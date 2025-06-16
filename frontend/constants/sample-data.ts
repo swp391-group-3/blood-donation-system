@@ -741,3 +741,38 @@ export const donationHistory = [
         certificateUrl: '/certificates/don-005.pdf',
     },
 ];
+
+
+type Role = 'staff' | 'admin' | 'member';
+type Gender = 'male' | 'female' | 'other';
+type BloodGroup = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+
+export class Account {
+    constructor(
+        public id: string,
+        public role: Role,
+        public email: string,
+        public password: string,
+        public phone?: string,
+        public name?: string,
+        public gender?: Gender,
+        public address?: string,
+        public birthday?: string,
+        public blood_group?: BloodGroup,
+        public is_active: boolean = false,
+        public created_at: string = new Date().toISOString()
+    ) { }
+}
+
+export const mockAccounts: Account[] = [
+    new Account('0b1e5c60-a1de-4af9-bf0e-111111111111', 'staff', 'alice.staff@example.com', 'hashed_password_1', '0123456789', 'Alice Nguyen', 'female', '123 Main St, Hanoi', '1990-01-15', 'A+', true),
+    new Account('0b1e5c60-a1de-4af9-bf0e-222222222222', 'staff', 'bob.staff@example.com', 'hashed_password_2', '0987654321', 'Bob Tran', 'male', '456 Le Loi, HCMC', '1985-06-20', 'B+', true),
+    new Account('0b1e5c60-a1de-4af9-bf0e-333333333333', 'staff', 'carol.staff@example.com', 'hashed_password_3', '0912345678', 'Carol Pham', 'female', '789 Nguyen Hue, Danang', '1992-03-10', 'O-', false),
+    new Account('0b1e5c60-a1de-4af9-bf0e-444444444444', 'staff', 'dave.staff@example.com', 'hashed_password_4', '0945678123', 'Dave Le', 'male', '1010 Vo Van Kiet, Can Tho', '1988-11-05', 'AB+', true),
+    new Account('0b1e5c60-a1de-4af9-bf0e-555555555555', 'staff', 'eve.staff@example.com', 'hashed_password_5', '0933333333', 'Eve Hoang', 'female', '25 Pasteur, Hue', '1993-09-18', 'A-', true),
+    new Account('0b1e5c60-a1de-4af9-bf0e-666666666666', 'staff', 'frank.staff@example.com', 'hashed_password_6', '0955555555', 'Frank Bui', 'male', '62 Dinh Tien Hoang, Nha Trang', '1991-07-02', 'B-', true),
+    new Account('0b1e5c60-a1de-4af9-bf0e-777777777777', 'staff', 'grace.staff@example.com', 'hashed_password_7', '0977777777', 'Grace Mai', 'female', '8 Tran Phu, Haiphong', '1989-12-25', 'O+', false),
+    new Account('0b1e5c60-a1de-4af9-bf0e-888888888888', 'staff', 'henry.staff@example.com', 'hashed_password_8', '0900000000', 'Henry Vu', 'male', '12 Nguyen Du, Bien Hoa', '1987-08-30', 'AB-', true),
+    new Account('0b1e5c60-a1de-4af9-bf0e-999999999999', 'staff', 'ivy.staff@example.com', 'hashed_password_9', '0966666666', 'Ivy Chau', 'female', '45 Ly Thuong Kiet, Vung Tau', '1995-05-12', 'A+', true),
+    new Account('0b1e5c60-a1de-4af9-bf0e-101010101010', 'staff', 'john.staff@example.com', 'hashed_password_10', '0911991199', 'John Dinh', 'male', '110 Quang Trung, Da Lat', '1986-04-22', 'O+', false),
+];
