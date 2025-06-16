@@ -1,11 +1,11 @@
 'use client';
-import { useState } from "react"
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { X } from 'lucide-react';
-import { Content } from "@tiptap/react"
-import { MinimalTiptapEditor } from "@/components/ui/minimal-tiptap"
+import { Content } from '@tiptap/react';
+import { MinimalTiptapEditor } from '@/components/ui/minimal-tiptap';
 import { Button } from '@/components/ui/button';
 import {
     Form,
@@ -34,7 +34,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { availableTags } from '../../../../constants/sample-data'
+import { availableTags } from '../../../../constants/sample-data';
+import { MultiSelect, type Option} from "@/components/multi-select"
 
 const formSchema = z.object({
     title: z.string().min(5, {
@@ -49,10 +50,27 @@ const formSchema = z.object({
     content: z.string().min(50, {
         message: 'Content must be at least 50 characters.',
     }),
-
 });
 
+const options: Option[] = [
+    { label: "Apple", value: "apple", category: "Fruits" },
+    { label: "Banana", value: "banana", category: "Fruits" },
+    { label: "Cherry", value: "cherry", category: "Fruits" },
+    { label: "Date", value: "date", category: "Fruits" },
+    { label: "Elderberry", value: "elderberry", category: "Fruits" },
+    { label: "Carrot", value: "carrot", category: "Vegetables" },
+    { label: "Broccoli", value: "broccoli", category: "Vegetables" },
+    { label: "Spinach", value: "spinach", category: "Vegetables" },
+    { label: "Potato", value: "potato", category: "Vegetables" },
+    { label: "Tomato", value: "tomato", category: "Vegetables" },
+    { label: "Milk", value: "milk", category: "Dairy" },
+    { label: "Cheese", value: "cheese", category: "Dairy" },
+    { label: "Yogurt", value: "yogurt", category: "Dairy" },
+  ]
+
 export default function CreateBlogPage() {
+    const [selected, setSelected] = useState<Option[]>([])
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -63,10 +81,10 @@ export default function CreateBlogPage() {
         },
     });
 
-    const [value, setValue] = useState<Content>("")
+    const [value, setValue] = useState<Content>('');
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // come in future      
+        // come in future
     }
 
     const handleTagSelect = (value: string) => {
@@ -160,58 +178,17 @@ export default function CreateBlogPage() {
                                             <FormLabel className="text-black">
                                                 Tags
                                             </FormLabel>
-                                            <div className="flex flex-wrap gap-2 mb-2">
-                                                {field.value.map((tag) => (
-                                                    <Badge
-                                                        key={tag}
-                                                        variant="outline"
-                                                        className="bg-gray-100 text-black flex items-center gap-1"
-                                                    >
-                                                        {availableTags.find(
-                                                            (t) =>
-                                                                t.value === tag,
-                                                        )?.label || tag}
-                                                        <X
-                                                            className="h-3 w-3 cursor-pointer"
-                                                            onClick={() =>
-                                                                removeTag(tag)
-                                                            }
-                                                        />
-                                                    </Badge>
-                                                ))}
-                                            </div>
                                             <FormControl>
-                                                <Select
-                                                    onValueChange={
-                                                        handleTagSelect
-                                                    }
-                                                >
-                                                    <SelectTrigger className="bg-white text-black">
-                                                        <SelectValue placeholder="Select a tag" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="bg-white text-black">
-                                                        {availableTags
-                                                            .filter(
-                                                                (tag) =>
-                                                                    !field.value.includes(
-                                                                        tag.value,
-                                                                    ),
-                                                            )
-                                                            .map((tag) => (
-                                                                <SelectItem
-                                                                    key={
-                                                                        tag.value
-                                                                    }
-                                                                    value={
-                                                                        tag.value
-                                                                    }
-                                                                >
-                                                                    {tag.label}
-                                                                </SelectItem>
-                                                            ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <MultiSelect options={options} selected={selected} onChange={setSelected} placeholder="Select blog tags..."/>
                                             </FormControl>
+                                            <div className="mt-4">
+                                                <h2 className="text-lg font-semibold mb-2">Selected items:</h2>
+                                                <ul className="list-disc list-inside">
+                                                    {selected.map((item) => (
+                                                        <li key={item.value}>{item.label}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
                                             <FormDescription className="text-gray-500">
                                                 Select relevant tags to
                                                 categorize your blog post.
@@ -230,7 +207,7 @@ export default function CreateBlogPage() {
                                                 Content
                                             </FormLabel>
                                             <FormControl>
-                                                <MinimalTiptapEditor 
+                                                <MinimalTiptapEditor
                                                     value={value}
                                                     onChange={setValue}
                                                     className="w-full"
