@@ -107,7 +107,7 @@ export default function CreateBlogPage() {
 
     return (
         <TooltipProvider>
-            <div className="container py-10">
+            <div className="container py-10 mx-auto">
                 <Card className="mx-auto max-w-4xl bg-white text-black border shadow-sm">
                     <CardHeader className="bg-white text-black">
                         <CardTitle className="text-3xl text-black">
@@ -220,9 +220,7 @@ export default function CreateBlogPage() {
                                                 />
                                             </FormControl>
                                             <FormDescription className="text-gray-500">
-                                                The main content of your blog
-                                                post. Supports markdown
-                                                formatting.
+                                                The main content of your blog post
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
