@@ -86,7 +86,7 @@ export default function LoginPage() {
                                 Login
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className='px-10'>
+                        <CardContent className="px-10">
                             <LoginForm />
 
                             <Separator text="or" />
