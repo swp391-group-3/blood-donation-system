@@ -87,24 +87,6 @@ export default function CreateBlogPage() {
         // come in future
     }
 
-    const handleTagSelect = (value: string) => {
-        const currentTags = form.getValues('tags');
-        if (!currentTags.includes(value)) {
-            form.setValue('tags', [...currentTags, value], {
-                shouldValidate: true,
-            });
-        }
-    };
-
-    const removeTag = (tag: string) => {
-        const currentTags = form.getValues('tags');
-        form.setValue(
-            'tags',
-            currentTags.filter((t) => t !== tag),
-            { shouldValidate: true },
-        );
-    };
-
     return (
         <TooltipProvider>
             <div className="container py-10 mx-auto">
