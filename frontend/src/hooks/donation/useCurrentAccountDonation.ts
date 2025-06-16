@@ -9,7 +9,7 @@ export const useCurrentAccountDonation = () => {
         queryFn: async () => {
             const response = await fetchWrapper('/donation/me');
 
-            return await deserialize<Donation>(response);
+            return await deserialize<Donation[]>(response);
         },
         queryKey: ['donation', 'me'],
     });

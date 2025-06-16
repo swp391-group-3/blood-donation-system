@@ -72,10 +72,10 @@ export const AccountIndicator = () => {
                             Profile
                         </DropdownMenuItem>
                     </Link>
-                    <Link href="/donation-history">
+                    <Link href="/donation">
                         <DropdownMenuItem className="flex flex-cols gap-5">
                             <Droplets className='text-red-500'/>
-                            Donation History
+                            Donation List
                         </DropdownMenuItem>
                     </Link>
                 </DropdownMenuGroup>
