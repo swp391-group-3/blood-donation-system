@@ -741,3 +741,8 @@ export const donationHistory = [
         certificateUrl: '/certificates/don-005.pdf',
     },
 ];
+
+export const availableTags = [
+    { label: 'Blood Information', value: 'blood information' },
+    { label: 'Experience', value: 'experience' },
+];
