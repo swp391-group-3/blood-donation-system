@@ -18,19 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Calendar,
-    Droplet,
-    MapPin,
-    Search,
-    Filter,
-    Download,
-    Award,
-    Heart,
-    TrendingUp,
-    CheckCircle,
-    FileText,
-} from 'lucide-react';
+import { Calendar, Droplet, Search, Download, CheckCircle } from 'lucide-react';
 import { donationHistory } from '../../../constants/sample-data';
 
 export default function MemberHistoryPage() {

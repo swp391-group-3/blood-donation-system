@@ -1,6 +1,5 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -18,21 +17,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    Calendar,
-    CalendarDays,
-    Camera,
-    Heart,
-    Loader2,
-    LoaderCircle,
-    User,
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { LoaderCircle } from 'lucide-react';
 import React from 'react';
 import {
-    Account,
     bloodGroups,
     displayBloodGroup,
     displayGender,
