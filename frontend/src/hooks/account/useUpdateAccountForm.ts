@@ -14,7 +14,7 @@ export const schema = registerSchema.omit({
     blood_group: true,
 });
 
-export const useUpdateAccountForm = (defaultValues: z.infer<typeof schema>) => {
+export const useUpdateAccountForm = (defaultValues?: z.infer<typeof schema>) => {
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
             const response = await fetchWrapper('/account', {
