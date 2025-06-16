@@ -16,6 +16,12 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
     User,
     Calendar,
     Phone,
@@ -29,8 +35,8 @@ import {
     XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
+import { questionnaireAnswers } from '../../../../constants/sample-data';
 
-// Mock appointment data
 const mockAppointment = {
     id: 'apt-001',
     donorName: 'John Smith',
@@ -180,140 +186,50 @@ export default function StaffAppointmentDetailsPage() {
                             </div>
                         </CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Heart className="h-5 w-5 text-red-500" />
-                                Health Questionnaire
-                            </CardTitle>
-                            <CardDescription>
-                                Pre-donation health screening responses
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div>
-                                <h4 className="font-medium mb-3">
-                                    Health History
-                                </h4>
-                                <div className="grid gap-4">
-                                    {Object.entries(
-                                        mockAppointment.questionnaire
-                                            .healthHistory,
-                                    ).map(([key, value]) => (
-                                        <div key={key} className="space-y-2">
-                                            <Label className="text-sm font-medium capitalize">
-                                                {key
-                                                    .replace(/([A-Z])/g, ' $1')
-                                                    .trim()}
-                                            </Label>
-                                            <div className="bg-gray-50 p-3 rounded-lg">
-                                                <p className="text-sm text-gray-700">
-                                                    {value}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                    <Accordion type="single" collapsible>
+                        <AccordionItem value="item-1">
+                            <div className="w-full" >
+                                <AccordionTrigger>
+                                    <Card className="w-full">
+                                        <CardHeader>
+                                            <CardTitle>Form Answers</CardTitle>
+                                            <CardDescription>
+                                                View the anwsers of the questions in
+                                                the appointment apply form
+                                            </CardDescription>
+                                        </CardHeader>
+                                    </Card>
+                                </AccordionTrigger>
                             </div>
-
-                            <Separator />
-
-                            <div>
-                                <h4 className="font-medium mb-3">
-                                    Eligibility Factors
-                                </h4>
-                                <div className="grid gap-4">
-                                    {Object.entries(
-                                        mockAppointment.questionnaire
-                                            .eligibility,
-                                    ).map(([key, value]) => (
-                                        <div key={key} className="space-y-2">
-                                            <Label className="text-sm font-medium capitalize">
-                                                {key
-                                                    .replace(/([A-Z])/g, ' $1')
-                                                    .trim()}
-                                            </Label>
-                                            <div className="bg-gray-50 p-3 rounded-lg">
-                                                <p className="text-sm text-gray-700">
-                                                    {value}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            <div>
-                                <h4 className="font-medium mb-3">
-                                    Lifestyle Information
-                                </h4>
-                                <div className="grid gap-4">
-                                    {Object.entries(
-                                        mockAppointment.questionnaire.lifestyle,
-                                    ).map(([key, value]) => (
-                                        <div key={key} className="space-y-2">
-                                            <Label className="text-sm font-medium capitalize">
-                                                {key
-                                                    .replace(/([A-Z])/g, ' $1')
-                                                    .trim()}
-                                            </Label>
-                                            <div className="bg-gray-50 p-3 rounded-lg">
-                                                <p className="text-sm text-gray-700">
-                                                    {value}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {mockAppointment.flaggedQuestions.length > 0 && (
-                                <>
-                                    <Separator />
-                                    <div className="bg-yellow-50 p-4 rounded-lg">
-                                        <div className="flex items-center gap-2">
-                                            <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                                            <h4 className="font-medium text-yellow-800">
-                                                Flagged Items
-                                            </h4>
-                                        </div>
-                                        <div className="mt-2 space-y-2">
-                                            {mockAppointment.flaggedQuestions.map(
-                                                (flag, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="text-sm text-yellow-700"
-                                                    >
-                                                        <span className="font-medium">
-                                                            {flag.question}:
-                                                        </span>{' '}
-                                                        {flag.reason}
+                            <AccordionContent>
+                                {questionnaireAnswers.map((question, index) => {
+                                    return (
+                                        <Card
+                                            key={question.id}
+                                            className="transition-all duration-300 mb-4 "
+                                        >
+                                            <CardHeader className="flex flex-row items-start justify-between">
+                                                <div className="flex items-start gap-3">
+                                                    <span className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium bg-green-100 text-green-600">
+                                                        {index + 1}
+                                                    </span>
+                                                    <div className="flex-1">
+                                                        <CardTitle className="text-lg">
+                                                            {question.question}
+                                                        </CardTitle>
+                                                        <CardDescription className="mt-2">
+                                                            {question.answer}
+                                                        </CardDescription>
                                                     </div>
-                                                ),
-                                            )}
-                                        </div>
-                                    </div>
-                                </>
-                            )}
+                                                </div>
+                                            </CardHeader>
+                                        </Card>
+                                    );
+                                })}
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
 
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <h4 className="font-medium mb-2">
-                                    Additional Notes
-                                </h4>
-                                <p className="text-sm text-gray-700">
-                                    {
-                                        mockAppointment.questionnaire
-                                            .additionalNotes
-                                    }
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Staff Review */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -409,9 +325,7 @@ export default function StaffAppointmentDetailsPage() {
                     </Card>
                 </div>
 
-                {/* Sidebar */}
                 <div className="space-y-6">
-                    {/* Appointment Summary */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -471,101 +385,6 @@ export default function StaffAppointmentDetailsPage() {
                                     </Badge>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Eligibility Score */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Activity className="h-5 w-5 text-green-500" />
-                                Eligibility Assessment
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="text-center">
-                                <div
-                                    className={`text-3xl font-bold ${
-                                        eligibilityScore >= 80
-                                            ? 'text-green-600'
-                                            : eligibilityScore >= 60
-                                              ? 'text-yellow-600'
-                                              : 'text-red-600'
-                                    }`}
-                                >
-                                    {eligibilityScore}%
-                                </div>
-                                <p className="text-sm text-gray-500">
-                                    Overall Score
-                                </p>
-                            </div>
-
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm">
-                                        Health History
-                                    </span>
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm">
-                                        Age & Weight
-                                    </span>
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm">
-                                        Last Donation
-                                    </span>
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm">
-                                        Travel History
-                                    </span>
-                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                                </div>
-                            </div>
-
-                            <div className="pt-2 border-t">
-                                <div className="text-sm text-gray-600">
-                                    <strong>Recommendation:</strong>{' '}
-                                    {eligibilityScore >= 80
-                                        ? 'Approve for donation'
-                                        : eligibilityScore >= 60
-                                          ? 'Review carefully before approval'
-                                          : 'Consider deferring donation'}
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Quick Actions</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <Button
-                                variant="outline"
-                                className="w-full"
-                                asChild
-                            >
-                                <Link href="/dashboard/staff/appointments">
-                                    Back to Appointments
-                                </Link>
-                            </Button>
-                            {decision === 'approved' && (
-                                <Button
-                                    className="w-full bg-blue-600 hover:bg-blue-700"
-                                    asChild
-                                >
-                                    <Link
-                                        href={`/dashboard/staff/appointments/${params.id}/checkin`}
-                                    >
-                                        Proceed to Check-in
-                                    </Link>
-                                </Button>
-                            )}
                         </CardContent>
                     </Card>
                 </div>
