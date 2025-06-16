@@ -642,6 +642,147 @@ export const comments = [
     },
 ];
 
+export const questionnaire = [
+    {
+        id: '1',
+        question:
+            'How are you feeling today? Describe your current health status.',
+        helpText:
+            "Please describe how you're feeling today, including any symptoms, fatigue, or general wellness concerns.",
+        placeholder:
+            "I am feeling well today. I had a good night's sleep and feel energetic. No symptoms of illness or discomfort...",
+    },
+    {
+        id: '2',
+        question:
+            'What medications, supplements, or vitamins are you currently taking?',
+        helpText:
+            'Please list all medications, supplements, and vitamins you are currently taking, including dosages and frequency.',
+        placeholder:
+            'I am currently taking a daily multivitamin, 81mg aspirin as prescribed by my doctor, and vitamin D supplements. No prescription medications...',
+    },
+    {
+        id: '3',
+        question:
+            'Do you have any chronic medical conditions or ongoing health issues?',
+        helpText:
+            'Please describe any ongoing medical conditions, even if they are well-controlled, including diabetes, heart conditions, etc.',
+        placeholder:
+            'I have well-controlled high blood pressure managed with medication. Blood pressure readings are consistently normal. No other chronic conditions...',
+    },
+    {
+        id: '4',
+        question:
+            "Describe any recent illnesses, infections, or symptoms you've experienced in the past month.",
+        helpText:
+            'Please describe any cold, flu, fever, dental work, or other health issues in the past 4 weeks.',
+        placeholder:
+            'I had a mild cold 3 weeks ago with congestion and cough, but fully recovered. Had a routine dental cleaning 2 weeks ago. No fever or other symptoms since...',
+    },
+    {
+        id: '5',
+        question:
+            'Describe any travel outside the country in the last 3 months.',
+        helpText:
+            'Please provide details about international travel, including destinations, dates, and any health precautions taken.',
+        placeholder:
+            'I traveled to Canada for vacation 6 weeks ago for one week. No travel to high-risk areas, tropical regions, or areas with disease outbreaks...',
+    },
+    {
+        id: '6',
+        question:
+            'Describe your lifestyle including sleep, diet, exercise, and substance use.',
+        helpText:
+            'Please describe your sleep patterns, eating habits, exercise routine, alcohol consumption, and smoking habits.',
+        placeholder:
+            "I get 7-8 hours of sleep nightly, eat a balanced diet, exercise 3 times per week. I occasionally have wine with dinner, don't smoke or use drugs...",
+    },
+    {
+        id: '7',
+        question:
+            "Describe any allergies or adverse reactions you've experienced.",
+        helpText:
+            'Please describe any known allergies to medications, foods, or other substances, and any adverse reactions to medical procedures.',
+        placeholder:
+            'I have a mild allergy to peanuts that causes hives. No known drug allergies or severe reactions to medical procedures...',
+    },
+    {
+        id: '8',
+        question:
+            'Please provide information about any history of infectious diseases or high-risk exposures.',
+        helpText:
+            'This information is confidential and helps ensure blood safety for recipients. Include any testing history.',
+        placeholder:
+            'I have never tested positive for HIV, Hepatitis B, or Hepatitis C. No history of tuberculosis, malaria, or other infectious diseases. Regular health screenings are normal...',
+    },
+    {
+        id: '9',
+        question:
+            'Please share any additional health concerns, family history, or information you think is relevant.',
+        helpText:
+            'Include any family medical history, concerns about donation, or other relevant health information.',
+        placeholder:
+            "Family history includes diabetes in grandparents. I'm slightly nervous about needles but have donated before successfully. No other concerns or relevant information...",
+    },
+];
+
+export const questionnaireAnswers = [
+    {
+        id: '1',
+        question:
+            'How are you feeling today? Describe your current health status.',
+        answer: "I am feeling well today. I had a good night's sleep and feel energetic. No symptoms of illness or discomfort.",
+    },
+    {
+        id: '2',
+        question:
+            'What medications, supplements, or vitamins are you currently taking?',
+        answer: 'I am currently taking a daily multivitamin, 81mg aspirin as prescribed by my doctor, and vitamin D supplements. No prescription medications.',
+    },
+    {
+        id: '3',
+        question:
+            'Do you have any chronic medical conditions or ongoing health issues?',
+        answer: 'I have well-controlled high blood pressure managed with medication. Blood pressure readings are consistently normal. No other chronic conditions.',
+    },
+    {
+        id: '4',
+        question:
+            "Describe any recent illnesses, infections, or symptoms you've experienced in the past month.",
+        answer: 'I had a mild cold 3 weeks ago with congestion and cough, but fully recovered. Had a routine dental cleaning 2 weeks ago. No fever or other symptoms since.',
+    },
+    {
+        id: '5',
+        question:
+            'Describe any travel outside the country in the last 3 months.',
+        answer: 'I traveled to Canada for vacation 6 weeks ago for one week. No travel to high-risk areas, tropical regions, or areas with disease outbreaks.',
+    },
+    {
+        id: '6',
+        question:
+            'Describe your lifestyle including sleep, diet, exercise, and substance use.',
+        answer: "I get 7-8 hours of sleep nightly, eat a balanced diet, exercise 3 times per week. I occasionally have wine with dinner, don't smoke or use drugs.",
+    },
+    {
+        id: '7',
+        question:
+            "Describe any allergies or adverse reactions you've experienced.",
+        answer: 'I have a mild allergy to peanuts that causes hives. No known drug allergies or severe reactions to medical procedures.',
+    },
+    {
+        id: '8',
+        question:
+            'Please provide information about any history of infectious diseases or high-risk exposures.',
+        answer: 'I have never tested positive for HIV, Hepatitis B, or Hepatitis C. No history of tuberculosis, malaria, or other infectious diseases. Regular health screenings are normal.',
+    },
+    {
+        id: '9',
+        question:
+            'Please share any additional health concerns, family history, or information you think is relevant.',
+        answer: "Family history includes diabetes in grandparents. I'm slightly nervous about needles but have donated before successfully. No other concerns or relevant information.",
+    },
+];
+
 // donation history sample data
 
 export const donationHistory = [
