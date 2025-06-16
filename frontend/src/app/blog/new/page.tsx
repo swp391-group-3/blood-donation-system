@@ -135,7 +135,7 @@ export default function CreateBlogPage() {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-black">
-                                                Excerpt
+                                                Summary
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -145,8 +145,7 @@ export default function CreateBlogPage() {
                                                 />
                                             </FormControl>
                                             <FormDescription className="text-gray-500">
-                                                A brief summary that appears in
-                                                blog listings.
+                                                Enter a short summary
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
