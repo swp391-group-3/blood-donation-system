@@ -7,10 +7,21 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { z } from "zod";
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+    Form,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormControl,
+    FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";  
 import {
     Accordion,
     AccordionContent,
@@ -26,8 +37,22 @@ import {
 import Link from 'next/link';
 import { questionnaireAnswers, mockAppointment } from '../../../../constants/sample-data';
 
+
+const reviewSchema = z.object({
+    reviewNotes: z
+      .string()
+      .min(1, "Fill in your revision"),
+  });
+
 export default function StaffAppointmentDetailsPage() {
 
+    const form = useForm({
+        resolver: zodResolver(reviewSchema),
+        defaultValues: {
+          reviewNotes: "",
+        },
+      });
+      
     const [viewState, setViewState] = useState('view'); 
 
     return (
@@ -143,16 +168,27 @@ export default function StaffAppointmentDetailsPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="review-notes">
-                                    Review Notes
-                                </Label>
-                                <Textarea
-                                    id="review-notes"
-                                    placeholder="Add your review notes, observations, or reasons for approval/rejection..."
-                                    rows={4}
-                                />
-                            </div>      
+                            <Form {...form}>
+                                <form className="space-y-4">
+                                    <FormField
+                                    control={form.control}
+                                    name="reviewNotes"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                        <FormLabel>Review Notes</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                            {...field}
+                                            placeholder="Add your review notes, observations, or reasons for approval/rejection..."
+                                            rows={4}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                    />
+                                </form>
+                            </Form>
                                 <div className="flex gap-4">
                                     <Button
                                         variant="outline"
