@@ -1,6 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { Account } from "./page";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 
@@ -9,26 +9,28 @@ const columnHelper = createColumnHelper<Account>();
 
 export const columns = [
     columnHelper.display({
-        id: "select",
+        id: "Select",
         header: ({ table }) => (
             <input
                 type="checkbox"
                 checked={table.getIsAllRowsSelected()}
-                onChange={table.getToggleAllPageRowsSelectedHandler()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
             />
         ),
-        cell: ({ row }) => (
-            <input
-                type="checkbox"
-                checked={row.getIsSelected()}
-                onChange={row.getToggleSelectedHandler()}
-            />
-        )
+        cell: ({ row }) => {
+            return (
+                <input
+                    type="checkbox"
+                    checked={row.getIsSelected()}
+                    onChange={row.getToggleSelectedHandler()}
+                />
+            )
+        }
     }),
     columnHelper.accessor(
         row => `${row.name} | ${row.email}`,
         {
-            id: "nameEmail",
+            id: "Name",
             header: "Name & Email",
             cell: info => {
                 const rowData = info.row.original;
@@ -43,14 +45,19 @@ export const columns = [
     )
     ,
     columnHelper.accessor("role", {
+        id: "Role",
         header: "Role",
-        cell: account => account.getValue()
+        cell: account => {
+            return account.getValue()
+        }
     }),
     columnHelper.accessor("status", {
+        id: "Status",
         header: "Status",
         cell: account => account.getValue()
     }),
     columnHelper.accessor("created_at", {
+        id: "Create At",
         header: "Created At",
         cell: account => account.getValue()
     }),
@@ -65,8 +72,7 @@ export const columns = [
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuContent align="start" side="bottom" sideOffset={8} alignOffset={4}>
                         <DropdownMenuItem
                         // onClick={() => setEditingUser(user)}
                         >

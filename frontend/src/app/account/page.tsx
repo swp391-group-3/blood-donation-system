@@ -11,15 +11,13 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Crown, Edit, MoreHorizontal, Search, Shield, Trash2, Upload, UserCheck, UserPlus, Users, UserX } from 'lucide-react';
-import React, { useState } from 'react'
+import { Crown, Search, Shield, Upload, UserCheck, UserPlus, Users, UserX } from 'lucide-react';
+import React, { useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Checkbox } from '@radix-ui/react-checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { AccountPicture } from '@/components/account-picture';
+import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import { columns } from './column';
 
 // mock data
 type Role = "ADMIN" | "MEMBER" | "STAFF";
@@ -58,26 +56,39 @@ function Page() {
     const [roleFilter, setRoleFilter] = useState("all");
     const [status, setStatus] = useState("all");
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-    const [csvFile, setCsvFile] = useState<File | null>(null);
-    const [csvData, setCsvData] = useState<any[]>([]);
-    const [importPreview, setImportPreview] = useState<Account[]>([]);
-    const [importErrors, setImportErrors] = useState<string[]>([]);
-    const [importProgress, setImportProgress] = useState(0);
-    const [isImporting, setIsImporting] = useState(false);
-    const [importStep, setImportStep] = useState<"upload" | "preview" | "importing" | "complete">("upload");
 
 
-    const filtersAccounts = mockAccounts.filter((account) => {
-        const matchesSearch =
-            account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            account.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const filtersAccounts: Account[] = useMemo(() => {
+        return mockAccounts.filter((account) => {
+            const matchesSearch =
+                account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                account.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const matchRole = roleFilter === "all" || account.role === roleFilter;
+            const matchRole = roleFilter === "all" || account.role === roleFilter;
 
-        const matchStatus = status === "all" || account.status === status
+            const matchStatus = status === "all" || account.status === status
 
-        return matchesSearch && matchRole && matchStatus;
+            return matchesSearch && matchRole && matchStatus;
+        })
+    }, [searchTerm, roleFilter, status]);
+
+
+    const table = useReactTable({
+        data: filtersAccounts,
+        columns: columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        initialState: {
+            pagination: {
+                pageIndex: 0,
+                pageSize: 5
+            }
+        }
     });
+
+    console.log("RENDER");
+    
+
 
     const getRoleIcon = (role: string) => {
         switch (role) {
@@ -103,21 +114,11 @@ function Page() {
                 return <Badge variant="outline">{status}</Badge>
         }
     }
-    const resetImportState = () => {
-        setCsvFile(null)
-        setCsvData([])
-        setImportPreview([])
-        setImportErrors([])
-        setImportProgress(0)
-        setIsImporting(false)
-        setImportStep("upload")
-    }
 
     const stats = {
         total: filtersAccounts.length,
         active: filtersAccounts.filter((u) => u.status === "ACTIVE").length,
         inactive: filtersAccounts.filter((u) => u.status === "INACTIVE").length,
-        admins: filtersAccounts.filter((u) => u.role === "ADMIN").length,
     }
 
     return (
@@ -133,8 +134,9 @@ function Page() {
                         <Dialog
                             open={isImportDialogOpen}
                             onOpenChange={(open) => {
+                                console.log("OPEN");
+
                                 setIsImportDialogOpen(open)
-                                if (!open) resetImportState()
                             }}
                         >
                             <DialogTrigger asChild>
@@ -150,48 +152,34 @@ function Page() {
                                         Upload a CSV file to bulk import users. Download the sample template to see the required format.
                                     </DialogDescription>
                                 </DialogHeader>
-                                {importStep === "upload" && (
-                                    <div className=' space-y-4'>
-                                        <div className='border-2 border-dashed p-6 border-gray-300 text-center rounded-lg'>
-                                            <div className='space-y-2'>
-                                                <Label
-                                                    htmlFor='csv-upload'
-                                                    className='cursor-pointer flex justify-center'
-                                                >
-                                                    <span>
-                                                        <Upload className='mx-auto h-12 w-12 text-gray-400 mb-4' />
-                                                    </span>
-                                                    <Input
-                                                        id="csv-upload"
-                                                        accept='.csv'
-                                                        type='file'
-                                                        className='hidden'
-                                                        onChange={(e) => {
-                                                            const file = e.target.files?.[0] || null;
-                                                            setCsvFile(file);
-                                                            // TODO: parse CSV, setCsvData, move to preview step
-                                                        }}
-                                                    />
-                                                </Label>
-                                                <p className='text-sx text-gray-800'>
-                                                    CSV file with columns: name, email, role, status
-                                                </p>
-                                            </div>
+                                <div className=' space-y-4'>
+                                    <div className='border-2 border-dashed p-6 border-gray-300 text-center rounded-lg'>
+                                        <div className='space-y-2'>
+                                            <Label
+                                                htmlFor='csv-upload'
+                                                className='cursor-pointer flex justify-center'
+                                            >
+                                                <span>
+                                                    <Upload className='mx-auto h-12 w-12 text-gray-400 mb-4' />
+                                                </span>
+                                                <Input
+                                                    id="csv-upload"
+                                                    accept='.csv'
+                                                    type='file'
+                                                    className='hidden'
+                                                // onChange={(e) => {
+                                                //     const file = e.target.files?.[0] || null;
+                                                //     setCsvFile(file);
+                                                //     // TODO: parse CSV, setCsvData, move to preview step
+                                                // }}
+                                                />
+                                            </Label>
+                                            <p className='text-sx text-gray-800'>
+                                                CSV file with columns: name, email, role, status
+                                            </p>
                                         </div>
                                     </div>
-                                )}
-                                {importStep === "preview" && (
-                                    // Preview table with import data
-                                    <div>Preview</div>
-                                )}
-                                {importStep === "importing" && (
-                                    // Progress indicator
-                                    <div>Progress</div>
-                                )}
-                                {importStep === "complete" && (
-                                    // Success message
-                                    <div>Success</div>
-                                )}
+                                </div>
 
                             </DialogContent>
                         </Dialog>
@@ -232,15 +220,6 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Admins</CardTitle>
-                            <Crown className="h-4 w-4 text-blue-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-blue-600">{stats.admins}</div>
                         </CardContent>
                     </Card>
                 </div>
@@ -304,80 +283,39 @@ function Page() {
                     <CardContent>
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-12">
-                                        <Checkbox
-                                        // checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
-                                        // onCheckedChange={handleSelectAll}
-                                        />
-                                    </TableHead>
-                                    <TableHead>User</TableHead>
-                                    <TableHead>Role</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Created At</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filtersAccounts.map(account => (
-                                    <TableRow>
-                                        <TableCell>
-                                            <Checkbox
-                                            // checked={selectedUsers.includes(user.id)}
-                                            // onCheckedChange={() => handleSelectUser(user.id)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                {/* <AccountPicture name='Bao' /> */}
-                                                <div className='size-8'>
-                                                    <AccountPicture name={account.name}/>
-                                                </div>
-                                                <div>
-                                                    <div className="font-medium">{account.name}</div>
-                                                    <div className="text-sm text-gray-500">{account.email}</div>
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                {getRoleIcon(account.role)}
-                                                <span className="capitalize">{account.role}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {getStatusBadge(account.status)}
-                                        </TableCell>
-                                        <TableCell className="text-sm text-gray-500">
-                                            {new Date(account.created_at).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem
-                                                    // onClick={() => setEditingUser(user)}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Edit User
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="text-red-600"
-                                                    // onClick={() => handleDeleteUser(user.id)}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Delete User
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
+                                {table.getHeaderGroups().map(headerGroup => (
+                                    <TableRow
+                                        key={headerGroup.id}
+                                    >
+                                        {headerGroup.headers.map(header => {
+                                            return (
+                                                <TableHead
+                                                    key={header.id}
+                                                >
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                </TableHead>
+                                            )
+                                        })}
                                     </TableRow>
                                 ))}
+                            </TableHeader>
+                            <TableBody>
+                                {table.getRowModel().rows.map(row => {
+                                    return (
+                                        <TableRow key={row.id} style={{ backgroundColor: row.getIsSelected() ? '#e3f2fd' : 'white' }}>
+                                            {row.getVisibleCells().map(cell => {
+                                                return <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            })}
+                                        </TableRow>
+                                    )
+                                })}
                             </TableBody>
                         </Table>
                     </CardContent>
