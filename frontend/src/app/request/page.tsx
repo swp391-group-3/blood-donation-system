@@ -1,4 +1,5 @@
 'use client';
+
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -26,11 +27,14 @@ import {
     AlertTriangle,
     Heart,
     Eye,
+    Home,
+    Droplets,
 } from 'lucide-react';
 import Link from 'next/link';
 import { mockRequests } from '../../../constants/sample-data';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Stats } from '@/components/stats';
 
 const schema = z.object({
     searchTerm: z.string().optional().default(''),
@@ -133,16 +137,26 @@ export default function BloodRequestPage() {
 
     return (
         <div className="flex-1 space-y-6 p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">
-                        Blood Donation Requests
-                    </h1>
-                    <p className="text-gray-500">
-                        Find and respond to blood donation opportunities
-                    </p>
+            <section className="bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                    <div className="text-center max-w-4xl mx-auto">
+                        <div className="inline-flex items-center px-4 py-2 bg-rose-50 text-rose-700 rounded-full text-sm font-medium mb-6">
+                            <Heart className="h-4 w-4 mr-2" />
+                            Save Lives Today
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                            Blood Donation
+                            <span className="block text-rose-600">
+                                Requests
+                            </span>
+                        </h1>
+                        <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+                            Find and respond to blood donation opportunities in
+                            your community
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </section>
 
             <Tabs
                 value={statusFilter}
