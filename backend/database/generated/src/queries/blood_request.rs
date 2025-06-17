@@ -23,6 +23,7 @@ pub struct UpdateParams<T1: crate::StringSql> {
 }
 #[derive(Debug, Clone, PartialEq)]
 pub struct GetAll {
+    pub id: uuid::Uuid,
     pub priority: ctypes::RequestPriority,
     pub title: String,
     pub blood_groups: Vec<ctypes::BloodGroup>,
@@ -32,6 +33,7 @@ pub struct GetAll {
     pub end_time: crate::types::time::TimestampTz,
 }
 pub struct GetAllBorrowed<'a> {
+    pub id: uuid::Uuid,
     pub priority: ctypes::RequestPriority,
     pub title: &'a str,
     pub blood_groups: crate::ArrayIterator<'a, ctypes::BloodGroup>,
@@ -43,6 +45,7 @@ pub struct GetAllBorrowed<'a> {
 impl<'a> From<GetAllBorrowed<'a>> for GetAll {
     fn from(
         GetAllBorrowed {
+            id,
             priority,
             title,
             blood_groups,
@@ -53,6 +56,7 @@ impl<'a> From<GetAllBorrowed<'a>> for GetAll {
         }: GetAllBorrowed<'a>,
     ) -> Self {
         Self {
+            id,
             priority,
             title: title.into(),
             blood_groups: blood_groups.map(|v| v).collect(),
@@ -65,6 +69,7 @@ impl<'a> From<GetAllBorrowed<'a>> for GetAll {
 }
 #[derive(Debug, Clone, PartialEq)]
 pub struct GetByMemberId {
+    pub id: uuid::Uuid,
     pub priority: ctypes::RequestPriority,
     pub title: String,
     pub blood_groups: Vec<ctypes::BloodGroup>,
@@ -74,6 +79,7 @@ pub struct GetByMemberId {
     pub end_time: crate::types::time::TimestampTz,
 }
 pub struct GetByMemberIdBorrowed<'a> {
+    pub id: uuid::Uuid,
     pub priority: ctypes::RequestPriority,
     pub title: &'a str,
     pub blood_groups: crate::ArrayIterator<'a, ctypes::BloodGroup>,
@@ -85,6 +91,7 @@ pub struct GetByMemberIdBorrowed<'a> {
 impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
     fn from(
         GetByMemberIdBorrowed {
+            id,
             priority,
             title,
             blood_groups,
@@ -95,6 +102,7 @@ impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
         }: GetByMemberIdBorrowed<'a>,
     ) -> Self {
         Self {
+            id,
             priority,
             title: title.into(),
             blood_groups: blood_groups.map(|v| v).collect(),
@@ -386,7 +394,7 @@ impl<'a, C: GenericClient + Send + Sync>
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT priority, title, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, max_people, start_time, end_time FROM blood_requests WHERE now() < end_time AND is_active = true",
+        "SELECT id, priority, title, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, max_people, start_time, end_time FROM blood_requests WHERE now() < end_time AND is_active = true",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -402,13 +410,14 @@ impl GetAllStmt {
             extractor:
                 |row: &tokio_postgres::Row| -> Result<GetAllBorrowed, tokio_postgres::Error> {
                     Ok(GetAllBorrowed {
-                        priority: row.try_get(0)?,
-                        title: row.try_get(1)?,
-                        blood_groups: row.try_get(2)?,
-                        current_people: row.try_get(3)?,
-                        max_people: row.try_get(4)?,
-                        start_time: row.try_get(5)?,
-                        end_time: row.try_get(6)?,
+                        id: row.try_get(0)?,
+                        priority: row.try_get(1)?,
+                        title: row.try_get(2)?,
+                        blood_groups: row.try_get(3)?,
+                        current_people: row.try_get(4)?,
+                        max_people: row.try_get(5)?,
+                        start_time: row.try_get(6)?,
+                        end_time: row.try_get(7)?,
                     })
                 },
             mapper: |it| GetAll::from(it),
@@ -417,7 +426,7 @@ impl GetAllStmt {
 }
 pub fn get_by_member_id() -> GetByMemberIdStmt {
     GetByMemberIdStmt(crate::client::async_::Stmt::new(
-        "SELECT priority, title, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, max_people, start_time, end_time FROM blood_requests WHERE blood_requests.id IN ( SELECT request_id FROM appointments WHERE member_id = $1 )",
+        "SELECT id, priority, title, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, max_people, start_time, end_time FROM blood_requests WHERE blood_requests.id IN ( SELECT request_id FROM appointments WHERE member_id = $1 )",
     ))
 }
 pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
@@ -434,13 +443,14 @@ impl GetByMemberIdStmt {
             extractor:
                 |row: &tokio_postgres::Row| -> Result<GetByMemberIdBorrowed, tokio_postgres::Error> {
                     Ok(GetByMemberIdBorrowed {
-                        priority: row.try_get(0)?,
-                        title: row.try_get(1)?,
-                        blood_groups: row.try_get(2)?,
-                        current_people: row.try_get(3)?,
-                        max_people: row.try_get(4)?,
-                        start_time: row.try_get(5)?,
-                        end_time: row.try_get(6)?,
+                        id: row.try_get(0)?,
+                        priority: row.try_get(1)?,
+                        title: row.try_get(2)?,
+                        blood_groups: row.try_get(3)?,
+                        current_people: row.try_get(4)?,
+                        max_people: row.try_get(5)?,
+                        start_time: row.try_get(6)?,
+                        end_time: row.try_get(7)?,
                     })
                 },
             mapper: |it| GetByMemberId::from(it),

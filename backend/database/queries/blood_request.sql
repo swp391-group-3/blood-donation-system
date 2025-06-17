@@ -29,6 +29,7 @@ VALUES (
 
 --! get_all
 SELECT
+    id,
     priority,
     title,
     (
@@ -51,6 +52,7 @@ WHERE now() < end_time AND is_active = true;
 
 --! get_by_member_id
 SELECT
+    id,
     priority,
     title,
     (

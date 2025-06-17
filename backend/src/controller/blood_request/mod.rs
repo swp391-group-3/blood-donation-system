@@ -13,6 +13,7 @@ use database::queries::blood_request::{GetAllBorrowed, GetByMemberIdBorrowed};
 use model_mapper::Mapper;
 use serde::Serialize;
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::{middleware, state::ApiState};
 
@@ -26,6 +27,7 @@ pub use update::*;
 #[mapper(derive(from(custom = "from_get_all"), ty = GetAllBorrowed::<'_>))]
 #[mapper(derive(from(custom = "from_get_by_member_id"), ty = GetByMemberIdBorrowed::<'_>))]
 pub struct BloodRequest {
+    pub id: Uuid,
     pub priority: RequestPriority,
     pub title: String,
     #[mapper(with = blood_groups.collect())]
