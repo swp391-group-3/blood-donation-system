@@ -1,8 +1,7 @@
-mod count_appointment;
 mod create;
 mod delete;
 mod get_all;
-mod get_booked;
+mod get_by_member_id;
 mod update;
 
 use std::sync::Arc;
@@ -10,27 +9,28 @@ use std::sync::Arc;
 use axum::{Router, routing};
 use chrono::{DateTime, Utc};
 use ctypes::{BloodGroup, RequestPriority, Role};
-use database::queries::blood_request::{GetAllBorrowed, GetBookedBorrowed};
+use database::queries::blood_request::{GetAllBorrowed, GetByMemberIdBorrowed};
 use model_mapper::Mapper;
 use serde::Serialize;
 use utoipa::ToSchema;
 
 use crate::{middleware, state::ApiState};
 
-pub use count_appointment::*;
 pub use create::*;
 pub use delete::*;
 pub use get_all::*;
-pub use get_booked::*;
+pub use get_by_member_id::*;
 pub use update::*;
 
 #[derive(Serialize, ToSchema, Mapper)]
 #[mapper(derive(from(custom = "from_get_all"), ty = GetAllBorrowed::<'_>))]
-#[mapper(derive(from(custom = "from_get_booked"), ty = GetBookedBorrowed::<'_>))]
+#[mapper(derive(from(custom = "from_get_by_member_id"), ty = GetByMemberIdBorrowed::<'_>))]
 pub struct BloodRequest {
-    pub blood_group: BloodGroup,
     pub priority: RequestPriority,
     pub title: String,
+    #[mapper(with = blood_groups.collect())]
+    pub blood_groups: Vec<BloodGroup>,
+    pub current_people: i64,
     pub max_people: i32,
     pub start_time: DateTime<Utc>,
     pub end_time: DateTime<Utc>,
@@ -47,7 +47,7 @@ pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
         ));
 
     let member_route = Router::new()
-        .route("/blood-request/get-booked", routing::get(get_booked))
+        .route("/blood-request/me", routing::get(get_by_member_id))
         .layer(axum::middleware::from_fn_with_state(
             state,
             middleware::authorize!(Role::Member),
@@ -57,8 +57,4 @@ pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
         .merge(staff_route)
         .merge(member_route)
         .route("/blood-request", routing::get(get_all))
-        .route(
-            "/blood-request/{id}/count-appointment",
-            routing::get(count_appointment),
-        )
 }
