@@ -44,6 +44,7 @@ import { Progress } from '@/components/ui/progress';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const priorityConfig = {
     high: {
@@ -413,12 +414,26 @@ export default function BloodRequestPage() {
                     </div>
                 </div>
                 <TabsContent
-                    className="grid md:grid-cols-2 xl:grid-cols-4 gap-10"
+                    className={cn(
+                        'grid gap-10',
+                        !filteredRequests || filteredRequests.length === 0
+                            ? ''
+                            : 'md:grid-cols-2 xl:grid-cols-4',
+                    )}
                     value="active"
                 >
-                    {filteredRequests!.map((request, index) => (
-                        <BloodRequestCard key={index} {...request} />
-                    ))}
+                    {!filteredRequests || filteredRequests.length === 0 ? (
+                        <EmptyState
+                            className="mx-auto"
+                            title="No Results Found"
+                            description="Try adjusting your search filters."
+                            icons={[Search]}
+                        />
+                    ) : (
+                        filteredRequests.map((request, index) => (
+                            <BloodRequestCard key={index} {...request} />
+                        ))
+                    )}
                 </TabsContent>
             </Tabs>
         </div>
