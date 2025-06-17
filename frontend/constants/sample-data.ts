@@ -726,6 +726,58 @@ export const questionnaire = [
     },
 ];
 
+export const mockAppointment = {
+    id: 'apt-001',
+    donorName: 'John Smith',
+    donorEmail: 'john.smith@email.com',
+    donorPhone: '+1234567890',
+    bloodType: 'O-',
+    scheduledDate: '2025-06-08',
+    scheduledTime: '10:00 AM',
+    status: 'pending_review',
+    preScreeningComplete: true,
+    healthRisk: 'medium',
+    lastDonation: '2025-03-15',
+    totalDonations: 8,
+    emergencyContact: {
+        name: 'Jane Smith',
+        relationship: 'Spouse',
+        phone: '+1234567891',
+    },
+    questionnaire: {
+        healthHistory: {
+            chronicConditions: 'None reported',
+            currentMedications: 'Multivitamin daily',
+            allergies: 'No known allergies',
+            recentIllness: 'Had a cold 3 weeks ago, fully recovered',
+            surgeries: 'Appendectomy in 2020, no complications',
+        },
+        eligibility: {
+            lastDonation: '2025-03-15',
+            recentTravel: 'Visited Canada last month for vacation',
+            alcoholConsumption: '1-2 drinks per week socially',
+            smoking: 'Never smoked',
+            drugUse: 'No recreational drug use',
+        },
+        lifestyle: {
+            exercise: 'Regular gym workouts 4 times per week',
+            diet: 'Balanced diet, high protein, plenty of vegetables',
+            sleep: '7-8 hours per night, good sleep quality',
+            occupation: 'Software Engineer - desk job',
+        },
+        additionalNotes:
+            'Regular donor with good donation history. Available for emergency requests.',
+    },
+    flaggedQuestions: [
+        {
+            category: 'eligibility',
+            question: 'recentTravel',
+            reason: 'International travel within 3 months',
+            severity: 'low',
+        },
+    ],
+};
+
 export const questionnaireAnswers = [
     {
         id: '1',

@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -35,59 +34,9 @@ import {
     XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { questionnaireAnswers } from '../../../../constants/sample-data';
+import { questionnaireAnswers, mockAppointment } from '../../../../constants/sample-data';
 
-const mockAppointment = {
-    id: 'apt-001',
-    donorName: 'John Smith',
-    donorEmail: 'john.smith@email.com',
-    donorPhone: '+1234567890',
-    bloodType: 'O-',
-    scheduledDate: '2025-06-08',
-    scheduledTime: '10:00 AM',
-    status: 'pending_review',
-    preScreeningComplete: true,
-    healthRisk: 'medium',
-    lastDonation: '2025-03-15',
-    totalDonations: 8,
-    emergencyContact: {
-        name: 'Jane Smith',
-        relationship: 'Spouse',
-        phone: '+1234567891',
-    },
-    questionnaire: {
-        healthHistory: {
-            chronicConditions: 'None reported',
-            currentMedications: 'Multivitamin daily',
-            allergies: 'No known allergies',
-            recentIllness: 'Had a cold 3 weeks ago, fully recovered',
-            surgeries: 'Appendectomy in 2020, no complications',
-        },
-        eligibility: {
-            lastDonation: '2025-03-15',
-            recentTravel: 'Visited Canada last month for vacation',
-            alcoholConsumption: '1-2 drinks per week socially',
-            smoking: 'Never smoked',
-            drugUse: 'No recreational drug use',
-        },
-        lifestyle: {
-            exercise: 'Regular gym workouts 4 times per week',
-            diet: 'Balanced diet, high protein, plenty of vegetables',
-            sleep: '7-8 hours per night, good sleep quality',
-            occupation: 'Software Engineer - desk job',
-        },
-        additionalNotes:
-            'Regular donor with good donation history. Available for emergency requests.',
-    },
-    flaggedQuestions: [
-        {
-            category: 'eligibility',
-            question: 'recentTravel',
-            reason: 'International travel within 3 months',
-            severity: 'low',
-        },
-    ],
-};
+
 
 export default function StaffAppointmentDetailsPage() {
     const params = useParams();
@@ -161,11 +110,7 @@ export default function StaffAppointmentDetailsPage() {
                                         Blood Group: {mockAppointment.bloodType}
                                     </p>
                                     <p className="text-sm text-gray-500">
-                                        Appointment:{' '}
-                                        {new Date(
-                                            mockAppointment.scheduledDate,
-                                        ).toLocaleDateString()}{' '}
-                                        at {mockAppointment.scheduledTime}
+                                        Appointment: 6/8/2025 at 10:00 AM
                                     </p>
                                 </div>
                             </div>
@@ -188,19 +133,18 @@ export default function StaffAppointmentDetailsPage() {
                     </Card>
                     <Accordion type="single" collapsible>
                         <AccordionItem value="item-1">
-                            <div className="w-full" >
-                                <AccordionTrigger>
-                                    <Card className="w-full">
-                                        <CardHeader>
-                                            <CardTitle>Form Answers</CardTitle>
-                                            <CardDescription>
-                                                View the anwsers of the questions in
-                                                the appointment apply form
-                                            </CardDescription>
-                                        </CardHeader>
-                                    </Card>
-                                </AccordionTrigger>
-                            </div>
+                            <Card className="w-full">
+                                <CardHeader>
+                                    <AccordionTrigger>
+                                        <div className="flex flex-col w-full cursor-pointer">
+                                            <span className="font-semibold text-lg">Form Answer</span>
+                                            <span className="text-sm text-muted-foreground">
+                                                View the answers of the questions in the appointment apply form
+                                            </span>
+                                        </div>
+                                    </AccordionTrigger>
+                                </CardHeader>
+                            </Card>
                             <AccordionContent>
                                 {questionnaireAnswers.map((question, index) => {
                                     return (
