@@ -3,12 +3,16 @@
 #[derive(Debug)]
 pub struct CreateParams<T1: crate::StringSql> {
     pub staff_id: uuid::Uuid,
-    pub blood_group: ctypes::BloodGroup,
     pub priority: ctypes::RequestPriority,
     pub title: T1,
     pub max_people: i32,
     pub start_time: crate::types::time::TimestampTz,
     pub end_time: crate::types::time::TimestampTz,
+}
+#[derive(Clone, Copy, Debug)]
+pub struct AddBloodGroupParams {
+    pub request_id: uuid::Uuid,
+    pub blood_group: ctypes::BloodGroup,
 }
 #[derive(Debug)]
 pub struct UpdateParams<T1: crate::StringSql> {
@@ -19,17 +23,19 @@ pub struct UpdateParams<T1: crate::StringSql> {
 }
 #[derive(Debug, Clone, PartialEq)]
 pub struct GetAll {
-    pub blood_group: ctypes::BloodGroup,
     pub priority: ctypes::RequestPriority,
     pub title: String,
+    pub blood_groups: Vec<ctypes::BloodGroup>,
+    pub current_people: i64,
     pub max_people: i32,
     pub start_time: crate::types::time::TimestampTz,
     pub end_time: crate::types::time::TimestampTz,
 }
 pub struct GetAllBorrowed<'a> {
-    pub blood_group: ctypes::BloodGroup,
     pub priority: ctypes::RequestPriority,
     pub title: &'a str,
+    pub blood_groups: crate::ArrayIterator<'a, ctypes::BloodGroup>,
+    pub current_people: i64,
     pub max_people: i32,
     pub start_time: crate::types::time::TimestampTz,
     pub end_time: crate::types::time::TimestampTz,
@@ -37,18 +43,20 @@ pub struct GetAllBorrowed<'a> {
 impl<'a> From<GetAllBorrowed<'a>> for GetAll {
     fn from(
         GetAllBorrowed {
-            blood_group,
             priority,
             title,
+            blood_groups,
+            current_people,
             max_people,
             start_time,
             end_time,
         }: GetAllBorrowed<'a>,
     ) -> Self {
         Self {
-            blood_group,
             priority,
             title: title.into(),
+            blood_groups: blood_groups.map(|v| v).collect(),
+            current_people,
             max_people,
             start_time,
             end_time,
@@ -56,37 +64,41 @@ impl<'a> From<GetAllBorrowed<'a>> for GetAll {
     }
 }
 #[derive(Debug, Clone, PartialEq)]
-pub struct GetBooked {
-    pub blood_group: ctypes::BloodGroup,
+pub struct GetByMemberId {
     pub priority: ctypes::RequestPriority,
     pub title: String,
+    pub blood_groups: Vec<ctypes::BloodGroup>,
+    pub current_people: i64,
     pub max_people: i32,
     pub start_time: crate::types::time::TimestampTz,
     pub end_time: crate::types::time::TimestampTz,
 }
-pub struct GetBookedBorrowed<'a> {
-    pub blood_group: ctypes::BloodGroup,
+pub struct GetByMemberIdBorrowed<'a> {
     pub priority: ctypes::RequestPriority,
     pub title: &'a str,
+    pub blood_groups: crate::ArrayIterator<'a, ctypes::BloodGroup>,
+    pub current_people: i64,
     pub max_people: i32,
     pub start_time: crate::types::time::TimestampTz,
     pub end_time: crate::types::time::TimestampTz,
 }
-impl<'a> From<GetBookedBorrowed<'a>> for GetBooked {
+impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
     fn from(
-        GetBookedBorrowed {
-            blood_group,
+        GetByMemberIdBorrowed {
             priority,
             title,
+            blood_groups,
+            current_people,
             max_people,
             start_time,
             end_time,
-        }: GetBookedBorrowed<'a>,
+        }: GetByMemberIdBorrowed<'a>,
     ) -> Self {
         Self {
-            blood_group,
             priority,
             title: title.into(),
+            blood_groups: blood_groups.map(|v| v).collect(),
+            current_people,
             max_people,
             start_time,
             end_time,
@@ -108,67 +120,6 @@ where
 {
     pub fn map<R>(self, mapper: fn(uuid::Uuid) -> R) -> UuidUuidQuery<'c, 'a, 's, C, R, N> {
         UuidUuidQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct I64Query<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<i64, tokio_postgres::Error>,
-    mapper: fn(i64) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> I64Query<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(self, mapper: fn(i64) -> R) -> I64Query<'c, 'a, 's, C, R, N> {
-        I64Query {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -278,19 +229,22 @@ where
         Ok(it)
     }
 }
-pub struct GetBookedQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct GetByMemberIdQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetBookedBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetBookedBorrowed) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<GetByMemberIdBorrowed, tokio_postgres::Error>,
+    mapper: fn(GetByMemberIdBorrowed) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetBookedQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByMemberIdQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(GetBookedBorrowed) -> R) -> GetBookedQuery<'c, 'a, 's, C, R, N> {
-        GetBookedQuery {
+    pub fn map<R>(
+        self,
+        mapper: fn(GetByMemberIdBorrowed) -> R,
+    ) -> GetByMemberIdQuery<'c, 'a, 's, C, R, N> {
+        GetByMemberIdQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -341,7 +295,7 @@ where
 }
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO blood_requests( staff_id, blood_group, priority, title, max_people, start_time, end_time ) VALUES ( $1, $2, $3, $4, $5, $6, $7 ) RETURNING id",
+        "INSERT INTO blood_requests( staff_id, priority, title, max_people, start_time, end_time ) VALUES ( $1, $2, $3, $4, $5, $6 ) RETURNING id",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
@@ -350,24 +304,15 @@ impl CreateStmt {
         &'s mut self,
         client: &'c C,
         staff_id: &'a uuid::Uuid,
-        blood_group: &'a ctypes::BloodGroup,
         priority: &'a ctypes::RequestPriority,
         title: &'a T1,
         max_people: &'a i32,
         start_time: &'a crate::types::time::TimestampTz,
         end_time: &'a crate::types::time::TimestampTz,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 7> {
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 6> {
         UuidUuidQuery {
             client,
-            params: [
-                staff_id,
-                blood_group,
-                priority,
-                title,
-                max_people,
-                start_time,
-                end_time,
-            ],
+            params: [staff_id, priority, title, max_people, start_time, end_time],
             stmt: &mut self.0,
             extractor: |row| Ok(row.try_get(0)?),
             mapper: |it| it,
@@ -380,7 +325,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         'a,
         's,
         CreateParams<T1>,
-        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 7>,
+        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 6>,
         C,
     > for CreateStmt
 {
@@ -388,11 +333,10 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         &'s mut self,
         client: &'c C,
         params: &'a CreateParams<T1>,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 7> {
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 6> {
         self.bind(
             client,
             &params.staff_id,
-            &params.blood_group,
             &params.priority,
             &params.title,
             &params.max_people,
@@ -401,30 +345,48 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         )
     }
 }
-pub fn count_appointment() -> CountAppointmentStmt {
-    CountAppointmentStmt(crate::client::async_::Stmt::new(
-        "SELECT COUNT(id) FROM appointments WHERE request_id = $1",
+pub fn add_blood_group() -> AddBloodGroupStmt {
+    AddBloodGroupStmt(crate::client::async_::Stmt::new(
+        "INSERT INTO request_blood_groups( request_id, blood_group ) VALUES ( $1, $2 )",
     ))
 }
-pub struct CountAppointmentStmt(crate::client::async_::Stmt);
-impl CountAppointmentStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
+pub struct AddBloodGroupStmt(crate::client::async_::Stmt);
+impl AddBloodGroupStmt {
+    pub async fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
         request_id: &'a uuid::Uuid,
-    ) -> I64Query<'c, 'a, 's, C, i64, 1> {
-        I64Query {
-            client,
-            params: [request_id],
-            stmt: &mut self.0,
-            extractor: |row| Ok(row.try_get(0)?),
-            mapper: |it| it,
-        }
+        blood_group: &'a ctypes::BloodGroup,
+    ) -> Result<u64, tokio_postgres::Error> {
+        let stmt = self.0.prepare(client).await?;
+        client.execute(stmt, &[request_id, blood_group]).await
+    }
+}
+impl<'a, C: GenericClient + Send + Sync>
+    crate::client::async_::Params<
+        'a,
+        'a,
+        'a,
+        AddBloodGroupParams,
+        std::pin::Pin<
+            Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+        >,
+        C,
+    > for AddBloodGroupStmt
+{
+    fn params(
+        &'a mut self,
+        client: &'a C,
+        params: &'a AddBloodGroupParams,
+    ) -> std::pin::Pin<
+        Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+    > {
+        Box::pin(self.bind(client, &params.request_id, &params.blood_group))
     }
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT blood_group, priority, title, max_people, start_time, end_time FROM blood_requests WHERE now() < end_time AND is_active = true",
+        "SELECT priority, title, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, max_people, start_time, end_time FROM blood_requests WHERE now() < end_time AND is_active = true",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -440,46 +402,48 @@ impl GetAllStmt {
             extractor:
                 |row: &tokio_postgres::Row| -> Result<GetAllBorrowed, tokio_postgres::Error> {
                     Ok(GetAllBorrowed {
-                        blood_group: row.try_get(0)?,
-                        priority: row.try_get(1)?,
-                        title: row.try_get(2)?,
-                        max_people: row.try_get(3)?,
-                        start_time: row.try_get(4)?,
-                        end_time: row.try_get(5)?,
+                        priority: row.try_get(0)?,
+                        title: row.try_get(1)?,
+                        blood_groups: row.try_get(2)?,
+                        current_people: row.try_get(3)?,
+                        max_people: row.try_get(4)?,
+                        start_time: row.try_get(5)?,
+                        end_time: row.try_get(6)?,
                     })
                 },
             mapper: |it| GetAll::from(it),
         }
     }
 }
-pub fn get_booked() -> GetBookedStmt {
-    GetBookedStmt(crate::client::async_::Stmt::new(
-        "SELECT blood_group, priority, title, max_people, start_time, end_time FROM blood_requests WHERE blood_requests.id IN ( SELECT request_id FROM appointments WHERE member_id = $1 )",
+pub fn get_by_member_id() -> GetByMemberIdStmt {
+    GetByMemberIdStmt(crate::client::async_::Stmt::new(
+        "SELECT priority, title, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, max_people, start_time, end_time FROM blood_requests WHERE blood_requests.id IN ( SELECT request_id FROM appointments WHERE member_id = $1 )",
     ))
 }
-pub struct GetBookedStmt(crate::client::async_::Stmt);
-impl GetBookedStmt {
+pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
+impl GetByMemberIdStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
         member_id: &'a uuid::Uuid,
-    ) -> GetBookedQuery<'c, 'a, 's, C, GetBooked, 1> {
-        GetBookedQuery {
+    ) -> GetByMemberIdQuery<'c, 'a, 's, C, GetByMemberId, 1> {
+        GetByMemberIdQuery {
             client,
             params: [member_id],
             stmt: &mut self.0,
             extractor:
-                |row: &tokio_postgres::Row| -> Result<GetBookedBorrowed, tokio_postgres::Error> {
-                    Ok(GetBookedBorrowed {
-                        blood_group: row.try_get(0)?,
-                        priority: row.try_get(1)?,
-                        title: row.try_get(2)?,
-                        max_people: row.try_get(3)?,
-                        start_time: row.try_get(4)?,
-                        end_time: row.try_get(5)?,
+                |row: &tokio_postgres::Row| -> Result<GetByMemberIdBorrowed, tokio_postgres::Error> {
+                    Ok(GetByMemberIdBorrowed {
+                        priority: row.try_get(0)?,
+                        title: row.try_get(1)?,
+                        blood_groups: row.try_get(2)?,
+                        current_people: row.try_get(3)?,
+                        max_people: row.try_get(4)?,
+                        start_time: row.try_get(5)?,
+                        end_time: row.try_get(6)?,
                     })
                 },
-            mapper: |it| GetBooked::from(it),
+            mapper: |it| GetByMemberId::from(it),
         }
     }
 }
