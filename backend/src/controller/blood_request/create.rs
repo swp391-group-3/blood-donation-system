@@ -24,7 +24,8 @@ use crate::{error::Result, state::ApiState, util::custom_validator, util::jwt::C
     add(field = staff_id, ty = Uuid),
 )]
 pub struct Request {
-    pub blood_group: BloodGroup,
+    #[mapper(skip)]
+    pub blood_groups: Vec<BloodGroup>,
     pub priority: RequestPriority,
     #[validate(length(min = 1))]
     pub title: String,
@@ -54,10 +55,18 @@ pub async fn create(
 ) -> Result<Json<Uuid>> {
     let database = state.database_pool.get().await?;
 
+    let blood_groups = request.blood_groups.clone();
+
     let id = queries::blood_request::create()
         .params(&database, &request.with_staff_id(claims.sub))
         .one()
         .await?;
+
+    for blood_group in &blood_groups {
+        queries::blood_request::add_blood_group()
+            .bind(&database, &id, blood_group)
+            .await?;
+    }
 
     Ok(Json(id))
 }

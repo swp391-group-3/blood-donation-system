@@ -1,6 +1,10 @@
 use std::sync::Arc;
 
-use axum::{RequestPartsExt, extract::FromRequestParts, http::request::Parts};
+use axum::{
+    RequestPartsExt,
+    extract::{FromRequestParts, OptionalFromRequestParts},
+    http::request::Parts,
+};
 use axum_extra::extract::{CookieJar, cookie::Cookie};
 use chrono::Local;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
@@ -75,5 +79,19 @@ impl FromRequestParts<Arc<ApiState>> for Claims {
         })?;
 
         Ok(token.claims)
+    }
+}
+
+impl OptionalFromRequestParts<Arc<ApiState>> for Claims {
+    type Rejection = crate::error::Error;
+
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &Arc<ApiState>,
+    ) -> Result<Option<Self>, Self::Rejection> {
+        Ok(parts
+            .extract_with_state::<Claims, Arc<ApiState>>(state)
+            .await
+            .ok())
     }
 }
