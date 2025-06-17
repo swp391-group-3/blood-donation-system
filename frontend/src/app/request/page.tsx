@@ -330,7 +330,6 @@ export default function BloodRequestPage() {
                     </div>
                 </div>
             </section>
-
             <section className="py-16 bg-white border-t border-slate-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -340,102 +339,73 @@ export default function BloodRequestPage() {
                     </div>
                 </div>
             </section>
-
-            <Tabs defaultValue="active" className="space-y-6">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        <TabsList className="grid w-full sm:w-auto grid-cols-2 bg-slate-100 p-1 rounded-xl">
-                            <TabsTrigger
-                                value="active"
-                                className="rounded-lg font-medium"
-                            >
-                                Active Requests
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="recommended"
-                                className="rounded-lg font-medium"
-                            >
-                                Recommended for You
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                        <div className="relative flex-1 lg:flex-initial">
-                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-                            <Input
-                                placeholder="Search by title..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="pl-11 w-full lg:w-80 border-slate-200 focus:border-rose-300 focus:ring-rose-200"
-                            />
-                        </div>
-                        <Select
-                            value={priority}
-                            onValueChange={(value: Priority) =>
-                                setPriority(value)
-                            }
-                        >
-                            <SelectTrigger
-                                onReset={() => setPriority(undefined)}
-                                value={priority}
-                                className="w-fit border-slate-200"
-                            >
-                                <Filter className="h-4 w-4 mr-2" />
-                                <SelectValue placeholder="Priority" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {priorities.map((priority) => (
-                                    <SelectItem value={priority}>
-                                        {capitalCase(priority)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-
-                        <Select
-                            value={bloodGroup}
-                            onValueChange={(value: BloodGroup) =>
-                                setBloodGroup(value)
-                            }
-                        >
-                            <SelectTrigger className="w-fit border-slate-200">
-                                <Droplet className="h-4 w-4 mr-2" />
-                                <SelectValue placeholder="Blood Group" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {bloodGroups.map((priority) => (
-                                    <SelectItem value={priority}>
-                                        {displayBloodGroup(priority)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                    <Input
+                        placeholder="Search requests..."
+                        className="pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200 rounded-xl"
+                    />
                 </div>
-                <TabsContent
-                    className={cn(
-                        'grid gap-10',
-                        !filteredRequests || filteredRequests.length === 0
-                            ? ''
-                            : 'md:grid-cols-2 xl:grid-cols-4',
-                    )}
-                    value="active"
+                <Select
+                    value={priority}
+                    onValueChange={(value: Priority) => setPriority(value)}
                 >
-                    {!filteredRequests || filteredRequests.length === 0 ? (
-                        <EmptyState
-                            className="mx-auto"
-                            title="No Results Found"
-                            description="Try adjusting your search filters."
-                            icons={[Search]}
-                        />
-                    ) : (
-                        filteredRequests.map((request, index) => (
-                            <BloodRequestCard key={index} {...request} />
-                        ))
-                    )}
-                </TabsContent>
-            </Tabs>
+                    <SelectTrigger
+                        onReset={() => setPriority(undefined)}
+                        value={priority}
+                        className="w-fit border-slate-200"
+                    >
+                        <Filter className="h-4 w-4 mr-2" />
+                        <SelectValue placeholder="Priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {priorities.map((priority) => (
+                            <SelectItem value={priority}>
+                                {capitalCase(priority)}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Select
+                    value={bloodGroup}
+                    onValueChange={(value: BloodGroup) => setBloodGroup(value)}
+                >
+                    <SelectTrigger className="w-fit border-slate-200">
+                        <Droplet className="h-4 w-4 mr-2" />
+                        <SelectValue placeholder="Blood Group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {bloodGroups.map((priority) => (
+                            <SelectItem value={priority}>
+                                {displayBloodGroup(priority)}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div
+                className={cn(
+                    'grid gap-10',
+                    !filteredRequests || filteredRequests.length === 0
+                        ? ''
+                        : 'md:grid-cols-2 xl:grid-cols-4',
+                )}
+            >
+                {!filteredRequests || filteredRequests.length === 0 ? (
+                    <EmptyState
+                        className="mx-auto"
+                        title="No Results Found"
+                        description="Try adjusting your search filters."
+                        icons={[Search]}
+                    />
+                ) : (
+                    filteredRequests.map((request, index) => (
+                        <BloodRequestCard key={index} {...request} />
+                    ))
+                )}
+            </div>
         </div>
     );
 }
