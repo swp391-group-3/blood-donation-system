@@ -46,7 +46,7 @@ pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
             middleware::authorize!(Role::Staff),
         ));
     let member_route = Router::new()
-        .route("/donation/self", routing::get(get_by_member_id))
+        .route("/donation/me", routing::get(get_by_member_id))
         .layer(axum::middleware::from_fn_with_state(
             state,
             middleware::authorize!(Role::Member),

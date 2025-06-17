@@ -10,7 +10,7 @@ use super::Donation;
 #[utoipa::path(
     get,
     tag = "Donation",
-    path = "/donation/self",
+    path = "/donation/me",
     operation_id = "donation::get_by_member_id",
     responses(
         (status = Status::OK, body = Vec<Donation>)
