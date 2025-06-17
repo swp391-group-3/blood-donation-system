@@ -17,5 +17,5 @@ export interface Donation {
     appointment_id: string;
     amount: number;
     type: DonationType;
-    created_ad: Date;
+    created_at: Date;
 }

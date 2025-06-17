@@ -94,7 +94,8 @@ export default function DonationPage() {
                                 const count = donations.filter(
                                     (d) => d.type === type,
                                 ).length;
-                                const percentage = (count / 10) * 100;
+                                const percentage =
+                                    (count / donations.length) * 100;
                                 return (
                                     <div key={type}>
                                         <div className="flex justify-between text-sm mb-1">
@@ -117,6 +118,64 @@ export default function DonationPage() {
                         </div>
                     </CardContent>
                 </Card>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {donations.map((donation) => (
+                    <Card
+                        key={donation.id}
+                        className="transition-colors shadow"
+                    >
+                        <CardHeader className="pb-3 flex flex-col lg:flex-row justify-between gap-4">
+                            <div>
+                                <div className="flex flex-row gap-4">
+                                    <CardTitle className="text-base">
+                                        {displayDonationType(donation.type)}
+                                    </CardTitle>
+                                    <Badge variant="outline">
+                                        {donation.amount}ml
+                                    </Badge>
+                                </div>
+                                <CardDescription className="flex flex-row pt-4 gap-5">
+                                    <div className="flex flex-row gap-3">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>
+                                            {new Date(
+                                                donation.created_at,
+                                            ).toLocaleString()}
+                                        </span>
+                                    </div>
+                                </CardDescription>
+                            </div>
+                            <Button variant="outline" size="sm">
+                                <Download className="mr-1 h-3 w-3" />
+                                View Certificate
+                            </Button>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="border-t pt-4">
+                                <div className="space-y-5 text-sm">
+                                    <div>
+                                        <p className='text-md font-bold'>Donation Id</p>
+                                        <p>{donation.id}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-md font-bold'>Appointment Id</p>
+                                        <p>{donation.appointment_id}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-md font-bold'>Type</p>
+                                        <p>{displayDonationType(donation.type)}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-md font-bold'>Amount</p>
+                                        <p>{donation.amount}ml</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         </div>
     );
