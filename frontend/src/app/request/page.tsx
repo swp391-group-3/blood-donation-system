@@ -27,14 +27,17 @@ import {
     AlertTriangle,
     Heart,
     Eye,
-    Home,
     Droplets,
+    User,
+    UserSearch,
 } from 'lucide-react';
 import Link from 'next/link';
 import { mockRequests } from '../../../constants/sample-data';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Stats } from '@/components/stats';
+import { useBloodRequest } from '@/hooks/blood-request/useBloodRequest';
+import { toast } from 'sonner';
 
 const schema = z.object({
     searchTerm: z.string().optional().default(''),
@@ -45,6 +48,7 @@ const schema = z.object({
 export type SearchFormValues = z.infer<typeof schema>;
 
 export default function BloodRequestPage() {
+    const { data: bloodRequests, isPending, error } = useBloodRequest();
     const [statusFilter, setStatusFilter] = useState('active');
     const [searchField, setSearchField] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('all');
@@ -135,6 +139,15 @@ export default function BloodRequestPage() {
         );
     };
 
+    if (isPending) {
+        return <div></div>;
+    }
+
+    if (error) {
+        toast.error('Failed to fetch blood request list');
+        return <div></div>;
+    }
+
     return (
         <div className="flex-1 space-y-6 p-6">
             <section className="bg-white">
@@ -154,6 +167,49 @@ export default function BloodRequestPage() {
                             Find and respond to blood donation opportunities in
                             your community
                         </p>
+                    </div>
+                </div>
+            </section>
+
+            <section className="py-16 bg-white border-t border-slate-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <Stats
+                            label="Blood Requests"
+                            value={bloodRequests.length}
+                            icon={Droplets}
+                            description="Number of blood request"
+                            fg="text-rose-600"
+                            bg="bg-rose-50"
+                        />
+                        <Stats
+                            label="Urgent Requests"
+                            value={
+                                bloodRequests.filter(
+                                    (request) => request.priority === 'high',
+                                ).length
+                            }
+                            icon={Droplet}
+                            description="Number of urgent blood request"
+                            fg="text-rose-600"
+                            bg="bg-rose-50"
+                        />
+                        <Stats
+                            label="Donors Needed"
+                            value="10"
+                            icon={User}
+                            description="Number of donors need across all request"
+                            fg="text-blue-600"
+                            bg="bg-blue-50"
+                        />
+                        <Stats
+                            label="Recommended Requests"
+                            value="0"
+                            icon={UserSearch}
+                            description="Number of recommended request for you"
+                            fg="text-emerald-600"
+                            bg="bg-emerald-50"
+                        />
                     </div>
                 </div>
             </section>
