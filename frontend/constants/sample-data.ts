@@ -726,13 +726,10 @@ export const questionnaire = [
     },
 ];
 
-
-
 export const mockAppointmentCheckin = {
     date: '2024-06-17',
     time: '10:30 AM',
 };
-
 
 export const mockDonor = {
     name: 'John Doe',
@@ -742,7 +739,6 @@ export const mockDonor = {
     lastDonation: '2024-01-15',
     totalDonations: 5,
 };
-
 
 export const mockAppointment = {
     id: 'apt-001',
