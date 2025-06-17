@@ -16,7 +16,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Calendar, Droplet, Download, CalendarIcon } from 'lucide-react';
+import {
+    Calendar,
+    Droplet,
+    Download,
+    CalendarIcon,
+    Search,
+} from 'lucide-react';
 import { useCurrentAccountDonation } from '@/hooks/donation/useCurrentAccountDonation';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
@@ -32,6 +38,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function DonationPage() {
     const { data: donations, isPending, error } = useCurrentAccountDonation();
@@ -64,7 +71,7 @@ export default function DonationPage() {
     }
 
     return (
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 p-6 pb-20">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
@@ -187,73 +194,84 @@ export default function DonationPage() {
                 </Popover>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredDonations.map((donation) => (
-                    <Card
-                        key={donation.id}
-                        className="transition-colors shadow"
-                    >
-                        <CardHeader className="pb-3 flex flex-col lg:flex-row justify-between gap-4">
-                            <div>
-                                <div className="flex flex-row gap-4">
-                                    <CardTitle className="text-base">
-                                        {displayDonationType(donation.type)}
-                                    </CardTitle>
-                                    <Badge variant="outline">
-                                        {donation.amount}ml
-                                    </Badge>
-                                </div>
-                                <CardDescription className="flex flex-row pt-4 gap-5">
-                                    <div className="flex flex-row gap-3">
-                                        <Calendar className="h-4 w-4" />
-                                        <span>
-                                            {new Date(
-                                                donation.created_at,
-                                            ).toLocaleString()}
-                                        </span>
-                                    </div>
-                                </CardDescription>
-                            </div>
-                            <Button variant="outline" size="sm">
-                                <Download className="mr-1 h-3 w-3" />
-                                View Certificate
-                            </Button>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="border-t pt-4">
-                                <div className="space-y-5 text-sm">
-                                    <div>
-                                        <p className="text-md font-bold">
-                                            Donation Id
-                                        </p>
-                                        <p>{donation.id}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-md font-bold">
-                                            Appointment Id
-                                        </p>
-                                        <p>{donation.appointment_id}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-md font-bold">
-                                            Type
-                                        </p>
-                                        <p>
+            {!filteredDonations || filteredDonations.length === 0 ? (
+                <EmptyState
+                    className="mx-auto"
+                    title="No Results Found"
+                    description="Try adjusting your search filters."
+                    icons={[Search]}
+                />
+            ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filteredDonations.map((donation) => (
+                        <Card
+                            key={donation.id}
+                            className="transition-colors shadow"
+                        >
+                            <CardHeader className="pb-3 flex flex-col lg:flex-row justify-between gap-4">
+                                <div>
+                                    <div className="flex flex-row gap-4">
+                                        <CardTitle className="text-base">
                                             {displayDonationType(donation.type)}
-                                        </p>
+                                        </CardTitle>
+                                        <Badge variant="outline">
+                                            {donation.amount}ml
+                                        </Badge>
                                     </div>
-                                    <div>
-                                        <p className="text-md font-bold">
-                                            Amount
-                                        </p>
-                                        <p>{donation.amount}ml</p>
+                                    <CardDescription className="flex flex-row pt-4 gap-5">
+                                        <div className="flex flex-row gap-3">
+                                            <Calendar className="h-4 w-4" />
+                                            <span>
+                                                {new Date(
+                                                    donation.created_at,
+                                                ).toLocaleString()}
+                                            </span>
+                                        </div>
+                                    </CardDescription>
+                                </div>
+                                <Button variant="outline" size="sm">
+                                    <Download className="mr-1 h-3 w-3" />
+                                    View Certificate
+                                </Button>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="border-t pt-4">
+                                    <div className="space-y-5 text-sm">
+                                        <div>
+                                            <p className="text-md font-bold">
+                                                Donation Id
+                                            </p>
+                                            <p>{donation.id}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-md font-bold">
+                                                Appointment Id
+                                            </p>
+                                            <p>{donation.appointment_id}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-md font-bold">
+                                                Type
+                                            </p>
+                                            <p>
+                                                {displayDonationType(
+                                                    donation.type,
+                                                )}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-md font-bold">
+                                                Amount
+                                            </p>
+                                            <p>{donation.amount}ml</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
