@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { Tag, TagInput } from "emblor"
 import { X } from 'lucide-react';
 import { Content } from '@tiptap/react';
 import { MinimalTiptapEditor } from '@/components/ui/minimal-tiptap';
@@ -52,6 +53,15 @@ const formSchema = z.object({
     }),
 });
 
+const tagFormSchema = z.object({
+    topics: z.array(
+        z.object({
+            id: z.string(),
+            text:z.string(),
+        }),
+    ),
+})
+
 const options: Option[] = [
     { label: "Apple", value: "apple", category: "Fruits" },
     { label: "Banana", value: "banana", category: "Fruits" },
@@ -66,7 +76,7 @@ const options: Option[] = [
     { label: "Milk", value: "milk", category: "Dairy" },
     { label: "Cheese", value: "cheese", category: "Dairy" },
     { label: "Yogurt", value: "yogurt", category: "Dairy" },
-  ]
+]
 
 export default function CreateBlogPage() {
     const [selected, setSelected] = useState<Option[]>([])
@@ -81,7 +91,15 @@ export default function CreateBlogPage() {
         },
     });
 
-    const [value, setValue] = useState<Content>('');
+    const tagForm = useForm<z.infer<typeof tagFormSchema>>({
+        resolver: zodResolver(tagFormSchema),
+    });
+
+    const [tags, setTags] = useState<Tag[]>([]);
+
+    const { setValue } = tagForm;
+
+    const [value, setValue1] = useState<Content>('');
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         // come in future
@@ -151,35 +169,48 @@ export default function CreateBlogPage() {
                                         </FormItem>
                                     )}
                                 />
-
-                                <FormField
-                                    control={form.control}
-                                    name="tags"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-black">
-                                                Tags
-                                            </FormLabel>
+                            </form>
+                        </Form>
+                        <Form {...tagForm}>
+                            <form>
+                                <FormField 
+                                    control={tagForm.control}
+                                    name="topics"
+                                    render= {({ field }) => (
+                                        <FormItem className="flex flex-col items-start mt-6">
+                                            <FormLabel className="text-left">Blog tags</FormLabel>
                                             <FormControl>
-                                                <MultiSelect options={options} selected={selected} onChange={setSelected} placeholder="Select blog tags..."/>
+                                                <TagInput
+                                                    {...field}
+                                                    placeholder="Enter the blog tags..."
+                                                    tags={tags}
+                                                    className="sm:min-w-[450px] bg-white text-black border-0"
+                                                    setTags={(newTags) => {
+                                                        setTags(newTags);
+                                                        setValue("topics", newTags as [Tag, ...Tag[]]);
+                                                    }}
+                                                    styleClasses = {
+                                                        {
+                                                          input: 'w-full sm:max-w-[350px] border-0',
+                                                        }
+                                                    }
+                                                />
                                             </FormControl>
-                                            <div className="mt-4">
-                                                <h2 className="text-lg font-semibold mb-2">Selected items:</h2>
-                                                <ul className="list-disc list-inside">
-                                                    {selected.map((item) => (
-                                                        <li key={item.value}>{item.label}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                            <FormDescription className="text-gray-500">
-                                                Select relevant tags to
-                                                categorize your blog post.
-                                            </FormDescription>
-                                            <FormMessage />
                                         </FormItem>
                                     )}
-                                />
+                                /> 
+                            </form>
+                        </Form>
+                    </CardContent>
+                </Card>
 
+                <Card className="mx-auto max-w-4xl bg-white text-black border shadow-sm mt-6">
+                    <CardContent className="bg-white text-black">
+                        <Form {...form}>
+                            <form
+                                onSubmit={form.handleSubmit(onSubmit)}
+                                className="space-y-6"
+                            >
                                 <FormField
                                     control={form.control}
                                     name="content"
@@ -191,7 +222,7 @@ export default function CreateBlogPage() {
                                             <FormControl>
                                                 <MinimalTiptapEditor
                                                     value={value}
-                                                    onChange={setValue}
+                                                    onChange={setValue1}
                                                     className="w-full"
                                                     editorContentClassName="p-5"
                                                     output="html"
@@ -208,16 +239,18 @@ export default function CreateBlogPage() {
                                         </FormItem>
                                     )}
                                 />
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-black text-white hover:bg-gray-800"
-                                >
-                                    Create Post
-                                </Button>
                             </form>
                         </Form>
                     </CardContent>
                 </Card>
+            </div>
+            <div className="container mx-auto max-w-4xl md:pl-4">
+                <Button
+                    type="submit"
+                    className="w-fit bg-black text-white hover:bg-gray-800"
+                >
+                    Create Post
+                </Button>
             </div>
         </TooltipProvider>
     );
