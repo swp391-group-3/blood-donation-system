@@ -23,6 +23,7 @@ import { donationHistory } from '../../../constants/sample-data';
 import { useCurrentAccountDonation } from '@/hooks/donation/useCurrentAccountDonation';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
+import { displayDonationType, donationTypes } from '@/lib/api/dto/donation';
 
 export default function DonationPage() {
     const { data: donations, isPending, error } = useCurrentAccountDonation();
@@ -49,7 +50,7 @@ export default function DonationPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="grid lg:grid-cols-2 gap-10">
                 <Card>
                     <CardHeader>
                         <CardTitle> Impact</CardTitle>
@@ -79,6 +80,40 @@ export default function DonationPage() {
                                     Blood Donated
                                 </div>
                             </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Donation Types</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-3">
+                            {donationTypes.map((type) => {
+                                const count = donations.filter(
+                                    (d) => d.type === type,
+                                ).length;
+                                const percentage = (count / 10) * 100;
+                                return (
+                                    <div key={type}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span>
+                                                {displayDonationType(type)}
+                                            </span>
+                                            <span>{count} donations</span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                            <div
+                                                className="bg-red-500 h-2 rounded-full"
+                                                style={{
+                                                    width: `${percentage}%`,
+                                                }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </CardContent>
                 </Card>
