@@ -7,7 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { z } from "zod";
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,41 +19,35 @@ import {
     FormLabel,
     FormControl,
     FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";  
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-    User,
-    Phone,
-    Mail,
-    UserCheck,
-} from 'lucide-react';
+import { User, Phone, Mail, UserCheck } from 'lucide-react';
 import Link from 'next/link';
-import { questionnaireAnswers, mockAppointment } from '../../../../constants/sample-data';
-
+import {
+    questionnaireAnswers,
+    mockAppointment,
+} from '../../../../constants/sample-data';
 
 const reviewSchema = z.object({
-    reviewNotes: z
-      .string()
-      .min(1, "Fill in your revision"),
-  });
+    reviewNotes: z.string().min(1, 'Fill in your revision'),
+});
 
 export default function StaffAppointmentDetailsPage() {
-
     const form = useForm({
         resolver: zodResolver(reviewSchema),
         defaultValues: {
-          reviewNotes: "",
+            reviewNotes: '',
         },
-      });
-      
-    const [viewState, setViewState] = useState('view'); 
+    });
+
+    const [viewState, setViewState] = useState('view');
 
     return (
         <div className="max-w-3xl mx-auto space-y-6 p-6">
@@ -68,7 +62,7 @@ export default function StaffAppointmentDetailsPage() {
                 </div>
             </div>
 
-            <div >
+            <div>
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
@@ -119,10 +113,14 @@ export default function StaffAppointmentDetailsPage() {
                                 <CardHeader>
                                     <AccordionTrigger>
                                         <div className="flex flex-col w-full cursor-pointer">
-                                            <span className="font-semibold text-lg">Form Answer</span>
+                                            <span className="font-semibold text-lg">
+                                                Form Answer
+                                            </span>
                                             <span className="text-sm text-muted-foreground">
-                                                View the answers of the questions in the appointment apply form
-                                            </span >
+                                                View the answers of the
+                                                questions in the appointment
+                                                apply form
+                                            </span>
                                         </div>
                                     </AccordionTrigger>
                                 </CardHeader>
@@ -156,7 +154,7 @@ export default function StaffAppointmentDetailsPage() {
                         </AccordionItem>
                     </Accordion>
 
-                    {viewState === "view" && (
+                    {viewState === 'view' && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -168,27 +166,29 @@ export default function StaffAppointmentDetailsPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                            <Form {...form}>
-                                <form className="space-y-4">
-                                    <FormField
-                                    control={form.control}
-                                    name="reviewNotes"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Review Notes</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                            {...field}
-                                            placeholder="Add your review notes, observations, or reasons for approval/rejection..."
-                                            rows={4}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                    />
-                                </form>
-                            </Form>
+                                <Form {...form}>
+                                    <form className="space-y-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="reviewNotes"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Review Notes
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            {...field}
+                                                            placeholder="Add your review notes, observations, or reasons for approval/rejection..."
+                                                            rows={4}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </form>
+                                </Form>
                                 <div className="flex gap-4">
                                     <Button
                                         variant="outline"
@@ -208,9 +208,7 @@ export default function StaffAppointmentDetailsPage() {
                     )}
                     {viewState === 'checkin' && (
                         <div>
-                            <Link
-                                href="/staff-appointment/checkin"
-                            >
+                            <Link href="/staff-appointment/checkin">
                                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
                                     Check In
                                 </Button>
