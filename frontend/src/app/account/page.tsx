@@ -10,51 +10,31 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Crown, Search, Shield, Upload, UserCheck, UserPlus, Users, UserX } from 'lucide-react';
+import { Search, Upload, UserPlus, Users, UserX } from 'lucide-react';
 import React, { useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { columns } from './column';
+import { Account, mockAccounts } from '@/lib/api/dto/account';
 
-// mock data
-type Role = "ADMIN" | "MEMBER" | "STAFF";
-type Gender = "MALE" | "FEMALE" | "OTHER";
-type Status = "ACTIVE" | "INACTIVE";
 
-export class Account {
-    constructor(
-        public id: string,
-        public role: Role,
-        public email: string,
-        public phone: string,
-        public name: string,
-        public gender: Gender,
-        public status: Status,
-        public created_at: string,
-    ) { }
-}
 
-const mockAccounts: Account[] = [
-    new Account('1', 'ADMIN', 'alice.admin@example.com', '0123456789', 'Alice Nguyen', 'FEMALE', 'ACTIVE', '2023-01-10'),
-    new Account('2', 'MEMBER', 'bob.member@example.com', '0987654321', 'Bob Tran', 'MALE', 'INACTIVE', '2023-02-15'),
-    new Account('3', 'STAFF', 'charlie.staff@example.com', '0111222333', 'Charlie Pham', 'OTHER', 'INACTIVE', '2023-03-20'),
-    new Account('4', 'MEMBER', 'diana.member@example.com', '0223344556', 'Diana Le', 'FEMALE', 'ACTIVE', '2023-04-05'),
-    new Account('5', 'ADMIN', 'edward.admin@example.com', '0334455667', 'Edward Hoang', 'MALE', 'ACTIVE', '2023-05-12'),
-    new Account('6', 'STAFF', 'fiona.staff@example.com', '0445566778', 'Fiona Vo', 'FEMALE', 'INACTIVE', '2023-06-25'),
-    new Account('7', 'MEMBER', 'george.member@example.com', '0556677889', 'George Do', 'MALE', 'INACTIVE', '2023-07-01'),
-    new Account('8', 'STAFF', 'hannah.staff@example.com', '0667788990', 'Hannah Bui', 'FEMALE', 'ACTIVE', '2023-08-17'),
-    new Account('9', 'MEMBER', 'ian.member@example.com', '0778899001', 'Ian Dinh', 'MALE', 'ACTIVE', '2023-09-30'),
-    new Account('10', 'ADMIN', 'julia.admin@example.com', '0889900112', 'Julia Ly', 'FEMALE', 'INACTIVE', '2023-10-08'),
-];
 
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
-    const [status, setStatus] = useState("all");
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
 
@@ -66,9 +46,7 @@ function Page() {
 
             const matchRole = roleFilter === "all" || account.role === roleFilter;
 
-            const matchStatus = status === "all" || account.status === status
-
-            return matchesSearch && matchRole && matchStatus;
+            return matchesSearch && matchRole;
         })
     }, [searchTerm, roleFilter, status]);
 
@@ -86,15 +64,9 @@ function Page() {
         }
     });
 
-    console.log("RENDER");
-    
-
-
 
     const stats = {
-        total: filtersAccounts.length,
-        active: filtersAccounts.filter((u) => u.status === "ACTIVE").length,
-        inactive: filtersAccounts.filter((u) => u.status === "INACTIVE").length,
+        total: filtersAccounts.length
     }
 
     return (
@@ -110,8 +82,6 @@ function Page() {
                         <Dialog
                             open={isImportDialogOpen}
                             onOpenChange={(open) => {
-                                console.log("OPEN");
-
                                 setIsImportDialogOpen(open)
                             }}
                         >
@@ -143,11 +113,6 @@ function Page() {
                                                     accept='.csv'
                                                     type='file'
                                                     className='hidden'
-                                                // onChange={(e) => {
-                                                //     const file = e.target.files?.[0] || null;
-                                                //     setCsvFile(file);
-                                                //     // TODO: parse CSV, setCsvData, move to preview step
-                                                // }}
                                                 />
                                             </Label>
                                             <p className='text-sx text-gray-800'>
@@ -180,24 +145,7 @@ function Page() {
                             <div className="text-2xl font-bold">{stats.total}</div>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active</CardTitle>
-                            <UserCheck className="h-4 w-4 text-green-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Inactive</CardTitle>
-                            <UserX className="h-4 w-4 text-red-600" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
-                        </CardContent>
-                    </Card>
+
                 </div>
                 {/* Filters and Search */}
                 <Card className='mb-6'>
@@ -230,21 +178,6 @@ function Page() {
                                 </SelectContent>
                             </Select>
 
-                            <Select value={status} onValueChange={setStatus}>
-                                <SelectTrigger className="w-full sm:w-[180px]">
-                                    <SelectValue
-                                        placeholder="Filter by status"
-                                    />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value='all'>All Status</SelectItem>
-                                    <SelectItem value='ACTIVE'>Active</SelectItem>
-                                    <SelectItem value='INACTIVE'>Inactive</SelectItem>
-                                    <SelectItem value='SUSPENDED'>
-                                        Suspended
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
                         </div>
                     </CardContent>
                 </Card>

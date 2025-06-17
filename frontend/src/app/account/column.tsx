@@ -1,10 +1,8 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { Account } from "./page";
+import { Account } from "@/lib/api/dto/account";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Crown, Edit, MoreHorizontal, Shield, Trash2, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useMemo } from "react";
 
 
 const columnHelper = createColumnHelper<Account>();
@@ -12,26 +10,12 @@ const columnHelper = createColumnHelper<Account>();
 
 const getRoleIcon = (role: string) => {
     switch (role) {
-        case "ADMIN":
-            return <Crown className="h-4 w-4" />
-        case "STAFF":
-            return <Shield className="h-4 w-4" />
+        case "admin":
+            return <Crown className="h-4 w-4 text-amber-500" />
+        case "staff":
+            return <Shield className="h-4 w-4 text-fuchsia-500" />
         default:
-            return <Users className="h-4 w-4" />
-    }
-}
-const getStatusBadge = (status: string) => {
-    switch (status) {
-        case "ACTIVE":
-            return (
-                <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
-                    Active
-                </Badge>
-            )
-        case "INACTIVE":
-            return <Badge variant="destructive">Inactive</Badge>
-        default:
-            return <Badge variant="outline">{status}</Badge>
+            return <Users className="h-4 w-4 text-emerald-500" />
     }
 }
 
@@ -75,17 +59,22 @@ export const columns = [
     columnHelper.accessor("role", {
         id: "Role",
         header: "Role",
-        cell: account => <div className="flex items-center gap-1">{getRoleIcon(account.getValue())} {account.getValue()}</div>
-    }),
-    columnHelper.accessor("status", {
-        id: "Status",
-        header: "Status",
-        cell: account => <div>{getStatusBadge(account.getValue())}</div>
+        cell: account =>
+        (
+            <span className="flex items-center gap-1">
+                {getRoleIcon(account.getValue())} {account.getValue()}
+            </span>
+        )
     }),
     columnHelper.accessor("created_at", {
         id: "Create At",
         header: "Created At",
-        cell: account => account.getValue()
+        cell: account => {
+            const date: Date = account.getValue() as Date;
+            return <span>
+                {date.toLocaleDateString()}
+            </span>
+        }
     }),
     columnHelper.display({
         id: "Actions",
