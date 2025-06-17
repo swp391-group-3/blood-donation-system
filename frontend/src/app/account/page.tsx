@@ -19,7 +19,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search, Upload, UserPlus, Users } from 'lucide-react';
 import React, { useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -68,7 +68,14 @@ function Page() {
     const stats = {
         total: filtersAccounts.length
     }
+    const { pageIndex, pageSize } = table.getState().pagination;
+    const pageCount = table.getPageCount();
 
+    // build an array [1, 2, 3, …, pageCount]
+    const pages = React.useMemo(
+        () => Array.from({ length: pageCount }, (_, i) => i + 1),
+        [pageCount]
+    );
     return (
         <div className='flex-1 overflow-auto'>
             <div className="p-8">
@@ -228,7 +235,63 @@ function Page() {
                             </TableBody>
                         </Table>
                     </CardContent>
+
+                    {/* Pagination */}
+                    <CardFooter>
+                        <Pagination>
+                            <PaginationContent>
+                                {/* PREVIOUS */}
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            table.previousPage();
+                                        }}
+                                        aria-disabled={!table.getCanPreviousPage()}
+                                        tabIndex={!table.getCanPreviousPage() ? -1 : undefined}
+                                        className={!table.getCanPreviousPage() ? "pointer-events-none opacity-50" : undefined}
+                                    />
+                                </PaginationItem>
+
+                                {/* PAGE NUMBERS */}
+                                {table.getPageOptions().map((pageIndex) => {
+                                    const isCurrent = pageIndex === table.getState().pagination.pageIndex;
+                                    return (
+                                        <PaginationItem key={pageIndex}>
+                                            <PaginationLink
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    table.setPageIndex(pageIndex);
+                                                }}
+                                                aria-current={isCurrent ? "page" : undefined}
+                                            >
+                                                {pageIndex + 1}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                })}
+
+                                {/* NEXT */}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            table.nextPage();
+                                        }}
+                                        aria-disabled={!table.getCanNextPage()}
+                                        tabIndex={!table.getCanNextPage() ? -1 : undefined}
+                                        className={!table.getCanNextPage() ? "pointer-events-none opacity-50" : undefined}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </CardFooter>
                 </Card>
+
+
             </div>
         </div>
     )
