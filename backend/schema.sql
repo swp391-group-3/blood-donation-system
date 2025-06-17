@@ -75,13 +75,18 @@ CREATE TABLE IF NOT EXISTS blood_requests(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     staff_id uuid NOT NULL REFERENCES accounts(id),
     priority request_priority NOT NULL,
-    blood_group blood_group NOT NULL,
     title text NOT NULL,
     max_people int NOT NULL,
     start_time timestamptz NOT NULL,
     end_time timestamptz NOT NULL,
     is_active bool NOT NULL DEFAULT true,
     created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS request_blood_groups(
+    request_id uuid NOT NULL,
+    blood_group_id uuid NOT NULL,
+    PRIMARY KEY (request_id, blood_group_id)
 );
 
 CREATE TABLE IF NOT EXISTS appointments(
