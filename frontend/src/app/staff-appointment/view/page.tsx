@@ -19,6 +19,7 @@ import {
     FormLabel,
     FormControl,
     FormMessage,
+    FormDescription,
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,15 +29,64 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
-import { User, Phone, Mail, UserCheck } from 'lucide-react';
+import { User, Phone, Mail, UserCheck, Thermometer, Weight, Ruler, Heart } from 'lucide-react';
 import Link from 'next/link';
 import {
     questionnaireAnswers,
     mockAppointment,
 } from '../../../../constants/sample-data';
+import { Separator } from '@radix-ui/react-dropdown-menu';
+import { Input } from '@/components/ui/input';
 
 const reviewSchema = z.object({
     reviewNotes: z.string().min(1, 'Fill in your revision'),
+    temperature: z
+        .string()
+        .min(1, 'Temperature is required')
+        .refine((val) => {
+            const temp = Number.parseFloat(val);
+            return !isNaN(temp) && temp >= 35 && temp <= 42;
+        }, 'Temperature must be between 35°C and 42°C'),
+    weight: z
+        .string()
+        .min(1, 'Weight is required')
+        .refine((val) => {
+            const weight = Number.parseFloat(val);
+            return !isNaN(weight) && weight >= 30 && weight <= 200;
+        }, 'Weight must be between 30kg and 200kg'),
+    upperBloodPressure: z
+        .string()
+        .optional()
+        .refine((val) => {
+            if (!val) return true;
+            const bpPattern = /^\d{2,3}\/\d{2,3}$/;
+            return bpPattern.test(val);
+        }, 'Blood pressure must be in format XXX/XX'),
+    lowerBloodPressure: z
+    .string()
+    .optional()
+    .refine((val) => {
+        if (!val) return true;
+        const bpPattern = /^\d{2,3}\/\d{2,3}$/;
+        return bpPattern.test(val);
+    }, 'Blood pressure must be in format XXX/XX'),
+    pulse: z
+        .string()
+        .optional()
+        .refine((val) => {
+            if (!val) return true;
+            const pulse = Number.parseFloat(val);
+            return !isNaN(pulse) && pulse >= 40 && pulse <= 200;
+        }, 'Pulse must be between 40 and 200 bpm'),
+    hemoglobin: z
+        .string()
+        .optional()
+        .refine((val) => {
+            if (!val) return true;
+            const hb = Number.parseFloat(val);
+            return !isNaN(hb) && hb >= 5 && hb <= 20;
+        }, 'Hemoglobin must be between 5 and 20 g/dL'),
+    notes: z.string().optional(),
 });
 
 export default function StaffAppointmentDetailsPage() {
@@ -44,6 +94,13 @@ export default function StaffAppointmentDetailsPage() {
         resolver: zodResolver(reviewSchema),
         defaultValues: {
             reviewNotes: '',
+            temperature: '',
+            weight: '',
+            upperBloodPressure: '',
+            lowerBloodPressure: '',
+            pulse: '',
+            hemoglobin: '',
+            notes: '',
         },
     });
 
@@ -71,38 +128,55 @@ export default function StaffAppointmentDetailsPage() {
                                 Donor Information
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-16 w-16">
-                                    <AvatarFallback className="text-xl">
+                        <CardContent>
+                            <div className="flex items-center gap-4 mb-4">
+                                <Avatar className="h-12 w-12">
+                                    <AvatarFallback className="text-lg">
                                         ND
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <h3 className="text-xl font-semibold mb-2">
-                                        {mockAppointment.donorName}
+                                    <h3 className="text-lg font-medium">
+                                        Nam Dang
                                     </h3>
-                                    <p className="text-gray-500 mb-2">
-                                        Blood Group: {mockAppointment.bloodType}
-                                    </p>
                                     <p className="text-sm text-gray-500">
-                                        Appointment: 6/8/2025 at 10:00 AM
+                                        Blood Group: O-
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="grid sm:grid-cols-2 mt-2">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Mail className="h-4 w-4 text-gray-400" />
-                                    <span className="text-sm">
-                                        {mockAppointment.donorEmail}
-                                    </span>
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                <div>
+                                    <p className="text-sm font-medium">
+                                        Contact
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        0123456789
+                                    </p>
                                 </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Phone className="h-4 w-4 text-gray-400" />
-                                    <span className="text-sm">
-                                        {mockAppointment.donorPhone}
-                                    </span>
+                                <div>
+                                    <p className="text-sm font-medium">
+                                        Last Donation
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        1/15/2024
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium">
+                                        Total Donations
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        10 times
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium">
+                                        Appointment
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        2024-06-17 at 10:30 AM
+                                    </p>
                                 </div>
                             </div>
                         </CardContent>
@@ -208,11 +282,187 @@ export default function StaffAppointmentDetailsPage() {
                     )}
                     {viewState === 'checkin' && (
                         <div>
-                            <Link href="/staff-appointment/checkin">
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                                    Check In
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Health Measurements</CardTitle>
+                                    <CardDescription>
+                                        Record the donor's vital signs and
+                                        health measurements
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Form {...form}>
+                                        <form className="space-y-6">
+                                            <div className="grid gap-6 md:grid-cols-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="temperature"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                Temperature (°C)
+                                                                *
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="36.5"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormDescription>
+                                                                Normal range:
+                                                                36.1°C - 37.2°C
+                                                            </FormDescription>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="weight"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                Weight (kg) *
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    step="0.1"
+                                                                    placeholder="70"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormDescription>
+                                                                Minimum: 50kg
+                                                            </FormDescription>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="upperBloodPressure"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                Upper Blood
+                                                                Pressure
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="170"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="lowerBloodPressure"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2">
+                                                                Lower Blood
+                                                                Pressure
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="120/80"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="pulse"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                Pulse (bpm)
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="72"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="hemoglobin"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                Hemoglobin
+                                                                (g/dL)
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    step="0.1"
+                                                                    placeholder="13.5"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                            <Separator />
+                                            <FormField
+                                                control={form.control}
+                                                name="notes"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>
+                                                            Medical Notes
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Any observations, concerns, or additional notes about the donor's health..."
+                                                                rows={3}
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </form>
+                                    </Form>
+                                </CardContent>
+                            </Card>
+                            <div className="flex gap-4 mt-4">
+                                <Button
+                                    variant="outline"
+                                    className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+                                >
+                                    Reject
                                 </Button>
-                            </Link>
+                                <Button
+                                    className="flex-1 bg-green-600 hover:bg-green-700"
+                                >
+                                    Approve
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>
