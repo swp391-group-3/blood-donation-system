@@ -1,54 +1,74 @@
-'use client';
-
-import type React from 'react';
-
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import * as React from "react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { LucideIcon } from "lucide-react"
 
 interface EmptyStateProps {
-    icon?: React.ReactNode;
-    title: string;
-    description?: string;
-    action?: {
-        label: string;
-        onClick?: () => void;
-        href?: string;
-    };
-    className?: string;
+  title: string
+  description: string
+  icons?: LucideIcon[]
+  action?: {
+    label: string
+    onClick: () => void
+  }
+  className?: string
 }
 
 export function EmptyState({
-    icon,
-    title,
-    description,
-    action,
-    className,
+  title,
+  description,
+  icons = [],
+  action,
+  className
 }: EmptyStateProps) {
-    return (
-        <div
-            className={cn(
-                'flex flex-col items-center justify-center py-12 text-center',
-                className,
-            )}
+  return (
+    <div className={cn(
+      "bg-background border-border hover:border-border/80 text-center",
+      "border-2 border-dashed rounded-xl p-14 w-full",
+      "group hover:bg-muted/50 transition duration-500 hover:duration-200",
+      className
+    )}>
+      <div className="flex justify-center isolate">
+        {icons.length === 3 ? (
+          <>
+            <div className="bg-background size-12 grid place-items-center rounded-xl relative left-2.5 top-1.5 -rotate-6 shadow-lg ring-1 ring-border group-hover:-translate-x-5 group-hover:-rotate-12 group-hover:-translate-y-0.5 transition duration-500 group-hover:duration-200">
+              {React.createElement(icons[0], {
+                className: "w-6 h-6 text-muted-foreground"
+              })}
+            </div>
+            <div className="bg-background size-12 grid place-items-center rounded-xl relative z-10 shadow-lg ring-1 ring-border group-hover:-translate-y-0.5 transition duration-500 group-hover:duration-200">
+              {React.createElement(icons[1], {
+                className: "w-6 h-6 text-muted-foreground"
+              })}
+            </div>
+            <div className="bg-background size-12 grid place-items-center rounded-xl relative right-2.5 top-1.5 rotate-6 shadow-lg ring-1 ring-border group-hover:translate-x-5 group-hover:rotate-12 group-hover:-translate-y-0.5 transition duration-500 group-hover:duration-200">
+              {React.createElement(icons[2], {
+                className: "w-6 h-6 text-muted-foreground"
+              })}
+            </div>
+          </>
+        ) : (
+          <div className="bg-background size-12 grid place-items-center rounded-xl shadow-lg ring-1 ring-border group-hover:-translate-y-0.5 transition duration-500 group-hover:duration-200">
+            {icons[0] && React.createElement(icons[0], {
+              className: "w-6 h-6 text-muted-foreground"
+            })}
+          </div>
+        )}
+      </div>
+      <h2 className="text-foreground font-medium mt-6">{title}</h2>
+      <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">{description}</p>
+      {action && (
+        <Button
+          onClick={action.onClick}
+          variant="outline"
+          className={cn(
+            "mt-4",
+            "shadow-sm active:shadow-none"
+          )}
         >
-            {icon && <div className="mb-4 text-gray-300">{icon}</div>}
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-            {description && (
-                <p className="text-gray-500 mb-6 max-w-md">{description}</p>
-            )}
-            {action && (
-                <Button
-                    onClick={action.onClick}
-                    className="bg-red-600 hover:bg-red-700"
-                    {...(action.href && { asChild: true })}
-                >
-                    {action.href ? (
-                        <a href={action.href}>{action.label}</a>
-                    ) : (
-                        action.label
-                    )}
-                </Button>
-            )}
-        </div>
-    );
+          {action.label}
+        </Button>
+      )}
+    </div>
+  )
 }
