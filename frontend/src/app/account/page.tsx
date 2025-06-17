@@ -11,23 +11,22 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Crown, Edit, Mail, MoreHorizontal, Search, Shield, ShieldX, Trash2, Upload, UserCheck, UserPlus, Users, UserX } from 'lucide-react';
+import { Crown, Edit, MoreHorizontal, Search, Shield, Trash2, Upload, UserCheck, UserPlus, Users, UserX } from 'lucide-react';
 import React, { useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@radix-ui/react-checkbox';
-// import { AccountPicture } from '@/components/account-picture';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-
+import { AccountPicture } from '@/components/account-picture';
 
 // mock data
 type Role = "ADMIN" | "MEMBER" | "STAFF";
 type Gender = "MALE" | "FEMALE" | "OTHER";
 type Status = "ACTIVE" | "INACTIVE";
 
-class Account {
+export class Account {
     constructor(
         public id: string,
         public role: Role,
@@ -331,15 +330,9 @@ function Page() {
                                         <TableCell>
                                             <div className="flex items-center gap-3">
                                                 {/* <AccountPicture name='Bao' /> */}
-                                                <Avatar className="h-8 w-8">
-                                                    <AvatarImage src={"/placeholder.svg"} alt={account.name} />
-                                                    <AvatarFallback>
-                                                        {account.name
-                                                            .split(" ")
-                                                            .map((n) => n[0])
-                                                            .join("")}
-                                                    </AvatarFallback>
-                                                </Avatar>
+                                                <div className='size-8'>
+                                                    <AccountPicture name={account.name}/>
+                                                </div>
                                                 <div>
                                                     <div className="font-medium">{account.name}</div>
                                                     <div className="text-sm text-gray-500">{account.email}</div>
