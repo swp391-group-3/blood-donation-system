@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
     Card,
     CardContent,
@@ -18,15 +18,51 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Calendar, Droplet, Search, Download, CheckCircle } from 'lucide-react';
+import {
+    Calendar,
+    Droplet,
+    Search,
+    Download,
+    CheckCircle,
+    CalendarIcon,
+} from 'lucide-react';
 import { donationHistory } from '../../../constants/sample-data';
 import { useCurrentAccountDonation } from '@/hooks/donation/useCurrentAccountDonation';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
-import { displayDonationType, donationTypes } from '@/lib/api/dto/donation';
+import {
+    displayDonationType,
+    DonationType,
+    donationTypes,
+} from '@/lib/api/dto/donation';
+import { RangeCalendar } from '@/components/ui/calendar-rac';
+import { DateRange } from 'react-aria-components';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
 
 export default function DonationPage() {
     const { data: donations, isPending, error } = useCurrentAccountDonation();
+    const [donationType, setDonationType] = useState<
+        DonationType | undefined
+    >();
+    const [date, setDate] = useState<DateRange | undefined>();
+    const filteredDonations = useMemo(() => {
+        return donations
+            ?.filter(
+                (donation) => !donationType || donation.type === donationType,
+            )
+            .filter(
+                (donation) =>
+                    !date ||
+                    (date.start.toDate('Asia/Bangkok') <=
+                        new Date(donation.created_at) &&
+                        new Date(donation.created_at) <=
+                            date.end.toDate('Asia/Bangkok')),
+            );
+    }, [donations, donationType, date]);
 
     if (isPending) {
         return <div></div>;
@@ -120,8 +156,49 @@ export default function DonationPage() {
                 </Card>
             </div>
 
+            <div className="flex w-full items-center gap-2">
+                <div className="relative w-full"></div>
+                <Select
+                    value={donationType}
+                    onValueChange={(value: DonationType) => {
+                        setDonationType(value);
+                    }}
+                >
+                    <SelectTrigger className="h-10">
+                        <Droplet className="text-red-500 mr-2 h-4 w-4" />
+                        <SelectValue placeholder="Donation Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {donationTypes.map((type) => (
+                            <SelectItem key={type} value={type}>
+                                {displayDonationType(type)}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline">
+                            <span>
+                                {date
+                                    ? `${date.start.toString()} to ${date.end.toString()}`
+                                    : 'Pick a date'}
+                            </span>
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <RangeCalendar
+                            className="rounded-lg border border-border p-2 bg-background"
+                            value={date}
+                            onChange={setDate}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {donations.map((donation) => (
+                {filteredDonations.map((donation) => (
                     <Card
                         key={donation.id}
                         className="transition-colors shadow"
@@ -156,19 +233,29 @@ export default function DonationPage() {
                             <div className="border-t pt-4">
                                 <div className="space-y-5 text-sm">
                                     <div>
-                                        <p className='text-md font-bold'>Donation Id</p>
+                                        <p className="text-md font-bold">
+                                            Donation Id
+                                        </p>
                                         <p>{donation.id}</p>
                                     </div>
                                     <div>
-                                        <p className='text-md font-bold'>Appointment Id</p>
+                                        <p className="text-md font-bold">
+                                            Appointment Id
+                                        </p>
                                         <p>{donation.appointment_id}</p>
                                     </div>
                                     <div>
-                                        <p className='text-md font-bold'>Type</p>
-                                        <p>{displayDonationType(donation.type)}</p>
+                                        <p className="text-md font-bold">
+                                            Type
+                                        </p>
+                                        <p>
+                                            {displayDonationType(donation.type)}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className='text-md font-bold'>Amount</p>
+                                        <p className="text-md font-bold">
+                                            Amount
+                                        </p>
                                         <p>{donation.amount}ml</p>
                                     </div>
                                 </div>
