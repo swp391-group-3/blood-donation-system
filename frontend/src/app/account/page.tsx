@@ -90,30 +90,6 @@ function Page() {
     
 
 
-    const getRoleIcon = (role: string) => {
-        switch (role) {
-            case "ADMIN":
-                return <Crown className="h-4 w-4" />
-            case "STAFF":
-                return <Shield className="h-4 w-4" />
-            default:
-                return <Users className="h-4 w-4" />
-        }
-    }
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case "ACTIVE":
-                return (
-                    <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
-                        Active
-                    </Badge>
-                )
-            case "INACTIVE":
-                return <Badge variant="destructive">Inactive</Badge>
-            default:
-                return <Badge variant="outline">{status}</Badge>
-        }
-    }
 
     const stats = {
         total: filtersAccounts.length,
