@@ -9,8 +9,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     Select,
     SelectContent,
@@ -18,15 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Calendar,
-    Droplet,
-    Search,
-    Download,
-    CheckCircle,
-    CalendarIcon,
-} from 'lucide-react';
-import { donationHistory } from '../../../constants/sample-data';
+import { Calendar, Droplet, Download, CalendarIcon } from 'lucide-react';
 import { useCurrentAccountDonation } from '@/hooks/donation/useCurrentAccountDonation';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
