@@ -2,9 +2,10 @@ mod create;
 mod delete;
 mod get_all;
 mod get_by_member_id;
+mod get_recommended;
 mod update;
 
-use std::sync::Arc;
+use std::{collections::HashSet, sync::Arc};
 
 use axum::{Router, routing};
 use chrono::{DateTime, Utc};
@@ -21,6 +22,7 @@ pub use create::*;
 pub use delete::*;
 pub use get_all::*;
 pub use get_by_member_id::*;
+pub use get_recommended::*;
 pub use update::*;
 
 #[derive(Serialize, ToSchema, Mapper)]
@@ -31,7 +33,7 @@ pub struct BloodRequest {
     pub priority: RequestPriority,
     pub title: String,
     #[mapper(with = blood_groups.collect())]
-    pub blood_groups: Vec<BloodGroup>,
+    pub blood_groups: HashSet<BloodGroup>,
     pub current_people: i64,
     pub max_people: i32,
     pub start_time: DateTime<Utc>,
@@ -50,6 +52,7 @@ pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
 
     let member_route = Router::new()
         .route("/blood-request/me", routing::get(get_by_member_id))
+        .route("/blood-request/recommended", routing::get(get_recommended))
         .layer(axum::middleware::from_fn_with_state(
             state,
             middleware::authorize!(Role::Member),
