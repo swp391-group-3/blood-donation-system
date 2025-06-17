@@ -16,7 +16,7 @@ interface Option {
 }
 
 interface Props {
-    placeholder: string;
+    placeholder?: string;
     options: Option[];
     selectedValues: string[];
     setSelectedValues: Dispatch<SetStateAction<string[]>>;
