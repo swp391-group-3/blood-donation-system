@@ -20,7 +20,7 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, Upload, UserPlus, Users, UserX } from 'lucide-react';
+import { Search, Upload, UserPlus, Users } from 'lucide-react';
 import React, { useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -48,7 +48,7 @@ function Page() {
 
             return matchesSearch && matchRole;
         })
-    }, [searchTerm, roleFilter, status]);
+    }, [searchTerm, roleFilter]);
 
 
     const table = useReactTable({
@@ -168,11 +168,11 @@ function Page() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value='all'>All Roles</SelectItem>
-                                    <SelectItem value='ADMIN'>Admin</SelectItem>
-                                    <SelectItem value='MEMBER'>
+                                    <SelectItem value='admin'>Admin</SelectItem>
+                                    <SelectItem value='member'>
                                         Member
                                     </SelectItem>
-                                    <SelectItem value='STAFF'>
+                                    <SelectItem value='staff'>
                                         Staff
                                     </SelectItem>
                                 </SelectContent>
