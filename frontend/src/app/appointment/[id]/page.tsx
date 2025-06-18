@@ -11,7 +11,6 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import {
     Form,
     FormField,
@@ -29,11 +28,9 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from '@/components/ui/accordion';
-import { User, Phone, Mail, UserCheck, Thermometer, Weight, Ruler, Heart } from 'lucide-react';
-import Link from 'next/link';
+import { User, UserCheck } from 'lucide-react';
 import {
     questionnaireAnswers,
-    mockAppointment,
 } from '../../../../constants/sample-data';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -286,7 +283,7 @@ export default function StaffAppointmentDetailsPage() {
                                 <CardHeader>
                                     <CardTitle>Health Measurements</CardTitle>
                                     <CardDescription>
-                                        Record the donor's vital signs and
+                                        Record the donor&apos;s vital signs and
                                         health measurements
                                     </CardDescription>
                                 </CardHeader>
