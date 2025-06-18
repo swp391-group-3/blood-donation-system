@@ -6,7 +6,9 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "format": "prettier --write .",
+        "lint": "next lint",
+        "lint:fix": "next lint --fix"
     },
     "dependencies": {
         "@hookform/resolvers": "^5.1.1",
