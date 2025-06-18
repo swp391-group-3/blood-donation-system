@@ -1,631 +1,164 @@
 'use client';
-import React, { useState } from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from '@/components/ui/chart';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-    Heart,
     Activity,
-    TrendingUp,
     Thermometer,
     Weight,
-    Droplet,
     CheckCircle,
-    ArrowUpNarrowWide,
+    Shield,
+    FileText,
+    Plus,
+    Clock,
+    Droplets,
 } from 'lucide-react';
-import {
-    mockHealthRecords,
-    weightChartData,
-    hemoglobinChartData,
-} from '../../../constants/sample-data';
+import { useCurrentAccountHealth } from '@/hooks/health/useCurrentAccountHealth';
+import { toast } from 'sonner';
+import { redirect } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { formatDistanceToNow } from 'date-fns';
 
-const chartConfig = {
-    weight: {
-        label: 'Weight',
-        color: 'oklch(70.7% 0.165 254.624)', // blue-400 tailwindcss
-    },
+const Hero = () => {
+    return (
+        <section className="bg-white">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div className="text-center max-w-4xl mx-auto">
+                    <div className="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium mb-6">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Health Monitoring
+                    </div>
+                    <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                        Your Health
+                        <span className="block text-emerald-600">
+                            Dashboard
+                        </span>
+                    </h1>
+                    <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+                        Monitor your health status and donation eligibility
+                    </p>
+                </div>
+            </div>
+        </section>
+    );
 };
-export default function HealthRecordsPage() {
-    const [selectedRecord, setSelectedRecord] = useState<string | null>(null);
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'approved':
-                return 'bg-green-500';
-            case 'rejected':
-                return 'bg-red-500';
-            case 'pending':
-                return 'bg-yellow-500';
-            default:
-                return 'bg-gray-500';
-        }
-    };
+export default function HealthPage() {
+    const { data: healths, isPending, error } = useCurrentAccountHealth();
+    const approvedCount = useMemo(
+        () => healths?.filter((health) => health.is_good_health).length ?? 0,
+        [healths],
+    );
+
+    if (isPending) {
+        return <div></div>;
+    }
+
+    if (error) {
+        toast.error('Login to use this feature');
+        redirect('/auth/login');
+    }
 
     return (
-        <div className="p-6 space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                    Health Records
-                </h1>
-                <p className="text-zinc-500">
-                    Track your health data and donation eligibility
-                </p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <Hero />
+            <div className="mb-8">
+                <Card className="flex flex-col md:flex-row md:items-center gap-8 border-0 shadow-2xl shadow-slate-200/50 rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-teal-50 relative">
+                    <CardHeader className='flex-1 p-8'>
+                        <CardTitle>
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="relative">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                                        <Shield className="h-8 w-8 text-white" />
+                                    </div>
+                                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                                        <CheckCircle className="h-4 w-4 text-white" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 className="text-3xl font-bold text-slate-900 mb-1">
+                                        Excellent Health
+                                    </h2>
+                                    <p className="text-slate-600 text-lg">
+                                        You're in great shape for donation
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 px-4 py-2 text-sm font-semibold">
+                                    ✓ Donation Eligible
+                                </Badge>
+                                <Badge className="bg-blue-100 text-blue-800 border-blue-200 px-4 py-2 text-sm font-semibold">
+                                    {approvedCount}/{healths.length} Approved
+                                </Badge>
+                            </div>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 relative">
+                        <div className="lg:w-80">
+                            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 shadow-lg">
+                                <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                                    Latest Vitals
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="text-center p-3 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl border border-red-100">
+                                        <Thermometer className="h-5 w-5 text-red-600 mx-auto mb-2" />
+                                        <div className="text-lg font-bold text-slate-900">
+                                            {healths[0].temperature}°C
+                                        </div>
+                                        <div className="text-xs text-slate-600">
+                                            Temperature
+                                        </div>
+                                    </div>
+                                    <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+                                        <Weight className="h-5 w-5 text-blue-600 mx-auto mb-2" />
+                                        <div className="text-lg font-bold text-slate-900">
+                                            {healths[0].weight}kg
+                                        </div>
+                                        <div className="text-xs text-slate-600">
+                                            Weight
+                                        </div>
+                                    </div>
+                                    <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+                                        <Activity className="h-5 w-5 text-purple-600 mx-auto mb-2" />
+                                        <div className="text-lg font-bold text-slate-900">
+                                            {healths[0].upper_blood_pressure}/
+                                            {healths[0].lower_blood_pressure}
+                                        </div>
+                                        <div className="text-xs text-slate-600">
+                                            Blood Pressure
+                                        </div>
+                                    </div>
+                                    <div className="text-center p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
+                                        <Droplets className="h-5 w-5 text-emerald-600 mx-auto mb-2" />
+                                        <div className="text-lg font-bold text-slate-900">
+                                            {healths[0].hemoglobin}
+                                        </div>
+                                        <div className="text-xs text-slate-600">
+                                            Hemoglobin
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 p-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="h-5 w-5 text-rose-600" />
+                                            <span className="text-sm font-medium text-slate-700">
+                                                Heart Rate
+                                            </span>
+                                        </div>
+                                        <div className="text-xl font-bold text-slate-900">
+                                            {healths[0].heart_pulse} bpm
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
-
-            <Tabs defaultValue="records" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="records">Health Records</TabsTrigger>
-                    <TabsTrigger value="trends">Health Trends</TabsTrigger>
-                    <TabsTrigger value="eligibility">
-                        Eligibility Status
-                    </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="records" className="space-y-6">
-                    <div className="grid gap-6 md:grid-cols-4">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                    <Heart className="h-5 w-5 text-red-500" />
-                                    Overall Health
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-green-500" />
-                                    <span className="font-medium text-green-600">
-                                        Excellent
-                                    </span>
-                                </div>
-                                <p className="text-sm text-zinc-500 mt-1">
-                                    Eligible for donation
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                    <Thermometer className="h-5 w-5 text-orange-500" />
-                                    Last Temperature
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">36.8°C</div>
-                                <p className="text-sm text-zinc-500">
-                                    Normal range
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                    <Weight className="h-5 w-5 text-blue-500" />
-                                    Current Weight
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">75kg</div>
-                                <p className="text-sm text-zinc-500">
-                                    +1kg from last visit
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                    <Droplet className="h-5 w-5 text-purple-500" />
-                                    Hemoglobin
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    14.2 g/dL
-                                </div>
-                                <p className="text-sm text-zinc-500">
-                                    Excellent level
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <Card>
-                        <CardHeader>
-                            <div className="flex justify-between">
-                                <div>
-                                    <CardTitle className="pb-2">
-                                        Health Screening History
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Your health records from donation
-                                        appointments
-                                    </CardDescription>
-                                </div>
-                                <div>
-                                    <Select defaultValue="newest">
-                                        <SelectTrigger className="w-[180px]">
-                                            <ArrowUpNarrowWide />
-                                            Newest first
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="newest">
-                                                Newest first
-                                            </SelectItem>
-                                            <SelectItem value="oldest">
-                                                Oldest first
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {mockHealthRecords.map((record) => (
-                                    <Card
-                                        key={record.id}
-                                        className={
-                                            'transition-colors cursor-pointer shadow' +
-                                            (selectedRecord === record.id
-                                                ? 'border-primary/60 shadow-lg'
-                                                : 'hover:bg-muted/30')
-                                        }
-                                        onClick={() =>
-                                            setSelectedRecord(
-                                                selectedRecord === record.id
-                                                    ? null
-                                                    : record.id,
-                                            )
-                                        }
-                                    >
-                                        <CardHeader className="pb-3 flex flex-row items-center justify-between gap-4">
-                                            <div className="flex items-center gap-4">
-                                                <div>
-                                                    <CardTitle className="text-base">
-                                                        {new Date(
-                                                            record.date,
-                                                        ).toLocaleDateString()}
-                                                    </CardTitle>
-                                                    <CardDescription>
-                                                        Appointment{' '}
-                                                        {record.appointmentId}
-                                                    </CardDescription>
-                                                </div>
-                                                <Badge
-                                                    className={getStatusColor(
-                                                        record.status,
-                                                    )}
-                                                >
-                                                    Approve
-                                                </Badge>
-                                            </div>
-                                            <div className="flex items-center gap-4 text-sm">
-                                                <div className="text-center">
-                                                    <p className="font-medium">
-                                                        {record.temperature}°C
-                                                    </p>
-                                                    <p className="text-gray-500">
-                                                        Temp
-                                                    </p>
-                                                </div>
-                                                <div className="text-center">
-                                                    <p className="font-medium">
-                                                        {record.weight}kg
-                                                    </p>
-                                                    <p className="text-gray-500">
-                                                        Weight
-                                                    </p>
-                                                </div>
-                                                <div className="text-center">
-                                                    <p className="font-medium">
-                                                        {record.hemoglobin}
-                                                    </p>
-                                                    <p className="text-gray-500">
-                                                        Hb g/dL
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </CardHeader>
-
-                                        {selectedRecord === record.id && (
-                                            <CardContent>
-                                                <div className="grid gap-4 md:grid-cols-1 border-t pt-4">
-                                                    <div>
-                                                        <div className="space-y-2 text-sm">
-                                                            <div className="flex justify-between">
-                                                                <span>
-                                                                    Temperature:
-                                                                </span>
-                                                                <span>
-                                                                    {
-                                                                        record.temperature
-                                                                    }
-                                                                    °C
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex justify-between">
-                                                                <span>
-                                                                    Weight:
-                                                                </span>
-                                                                <span>
-                                                                    {
-                                                                        record.weight
-                                                                    }
-                                                                    kg
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex justify-between">
-                                                                <span>
-                                                                    Upper Blood
-                                                                    Pressure:
-                                                                </span>
-                                                                <span>
-                                                                    {
-                                                                        record.bloodPressure
-                                                                    }
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex justify-between">
-                                                                <span>
-                                                                    Lower Blood
-                                                                    Pressure:
-                                                                </span>
-                                                                <span>
-                                                                    {
-                                                                        record.bloodPressure
-                                                                    }
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex justify-between">
-                                                                <span>
-                                                                    Pulse:
-                                                                </span>
-                                                                <span>
-                                                                    {
-                                                                        record.pulse
-                                                                    }{' '}
-                                                                    bpm
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex justify-between">
-                                                                <span>
-                                                                    Hemoglobin:
-                                                                </span>
-                                                                <span>
-                                                                    {
-                                                                        record.hemoglobin
-                                                                    }{' '}
-                                                                    g/dL
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="border-t pt-4 flex justify-between">
-                                                        <h4 className="font-medium mb-2">
-                                                            Medical Notes
-                                                        </h4>
-                                                        <p className="text-sm text-zinc-600">
-                                                            {record.notes}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        )}
-                                    </Card>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="trends" className="space-y-6">
-                    <div className="grid gap-6 md:grid-cols-2">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <TrendingUp className="h-5 w-5 text-blue-500" />
-                                    Weight Trend
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm">
-                                            Current: 75kg
-                                        </span>
-                                        <span className="text-sm text-green-600">
-                                            +2kg (3 months)
-                                        </span>
-                                    </div>
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>
-                                                Bar Chart - Weight
-                                            </CardTitle>
-                                            <CardDescription>
-                                                January - July 2025
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <ChartContainer
-                                                config={chartConfig}
-                                            >
-                                                <BarChart
-                                                    accessibilityLayer
-                                                    data={weightChartData}
-                                                >
-                                                    <CartesianGrid
-                                                        vertical={false}
-                                                    />
-                                                    <XAxis
-                                                        dataKey="month"
-                                                        tickMargin={10}
-                                                        axisLine={false}
-                                                        tickFormatter={(
-                                                            value,
-                                                        ) => value.slice(0, 3)}
-                                                    />
-                                                    <ChartTooltip
-                                                        cursor={false}
-                                                        content={
-                                                            <ChartTooltipContent
-                                                                hideLabel
-                                                            />
-                                                        }
-                                                    />
-                                                    <Bar
-                                                        dataKey="weight"
-                                                        fill="oklch(70.7% 0.165 254.624)"
-                                                        radius={8}
-                                                    />
-                                                </BarChart>
-                                            </ChartContainer>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Activity className="h-5 w-5 text-red-500" />
-                                    Hemoglobin Trend
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm">
-                                            Current: 14.2 g/dL
-                                        </span>
-                                        <span className="text-sm text-green-600">
-                                            Stable
-                                        </span>
-                                    </div>
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>
-                                                Bar Chart - Hemoglobin
-                                            </CardTitle>
-                                            <CardDescription>
-                                                January - July 2025
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <ChartContainer
-                                                config={chartConfig}
-                                            >
-                                                <BarChart
-                                                    accessibilityLayer
-                                                    data={hemoglobinChartData}
-                                                >
-                                                    <CartesianGrid
-                                                        vertical={false}
-                                                    />
-                                                    <XAxis
-                                                        dataKey="month"
-                                                        tickMargin={10}
-                                                        axisLine={false}
-                                                        tickFormatter={(
-                                                            value,
-                                                        ) => value.slice(0, 3)}
-                                                    />
-                                                    <ChartTooltip
-                                                        cursor={false}
-                                                        content={
-                                                            <ChartTooltipContent
-                                                                hideLabel
-                                                            />
-                                                        }
-                                                    />
-                                                    <Bar
-                                                        dataKey="hemoglobin"
-                                                        fill="oklch(63.7% 0.237 25.331)"
-                                                        radius={8}
-                                                    />
-                                                </BarChart>
-                                            </ChartContainer>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Health Insights</CardTitle>
-                            <CardDescription>
-                                AI-powered insights based on your health trends
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-                                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                                    <div>
-                                        <h4 className="font-medium text-green-800">
-                                            Excellent Health Trend
-                                        </h4>
-                                        <p className="text-sm text-green-700">
-                                            Your hemoglobin levels are
-                                            consistently excellent, indicating
-                                            good iron levels and overall health.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                                    <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
-                                    <div>
-                                        <h4 className="font-medium text-blue-800">
-                                            Weight Stability
-                                        </h4>
-                                        <p className="text-sm text-blue-700">
-                                            Your weight has been gradually
-                                            increasing, which is positive for
-                                            donation eligibility.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="eligibility" className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <CheckCircle className="h-5 w-5 text-green-500" />
-                                Current Eligibility Status
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                                    <div>
-                                        <h3 className="font-medium text-green-800">
-                                            Eligible for Donation
-                                        </h3>
-                                        <p className="text-sm text-green-700">
-                                            You meet all health requirements for
-                                            blood donation
-                                        </p>
-                                    </div>
-                                    <Badge className="bg-green-500">
-                                        Approved
-                                    </Badge>
-                                </div>
-
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="space-y-3">
-                                        <h4 className="font-medium">
-                                            Health Requirements
-                                        </h4>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <span className="text-sm">
-                                                    Age: 18-65 years ✓
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <span className="text-sm">
-                                                    Weight: ≥50kg ✓
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <span className="text-sm">
-                                                    Hemoglobin: ≥12.5 g/dL ✓
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <span className="text-sm">
-                                                    Blood pressure: Normal ✓
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <h4 className="font-medium">
-                                            Time Requirements
-                                        </h4>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <span className="text-sm">
-                                                    Last donation: 8+ weeks ago
-                                                    ✓
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <span className="text-sm">
-                                                    No recent illness ✓
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <span className="text-sm">
-                                                    No recent travel
-                                                    restrictions ✓
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 border-t">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h4 className="font-medium">
-                                                Next Eligible Donation Date
-                                            </h4>
-                                            <p className="text-sm text-gray-500">
-                                                Based on your last donation
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-lg font-semibold text-green-600">
-                                                Available Now
-                                            </p>
-                                            <p className="text-sm text-gray-500">
-                                                You can donate today
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
         </div>
     );
 }
