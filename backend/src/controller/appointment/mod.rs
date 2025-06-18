@@ -2,6 +2,7 @@ mod create;
 mod get;
 mod get_answer;
 mod get_by_member_id;
+mod update_status;
 
 use std::sync::Arc;
 
@@ -14,11 +15,13 @@ pub use create::*;
 pub use get::*;
 pub use get_answer::*;
 pub use get_by_member_id::*;
+pub use update_status::*;
 
 pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
     let staff_router = Router::new()
         .route("/appointment/{id}/answer", routing::get(get_answer))
         .route("/appointment/{id}", routing::get(get))
+        .route("/appointment/{id}", routing::post(update_status))
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
             middleware::authorize!(Role::Staff),
