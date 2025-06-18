@@ -9,6 +9,22 @@ permissions:
   contents: read
 
 jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Lint
+        run: bun run lint
+
   clippy-fmt:
     name: Check Clippy and rustfmt
     runs-on: ubuntu-latest
