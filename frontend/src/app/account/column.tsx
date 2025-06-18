@@ -47,7 +47,7 @@ export const columns = [
             cell: info => {
                 const rowData = info.row.original;
                 return (
-                    <div>
+                    <div className="w-2xs">
                         <div className="font-medium">{rowData.name}</div>
                         <div className="text-sm text-gray-500">{rowData.email}</div>
                     </div>
