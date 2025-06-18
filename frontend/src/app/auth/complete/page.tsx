@@ -28,12 +28,8 @@ import {
 } from '@/components/ui/command';
 import { Textarea } from '@/components/ui/textarea';
 import { useCompleteOAuth2 } from '@/hooks/auth/useCompleteOAuth2';
-import {
-    bloodGroups,
-    displayBloodGroup,
-    displayGender,
-    genders,
-} from '@/lib/api/dto/account';
+import { displayGender, genders } from '@/lib/api/dto/account';
+import { bloodGroups, displayBloodGroup } from '@/lib/api/dto/blood-group';
 
 const CompleteForm = () => {
     const { mutation, form } = useCompleteOAuth2();
