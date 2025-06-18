@@ -62,3 +62,14 @@ pub enum Gender {
     Male,
     Female,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ToSql, FromSql, Serialize, Deserialize, ToSchema)]
+#[serde(rename_all = "snake_case")]
+#[postgres(name = "appointment_status", rename_all = "snake_case")]
+pub enum AppointmentStatus {
+    OnProcess,
+    Approved,
+    CheckedIn,
+    Done,
+    Rejected,
+}
