@@ -13,7 +13,6 @@ import {
 import {
     Pagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
@@ -68,14 +67,14 @@ function Page() {
     const stats = {
         total: filtersAccounts.length
     }
-    const { pageIndex, pageSize } = table.getState().pagination;
+    // const { pageIndex, pageSize } = table.getState().pagination;
     const pageCount = table.getPageCount();
 
     // build an array [1, 2, 3, …, pageCount]
-    const pages = React.useMemo(
-        () => Array.from({ length: pageCount }, (_, i) => i + 1),
-        [pageCount]
-    );
+    // const pages = React.useMemo(
+    //     () => Array.from({ length: pageCount }, (_, i) => i + 1),
+    //     [pageCount]
+    // );
     return (
         <div className='flex-1 overflow-auto'>
             <div className="p-8">
