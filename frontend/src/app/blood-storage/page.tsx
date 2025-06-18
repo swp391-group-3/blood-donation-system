@@ -48,11 +48,7 @@ import {
 } from 'lucide-react';
 import { mockBloodBags, bloodTypeStats } from '../../../constants/sample-data';
 import { TabsContent } from '@radix-ui/react-tabs';
-import {
-    getDemandColor,
-    getPriorityColor,
-    getStatusColor,
-} from '../../lib/color';
+import { getPriorityColor, getStatusColor } from '../../lib/color';
 
 export default function BloodBagsPage() {
     const [searchTerm, setSearchTerm] = useState('');

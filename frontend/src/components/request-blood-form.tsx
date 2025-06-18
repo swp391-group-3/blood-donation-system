@@ -69,7 +69,7 @@ export default function RequestBloodDialog() {
         },
     });
     const onRequestSubmit = (data: RequestBloodFormType) => {
-        // come in future
+        console.log(data)
         setRequestFormOpen(false);
     };
 
@@ -102,7 +102,7 @@ export default function RequestBloodDialog() {
                                 <FormField
                                     control={form.control}
                                     name="bloodType"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem>
                                             <FormLabel>Blood Type</FormLabel>
                                             <Select>
@@ -112,13 +112,16 @@ export default function RequestBloodDialog() {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {bloodTypes.map((type) => (
-                                                        <SelectItem
-                                                            value={type}
-                                                        >
-                                                            {type}
-                                                        </SelectItem>
-                                                    ))}
+                                                    {bloodTypes.map(
+                                                        (type, index) => (
+                                                            <SelectItem
+                                                                key={index}
+                                                                value={type}
+                                                            >
+                                                                {type}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                         </FormItem>

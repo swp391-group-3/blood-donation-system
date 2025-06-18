@@ -1,6 +1,5 @@
 'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -343,6 +342,8 @@ export default function BloodRequestPage() {
                 <div className="relative flex-1">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                     <Input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search requests..."
                         className="pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200 rounded-xl"
                     />
@@ -361,7 +362,7 @@ export default function BloodRequestPage() {
                     </SelectTrigger>
                     <SelectContent>
                         {priorities.map((priority) => (
-                            <SelectItem value={priority}>
+                            <SelectItem key={priority} value={priority}>
                                 {capitalCase(priority)}
                             </SelectItem>
                         ))}
@@ -378,7 +379,7 @@ export default function BloodRequestPage() {
                     </SelectTrigger>
                     <SelectContent>
                         {bloodGroups.map((priority) => (
-                            <SelectItem value={priority}>
+                            <SelectItem key={priority} value={priority}>
                                 {displayBloodGroup(priority)}
                             </SelectItem>
                         ))}
