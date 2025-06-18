@@ -31,10 +31,14 @@ const HealthCard = (health: Health) => {
                             className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
                                 health.is_good_health
                                     ? 'bg-emerald-100 text-emerald-600'
-                                    : 'bg-amber-100 text-amber-600'
+                                    : 'bg-rose-100 text-rose-600'
                             }`}
                         >
-                            <CheckCircle className="h-7 w-7" />
+                            {health.is_good_health ? (
+                                <CheckCircle className="h-7 w-7" />
+                            ) : (
+                                <XCircle className="h-7 w-7" />
+                            )}
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-slate-900 mb-1">
@@ -53,15 +57,22 @@ const HealthCard = (health: Health) => {
                                     Appointment {health.appointment_id}
                                 </p>
                                 <Badge
-                                    className={`font-medium ${
+                                    className={cn(
+                                        'font-medium',
                                         health.is_good_health
                                             ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                                            : 'bg-amber-100 text-amber-800 border-amber-200'
-                                    }`}
+                                            : 'bg-rose-100 text-red-800 border-rose-200',
+                                    )}
                                 >
-                                    {health.is_good_health
-                                        ? '✓ Approved'
-                                        : '⏳ Under Review'}
+                                    {health.is_good_health ? (
+                                        <>
+                                            <Check /> Approved
+                                        </>
+                                    ) : (
+                                        <>
+                                            <X /> Disapproved
+                                        </>
+                                    )}
                                 </Badge>
                             </div>
                         </div>
