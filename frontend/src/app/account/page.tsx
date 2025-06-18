@@ -68,7 +68,7 @@ function Page() {
         total: filtersAccounts.length
     }
     // const { pageIndex, pageSize } = table.getState().pagination;
-    const pageCount = table.getPageCount();
+    // const pageCount = table.getPageCount();
 
     // build an array [1, 2, 3, …, pageCount]
     // const pages = React.useMemo(

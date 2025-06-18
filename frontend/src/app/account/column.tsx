@@ -79,7 +79,7 @@ export const columns = [
     columnHelper.display({
         id: "Actions",
         header: "Actions",
-        cell({ row }) {
+        cell() {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
