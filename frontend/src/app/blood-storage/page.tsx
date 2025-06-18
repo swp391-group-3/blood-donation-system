@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import RequestBloodDialog from '@/components/request-blood-form'
+import RequestBloodDialog from '@/components/request-blood-form';
 import {
     User,
     Package2,
@@ -46,21 +46,17 @@ import {
     Edit,
     RefreshCw,
 } from 'lucide-react';
-import {
-    mockBloodBags,
-    bloodTypeStats,
-} from '../../../constants/sample-data';
+import { mockBloodBags, bloodTypeStats } from '../../../constants/sample-data';
 import { TabsContent } from '@radix-ui/react-tabs';
 import {
     getDemandColor,
     getPriorityColor,
     getStatusColor,
-} from '../../lib/color'
+} from '../../lib/color';
 
 export default function BloodBagsPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
-
 
     return (
         <div className="space-y-8 p-6 bg-gradient-to-br from-red-50 via-white to-pink-50 min-h-screen">
