@@ -12,14 +12,7 @@ WHERE id = :id;
 SELECT 
     *,
     (SELECT start_time FROM blood_requests WHERE id = appointments.request_id) AS start_time,
-    (SELECT end_time FROM blood_requests WHERE id = appointments.request_id) AS end_time,
-    (
-        SELECT ARRAY(
-            SELECT blood_group
-            FROM request_blood_groups
-            WHERE request_id = appointments.request_id
-        )
-    ) AS blood_groups
+    (SELECT end_time FROM blood_requests WHERE id = appointments.request_id) AS end_time
 FROM appointments
 WHERE member_id = :member_id;
 

@@ -1,18 +1,13 @@
-use std::{collections::HashSet, sync::Arc};
+use std::sync::Arc;
 
-use anyhow::anyhow;
 use axum::{
     Json,
     extract::{Path, State},
 };
 use ctypes::AppointmentStatus;
-use database::{
-    client::Params,
-    queries::{self, appointment::CreateParams},
-};
-use futures::stream::TryStreamExt;
+use database::queries::{self};
 use model_mapper::Mapper;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
@@ -36,7 +31,7 @@ pub struct AppointmentDetail {
         ("id" = Uuid, Path, description = "Appointment id")
     ),
     responses(
-        (status = Status::OK, body = Uuid)
+        (status = Status::OK, body = AppointmentDetail)
     ),
     security(("jwt_token" = []))
 )]
