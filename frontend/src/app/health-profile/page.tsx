@@ -7,10 +7,8 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-    CardFooter,
 } from '@/components/ui/card';
 import {
-    ChartConfig,
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
@@ -20,20 +18,9 @@ import {
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AnimatePresence, motion } from 'framer-motion';
-import { toast } from 'sonner';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
     Heart,
     Activity,
@@ -46,7 +33,6 @@ import {
 } from 'lucide-react';
 import {
     mockHealthRecords,
-    mockHealthTrends,
     weightChartData,
     hemoglobinChartData,
 } from '../../../constants/sample-data';

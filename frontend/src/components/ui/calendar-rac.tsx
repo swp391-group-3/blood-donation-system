@@ -31,14 +31,14 @@ const CalendarHeader = () => (
       slot="previous"
       className="flex size-9 items-center justify-center rounded-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:bg-accent hover:text-foreground focus:outline-none data-[focus-visible]:outline data-[focus-visible]:outline-2 data-[focus-visible]:outline-ring/70"
     >
-      <ChevronLeftIcon size={16} strokeWidth={2} />
+      <ChevronLeftIcon className="size-16" strokeWidth={2} />
     </Button>
     <HeadingRac className="grow text-center text-sm font-medium" />
     <Button
       slot="next"
       className="flex size-9 items-center justify-center rounded-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:bg-accent hover:text-foreground focus:outline-none data-[focus-visible]:outline data-[focus-visible]:outline-2 data-[focus-visible]:outline-ring/70"
     >
-      <ChevronRightIcon size={16} strokeWidth={2} />
+      <ChevronRightIcon className="size-16" strokeWidth={2} />
     </Button>
   </header>
 )

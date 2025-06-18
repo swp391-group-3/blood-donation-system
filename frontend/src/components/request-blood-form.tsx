@@ -36,12 +36,9 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-    CalendarIcon,
-    Droplet,
-} from 'lucide-react';
+import { CalendarIcon, Droplet } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { bloodTypes, urgencyLevels } from "../../constants/sample-data"
+import { bloodTypes, urgencyLevels } from '../../constants/sample-data';
 
 export const requestBloodSchema = z.object({
     bloodType: z.string().min(1, 'Please select the blood type'),
@@ -56,25 +53,27 @@ export type RequestBloodFormType = z.infer<typeof requestBloodSchema>;
 
 export default function RequestBloodDialog() {
     const [requestFormOpen, setRequestFormOpen] = useState(false);
-    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(
+        undefined,
+    );
     const form = useForm<RequestBloodFormType>({
-            resolver: zodResolver(requestBloodSchema),
-            defaultValues: {
-                bloodType: 'A+',
-                quantity: 1,
-                urgency: 'normal',
-                reason: '',
-                date: undefined,
-                terms: false,
-                emergency: false,
-            },
-        });
+        resolver: zodResolver(requestBloodSchema),
+        defaultValues: {
+            bloodType: 'A+',
+            quantity: 1,
+            urgency: 'normal',
+            reason: '',
+            date: undefined,
+            terms: false,
+            emergency: false,
+        },
+    });
     const onRequestSubmit = (data: RequestBloodFormType) => {
-        // come in future
+        console.log(data)
         setRequestFormOpen(false);
     };
-    
-    return(
+
+    return (
         <Dialog open={requestFormOpen} onOpenChange={setRequestFormOpen}>
             <DialogTrigger asChild>
                 <Button className="bg-white text-red-600 hover:bg-gray-100">
@@ -89,18 +88,21 @@ export default function RequestBloodDialog() {
                         Request Blood
                     </DialogTitle>
                     <DialogDescription>
-                        Fill out this form to request blood for medical purposes. All
-                        requests are reviewed by our medical team.
+                        Fill out this form to request blood for medical
+                        purposes. All requests are reviewed by our medical team.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onRequestSubmit)} className="space-y-6">
+                    <form
+                        onSubmit={form.handleSubmit(onRequestSubmit)}
+                        className="space-y-6"
+                    >
                         <div className="grid gap-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <FormField
                                     control={form.control}
                                     name="bloodType"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem>
                                             <FormLabel>Blood Type</FormLabel>
                                             <Select>
@@ -110,11 +112,16 @@ export default function RequestBloodDialog() {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {bloodTypes.map((type) => (
-                                                        <SelectItem value={type}>
-                                                            {type}
-                                                        </SelectItem>
-                                                    ))}
+                                                    {bloodTypes.map(
+                                                        (type, index) => (
+                                                            <SelectItem
+                                                                key={index}
+                                                                value={type}
+                                                            >
+                                                                {type}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                         </FormItem>
@@ -126,7 +133,9 @@ export default function RequestBloodDialog() {
                                     name="quantity"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Quantity (units) *</FormLabel>
+                                            <FormLabel>
+                                                Quantity (units) *
+                                            </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
@@ -135,7 +144,9 @@ export default function RequestBloodDialog() {
                                                     value={field.value ?? 1}
                                                     onChange={(e) =>
                                                         field.onChange(
-                                                            Number(e.target.value),
+                                                            Number(
+                                                                e.target.value,
+                                                            ),
                                                         )
                                                     }
                                                 ></Input>
@@ -237,13 +248,15 @@ export default function RequestBloodDialog() {
                                             <FormControl>
                                                 <Checkbox
                                                     checked={field.value}
-                                                    onCheckedChange={field.onChange}
+                                                    onCheckedChange={
+                                                        field.onChange
+                                                    }
                                                     id="terms"
                                                 />
                                             </FormControl>
                                             <FormLabel className="text-sm font-medium leading-none">
-                                                I confirm this is a legitimate medical
-                                                request
+                                                I confirm this is a legitimate
+                                                medical request
                                             </FormLabel>
                                         </FormItem>
                                     )}
@@ -257,14 +270,16 @@ export default function RequestBloodDialog() {
                                             <FormControl>
                                                 <Checkbox
                                                     checked={field.value}
-                                                    onCheckedChange={field.onChange}
+                                                    onCheckedChange={
+                                                        field.onChange
+                                                    }
                                                     id="emergency"
                                                 />
                                             </FormControl>
                                             <FormLabel className="text-sm font-medium leading-none">
-                                                I understand that false emergency
-                                                requests may result in account
-                                                suspension
+                                                I understand that false
+                                                emergency requests may result in
+                                                account suspension
                                             </FormLabel>
                                         </FormItem>
                                     )}
@@ -290,6 +305,5 @@ export default function RequestBloodDialog() {
                 </Form>
             </DialogContent>
         </Dialog>
-    )
+    );
 }
-
