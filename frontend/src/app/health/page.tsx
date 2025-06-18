@@ -244,7 +244,8 @@ export default function HealthPage() {
                                             Excellent Health
                                         </h2>
                                         <p className="text-slate-600 text-lg">
-                                            You're in great shape for donation
+                                            You&apos;re in great shape for
+                                            donation
                                         </p>
                                     </div>
                                 </div>
@@ -263,8 +264,8 @@ export default function HealthPage() {
                                             Bad Health
                                         </h2>
                                         <p className="text-slate-600 text-lg">
-                                            You're not in good condition for
-                                            donation
+                                            You&apos;re not in good condition
+                                            for donation
                                         </p>
                                     </div>
                                 </div>
