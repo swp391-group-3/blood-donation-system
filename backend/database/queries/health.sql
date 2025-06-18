@@ -31,7 +31,8 @@ WHERE appointment_id = :appointment_id;
 --! get_by_member_id
 SELECT *
 FROM healths
-WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = :member_id);
+WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = :member_id)
+ORDER BY created_at DESC;
 
 --! update(temperature?, weight?, upper_blood_pressure?, lower_blood_pressure?, heart_pulse?, hemoglobin?, is_good_health?, note?)
 UPDATE healths

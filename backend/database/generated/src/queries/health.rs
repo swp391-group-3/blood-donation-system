@@ -439,7 +439,7 @@ impl GetByAppointmentIdStmt {
 }
 pub fn get_by_member_id() -> GetByMemberIdStmt {
     GetByMemberIdStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM healths WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = $1)",
+        "SELECT * FROM healths WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = $1) ORDER BY created_at DESC",
     ))
 }
 pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
