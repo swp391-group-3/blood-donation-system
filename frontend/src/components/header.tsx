@@ -53,7 +53,7 @@ const getMenuItems = (role?: Role): MenuItem[] => {
                 },
                 {
                     title: 'Blood Request',
-                    href: '/blood-request',
+                    href: '/request',
                 },
                 {
                     title: 'Blog',
