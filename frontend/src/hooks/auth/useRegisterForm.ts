@@ -1,7 +1,8 @@
 'use client';
 
 import { fetchWrapper, throwIfError } from '@/lib/api';
-import { bloodGroups, genders } from '@/lib/api/dto/account';
+import { genders } from '@/lib/api/dto/account';
+import { bloodGroups } from '@/lib/api/dto/blood-group';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';

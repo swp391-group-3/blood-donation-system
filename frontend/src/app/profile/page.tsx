@@ -20,12 +20,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { LoaderCircle } from 'lucide-react';
 import React from 'react';
-import {
-    bloodGroups,
-    displayBloodGroup,
-    displayGender,
-    genders,
-} from '@/lib/api/dto/account';
+import { displayGender, genders } from '@/lib/api/dto/account';
+import { bloodGroups, displayBloodGroup } from '@/lib/api/dto/blood-group';
 import { AccountPicture } from '@/components/account-picture';
 import { useCurrentAccount } from '@/hooks/auth/useCurrentAccount';
 import { toast } from 'sonner';

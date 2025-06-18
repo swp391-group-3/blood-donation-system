@@ -31,12 +31,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/separator';
 import { OAuth2 } from '@/components/oauth2';
 import { useRegisterForm } from '@/hooks/auth/useRegisterForm';
-import {
-    bloodGroups,
-    displayBloodGroup,
-    displayGender,
-    genders,
-} from '@/lib/api/dto/account';
+import { displayGender, genders } from '@/lib/api/dto/account';
+import { bloodGroups, displayBloodGroup } from '@/lib/api/dto/blood-group';
 
 const RegisterForm = () => {
     const { mutation, form } = useRegisterForm();
