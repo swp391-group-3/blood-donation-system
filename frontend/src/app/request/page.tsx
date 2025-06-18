@@ -118,8 +118,7 @@ const BloodRequestCard = (request: BloodRequest) => {
                         </CardTitle>
                     </div>
                 </div>
-
-                <div className="mb-4">
+                <div>
                     <div className="text-xs font-medium text-slate-500 mb-2">
                         Blood Types Needed
                     </div>
@@ -135,8 +134,6 @@ const BloodRequestCard = (request: BloodRequest) => {
                         ))}
                     </div>
                 </div>
-
-                <div className="mb-4"></div>
             </CardHeader>
 
             <CardContent className="px-6 pb-6">
