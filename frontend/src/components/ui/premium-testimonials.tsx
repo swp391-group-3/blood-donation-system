@@ -1,6 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, ArrowRight, Sparkles, Droplets, Clock, MapPin, Heart, Phone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Droplets, Clock, MapPin, Heart, Phone, Icon, Badge, Users, Calendar, ChevronRight } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from './card';
+import { cn } from '@/lib/utils';
+import { config } from 'zod/v4/core';
+import { request } from 'http';
+import { Progress } from '@radix-ui/react-progress';
+import { Button } from './button';
 
 const urgentRequests = [
   {
@@ -276,7 +282,126 @@ export function PremiumTestimonials() {
         {/* Main Display */}
         <div className="relative max-w-6xl mx-auto mb-16">
           <div className="relative h-[600px] md:h-[500px] perspective-1000">
-            <AnimatePresence initial={false} custom={direction}>
+            <Card
+                        key={1}
+                        className={cn(
+                            'group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 border-slate-200 rounded-2xl overflow-hidden h-fit',
+                        )}
+                    >
+                        <CardHeader className="p-6">
+                            <div className="flex items-start gap-4 mb-4">
+                                <div
+                                    className={`p-3 rounded-xl shadow-lg ring-4`}
+                                >
+                                    <Icon className="h-5 w-5 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <CardTitle className="flex items-center gap-5 text-lg font-bold text-slate-900 leading-tight mb-3">
+                                        Title
+                                        <Badge
+                                            className="bg-rose-600 border text-xs font-semibold px-2 py-1"
+                                        >
+                                            High Priority
+                                        </Badge>
+                                    </CardTitle>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-xs font-medium text-slate-500 mb-2">
+                                    Blood Types Needed
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    O-, AB+, AB-
+                                </div>
+                            </div>
+                        </CardHeader>
+            
+                        <CardContent className="px-6 pb-6">
+                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                                    <Clock className="h-4 w-4 text-blue-600" />
+                                    <div>
+                                        <div className="font-semibold text-slate-900 text-sm">
+                                            6 days
+                                        </div>
+                                        <div className="text-xs text-slate-500">
+                                            Time Left
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                                    <Users className="h-4 w-4 text-emerald-600" />
+                                    <div>
+                                        <div className="font-semibold text-slate-900 text-sm">
+                                            6/10
+                                        </div>
+                                        <div className="text-xs text-slate-500">Donors</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                                    <Calendar className="h-4 w-4 text-purple-600" />
+                                    <div>
+                                        <div className="font-semibold text-slate-900 text-sm">
+                                            6/10/2025
+                                        </div>
+                                        <div className="text-xs text-slate-500">
+                                            Start Date
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                                    <Calendar className="h-4 w-4 text-amber-600" />
+                                    <div>
+                                        <div className="font-semibold text-slate-900 text-sm">
+                                            10/10/2025
+                                        </div>
+                                        <div className="text-xs text-slate-500">
+                                            End Date
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div className="space-y-3 mb-6">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-semibold text-slate-700">
+                                        Progress
+                                    </span>
+                                    <span className="text-sm font-bold text-slate-900">
+                                        {17}%
+                                    </span>
+                                </div>
+                                <Progress
+                                    value={17}
+                                    className="h-2 bg-slate-200 rounded-full [&>div]:bg-rose-500"
+                                />
+                                <div className="text-xs text-slate-500 font-medium">
+                                    5 more
+                                    donors needed
+                                </div>
+                            </div>
+            
+                            <div className="space-y-2">
+                                <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                                    Apply Now
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="w-full h-9 border-slate-200 hover:bg-slate-50 rounded-xl"
+                                >
+                                    View Details
+                                    <ChevronRight className="h-3 w-3 ml-1" />
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    </div>
+                </div>
+              </motion.div>
+            </section>
+          );
+        }
+            {/* <AnimatePresence initial={false} custom={direction}>
               <motion.div
                 key={currentIndex}
                 custom={direction}
@@ -410,10 +535,4 @@ export function PremiumTestimonials() {
                 whileTap={{ scale: 0.95 }}
               >
                 <ArrowRight className="w-5 h-5" />
-              </motion.button>
-            </div>
-        </div>
-      </motion.div>
-    </section>
-  );
-}
+              </motion.button */
