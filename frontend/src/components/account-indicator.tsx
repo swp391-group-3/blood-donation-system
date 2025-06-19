@@ -12,7 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Droplets, File, Heart, LogOut, User } from 'lucide-react';
+import { Calendar, Droplets, Heart, LogOut, User } from 'lucide-react';
 import {
     Accordion,
     AccordionContent,
@@ -86,7 +86,7 @@ export const AccountIndicator = () => {
                     </Link>
                     <Link href="/appointment">
                         <DropdownMenuItem className="flex flex-cols gap-5">
-                            <File className="text-blue-700" />
+                            <Calendar className="text-blue-700" />
                             Appointment
                         </DropdownMenuItem>
                     </Link>
@@ -161,7 +161,7 @@ export const MobileAccountIndicator = () => {
                             className="rounded-md p-3 transition-colors hover:bg-muted/70"
                         >
                             <div className="flex flex-cols items-center gap-3 mb-1 font-semibold text-foreground">
-                                <File className="text-blue-700" />
+                                <Calendar className="text-blue-700" />
                                 <span>Appointment</span>
                             </div>
                         </Link>

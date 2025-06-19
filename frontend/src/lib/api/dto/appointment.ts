@@ -12,6 +12,7 @@ export interface Appointment {
     id: string;
     request_id: string;
     member_id: string;
+    title: string;
     status: Status;
     start_time: Date;
     end_time: Date;
