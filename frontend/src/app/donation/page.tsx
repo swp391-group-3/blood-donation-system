@@ -23,7 +23,7 @@ import {
     CalendarIcon,
     Search,
 } from 'lucide-react';
-import { useCurrentAccountDonation } from '@/hooks/donation/useCurrentAccountDonation';
+import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
 import {

@@ -30,9 +30,10 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/separator';
 import { OAuth2 } from '@/components/oauth2';
-import { useRegisterForm } from '@/hooks/auth/useRegisterForm';
-import { displayGender, genders } from '@/lib/api/dto/account';
-import { bloodGroups, displayBloodGroup } from '@/lib/api/dto/blood-group';
+import { useRegisterForm } from '@/hooks/use-register-form';
+import { genders } from '@/lib/api/dto/account';
+import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import { capitalCase } from 'change-case';
 
 const RegisterForm = () => {
     const { mutation, form } = useRegisterForm();
@@ -107,7 +108,7 @@ const RegisterForm = () => {
                                                 )}
                                             >
                                                 {field.value
-                                                    ? displayGender(field.value)
+                                                    ? capitalCase(field.value)
                                                     : 'Select Gender'}
                                                 <ChevronsUpDown className="opacity-50" />
                                             </Button>
@@ -126,7 +127,7 @@ const RegisterForm = () => {
                                                 <CommandGroup>
                                                     {genders.map((value) => (
                                                         <CommandItem
-                                                            value={displayGender(
+                                                            value={capitalCase(
                                                                 value,
                                                             )}
                                                             key={value}
@@ -137,9 +138,7 @@ const RegisterForm = () => {
                                                                 );
                                                             }}
                                                         >
-                                                            {displayGender(
-                                                                value,
-                                                            )}
+                                                            {capitalCase(value)}
                                                             <Check
                                                                 className={cn(
                                                                     'ml-auto',
@@ -192,9 +191,9 @@ const RegisterForm = () => {
                                                 )}
                                             >
                                                 {field.value
-                                                    ? displayBloodGroup(
-                                                          field.value,
-                                                      )
+                                                    ? bloodGroupLabels[
+                                                          field.value
+                                                      ]
                                                     : 'Select Blood Group'}
                                                 <ChevronsUpDown className="opacity-50" />
                                             </Button>
@@ -214,9 +213,11 @@ const RegisterForm = () => {
                                                     {bloodGroups.map(
                                                         (value) => (
                                                             <CommandItem
-                                                                value={displayBloodGroup(
-                                                                    value,
-                                                                )}
+                                                                value={
+                                                                    bloodGroupLabels[
+                                                                        value
+                                                                    ]
+                                                                }
                                                                 key={value}
                                                                 onSelect={() => {
                                                                     form.setValue(
@@ -225,9 +226,11 @@ const RegisterForm = () => {
                                                                     );
                                                                 }}
                                                             >
-                                                                {displayBloodGroup(
-                                                                    value,
-                                                                )}
+                                                                {
+                                                                    bloodGroupLabels[
+                                                                        value
+                                                                    ]
+                                                                }
                                                                 <Check
                                                                     className={cn(
                                                                         'ml-auto',

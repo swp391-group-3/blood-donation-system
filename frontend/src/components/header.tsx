@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/sheet';
 import Link from 'next/link';
 import { Role } from '@/lib/api/dto/account';
-import { useCurrentAccount } from '@/hooks/auth/useCurrentAccount';
+import { useCurrentAccount } from '@/hooks/use-current-account';
 import { useMemo } from 'react';
 import { AccountIndicator, MobileAccountIndicator } from './account-indicator';
 
