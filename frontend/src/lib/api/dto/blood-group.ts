@@ -11,7 +11,7 @@ export const bloodGroups = [
 
 export type BloodGroup = (typeof bloodGroups)[number];
 
-export const bloogGroupLabels: {
+export const bloodGroupLabels: {
     [key in BloodGroup]: string;
 } = {
     o_plus: 'O+',

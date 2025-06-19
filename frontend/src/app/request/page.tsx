@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Stats, Props as StatsProps } from '@/components/stats';
-import { useBloodRequest } from '@/hooks/blood-request/useBloodRequest';
+import { useBloodRequest } from '@/hooks/use-blood-request';
 import { toast } from 'sonner';
 import {
     BloodRequest,
@@ -36,7 +36,7 @@ import { capitalCase } from 'change-case';
 import {
     BloodGroup,
     bloodGroups,
-    displayBloodGroup,
+    bloodGroupLabels,
 } from '@/lib/api/dto/blood-group';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -44,6 +44,13 @@ import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/empty-state';
+import {
+    Hero,
+    HeroDescription,
+    HeroKeyword,
+    HeroSummary,
+    HeroTitle,
+} from '@/components/hero';
 
 const priorityConfig = {
     high: {
@@ -129,7 +136,7 @@ const BloodRequestCard = (request: BloodRequest) => {
                                 variant="outline"
                                 className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-semibold px-2 py-1"
                             >
-                                {displayBloodGroup(type)}
+                                {bloodGroupLabels[type]}
                             </Badge>
                         ))}
                     </div>
@@ -306,26 +313,21 @@ export default function BloodRequestPage() {
 
     return (
         <div className="flex-1 space-y-6 p-6">
-            <section className="bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                    <div className="text-center max-w-4xl mx-auto">
-                        <div className="inline-flex items-center px-4 py-2 bg-rose-50 text-rose-700 rounded-full text-sm font-medium mb-6">
-                            <Heart className="h-4 w-4 mr-2" />
-                            Save Lives Today
-                        </div>
-                        <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-                            Blood Donation
-                            <span className="block text-rose-600">
-                                Requests
-                            </span>
-                        </h1>
-                        <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                            Find and respond to blood donation opportunities in
-                            your community
-                        </p>
-                    </div>
-                </div>
-            </section>
+            <Hero>
+                <HeroSummary color="rose">
+                    <Heart className="h-4 w-4 mr-2" />
+                    Save Lives Today
+                </HeroSummary>
+                <HeroTitle>
+                    Blood Donation
+                    <HeroKeyword color="rose">Requests</HeroKeyword>
+                </HeroTitle>
+                <HeroDescription>
+                    Find and respond to blood donation opportunities in your
+                    community
+                </HeroDescription>
+            </Hero>
+
             <section className="py-16 bg-white border-t border-slate-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -335,7 +337,7 @@ export default function BloodRequestPage() {
                     </div>
                 </div>
             </section>
-            <div className='mx-auto max-w-7xl'>
+            <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
                     <div className="relative flex-1">
                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
@@ -378,9 +380,9 @@ export default function BloodRequestPage() {
                             <SelectValue placeholder="Blood Group" />
                         </SelectTrigger>
                         <SelectContent>
-                            {bloodGroups.map((priority) => (
-                                <SelectItem key={priority} value={priority}>
-                                    {displayBloodGroup(priority)}
+                            {bloodGroups.map((group) => (
+                                <SelectItem key={group} value={group}>
+                                    {bloodGroupLabels[group]}
                                 </SelectItem>
                             ))}
                         </SelectContent>

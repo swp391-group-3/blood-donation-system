@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCurrentAccount } from '@/hooks/auth/useCurrentAccount';
+import { useCurrentAccount } from '@/hooks/use-current-account';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
