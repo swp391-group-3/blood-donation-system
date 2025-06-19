@@ -429,37 +429,6 @@ export function PremiumTestimonials() {
               </motion.button>
             </div>
         </div>
-        
-        {/* Stats Section */}
-        <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-8"
-          variants={staggerContainer}
-        >
-          {[
-            { number: "500+", label: "Happy Clients" },
-            { number: "98%", label: "Satisfaction Rate" },
-            { number: "$10M+", label: "Cost Savings" },
-            { number: "99.9%", label: "Uptime SLA" }
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              className="text-center group"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.05 }}
-            >
-              <motion.div
-                className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-300 to-rose-300 bg-clip-text text-transparent mb-2"
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity, delay: index * 0.5 }}
-              >
-                {stat.number}
-              </motion.div>
-              <div className="text-white/60 text-sm font-medium group-hover:text-white/80 transition-colors">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
       </motion.div>
     </section>
   );
