@@ -7,6 +7,7 @@ import {
     Settings,
     BookOpen,
     History,
+    Circle,
 } from 'lucide-react';
 
 export const sidebarItems = [
@@ -745,4 +746,27 @@ export const donationHistory = [
 export const availableTags = [
     { label: 'Blood Information', value: 'blood information' },
     { label: 'Experience', value: 'experience' },
+];
+
+export const steps = [
+    {
+        title: 'Registration',
+        description:
+            'Complete a quick registration form with your personal details and medical history.',
+    },
+    {
+        title: 'Screening',
+        description:
+            'A healthcare professional will check your temperature, blood pressure, pulse and hemoglobin levels.',
+    },
+    {
+        title: 'Donation',
+        description:
+            "The actual blood donation takes only 8-10 minutes. You'll be seated comfortably while donating.",
+    },
+    {
+        title: 'Recovery',
+        description:
+            "After donating, you'll rest and enjoy refreshments. Most people feel fine after a short rest.",
+    },
 ];
