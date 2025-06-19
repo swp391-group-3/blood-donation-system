@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Tag, TagInput } from "emblor"
+import { Tag, TagInput } from 'emblor';
 import { X } from 'lucide-react';
 import { Content } from '@tiptap/react';
 import { MinimalTiptapEditor } from '@/components/ui/minimal-tiptap';
@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/select';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { availableTags } from '../../../../constants/sample-data';
-import { MultiSelect, type Option} from "@/components/multi-select"
+import { MultiSelect, type Option } from '@/components/multi-select';
 
 const formSchema = z.object({
     title: z.string().min(5, {
@@ -57,29 +57,29 @@ const tagFormSchema = z.object({
     topics: z.array(
         z.object({
             id: z.string(),
-            text:z.string(),
+            text: z.string(),
         }),
     ),
-})
+});
 
 const options: Option[] = [
-    { label: "Apple", value: "apple", category: "Fruits" },
-    { label: "Banana", value: "banana", category: "Fruits" },
-    { label: "Cherry", value: "cherry", category: "Fruits" },
-    { label: "Date", value: "date", category: "Fruits" },
-    { label: "Elderberry", value: "elderberry", category: "Fruits" },
-    { label: "Carrot", value: "carrot", category: "Vegetables" },
-    { label: "Broccoli", value: "broccoli", category: "Vegetables" },
-    { label: "Spinach", value: "spinach", category: "Vegetables" },
-    { label: "Potato", value: "potato", category: "Vegetables" },
-    { label: "Tomato", value: "tomato", category: "Vegetables" },
-    { label: "Milk", value: "milk", category: "Dairy" },
-    { label: "Cheese", value: "cheese", category: "Dairy" },
-    { label: "Yogurt", value: "yogurt", category: "Dairy" },
-]
+    { label: 'Apple', value: 'apple', category: 'Fruits' },
+    { label: 'Banana', value: 'banana', category: 'Fruits' },
+    { label: 'Cherry', value: 'cherry', category: 'Fruits' },
+    { label: 'Date', value: 'date', category: 'Fruits' },
+    { label: 'Elderberry', value: 'elderberry', category: 'Fruits' },
+    { label: 'Carrot', value: 'carrot', category: 'Vegetables' },
+    { label: 'Broccoli', value: 'broccoli', category: 'Vegetables' },
+    { label: 'Spinach', value: 'spinach', category: 'Vegetables' },
+    { label: 'Potato', value: 'potato', category: 'Vegetables' },
+    { label: 'Tomato', value: 'tomato', category: 'Vegetables' },
+    { label: 'Milk', value: 'milk', category: 'Dairy' },
+    { label: 'Cheese', value: 'cheese', category: 'Dairy' },
+    { label: 'Yogurt', value: 'yogurt', category: 'Dairy' },
+];
 
 export default function CreateBlogPage() {
-    const [selected, setSelected] = useState<Option[]>([])
+    const [selected, setSelected] = useState<Option[]>([]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -173,12 +173,14 @@ export default function CreateBlogPage() {
                         </Form>
                         <Form {...tagForm}>
                             <form>
-                                <FormField 
+                                <FormField
                                     control={tagForm.control}
                                     name="topics"
-                                    render= {({ field }) => (
+                                    render={({ field }) => (
                                         <FormItem className="flex flex-col items-start mt-6">
-                                            <FormLabel className="text-left">Blog tags</FormLabel>
+                                            <FormLabel className="text-left">
+                                                Blog tags
+                                            </FormLabel>
                                             <FormControl>
                                                 <TagInput
                                                     {...field}
@@ -187,18 +189,22 @@ export default function CreateBlogPage() {
                                                     className="sm:min-w-[450px] bg-white text-black border-0"
                                                     setTags={(newTags) => {
                                                         setTags(newTags);
-                                                        setValue("topics", newTags as [Tag, ...Tag[]]);
+                                                        setValue(
+                                                            'topics',
+                                                            newTags as [
+                                                                Tag,
+                                                                ...Tag[],
+                                                            ],
+                                                        );
                                                     }}
-                                                    styleClasses = {
-                                                        {
-                                                          input: 'w-full sm:max-w-[350px] border-0',
-                                                        }
-                                                    }
+                                                    styleClasses={{
+                                                        input: 'w-full sm:max-w-[350px] border-0',
+                                                    }}
                                                 />
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                /> 
+                                />
                             </form>
                         </Form>
                     </CardContent>
@@ -233,7 +239,8 @@ export default function CreateBlogPage() {
                                                 />
                                             </FormControl>
                                             <FormDescription className="text-gray-500">
-                                                The main content of your blog post
+                                                The main content of your blog
+                                                post
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>

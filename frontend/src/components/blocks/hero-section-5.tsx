@@ -1,12 +1,12 @@
-'use client'
-import React from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { InfiniteSlider } from '@/components/ui/infinite-slider'
-import { ProgressiveBlur } from '@/components/ui/progressive-blur'
-import { cn } from '@/lib/utils'
-import { Menu, X, ChevronRight } from 'lucide-react'
-import { useScroll, motion } from 'motion/react'
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { InfiniteSlider } from '@/components/ui/infinite-slider';
+import { ProgressiveBlur } from '@/components/ui/progressive-blur';
+import { cn } from '@/lib/utils';
+import { Menu, X, ChevronRight } from 'lucide-react';
+import { useScroll, motion } from 'motion/react';
 
 export function HeroSection() {
     return (
@@ -17,16 +17,25 @@ export function HeroSection() {
                     <div className="py-24 md:pb-32 lg:pb-36 lg:pt-72">
                         <div className="relative z-10 mx-auto flex max-w-7xl flex-col px-6 lg:block lg:px-12">
                             <div className="mx-auto max-w-lg text-center lg:ml-0 lg:max-w-full lg:text-left">
-                                <h1 className="mt-8 max-w-2xl text-balance text-5xl md:text-6xl lg:mt-16 xl:text-7xl">Build 10x Faster with NS</h1>
-                                <p className="mt-8 max-w-2xl text-balance text-lg">Highly customizable components for building modern websites and applications you mean it.</p>
+                                <h1 className="mt-8 max-w-2xl text-balance text-5xl md:text-6xl lg:mt-16 xl:text-7xl">
+                                    Build 10x Faster with NS
+                                </h1>
+                                <p className="mt-8 max-w-2xl text-balance text-lg">
+                                    Highly customizable components for building
+                                    modern websites and applications you mean
+                                    it.
+                                </p>
 
                                 <div className="mt-12 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start">
                                     <Button
                                         asChild
                                         size="lg"
-                                        className="h-12 rounded-full pl-5 pr-3 text-base">
+                                        className="h-12 rounded-full pl-5 pr-3 text-base"
+                                    >
                                         <Link href="#link">
-                                            <span className="text-nowrap">Start Building</span>
+                                            <span className="text-nowrap">
+                                                Start Building
+                                            </span>
                                             <ChevronRight className="ml-1" />
                                         </Link>
                                     </Button>
@@ -35,9 +44,12 @@ export function HeroSection() {
                                         asChild
                                         size="lg"
                                         variant="ghost"
-                                        className="h-12 rounded-full px-5 text-base hover:bg-zinc-950/5 dark:hover:bg-white/5">
+                                        className="h-12 rounded-full px-5 text-base hover:bg-zinc-950/5 dark:hover:bg-white/5"
+                                    >
                                         <Link href="#link">
-                                            <span className="text-nowrap">Request a demo</span>
+                                            <span className="text-nowrap">
+                                                Request a demo
+                                            </span>
                                         </Link>
                                     </Button>
                                 </div>
@@ -48,7 +60,8 @@ export function HeroSection() {
                                 autoPlay
                                 loop
                                 className="size-full object-cover opacity-50 invert dark:opacity-35 dark:invert-0 dark:lg:opacity-75"
-                                src="https://ik.imagekit.io/lrigu76hy/tailark/dna-video.mp4?updatedAt=1745736251477"></video>
+                                src="https://ik.imagekit.io/lrigu76hy/tailark/dna-video.mp4?updatedAt=1745736251477"
+                            ></video>
                         </div>
                     </div>
                 </section>
@@ -56,13 +69,16 @@ export function HeroSection() {
                     <div className="group relative m-auto max-w-7xl px-6">
                         <div className="flex flex-col items-center md:flex-row">
                             <div className="md:max-w-44 md:border-r md:pr-6">
-                                <p className="text-end text-sm">Powering the best teams</p>
+                                <p className="text-end text-sm">
+                                    Powering the best teams
+                                </p>
                             </div>
                             <div className="relative py-6 md:w-[calc(100%-11rem)]">
                                 <InfiniteSlider
                                     speedOnHover={20}
                                     speed={40}
-                                    gap={112}>
+                                    gap={112}
+                                >
                                     <div className="flex">
                                         <img
                                             className="mx-auto h-5 w-fit dark:invert"
@@ -157,7 +173,7 @@ export function HeroSection() {
                 </section>
             </main>
         </>
-    )
+    );
 }
 
 const menuItems = [
@@ -165,41 +181,57 @@ const menuItems = [
     { name: 'Solution', href: '#link' },
     { name: 'Pricing', href: '#link' },
     { name: 'About', href: '#link' },
-]
+];
 
 const HeroHeader = () => {
-    const [menuState, setMenuState] = React.useState(false)
-    const [scrolled, setScrolled] = React.useState(false)
-    const { scrollYProgress } = useScroll()
+    const [menuState, setMenuState] = React.useState(false);
+    const [scrolled, setScrolled] = React.useState(false);
+    const { scrollYProgress } = useScroll();
 
     React.useEffect(() => {
         const unsubscribe = scrollYProgress.on('change', (latest) => {
-            setScrolled(latest > 0.05)
-        })
-        return () => unsubscribe()
-    }, [scrollYProgress])
+            setScrolled(latest > 0.05);
+        });
+        return () => unsubscribe();
+    }, [scrollYProgress]);
 
     return (
         <header>
             <nav
                 data-state={menuState && 'active'}
-                className="group fixed z-20 w-full pt-2">
-                <div className={cn('mx-auto max-w-7xl rounded-3xl px-6 transition-all duration-300 lg:px-12', scrolled && 'bg-background/50 backdrop-blur-2xl')}>
+                className="group fixed z-20 w-full pt-2"
+            >
+                <div
+                    className={cn(
+                        'mx-auto max-w-7xl rounded-3xl px-6 transition-all duration-300 lg:px-12',
+                        scrolled && 'bg-background/50 backdrop-blur-2xl',
+                    )}
+                >
                     <motion.div
                         key={1}
-                        className={cn('relative flex flex-wrap items-center justify-between gap-6 py-3 duration-200 lg:gap-0 lg:py-6', scrolled && 'lg:py-4')}>
+                        className={cn(
+                            'relative flex flex-wrap items-center justify-between gap-6 py-3 duration-200 lg:gap-0 lg:py-6',
+                            scrolled && 'lg:py-4',
+                        )}
+                    >
                         <div className="flex w-full items-center justify-between gap-12 lg:w-auto">
                             <Link
                                 href="/"
                                 aria-label="home"
-                                className="flex items-center space-x-2">
+                                className="flex items-center space-x-2"
+                            >
                                 <Logo />
                             </Link>
 
                             <button
                                 onClick={() => setMenuState(!menuState)}
-                                aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
-                                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
+                                aria-label={
+                                    menuState == true
+                                        ? 'Close Menu'
+                                        : 'Open Menu'
+                                }
+                                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
+                            >
                                 <Menu className="group-data-[state=active]:rotate-180 group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
                                 <X className="group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
                             </button>
@@ -210,7 +242,8 @@ const HeroHeader = () => {
                                         <li key={index}>
                                             <Link
                                                 href={item.href}
-                                                className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                                            >
                                                 <span>{item.name}</span>
                                             </Link>
                                         </li>
@@ -226,7 +259,8 @@ const HeroHeader = () => {
                                         <li key={index}>
                                             <Link
                                                 href={item.href}
-                                                className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                                            >
                                                 <span>{item.name}</span>
                                             </Link>
                                         </li>
@@ -234,17 +268,12 @@ const HeroHeader = () => {
                                 </ul>
                             </div>
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm">
+                                <Button asChild variant="outline" size="sm">
                                     <Link href="#">
                                         <span>Login</span>
                                     </Link>
                                 </Button>
-                                <Button
-                                    asChild
-                                    size="sm">
+                                <Button asChild size="sm">
                                     <Link href="#">
                                         <span>Sign Up</span>
                                     </Link>
@@ -255,8 +284,8 @@ const HeroHeader = () => {
                 </div>
             </nav>
         </header>
-    )
-}
+    );
+};
 
 const Logo = ({ className }: { className?: string }) => {
     return (
@@ -264,7 +293,8 @@ const Logo = ({ className }: { className?: string }) => {
             viewBox="0 0 78 18"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className={cn('h-5 w-auto', className)}>
+            className={cn('h-5 w-auto', className)}
+        >
             <path
                 d="M3 0H5V18H3V0ZM13 0H15V18H13V0ZM18 3V5H0V3H18ZM0 15V13H18V15H0Z"
                 fill="url(#logo-gradient)"
@@ -280,14 +310,12 @@ const Logo = ({ className }: { className?: string }) => {
                     y1="0"
                     x2="10"
                     y2="20"
-                    gradientUnits="userSpaceOnUse">
+                    gradientUnits="userSpaceOnUse"
+                >
                     <stop stopColor="#9B99FE" />
-                    <stop
-                        offset="1"
-                        stopColor="#2BC8B7"
-                    />
+                    <stop offset="1" stopColor="#2BC8B7" />
                 </linearGradient>
             </defs>
         </svg>
-    )
-}
+    );
+};
