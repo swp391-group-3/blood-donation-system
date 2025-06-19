@@ -51,6 +51,7 @@ import {
     HeroSummary,
     HeroTitle,
 } from '@/components/hero';
+import { CardGrid } from '@/components/card-grid';
 
 const priorityConfig = {
     high: {
@@ -381,27 +382,11 @@ export default function BloodRequestPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                <div
-                    className={cn(
-                        'grid gap-10',
-                        !filteredRequests || filteredRequests.length === 0
-                            ? ''
-                            : 'md:grid-cols-2',
-                    )}
-                >
-                    {!filteredRequests || filteredRequests.length === 0 ? (
-                        <EmptyState
-                            className="mx-auto"
-                            title="No Results Found"
-                            description="Try adjusting your search filters."
-                            icons={[Search]}
-                        />
-                    ) : (
-                        filteredRequests.map((request, index) => (
-                            <BloodRequestCard key={index} {...request} />
-                        ))
-                    )}
-                </div>
+                <CardGrid>
+                    {filteredRequests!.map((request, index) => (
+                        <BloodRequestCard key={index} {...request} />
+                    ))}
+                </CardGrid>
             </div>
         </div>
     );
