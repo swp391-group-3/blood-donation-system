@@ -12,7 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Droplets, Heart, LogOut, User } from 'lucide-react';
+import { Calendar, Droplets, Heart, LogOut, User } from 'lucide-react';
 import {
     Accordion,
     AccordionContent,
@@ -75,13 +75,19 @@ export const AccountIndicator = () => {
                     <Link href="/donation">
                         <DropdownMenuItem className="flex flex-cols gap-5">
                             <Droplets className="text-rose-600" />
-                            Donation List
+                            Donation
                         </DropdownMenuItem>
                     </Link>
                     <Link href="/health">
                         <DropdownMenuItem className="flex flex-cols gap-5">
-                            <Heart className="text-amber-600" />
+                            <Heart className="text-emerald-600" />
                             Health
+                        </DropdownMenuItem>
+                    </Link>
+                    <Link href="/appointment">
+                        <DropdownMenuItem className="flex flex-cols gap-5">
+                            <Calendar className="text-blue-700" />
+                            Appointment
                         </DropdownMenuItem>
                     </Link>
                 </DropdownMenuGroup>
@@ -130,6 +136,33 @@ export const MobileAccountIndicator = () => {
                             <div className="flex flex-cols items-center gap-3 mb-1 font-semibold text-foreground">
                                 <User />
                                 <span>Profile</span>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/donation"
+                            className="rounded-md p-3 transition-colors hover:bg-muted/70"
+                        >
+                            <div className="flex flex-cols items-center gap-3 mb-1 font-semibold text-foreground">
+                                <Droplets className="text-rose-600" />
+                                <span>Donation</span>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/health"
+                            className="rounded-md p-3 transition-colors hover:bg-muted/70"
+                        >
+                            <div className="flex flex-cols items-center gap-3 mb-1 font-semibold text-foreground">
+                                <Heart className="text-emerald-700" />
+                                <span>Health</span>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/appointment"
+                            className="rounded-md p-3 transition-colors hover:bg-muted/70"
+                        >
+                            <div className="flex flex-cols items-center gap-3 mb-1 font-semibold text-foreground">
+                                <Calendar className="text-blue-700" />
+                                <span>Appointment</span>
                             </div>
                         </Link>
                         <div className="hover:pointer rounded-md p-3 transition-colors hover:bg-muted/70">
