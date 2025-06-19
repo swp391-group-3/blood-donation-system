@@ -23,7 +23,7 @@ import {
     ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Stats, Props as StatsProps } from '@/components/stats';
+import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { useBloodRequest } from '@/hooks/use-blood-request';
 import { toast } from 'sonner';
 import {
@@ -242,8 +242,7 @@ const getStats = (bloodRequests: BloodRequest[]): StatsProps[] => {
             value: bloodRequests.length,
             icon: Droplets,
             description: 'Number of blood request',
-            fg: 'text-rose-600',
-            bg: 'bg-rose-50',
+            color: 'rose',
         },
         {
             label: 'Urgent Requests',
@@ -252,8 +251,7 @@ const getStats = (bloodRequests: BloodRequest[]): StatsProps[] => {
             ).length,
             icon: Droplet,
             description: 'Number of urgent blood request',
-            fg: 'text-rose-600',
-            bg: 'bg-rose-50',
+            color: 'rose',
         },
         {
             label: 'Donors Needed',
@@ -264,16 +262,14 @@ const getStats = (bloodRequests: BloodRequest[]): StatsProps[] => {
             ),
             icon: User,
             description: 'Number of donors need across all request',
-            fg: 'text-blue-600',
-            bg: 'bg-blue-50',
+            color: 'blue',
         },
         {
             label: 'Recommended Requests',
             value: '0',
             icon: UserSearch,
             description: 'Number of recommended request for you',
-            fg: 'text-emerald-600',
-            bg: 'bg-emerald-50',
+            color: 'emerald',
         },
     ];
 };
@@ -328,15 +324,12 @@ export default function BloodRequestPage() {
                 </HeroDescription>
             </Hero>
 
-            <section className="py-16 bg-white border-t border-slate-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {stats!.map((entry, index) => (
-                            <Stats key={index} {...entry} />
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <StatsGrid>
+                {stats!.map((entry, index) => (
+                    <Stats key={index} {...entry} />
+                ))}
+            </StatsGrid>
+
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
                     <div className="relative flex-1">
