@@ -293,7 +293,7 @@ export function PremiumTestimonials() {
                                 <div
                                     className={`p-3 rounded-xl shadow-lg ring-4`}
                                 >
-                                    <Icon className="h-5 w-5 text-white" />
+                                    <Calendar className="h-5 w-5 text-white" />
                                 </div>
                                 <div className="flex-1">
                                     <CardTitle className="flex items-center gap-5 text-lg font-bold text-slate-900 leading-tight mb-3">
