@@ -428,51 +428,8 @@ export function PremiumTestimonials() {
                 <ArrowRight className="w-5 h-5" />
               </motion.button>
             </div>
-          )}
         </div>
-
-          {/* Navigation Controls */}
-          <div className="flex justify-center items-center gap-6 mt-8">
-            <motion.button
-              onClick={prevTestimonial}
-              className="p-3 rounded-full bg-white/[0.08] border border-white/[0.15] backdrop-blur-sm text-white hover:bg-white/[0.15] transition-all"
-              whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.15)" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </motion.button>
-
-            {/* Dots Indicator */}
-            <div className="flex gap-3">
-              {urgentRequests.map((_, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => {
-                    setDirection(index > currentIndex ? 1 : -1);
-                    setCurrentIndex(index);
-                  }}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index === currentIndex 
-                      ? 'bg-indigo-400 scale-125' 
-                      : 'bg-white/30 hover:bg-white/50'
-                  }`}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                />
-              ))}
-            </div>
-
-            <motion.button
-              onClick={nextTestimonial}
-              className="p-3 rounded-full bg-white/[0.08] border border-white/[0.15] backdrop-blur-sm text-white hover:bg-white/[0.15] transition-all"
-              whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.15)" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
-          </div>
-
-
+        
         {/* Stats Section */}
         <motion.div 
           className="grid grid-cols-2 md:grid-cols-4 gap-8"
