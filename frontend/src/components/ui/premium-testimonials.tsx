@@ -1,54 +1,74 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { Quote, Star, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { PartyPopper ,Quote, Star, ArrowLeft, ArrowRight, Sparkles, Droplets, Clock, MapPin, Heart, Phone } from 'lucide-react';
 
-const testimonials = [
+const urgentRequests = [
   {
-    name: "Sarah Chen",
-    role: "CEO, TechFlow Solutions",
-    company: "TechFlow",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-    text: "Lord AI transformed our entire operation. We've seen a 300% increase in efficiency and saved over $2M in operational costs. The autonomous agents work flawlessly.",
-    results: ["300% efficiency increase", "$2M cost savings", "24/7 automation"]
+    patientName: "Sarah Chen",
+    age: 34,
+    bloodType: "O-",
+    hospital: "City General Hospital",
+    location: "Downtown Medical Center",
+    urgency: "Critical",
+    unitsNeeded: 4,
+    timeLeft: "6 hours",
+    condition: "Emergency surgery complications",
+    contactNumber: "+1 (555) 123-4567",
+    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
   },
   {
-    name: "Marcus Johnson",
-    role: "CTO, DataDrive Inc",
-    company: "DataDrive",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-    text: "The AI voice agents are revolutionary. Our customer satisfaction increased by 40% while reducing response time from hours to seconds. Incredible ROI.",
-    results: ["40% satisfaction boost", "Instant responses", "Seamless integration"]
+    patientName: "Marcus Johnson",
+    age: 28,
+    bloodType: "A+",
+    hospital: "St. Mary's Medical Center",
+    location: "Westside Campus",
+    urgency: "High",
+    unitsNeeded: 2,
+    timeLeft: "12 hours",
+    condition: "Accident trauma recovery",
+    contactNumber: "+1 (555) 234-5678",
+    image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face",
   },
   {
-    name: "Elena Rodriguez",
-    role: "VP Operations, ScaleUp Co",
-    company: "ScaleUp",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-    text: "From workflow automation to social media management, Lord AI handles everything. Our team can finally focus on strategy instead of repetitive tasks.",
-    results: ["Full automation", "Strategic focus", "Team productivity"]
+    patientName: "Elena Rodriguez",
+    age: 45,
+    bloodType: "B-",
+    hospital: "Regional Medical Center",
+    location: "North District",
+    urgency: "Urgent",
+    unitsNeeded: 3,
+    timeLeft: "8 hours",
+    condition: "Cancer treatment support",
+    contactNumber: "+1 (555) 345-6789",
+    image: "https://images.unsplash.com/photo-1594824388853-d0c2d4e5b1b7?w=150&h=150&fit=crop&crop=face",
   },
   {
-    name: "David Kim",
-    role: "Founder, GrowthLab",
-    company: "GrowthLab",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-    text: "The custom AI systems delivered results beyond our expectations. Revenue increased 150% while operational overhead decreased significantly.",
-    results: ["150% revenue growth", "Reduced overhead", "Scalable systems"]
+    patientName: "David Kim",
+    age: 52,
+    bloodType: "AB+",
+    hospital: "University Hospital",
+    location: "Medical District",
+    urgency: "High",
+    unitsNeeded: 2,
+    timeLeft: "10 hours",
+    condition: "Cardiac surgery preparation",
+    contactNumber: "+1 (555) 456-7890",
+    image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
   },
   {
-    name: "Lisa Thompson",
-    role: "Director, InnovateCorp",
-    company: "InnovateCorp",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face",
-    rating: 5,
-    text: "Exceptional AI solutions that actually work. The implementation was smooth, and the results were immediate. Best investment we've made.",
-    results: ["Immediate results", "Smooth integration", "High ROI"]
-  }
-];
+    patientName: "Lisa Thompson",
+    age: 29,
+    bloodType: "O+",
+    hospital: "Children's Hospital",
+    location: "Pediatric Wing",
+    urgency: "Critical",
+    unitsNeeded: 1,
+    timeLeft: "4 hours",
+    condition: "Pediatric emergency",
+    contactNumber: "+1 (555) 567-8901",
+    image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=150&h=150&fit=crop&crop=face",
+  },
+]
 
 export function PremiumTestimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -58,7 +78,7 @@ export function PremiumTestimonials() {
   useEffect(() => {
     const timer = setInterval(() => {
       setDirection(1);
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+      setCurrentIndex((prev) => (prev + 1) % urgentRequests.length);
     }, 6000);
 
     return () => clearInterval(timer);
@@ -112,12 +132,12 @@ export function PremiumTestimonials() {
 
   const nextTestimonial = () => {
     setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    setCurrentIndex((prev) => (prev + 1) % urgentRequests.length);
   };
 
   const prevTestimonial = () => {
     setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setCurrentIndex((prev) => (prev - 1 + urgentRequests.length) % urgentRequests.length);
   };
 
   return (
@@ -216,9 +236,9 @@ export function PremiumTestimonials() {
               <Sparkles className="h-4 w-4 text-indigo-300" />
             </motion.div>
             <span className="text-sm font-medium text-white/80">
-              ✨ Client Success Stories
+              Welcome to Blood Donation System
             </span>
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
           </motion.div>
 
           <motion.h2 
@@ -226,7 +246,7 @@ export function PremiumTestimonials() {
             variants={fadeInUp}
           >
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
-              Trusted by
+              Every Drop
             </span>
             <br />
             <motion.span 
@@ -243,7 +263,7 @@ export function PremiumTestimonials() {
                 backgroundSize: '200% 200%'
               }}
             >
-              Industry Leaders
+              Saves Lives
             </motion.span>
           </motion.h2>
           
@@ -251,13 +271,13 @@ export function PremiumTestimonials() {
             className="text-xl sm:text-2xl text-white/60 max-w-4xl mx-auto leading-relaxed"
             variants={fadeInUp}
           >
-            Join thousands of businesses already transforming their operations with our premium AI solutions.
+            Critical blood shortages require immediate action. Your donation can be the difference between life and death.
           </motion.p>
         </motion.div>
 
-        {/* Main Testimonial Display */}
+        {/* Main Display */}
         <div className="relative max-w-6xl mx-auto mb-16">
-          <div className="relative h-[500px] md:h-[400px] perspective-1000">
+          <div className="relative h-[600px] md:h-[500px] perspective-1000">
             <AnimatePresence initial={false} custom={direction}>
               <motion.div
                 key={currentIndex}
@@ -270,127 +290,146 @@ export function PremiumTestimonials() {
                   x: { type: "spring", stiffness: 300, damping: 30 },
                   opacity: { duration: 0.4 },
                   scale: { duration: 0.4 },
-                  rotateY: { duration: 0.6 }
+                  rotateY: { duration: 0.6 },
                 }}
                 className="absolute inset-0"
               >
-                <div className="relative h-full bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/[0.15] p-8 md:p-12 overflow-hidden group">
-                  {/* Animated background gradient */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.08] via-purple-500/[0.05] to-rose-500/[0.08] rounded-3xl"
-                    animate={{
-                      backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
-                    }}
-                    transition={{
-                      duration: 15,
-                      repeat: Infinity,
-                      ease: "linear"
-                    }}
-                    style={{
-                      backgroundSize: '300% 300%'
-                    }}
-                  />
 
-                  {/* Quote icon */}
-                  <motion.div
-                    className="absolute top-8 right-8 opacity-20"
-                    animate={{ rotate: [0, 10, 0] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                  >
-                    <Quote className="w-16 h-16 text-white" />
-                  </motion.div>
+                  <div className="relative h-full bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/[0.15] p-8 md:p-12 overflow-hidden group">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-red-500/[0.12] via-red-400/[0.08] to-red-600/[0.12] rounded-3xl"
+                      animate={{
+                        backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
+                      }}
+                      transition={{
+                        duration: 15,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: "linear",
+                      }}
+                      style={{
+                        backgroundSize: "300% 300%",
+                      }}
+                    />
 
-                  <div className="relative z-10 h-full flex flex-col md:flex-row items-center gap-8">
-                    {/* User Info */}
-                    <div className="flex-shrink-0 text-center md:text-left">
-                      <motion.div
-                        className="relative mb-6"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="w-24 h-24 mx-auto md:mx-0 rounded-full overflow-hidden border-4 border-white/20 relative">
-                          <img 
-                            src={testimonials[currentIndex].avatar} 
-                            alt={testimonials[currentIndex].name}
-                            className="w-full h-full object-cover"
-                          />
+                    <motion.div
+                      className="absolute top-8 right-8 opacity-20"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                    >
+                      <Droplets className="w-16 h-16 text-red-400" />
+                    </motion.div>
+
+                    <div className="relative z-10 h-full flex flex-col md:flex-row items-center gap-8">
+                      <div className="flex-shrink-0 text-center md:text-left">
+                        <motion.div className="relative mb-6" whileHover={{ scale: 1.05 }}>
+                          <div className="w-32 h-32 mx-auto md:mx-0 rounded-full overflow-hidden border-4 border-red-400/30 relative">
+                            <img
+                              src={"/placeholder.svg"}
+                              alt="patientName"
+                              className="w-full h-full object-cover"
+                            />
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-br from-red-400/20 to-red-600/20"
+                              animate={{ opacity: [0, 0.3, 0] }}
+                              transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+                            />
+                          </div>
+
                           <motion.div
-                            className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-rose-400/20"
-                            animate={{ opacity: [0, 0.3, 0] }}
-                            transition={{ duration: 3, repeat: Infinity }}
+                            className="absolute inset-0 border-2 border-red-400/40 rounded-full"
+                            animate={{
+                              scale: [1, 1.2, 1],
+                              opacity: [0.5, 0, 0.5],
+                            }}
+                            transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
                           />
+                        </motion.div>
+
+                        <div
+                          className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold mb-4 text-red-400 bg-red-500/20 border-red-500/30"
+                        >
+                          <Clock className="w-4 h-4" />
+                          High Urgency
                         </div>
-                        
-                        {/* Floating ring animation */}
-                        <motion.div
-                          className="absolute inset-0 border-2 border-indigo-400/30 rounded-full"
-                          animate={{ 
-                            scale: [1, 1.4, 1],
-                            opacity: [0.5, 0, 0.5]
-                          }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        />
-                      </motion.div>
-
-                      <h3 className="text-2xl font-bold text-white mb-2">
-                        {testimonials[currentIndex].name}
-                      </h3>
-                      <p className="text-indigo-300 mb-1 font-medium">
-                        {testimonials[currentIndex].role}
-                      </p>
-                      <p className="text-white/60 mb-4">
-                        {testimonials[currentIndex].company}
-                      </p>
-                      
-                      {/* Star Rating */}
-                      <div className="flex justify-center md:justify-start gap-1 mb-6">
-                        {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: i * 0.1, duration: 0.3 }}
-                          >
-                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                          </motion.div>
-                        ))}
                       </div>
-                    </div>
 
-                    {/* Content */}
-                    <div className="flex-1">
-                      <motion.blockquote 
-                        className="text-xl md:text-2xl text-white/90 leading-relaxed mb-8 font-light italic"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3, duration: 0.8 }}
-                      >
-                        "{testimonials[currentIndex].text}"
-                      </motion.blockquote>
+                      <div className="flex-1">
+                        <div className="mb-6">
+                          <h3 className="text-3xl font-bold text-white mb-2">
+                            AB, 46
+                          </h3>
+                          <div className="flex flex-wrap gap-4 text-white/80">
+                            <div className="flex items-center gap-2">
+                              <Droplets className="w-5 h-5 text-red-400" />
+                              <span className="font-bold text-xl text-red-300">O-</span>
+                            </div>
+                          </div>
+                        </div>
 
-                      {/* Results */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {testimonials[currentIndex].results.map((result, i) => (
-                          <motion.div
-                            key={i}
-                            className="bg-white/[0.05] rounded-lg p-3 border border-white/[0.1] backdrop-blur-sm"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
-                            whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                          <div className="bg-white/[0.05] rounded-lg p-4 border border-white/[0.1]">
+                            <p className="text-white/60 text-sm">Units Needed</p>
+                            <p className="text-2xl font-bold text-white">450ml</p>
+                          </div>
+                        </div>
+
+                        <p className="text-lg text-white/90 mb-6 italic">"Car accident"</p>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <motion.button
+                            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-2"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                           >
-                            <span className="text-sm text-white/70 font-medium">
-                              {result}
-                            </span>
-                          </motion.div>
-                        ))}
+                            <Heart className="w-5 h-5" />
+                            Donate Now
+                          </motion.button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
               </motion.div>
             </AnimatePresence>
           </div>
+
+            <div className="flex justify-center items-center gap-6 mt-8">
+              <motion.button
+                onClick={prevTestimonial}
+                className="p-3 rounded-full bg-white/[0.08] border border-white/[0.15] backdrop-blur-sm text-white hover:bg-white/[0.15] transition-all"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </motion.button>
+
+              <div className="flex gap-3">
+                {urgentRequests.map((_, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => {
+                      setDirection(index > currentIndex ? 1 : -1)
+                      setCurrentIndex(index)
+                    }}
+                    className={`w-3 h-3 rounded-full transition-all ${
+                      index === currentIndex ? "bg-red-400 scale-125" : "bg-white/30 hover:bg-white/50"
+                    }`}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                  />
+                ))}
+              </div>
+
+              <motion.button
+                onClick={nextTestimonial}
+                className="p-3 rounded-full bg-white/[0.08] border border-white/[0.15] backdrop-blur-sm text-white hover:bg-white/[0.15] transition-all"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
+            </div>
+          )}
+        </div>
 
           {/* Navigation Controls */}
           <div className="flex justify-center items-center gap-6 mt-8">
@@ -405,7 +444,7 @@ export function PremiumTestimonials() {
 
             {/* Dots Indicator */}
             <div className="flex gap-3">
-              {testimonials.map((_, index) => (
+              {urgentRequests.map((_, index) => (
                 <motion.button
                   key={index}
                   onClick={() => {
@@ -432,7 +471,7 @@ export function PremiumTestimonials() {
               <ArrowRight className="w-5 h-5" />
             </motion.button>
           </div>
-        </div>
+
 
         {/* Stats Section */}
         <motion.div 
