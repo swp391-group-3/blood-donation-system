@@ -1,208 +1,376 @@
 'use client';
 
-import { MenuIcon } from 'lucide-react';
+import { useState } from 'react';
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
+    Home,
+    Droplets,
+    FileText,
+    User,
+    ChevronDown,
+    Calendar,
+    Shield,
+    LogOut,
+    Menu,
+    X,
+    LucideIcon,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import Link from 'next/link';
-import { Role } from '@/lib/api/dto/account';
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Logo } from '@/components/logo';
+import { AccountPicture } from '@/components/account-picture';
 import { useCurrentAccount } from '@/hooks/use-current-account';
-import { useMemo } from 'react';
-import { AccountIndicator, MobileAccountIndicator } from './account-indicator';
+import Link from 'next/link';
+import { AccountOverview } from '@/components/account-overview';
+import { Role } from '@/lib/api/dto/account';
 
-interface MenuItem {
-    title: string;
+interface NavigationItem {
+    label: string;
+    icon: LucideIcon;
     href: string;
-    subItems?: {
-        title: string;
-        href: string;
-    }[];
 }
 
-const getMenuItems = (role?: Role): MenuItem[] => {
+const getNavigationItems = (role?: Role): NavigationItem[] => {
     switch (role) {
         case 'staff':
             return [];
+
         case 'admin':
             return [];
+
         default:
             return [
                 {
-                    title: 'Home',
+                    label: 'Home',
+                    icon: Home,
                     href: '/',
                 },
                 {
-                    title: 'Blood Request',
+                    label: 'Blood Request',
+                    icon: Droplets,
                     href: '/request',
                 },
                 {
-                    title: 'Blog',
+                    label: 'Blog',
+                    icon: FileText,
                     href: '/blog',
                 },
             ];
     }
 };
 
-const Logo = () => {
-    return (
-        <Link href="/" className="flex items-center gap-2">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-black"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-            </svg>
-            <span className="text-lg font-semibold tracking-tighter">
-                Blood Donation System
-            </span>
-        </Link>
-    );
-};
+export const Header = () => {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { data: account } = useCurrentAccount();
+    const items = getNavigationItems(account?.role);
 
-const NavigationItem = ({ title, href, subItems }: MenuItem) => {
-    if (!subItems) {
-        return (
-            <NavigationMenuItem>
-                <NavigationMenuLink
-                    href={href}
-                    className={navigationMenuTriggerStyle()}
-                >
-                    {title}
-                </NavigationMenuLink>
-            </NavigationMenuItem>
-        );
-    }
     return (
-        <NavigationMenuItem>
-            <NavigationMenuTrigger>{title}</NavigationMenuTrigger>
-            <NavigationMenuContent>
-                <div className="grid w-[600px] grid-cols-2 p-3">
-                    {subItems.map((subItem, index) => (
-                        <NavigationMenuLink
-                            href={subItem.href}
-                            key={index}
-                            className="rounded-md p-3 transition-colors hover:bg-muted/70"
-                        >
-                            <p className="mb-1 font-semibold text-foreground">
-                                {subItem.title}
-                            </p>
-                        </NavigationMenuLink>
-                    ))}
-                </div>
-            </NavigationMenuContent>
-        </NavigationMenuItem>
-    );
-};
+        <>
+            <header className="bg-white/80 backdrop-blur-xl border-b border-slate-300/60 sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <Logo />
+                        <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center space-x-12">
+                            {items.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className="text-slate-700 hover:text-rose-600 font-medium text-sm transition-colors duration-200 relative group"
+                                >
+                                    {item.label}
+                                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-rose-500 group-hover:w-full transition-all duration-300"></span>
+                                </Link>
+                            ))}
+                        </nav>
 
-const MobileNavigationItem = ({ title, href, subItems }: MenuItem) => {
-    if (!subItems) {
-        return (
-            <Link href={href} className="font-medium">
-                {title}
-            </Link>
-        );
-    }
-    return (
-        <Accordion type="single" collapsible>
-            <AccordionItem value="solutions" className="border-none">
-                <AccordionTrigger className="text-base hover:no-underline">
-                    {title}
-                </AccordionTrigger>
-                <AccordionContent>
-                    <div className="grid md:grid-cols-2">
-                        {subItems.map((subItem, index) => (
-                            <Link
-                                href={subItem.href}
-                                key={index}
-                                className="rounded-md p-3 transition-colors hover:bg-muted/70"
+                        <div className="flex items-center space-x-3 flex-shrink-0">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="md:hidden hover:bg-slate-100 rounded-xl p-2.5 transition-all duration-200"
+                                onClick={() =>
+                                    setIsMobileMenuOpen(!isMobileMenuOpen)
+                                }
                             >
-                                <p className="mb-1 font-semibold text-foreground">
-                                    {subItem.title}
-                                </p>
+                                {isMobileMenuOpen ? (
+                                    <X className="h-5 w-5 text-slate-600" />
+                                ) : (
+                                    <Menu className="h-5 w-5 text-slate-600" />
+                                )}
+                            </Button>
+
+                            <div className="hidden md:block">
+                                {!account ? (
+                                    <div className="gap-4 flex">
+                                        <Link href="/auth/register">
+                                            <Button variant="outline">
+                                                Register
+                                            </Button>
+                                        </Link>
+                                        <Link href="/auth/login">
+                                            <Button>Login</Button>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <div className="flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-200 group">
+                                                <div className="size-8">
+                                                    <AccountPicture
+                                                        name={account.name}
+                                                    />
+                                                </div>
+                                                <ChevronDown className="h-3 w-3 text-slate-500 group-hover:text-slate-700 transition-colors duration-200" />
+                                            </div>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent
+                                            align="end"
+                                            className="mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/60 shadow-xl rounded-2xl p-2"
+                                        >
+                                            <div className="px-3 py-3 border-b border-slate-100 mb-2">
+                                                <AccountOverview
+                                                    account={account}
+                                                />
+                                            </div>
+
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href="/profile"
+                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                >
+                                                    <div className="p-1.5 bg-blue-50 rounded-lg">
+                                                        <User className="h-4 w-4 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium text-slate-900">
+                                                            Profile
+                                                        </span>
+                                                        <div className="text-xs text-slate-500">
+                                                            Manage your account
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href="/donation"
+                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                >
+                                                    <div className="p-1.5 bg-rose-50 rounded-lg">
+                                                        <Droplets className="h-4 w-4 text-rose-600" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium text-slate-900">
+                                                            Donations
+                                                        </span>
+                                                        <div className="text-xs text-slate-500">
+                                                            View donation
+                                                            history
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href="/health"
+                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                >
+                                                    <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                                        <Shield className="h-4 w-4 text-emerald-600" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium text-slate-900">
+                                                            Health
+                                                        </span>
+                                                        <div className="text-xs text-slate-500">
+                                                            Health records &
+                                                            status
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href="/appointment"
+                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                >
+                                                    <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                        <Calendar className="h-4 w-4 text-purple-600" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium text-slate-900">
+                                                            Appointments
+                                                        </span>
+                                                        <div className="text-xs text-slate-500">
+                                                            Manage appointments
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuSeparator className="my-2 bg-slate-100" />
+
+                                            <DropdownMenuItem className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 focus:text-red-600 transition-colors duration-200">
+                                                <div className="p-1.5 bg-red-50 rounded-lg">
+                                                    <LogOut className="h-4 w-4 text-red-600" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium">
+                                                        Logout
+                                                    </span>
+                                                    <div className="text-xs text-red-500">
+                                                        Sign out of your account
+                                                    </div>
+                                                </div>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div
+                className={`fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${
+                    isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                }`}
+            >
+                {account && (
+                    <div className="flex items-center gap-4 p-6 bg-gradient-to-r from-slate-50 to-slate-100/50">
+                        <AccountOverview account={account} />
+                    </div>
+                )}
+
+                <div className="px-6 py-4">
+                    <div className="space-y-1">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                            Navigation
+                        </div>
+                        {items.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all duration-200 group"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                <div className="p-2 bg-slate-100 group-hover:bg-rose-100 rounded-lg transition-colors duration-200">
+                                    <item.icon className="h-5 w-5 group-hover:text-rose-600" />
+                                </div>
+                                <span className="font-medium">
+                                    {item.label}
+                                </span>
                             </Link>
                         ))}
                     </div>
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
-    );
-};
-
-export const Header = () => {
-    const { data: account } = useCurrentAccount();
-    const menuItems = useMemo(() => getMenuItems(account?.role), [account]);
-
-    return (
-        <header className="m-5">
-            <nav className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr]">
-                <Logo />
-                <NavigationMenu className="hidden md:block">
-                    <NavigationMenuList>
-                        {menuItems.map((item, index) => (
-                            <NavigationItem key={index} {...item} />
-                        ))}
-                    </NavigationMenuList>
-                </NavigationMenu>
-                <div className="justify-self-end hidden md:block">
-                    <AccountIndicator />
                 </div>
-                <Sheet>
-                    <SheetTrigger asChild className="md:hidden">
-                        <Button variant="outline" size="icon">
-                            <MenuIcon className="h-4 w-4" />
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent
-                        side="top"
-                        className="max-h-screen overflow-auto"
-                    >
-                        <SheetHeader>
-                            <SheetTitle>
-                                <Logo />
-                            </SheetTitle>
-                        </SheetHeader>
-                        <div className="flex flex-col p-4">
-                            <div className="flex flex-col gap-6">
-                                {menuItems.map((item, index) => (
-                                    <MobileNavigationItem
-                                        key={index}
-                                        {...item}
-                                    />
-                                ))}
-                            </div>
-                            <MobileAccountIndicator />
+
+                <div className="px-6 py-4 border-t border-slate-200">
+                    <div className="space-y-1">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                            Account
                         </div>
-                    </SheetContent>
-                </Sheet>
-            </nav>
-        </header>
+                        <Link
+                            href="/profile"
+                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            <div className="p-1.5 bg-blue-50 rounded-lg">
+                                <User className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div>
+                                <span className="font-medium text-slate-900">
+                                    Profile
+                                </span>
+                                <div className="text-xs text-slate-500">
+                                    Manage your account
+                                </div>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/donations"
+                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            <div className="p-1.5 bg-rose-50 rounded-lg">
+                                <Droplets className="h-4 w-4 text-rose-600" />
+                            </div>
+                            <div>
+                                <span className="font-medium text-slate-900">
+                                    Donations
+                                </span>
+                                <div className="text-xs text-slate-500">
+                                    View donation history
+                                </div>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/health"
+                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                <Shield className="h-4 w-4 text-emerald-600" />
+                            </div>
+                            <div>
+                                <span className="font-medium text-slate-900">
+                                    Health
+                                </span>
+                                <div className="text-xs text-slate-500">
+                                    Health records & status
+                                </div>
+                            </div>
+                        </Link>
+                        <Link
+                            href="/appointment"
+                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            <div className="p-1.5 bg-purple-50 rounded-lg">
+                                <Calendar className="h-4 w-4 text-purple-600" />
+                            </div>
+                            <div>
+                                <span className="font-medium text-slate-900">
+                                    Appointments
+                                </span>
+                                <div className="text-xs text-slate-500">
+                                    Manage appointments
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="px-6 py-4 mt-auto border-t border-slate-200">
+                    <button className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full">
+                        <div className="p-1.5 bg-red-50 rounded-lg">
+                            <LogOut className="h-4 w-4 text-red-600" />
+                        </div>
+                        <div>
+                            <p className="text-left font-medium">Logout</p>
+                            <div className="text-xs text-red-500">
+                                Sign out of your account
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            {isMobileMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+        </>
     );
 };
