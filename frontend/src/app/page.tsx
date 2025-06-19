@@ -102,19 +102,19 @@ const data = [
           </p>
           <div className="mb-8">
             <div className="flex gap-2 items-center text-neutral-700 dark:text-neutral-300 text-xs md:text-sm">
-              ✅ Card grid component
+              Card grid component
             </div>
             <div className="flex gap-2 items-center text-neutral-700 dark:text-neutral-300 text-xs md:text-sm">
-              ✅ Startup template Aceternity
+              Startup template Aceternity
             </div>
             <div className="flex gap-2 items-center text-neutral-700 dark:text-neutral-300 text-xs md:text-sm">
-              ✅ Random file upload lol
+              Random file upload lol
             </div>
             <div className="flex gap-2 items-center text-neutral-700 dark:text-neutral-300 text-xs md:text-sm">
-              ✅ Himesh Reshammiya Music CD
+              Himesh Reshammiya Music CD
             </div>
             <div className="flex gap-2 items-center text-neutral-700 dark:text-neutral-300 text-xs md:text-sm">
-              ✅ Salman Bhai Fan Club registrations open
+              Salman Bhai Fan Club registrations open
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -154,9 +154,9 @@ const data = [
 
 export default function MemberHomePage() {
   useEffect(() => {
-    document.body.classList.add('dark');
+    document.body.classList.add('light');
     return () => {
-      document.body.classList.remove('dark');
+      document.body.classList.remove('light');
     };
   }, []);
 

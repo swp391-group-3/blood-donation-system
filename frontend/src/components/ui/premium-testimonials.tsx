@@ -326,21 +326,7 @@ export function PremiumTestimonials() {
                               alt="patientName"
                               className="w-full h-full object-cover"
                             />
-                            <motion.div
-                              className="absolute inset-0 bg-gradient-to-br from-red-400/20 to-red-600/20"
-                              animate={{ opacity: [0, 0.3, 0] }}
-                              transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                            />
                           </div>
-
-                          <motion.div
-                            className="absolute inset-0 border-2 border-red-400/40 rounded-full"
-                            animate={{
-                              scale: [1, 1.2, 1],
-                              opacity: [0.5, 0, 0.5],
-                            }}
-                            transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                          />
                         </motion.div>
 
                         <div
