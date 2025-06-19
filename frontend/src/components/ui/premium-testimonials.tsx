@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { PartyPopper ,Quote, Star, ArrowLeft, ArrowRight, Sparkles, Droplets, Clock, MapPin, Heart, Phone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Droplets, Clock, MapPin, Heart, Phone } from 'lucide-react';
 
 const urgentRequests = [
   {
@@ -142,9 +142,7 @@ export function PremiumTestimonials() {
 
   return (
     <section id="testimonials" className="relative py-32 bg-gradient-to-br from-black via-indigo-950/20 to-black text-white overflow-hidden">
-      {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
-        {/* Animated gradient mesh */}
         <motion.div 
           className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.08] via-purple-500/[0.05] to-rose-500/[0.08]"
           animate={{
