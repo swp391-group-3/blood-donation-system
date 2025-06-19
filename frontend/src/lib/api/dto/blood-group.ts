@@ -11,23 +11,15 @@ export const bloodGroups = [
 
 export type BloodGroup = (typeof bloodGroups)[number];
 
-export const displayBloodGroup = (bloodGroup: BloodGroup): string => {
-    switch (bloodGroup) {
-        case 'o_plus':
-            return 'O+';
-        case 'o_minus':
-            return 'O-';
-        case 'a_plus':
-            return 'A+';
-        case 'a_minus':
-            return 'A-';
-        case 'b_plus':
-            return 'B+';
-        case 'b_minus':
-            return 'B-';
-        case 'a_b_plus':
-            return 'AB+';
-        case 'a_b_minus':
-            return 'AB-';
-    }
+export const bloogGroupLabels: {
+    [key in BloodGroup]: string;
+} = {
+    o_plus: 'O+',
+    o_minus: 'O-',
+    a_plus: 'A+',
+    a_minus: 'A-',
+    b_plus: 'B+',
+    b_minus: 'B-',
+    a_b_plus: 'AB+',
+    a_b_minus: 'AB-',
 };
