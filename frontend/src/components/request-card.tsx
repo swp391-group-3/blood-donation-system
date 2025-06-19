@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { capitalCase } from 'change-case';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { Progress } from '@radix-ui/react-progress';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const priorityConfigs = {
     high: {
@@ -38,7 +38,7 @@ export const RequestCard = (request: BloodRequest) => {
             <CardHeader className="p-6">
                 <div className="flex items-start gap-4 mb-4">
                     <div
-                        className={`p-3 rounded-xl bg-${config.color}-500 shadow-lg ring-${config.color}-500/20 ring-4`}
+                        className={`p-3 rounded-xl bg-${config.color}-500 ring-${config.color}-500/20 shadow-lg ring-4`}
                     >
                         <config.icon className="h-5 w-5 text-white" />
                     </div>
