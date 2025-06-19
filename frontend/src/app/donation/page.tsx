@@ -1,14 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import {
     Select,
     SelectContent,
@@ -16,262 +7,190 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Calendar,
-    Droplet,
-    Download,
-    CalendarIcon,
-    Search,
-} from 'lucide-react';
-import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
+import { Filter, Droplets, Calendar, Activity, Award } from 'lucide-react';
+import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { toast } from 'sonner';
-import { redirect } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { capitalCase } from 'change-case';
 import {
-    displayDonationType,
-    DonationType,
-    donationTypes,
-} from '@/lib/api/dto/donation';
-import { RangeCalendar } from '@/components/ui/calendar-rac';
-import { DateRange } from 'react-aria-components';
+    Hero,
+    HeroDescription,
+    HeroKeyword,
+    HeroSummary,
+    HeroTitle,
+} from '@/components/hero';
+import { CardGrid } from '@/components/card-grid';
+import { Donation, DonationType, donationTypes } from '@/lib/api/dto/donation';
+import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
-import { EmptyState } from '@/components/ui/empty-state';
+    differenceInCalendarMonths,
+    differenceInCalendarQuarters,
+    differenceInCalendarYears,
+} from 'date-fns';
+import { DonationCard } from '@/components/donation-card';
+
+const getStats = (donations: Donation[]): StatsProps[] => {
+    return [
+        {
+            label: 'Total Donations',
+            value: donations.length.toString(),
+            icon: Droplets,
+            description: 'All donations',
+            color: 'rose',
+        },
+        {
+            label: 'Total Amount',
+            value: `${donations.reduce((sum, donation) => sum + donation.amount, 0)}ml`,
+            icon: Activity,
+            description: 'Volume donated',
+            color: 'blue',
+        },
+        {
+            label: 'This Month',
+            value: donations
+                .filter(
+                    (d) =>
+                        d.created_at >
+                        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+                )
+                .length.toString(),
+            icon: Calendar,
+            description: 'Recent donations',
+            color: 'emerald',
+        },
+        {
+            label: 'Donation Types',
+            value: new Set(donations.map((d) => d.type)).size.toString(),
+            icon: Award,
+            description: 'Different types',
+            color: 'purple',
+        },
+    ];
+};
 
 export default function DonationPage() {
     const { data: donations, isPending, error } = useCurrentAccountDonation();
-    const [donationType, setDonationType] = useState<
-        DonationType | undefined
-    >();
-    const [date, setDate] = useState<DateRange | undefined>();
-    const filteredDonations = useMemo(() => {
-        return donations
-            ?.filter(
-                (donation) => !donationType || donation.type === donationType,
-            )
-            .filter(
-                (donation) =>
-                    !date ||
-                    (date.start.toDate('Asia/Bangkok') <=
-                        new Date(donation.created_at) &&
-                        new Date(donation.created_at) <=
-                            date.end.toDate('Asia/Bangkok')),
-            );
-    }, [donations, donationType, date]);
+    const stats = useMemo(
+        () => (donations ? getStats(donations) : undefined),
+        [donations],
+    );
+    const [type, setType] = useState<DonationType | 'all'>('all');
+    const [period, setPeriod] = useState<'month' | 'quarter' | 'year' | 'all'>(
+        'all',
+    );
+    const filteredDonations = useMemo(
+        () =>
+            donations
+                ?.filter((donation) => type === 'all' || donation.type === type)
+                .filter((donation) => {
+                    switch (period) {
+                        case 'all':
+                            return true;
+                        case 'month':
+                            return (
+                                differenceInCalendarMonths(
+                                    new Date(),
+                                    new Date(donation.created_at),
+                                ) <= 1
+                            );
+                        case 'quarter':
+                            return (
+                                differenceInCalendarQuarters(
+                                    new Date(),
+                                    new Date(donation.created_at),
+                                ) <= 1
+                            );
+                        case 'year':
+                            return (
+                                differenceInCalendarYears(
+                                    new Date(),
+                                    new Date(donation.created_at),
+                                ) <= 1
+                            );
+                    }
+                }),
+        [donations, type, period],
+    );
 
     if (isPending) {
         return <div></div>;
     }
 
     if (error) {
-        toast.error('Login to use this feature');
-        redirect('/auth/login');
+        toast.error('Failed to fetch blood request list');
+        return <div></div>;
     }
 
     return (
-        <div className="space-y-6 p-6 pb-20">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        Donation History
-                    </h1>
-                    <p className="text-zinc-600">
-                        Your complete record of life-saving donations
-                    </p>
-                </div>
-            </div>
+        <div className="flex-1 space-y-6 p-6">
+            <Hero>
+                <HeroSummary color="rose">
+                    <Droplets className="h-4 w-4 mr-2" />
+                    Donation History
+                </HeroSummary>
+                <HeroTitle>
+                    Your Blood
+                    <HeroKeyword color="rose">Donations</HeroKeyword>
+                </HeroTitle>
+                <HeroDescription>
+                    Track your donation history and impact
+                </HeroDescription>
+            </Hero>
 
-            <div className="grid lg:grid-cols-2 gap-10">
-                <Card>
-                    <CardHeader>
-                        <CardTitle> Impact</CardTitle>
-                        <CardDescription>
-                            How your donations have helped community
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="text-center p-4 bg-red-50 rounded-lg">
-                                <div className="text-3xl font-bold text-red-600 mb-1">
-                                    {donations.length}
-                                </div>
-                                <div className="text-sm text-zinc-600">
-                                    Total Donations
-                                </div>
-                            </div>
-                            <div className="text-center p-4 bg-blue-50 rounded-lg">
-                                <div className="text-3xl font-bold text-blue-600 mb-1">
-                                    {donations.reduce(
-                                        (prev, cur) => prev + cur.amount,
-                                        0,
-                                    ) / 1000}
-                                    L
-                                </div>
-                                <div className="text-sm text-zinc-600">
-                                    Blood Donated
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+            <StatsGrid>
+                {stats!.map((entry, index) => (
+                    <Stats key={index} {...entry} />
+                ))}
+            </StatsGrid>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Donation Types</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            {donationTypes.map((type) => {
-                                const count = donations.filter(
-                                    (d) => d.type === type,
-                                ).length;
-                                const percentage =
-                                    (count / donations.length) * 100;
-                                return (
-                                    <div key={type}>
-                                        <div className="flex justify-between text-sm mb-1">
-                                            <span>
-                                                {displayDonationType(type)}
-                                            </span>
-                                            <span>{count} donations</span>
-                                        </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-2">
-                                            <div
-                                                className="bg-red-500 h-2 rounded-full"
-                                                style={{
-                                                    width: `${percentage}%`,
-                                                }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="flex w-full items-center gap-2">
-                <div className="relative w-full"></div>
-                <Select
-                    value={donationType}
-                    onValueChange={(value: DonationType) => {
-                        setDonationType(value);
-                    }}
-                >
-                    <SelectTrigger className="h-10">
-                        <Droplet className="text-red-500 mr-2 h-4 w-4" />
-                        <SelectValue placeholder="Donation Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {donationTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                                {displayDonationType(type)}
+            <div className="mx-auto max-w-7xl">
+                <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                    <div className="relative flex-1"></div>
+                    <Select
+                        value={type}
+                        onValueChange={(value: DonationType | 'all') =>
+                            setType(value)
+                        }
+                    >
+                        <SelectTrigger className="w-full sm:w-40 border-slate-200 rounded">
+                            <Filter className="h-4 w-4 mr-2" />
+                            <SelectValue placeholder="Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            {donationTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                    {capitalCase(type)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select
+                        value={period}
+                        onValueChange={(
+                            value: 'month' | 'quarter' | 'year' | 'all',
+                        ) => setPeriod(value)}
+                    >
+                        <SelectTrigger className="w-full sm:w-40 h-11 border-slate-200 rounded">
+                            <Calendar className="h-4 w-4 mr-2" />
+                            <SelectValue placeholder="Period" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Time</SelectItem>
+                            <SelectItem value="month">This Month</SelectItem>
+                            <SelectItem value="quarter">
+                                Last 3 Months
                             </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline">
-                            <span>
-                                {date
-                                    ? `${date.start.toString()} to ${date.end.toString()}`
-                                    : 'Pick a date'}
-                            </span>
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <RangeCalendar
-                            className="rounded-lg border border-border p-2 bg-background"
-                            value={date}
-                            onChange={setDate}
-                        />
-                    </PopoverContent>
-                </Popover>
-            </div>
-
-            {!filteredDonations || filteredDonations.length === 0 ? (
-                <EmptyState
-                    className="mx-auto"
-                    title="No Results Found"
-                    description="Try adjusting your search filters."
-                    icons={[Search]}
-                />
-            ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {filteredDonations.map((donation) => (
-                        <Card
-                            key={donation.id}
-                            className="transition-colors shadow"
-                        >
-                            <CardHeader className="pb-3 flex flex-col lg:flex-row justify-between gap-4">
-                                <div>
-                                    <div className="flex flex-row gap-4">
-                                        <CardTitle className="text-base">
-                                            {displayDonationType(donation.type)}
-                                        </CardTitle>
-                                        <Badge variant="outline">
-                                            {donation.amount}ml
-                                        </Badge>
-                                    </div>
-                                    <CardDescription className="flex flex-row pt-4 gap-5">
-                                        <div className="flex flex-row gap-3">
-                                            <Calendar className="h-4 w-4" />
-                                            <span>
-                                                {new Date(
-                                                    donation.created_at,
-                                                ).toLocaleString()}
-                                            </span>
-                                        </div>
-                                    </CardDescription>
-                                </div>
-                                <Button variant="outline" size="sm">
-                                    <Download className="mr-1 h-3 w-3" />
-                                    View Certificate
-                                </Button>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="border-t pt-4">
-                                    <div className="space-y-5 text-sm">
-                                        <div>
-                                            <p className="text-md font-bold">
-                                                Donation Id
-                                            </p>
-                                            <p>{donation.id}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-md font-bold">
-                                                Appointment Id
-                                            </p>
-                                            <p>{donation.appointment_id}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-md font-bold">
-                                                Type
-                                            </p>
-                                            <p>
-                                                {displayDonationType(
-                                                    donation.type,
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-md font-bold">
-                                                Amount
-                                            </p>
-                                            <p>{donation.amount}ml</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                            <SelectItem value="year">This Year</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
-            )}
+                <CardGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {filteredDonations!.map((request, index) => (
+                        <DonationCard key={index} {...request} />
+                    ))}
+                </CardGrid>
+            </div>
         </div>
     );
 }
