@@ -23,7 +23,7 @@ pub struct Appointment {
 }
 
 #[utoipa::path(
-    post,
+    get,
     tag = "Appointment",
     path = "/appointment",
     operation_id = "appointment::get_by_member_id",
