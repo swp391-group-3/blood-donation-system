@@ -12,17 +12,11 @@ import {
     Droplet,
     Search,
     Filter,
-    Calendar,
-    Users,
-    Clock,
-    AlertTriangle,
     Heart,
     Droplets,
     User,
     UserSearch,
-    ChevronRight,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { useBloodRequest } from '@/hooks/use-blood-request';
 import { toast } from 'sonner';
@@ -38,12 +32,6 @@ import {
     bloodGroups,
     bloodGroupLabels,
 } from '@/lib/api/dto/blood-group';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { formatDistanceToNow } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { EmptyState } from '@/components/ui/empty-state';
 import {
     Hero,
     HeroDescription,
