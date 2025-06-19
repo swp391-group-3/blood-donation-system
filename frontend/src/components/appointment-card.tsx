@@ -2,7 +2,6 @@ import { Appointment } from '@/lib/api/dto/appointment';
 import { formatDistanceToNow } from 'date-fns';
 import {
     Activity,
-    Badge,
     CheckCircle,
     Clock,
     MapPin,
@@ -16,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { capitalCase } from 'change-case';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const statusConfig = {
     on_process: {
