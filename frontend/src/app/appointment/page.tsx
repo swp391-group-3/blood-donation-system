@@ -12,22 +12,12 @@ import {
     Search,
     Filter,
     Calendar,
-    Users,
     Clock,
-    User,
     CheckCircle,
     Activity,
-    XCircle,
-    MapPin,
-    Timer,
-    QrCode,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatDistanceToNow } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
 import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
 import { useCurrentAccountAppointment } from '@/hooks/use-current-account-appointment';
 import { redirect } from 'next/navigation';

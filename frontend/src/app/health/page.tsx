@@ -15,7 +15,7 @@ import {
     Check,
     X,
 } from 'lucide-react';
-import { useCurrentAccountHealth } from '@/hooks/health/useCurrentAccountHealth';
+import { useCurrentAccountHealth } from '@/hooks/use-current-account-health';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
 import { Health } from '@/lib/api/dto/health';
