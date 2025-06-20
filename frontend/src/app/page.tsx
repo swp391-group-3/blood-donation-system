@@ -6,7 +6,29 @@ import {
 } from 'lucide-react';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { steps } from "../../constants/sample-data"
+
+const steps = [
+    {
+        title: 'Registration',
+        description:
+            'Complete a quick registration form with your personal details and medical history.',
+    },
+    {
+        title: 'Screening',
+        description:
+            'A healthcare professional will check your temperature, blood pressure, pulse and hemoglobin levels.',
+    },
+    {
+        title: 'Donation',
+        description:
+            "The actual blood donation takes only 8-10 minutes. You'll be seated comfortably while donating.",
+    },
+    {
+        title: 'Recovery',
+        description:
+            "After donating, you'll rest and enjoy refreshments. Most people feel fine after a short rest.",
+    },
+];
 
 
 export default function LandingPage() {
