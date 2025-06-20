@@ -401,95 +401,63 @@ export const emergencyRequests = [
     },
 ];
 
-// sample-data of blog
-export const blogPosts = [
+// Mock blog data
+export const blogs = [
     {
-        id: 'post-001',
-        title: 'The Importance of Regular Blood Donation',
-        excerpt:
-            'Learn why regular blood donation is crucial for maintaining adequate blood supplies and how it benefits both donors and recipients.',
-        content: 'Full content here...',
-        author: {
-            name: 'Dr. Sarah Johnson',
-            role: 'staff',
-            initials: 'SJ',
-        },
-        tags: ['donation', 'health', 'community'],
-        publishedAt: '2023-05-28',
+      id: "blog-001",
+      owner: "Dr. Sarah Johnson",
+      title: "The Importance of Regular Blood Donation: A Medical Perspective",
+      content:
+        "Blood donation is one of the most significant contributions an individual can make to society. As a medical professional with over 15 years of experience in hematology, I've witnessed firsthand the life-saving impact of blood donations. Every unit of blood donated can save up to three lives, making it one of the most efficient ways to help others. The process is safe, regulated, and essential for maintaining adequate blood supplies in hospitals and medical centers. Regular donors often report feeling a sense of purpose and community connection, knowing they're making a tangible difference in their community's health and wellbeing.",
+      tags: ["medical", "health", "community", "lifesaving"],
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     },
     {
-        id: 'post-002',
-        title: 'My First Blood Donation Experience',
-        excerpt:
-            'A personal story about overcoming fears and making a difference through blood donation.',
-        content: 'Full content here...',
-        author: {
-            name: 'Michael Chen',
-            role: 'member',
-            initials: 'MC',
-        },
-
-        tags: ['experience', 'first-time', 'inspiration'],
-        publishedAt: '2023-05-27',
+      id: "blog-002",
+      owner: "Michael Chen",
+      title: "My Journey as a First-Time Blood Donor: Overcoming Fear and Finding Purpose",
+      content:
+        "I'll be honest – I was terrified of needles for most of my adult life. The thought of voluntarily having blood drawn seemed impossible. But when my colleague shared how blood donation saved her father's life during emergency surgery, something clicked. I decided to face my fear and become a donor. The experience was nothing like I expected. The staff was incredibly supportive, the process was quick and comfortable, and the sense of accomplishment afterward was overwhelming. Now, six donations later, I'm proud to be a regular donor and advocate for others to overcome their fears and join this life-saving community.",
+      tags: ["personal", "first-time", "fear", "community", "inspiration"],
+      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
     },
     {
-        id: 'post-003',
-        title: 'Blood Types and Compatibility: A Complete Guide',
-        excerpt:
-            'Understanding different blood types, compatibility, and why certain types are more in demand.',
-        content: 'Full content here...',
-        author: {
-            name: 'Dr. Emily Rodriguez',
-            role: 'staff',
-            initials: 'ER',
-        },
-        tags: ['blood-types', 'compatibility', 'education'],
-        publishedAt: '2023-05-26',
+      id: "blog-003",
+      owner: "Lisa Rodriguez",
+      title: "Understanding Blood Types: What Every Donor Should Know",
+      content:
+        "Blood typing is fundamental to safe transfusion medicine, yet many donors don't fully understand their blood type's significance. The ABO system, discovered over a century ago, remains the most critical factor in blood compatibility. Type O negative donors are universal donors, meaning their blood can be given to anyone in emergency situations. However, every blood type is valuable and needed. Type AB positive individuals are universal plasma donors, while specific types are often in higher demand for certain patient populations. Understanding your blood type helps you appreciate your unique contribution to the blood supply and can guide you toward the most impactful donation methods.",
+      tags: ["education", "blood-types", "science", "compatibility"],
+      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     },
     {
-        id: 'post-004',
-        title: 'Community Blood Drive Success Story',
-        excerpt:
-            'How our recent community blood drive exceeded expectations and made a real impact.',
-        content: 'Full content here...',
-        author: {
-            name: 'Jennifer Adams',
-            role: 'staff',
-            initials: 'JA',
-        },
-        tags: ['community', 'success', 'impact'],
-        publishedAt: '2023-05-25',
+      id: "blog-004",
+      owner: "Dr. James Wilson",
+      title: "Preparing for Your Blood Donation: Tips for a Successful Experience",
+      content:
+        "Proper preparation can make your blood donation experience smooth and comfortable. Start by staying well-hydrated in the days leading up to your donation – aim for at least 8 glasses of water daily. Eat iron-rich foods like spinach, red meat, or beans to maintain healthy hemoglobin levels. Get a good night's sleep before your appointment, as fatigue can affect your body's response to donation. On donation day, eat a substantial meal 2-3 hours beforehand and avoid fatty foods. Bring identification and your donor card if you have one. Most importantly, relax and remember that you're performing a heroic act that will directly save lives.",
+      tags: ["preparation", "tips", "health", "donation-day"],
+      created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
     },
     {
-        id: 'post-005',
-        title: 'Preparing for Your Blood Donation',
-        excerpt:
-            "Essential tips and guidelines to ensure you're ready for a successful blood donation.",
-        content: 'Full content here...',
-        author: {
-            name: 'Robert Kim',
-            role: 'member',
-            initials: 'RK',
-        },
-        tags: ['preparation', 'tips', 'donation'],
-        publishedAt: '2023-05-24',
+      id: "blog-005",
+      owner: "Emma Thompson",
+      title: "The Global Impact of Blood Donation: Stories from Around the World",
+      content:
+        "Blood donation is a universal language of compassion that transcends borders, cultures, and backgrounds. From rural clinics in Africa to metropolitan hospitals in Asia, donated blood saves lives regardless of geography. I've had the privilege of working with international health organizations and witnessing the profound impact of blood donation programs worldwide. In developing countries, access to safe blood can mean the difference between life and death for mothers during childbirth, children with severe anemia, and accident victims. Every donation, no matter where it occurs, contributes to a global network of care and compassion that connects us all as human beings.",
+      tags: ["global", "international", "impact", "stories", "humanitarian"],
+      created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
     },
     {
-        id: 'post-006',
-        title: 'The Science Behind Blood Storage',
-        excerpt:
-            'Exploring how blood is processed, stored, and maintained to ensure safety and effectiveness.',
-        content: 'Full content here...',
-        author: {
-            name: 'Dr. Amanda Foster',
-            role: 'staff',
-            initials: 'AF',
-        },
-        tags: ['science', 'storage', 'technology'],
-        publishedAt: '2023-05-23',
+      id: "blog-006",
+      owner: "Dr. Amanda Foster",
+      title: "Myths and Facts About Blood Donation: Separating Truth from Fiction",
+      content:
+        "Despite decades of safe blood donation practices, myths and misconceptions persist that prevent people from becoming donors. Let's address the most common ones: No, you cannot contract diseases from donating blood – all equipment is sterile and single-use. No, donation doesn't weaken your immune system – your body replaces donated blood within 24-48 hours. No, you won't feel weak for days – most donors return to normal activities immediately. Yes, there are age limits, but healthy adults from 17-70 can typically donate. Yes, you can donate if you have tattoos, as long as they're from licensed facilities. Education and facts are our best tools for encouraging more people to join the life-saving community of blood donors.",
+      tags: ["myths", "facts", "education", "misconceptions", "safety"],
+      created_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000),
     },
-];
-
+  ]
 // health-profile chart data weight
 export const weightChartData = [
     { month: 'January', weight: 70 },
@@ -523,6 +491,7 @@ export const bloodDonationTags = [
     { value: 'medical-facts', label: 'Medical Facts' },
     { value: 'faq', label: 'FAQ' },
 ];
+
 
 // empty blog list to test the empty list state
 export const emptyBlogList = [];
@@ -955,25 +924,3 @@ export const availableTags = [
     { label: 'Experience', value: 'experience' },
 ];
 
-export const steps = [
-    {
-        title: 'Registration',
-        description:
-            'Complete a quick registration form with your personal details and medical history.',
-    },
-    {
-        title: 'Screening',
-        description:
-            'A healthcare professional will check your temperature, blood pressure, pulse and hemoglobin levels.',
-    },
-    {
-        title: 'Donation',
-        description:
-            "The actual blood donation takes only 8-10 minutes. You'll be seated comfortably while donating.",
-    },
-    {
-        title: 'Recovery',
-        description:
-            "After donating, you'll rest and enjoy refreshments. Most people feel fine after a short rest.",
-    },
-];
