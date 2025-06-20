@@ -15,7 +15,6 @@ import {
     Clock,
     CheckCircle,
     Activity,
-    Heart,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { toast } from 'sonner';
