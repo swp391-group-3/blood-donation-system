@@ -49,7 +49,7 @@ import {
 import { mockBloodBags, bloodTypeStats } from '../../../constants/sample-data';
 import { TabsContent } from '@radix-ui/react-tabs';
 
-export const getStatusColor = (status: string) => {
+const getStatusColor = (status: string) => {
     switch (status) {
         case 'Available':
             return 'bg-emerald-100 text-emerald-800 border-emerald-200';
@@ -66,7 +66,7 @@ export const getStatusColor = (status: string) => {
     }
 };
 
-export const getPriorityColor = (priority: string) => {
+const getPriorityColor = (priority: string) => {
     switch (priority) {
         case 'urgent':
             return 'bg-red-100 text-red-800 border-red-200';
@@ -76,21 +76,6 @@ export const getPriorityColor = (priority: string) => {
             return 'bg-green-100 text-green-800 border-green-200';
         default:
             return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-};
-
-export const getDemandColor = (demand: string) => {
-    switch (demand) {
-        case 'very-high':
-            return 'text-red-600';
-        case 'high':
-            return 'text-orange-600';
-        case 'medium':
-            return 'text-yellow-600';
-        case 'low':
-            return 'text-green-600';
-        default:
-            return 'text-gray-600';
     }
 };
 
