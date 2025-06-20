@@ -1,9 +1,11 @@
 pub mod bcrypt;
+pub mod email;
 pub mod jwt;
 pub mod oidc;
 
 use std::{collections::HashMap, sync::LazyLock};
 
+use email::EmailConfig;
 use oidc::Provider;
 use serde::Deserialize;
 
@@ -31,6 +33,8 @@ pub struct Config {
     pub jwt: JwtConfig,
     #[serde(default)]
     pub oidc: HashMap<Provider, OpenIdConnectConfig>,
+    #[serde(default)]
+    pub email: EmailConfig,
 }
 
 pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {
