@@ -2,10 +2,7 @@
 import { Button } from '@/components/ui/button';
 import {
     ArrowRight,
-    CheckCircle,
     Heart,
-    Shield,
-    Star,
 } from 'lucide-react';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
@@ -44,20 +41,6 @@ export default function LandingPage() {
                                 Become a Donor
                                 <ArrowRight className="ml-2 h-5 w-5" />
                             </Button>
-                        </div>
-                        <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                <span>FDA Approved</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Shield className="h-4 w-4 text-blue-500" />
-                                <span>100% Secure</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Star className="h-4 w-4 text-yellow-500" />
-                                <span>4.9/5 Rating</span>
-                            </div>
                         </div>
                     </div>
                 </section>
