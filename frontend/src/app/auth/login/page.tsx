@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { Separator } from '@/components/separator';
 import { OAuth2 } from '@/components/oauth2';
-import { useLoginForm } from '@/hooks/auth/useLoginForm';
+import { useLoginForm } from '@/hooks/use-login-form';
 
 const LoginForm = () => {
     const { mutation, form } = useLoginForm();

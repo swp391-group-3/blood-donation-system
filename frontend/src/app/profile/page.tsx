@@ -20,13 +20,13 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { LoaderCircle } from 'lucide-react';
 import React from 'react';
-import { displayGender, genders } from '@/lib/api/dto/account';
-import { bloodGroups, displayBloodGroup } from '@/lib/api/dto/blood-group';
+import { genders } from '@/lib/api/dto/account';
+import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { AccountPicture } from '@/components/account-picture';
-import { useCurrentAccount } from '@/hooks/auth/useCurrentAccount';
+import { useCurrentAccount } from '@/hooks/use-current-account';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
-import { useUpdateAccountForm } from '@/hooks/account/useUpdateAccountForm';
+import { useUpdateAccountForm } from '@/hooks/use-update-account-form';
 import {
     Form,
     FormControl,
@@ -35,6 +35,7 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
+import { capitalCase } from 'change-case';
 
 export default function ProfilePage() {
     const { data: account, isPending, error } = useCurrentAccount();
@@ -137,7 +138,7 @@ export default function ProfilePage() {
                                                                         gender
                                                                     }
                                                                 >
-                                                                    {displayGender(
+                                                                    {capitalCase(
                                                                         gender,
                                                                     )}
                                                                 </SelectItem>
@@ -184,9 +185,11 @@ export default function ProfilePage() {
                                                             key={index}
                                                             value={bloodGroup}
                                                         >
-                                                            {displayBloodGroup(
-                                                                bloodGroup,
-                                                            )}
+                                                            {
+                                                                bloodGroupLabels[
+                                                                    bloodGroup
+                                                                ]
+                                                            }
                                                         </SelectItem>
                                                     ),
                                                 )}
