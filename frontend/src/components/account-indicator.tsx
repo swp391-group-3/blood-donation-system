@@ -12,8 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { LogOut, User } from 'lucide-react';
+import { Droplets, Heart, LogOut, User } from 'lucide-react';
 import {
     Accordion,
     AccordionContent,
@@ -67,12 +66,24 @@ export const AccountIndicator = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <Link className="flex flex-cols gap-5" href="/profile">
+                    <Link href="/profile">
+                        <DropdownMenuItem className="flex flex-cols gap-5">
                             <User />
                             Profile
-                        </Link>
-                    </DropdownMenuItem>
+                        </DropdownMenuItem>
+                    </Link>
+                    <Link href="/donation">
+                        <DropdownMenuItem className="flex flex-cols gap-5">
+                            <Droplets className="text-rose-600" />
+                            Donation List
+                        </DropdownMenuItem>
+                    </Link>
+                    <Link href="/health">
+                        <DropdownMenuItem className="flex flex-cols gap-5">
+                            <Heart className="text-amber-600" />
+                            Health
+                        </DropdownMenuItem>
+                    </Link>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

@@ -643,6 +643,213 @@ export const comments = [
     },
 ];
 
+export const questionnaire = [
+    {
+        id: '1',
+        question:
+            'How are you feeling today? Describe your current health status.',
+        helpText:
+            "Please describe how you're feeling today, including any symptoms, fatigue, or general wellness concerns.",
+        placeholder:
+            "I am feeling well today. I had a good night's sleep and feel energetic. No symptoms of illness or discomfort...",
+    },
+    {
+        id: '2',
+        question:
+            'What medications, supplements, or vitamins are you currently taking?',
+        helpText:
+            'Please list all medications, supplements, and vitamins you are currently taking, including dosages and frequency.',
+        placeholder:
+            'I am currently taking a daily multivitamin, 81mg aspirin as prescribed by my doctor, and vitamin D supplements. No prescription medications...',
+    },
+    {
+        id: '3',
+        question:
+            'Do you have any chronic medical conditions or ongoing health issues?',
+        helpText:
+            'Please describe any ongoing medical conditions, even if they are well-controlled, including diabetes, heart conditions, etc.',
+        placeholder:
+            'I have well-controlled high blood pressure managed with medication. Blood pressure readings are consistently normal. No other chronic conditions...',
+    },
+    {
+        id: '4',
+        question:
+            "Describe any recent illnesses, infections, or symptoms you've experienced in the past month.",
+        helpText:
+            'Please describe any cold, flu, fever, dental work, or other health issues in the past 4 weeks.',
+        placeholder:
+            'I had a mild cold 3 weeks ago with congestion and cough, but fully recovered. Had a routine dental cleaning 2 weeks ago. No fever or other symptoms since...',
+    },
+    {
+        id: '5',
+        question:
+            'Describe any travel outside the country in the last 3 months.',
+        helpText:
+            'Please provide details about international travel, including destinations, dates, and any health precautions taken.',
+        placeholder:
+            'I traveled to Canada for vacation 6 weeks ago for one week. No travel to high-risk areas, tropical regions, or areas with disease outbreaks...',
+    },
+    {
+        id: '6',
+        question:
+            'Describe your lifestyle including sleep, diet, exercise, and substance use.',
+        helpText:
+            'Please describe your sleep patterns, eating habits, exercise routine, alcohol consumption, and smoking habits.',
+        placeholder:
+            "I get 7-8 hours of sleep nightly, eat a balanced diet, exercise 3 times per week. I occasionally have wine with dinner, don't smoke or use drugs...",
+    },
+    {
+        id: '7',
+        question:
+            "Describe any allergies or adverse reactions you've experienced.",
+        helpText:
+            'Please describe any known allergies to medications, foods, or other substances, and any adverse reactions to medical procedures.',
+        placeholder:
+            'I have a mild allergy to peanuts that causes hives. No known drug allergies or severe reactions to medical procedures...',
+    },
+    {
+        id: '8',
+        question:
+            'Please provide information about any history of infectious diseases or high-risk exposures.',
+        helpText:
+            'This information is confidential and helps ensure blood safety for recipients. Include any testing history.',
+        placeholder:
+            'I have never tested positive for HIV, Hepatitis B, or Hepatitis C. No history of tuberculosis, malaria, or other infectious diseases. Regular health screenings are normal...',
+    },
+    {
+        id: '9',
+        question:
+            'Please share any additional health concerns, family history, or information you think is relevant.',
+        helpText:
+            'Include any family medical history, concerns about donation, or other relevant health information.',
+        placeholder:
+            "Family history includes diabetes in grandparents. I'm slightly nervous about needles but have donated before successfully. No other concerns or relevant information...",
+    },
+];
+
+export const mockAppointmentCheckin = {
+    date: '2024-06-17',
+    time: '10:30 AM',
+};
+
+export const mockDonor = {
+    name: 'John Doe',
+    bloodGroup: 'O+',
+    email: 'john.doe@email.com',
+    phone: '+1 234 567 8900',
+    lastDonation: '2024-01-15',
+    totalDonations: 5,
+};
+
+export const mockAppointment = {
+    id: 'apt-001',
+    donorName: 'John Smith',
+    donorEmail: 'john.smith@email.com',
+    donorPhone: '+1234567890',
+    bloodType: 'O-',
+    scheduledDate: '2025-06-08',
+    scheduledTime: '10:00 AM',
+    status: 'pending_review',
+    preScreeningComplete: true,
+    healthRisk: 'medium',
+    lastDonation: '2025-03-15',
+    totalDonations: 8,
+    emergencyContact: {
+        name: 'Jane Smith',
+        relationship: 'Spouse',
+        phone: '+1234567891',
+    },
+    questionnaire: {
+        healthHistory: {
+            chronicConditions: 'None reported',
+            currentMedications: 'Multivitamin daily',
+            allergies: 'No known allergies',
+            recentIllness: 'Had a cold 3 weeks ago, fully recovered',
+            surgeries: 'Appendectomy in 2020, no complications',
+        },
+        eligibility: {
+            lastDonation: '2025-03-15',
+            recentTravel: 'Visited Canada last month for vacation',
+            alcoholConsumption: '1-2 drinks per week socially',
+            smoking: 'Never smoked',
+            drugUse: 'No recreational drug use',
+        },
+        lifestyle: {
+            exercise: 'Regular gym workouts 4 times per week',
+            diet: 'Balanced diet, high protein, plenty of vegetables',
+            sleep: '7-8 hours per night, good sleep quality',
+            occupation: 'Software Engineer - desk job',
+        },
+        additionalNotes:
+            'Regular donor with good donation history. Available for emergency requests.',
+    },
+    flaggedQuestions: [
+        {
+            category: 'eligibility',
+            question: 'recentTravel',
+            reason: 'International travel within 3 months',
+            severity: 'low',
+        },
+    ],
+};
+
+export const questionnaireAnswers = [
+    {
+        id: '1',
+        question:
+            'How are you feeling today? Describe your current health status.',
+        answer: "I am feeling well today. I had a good night's sleep and feel energetic. No symptoms of illness or discomfort.",
+    },
+    {
+        id: '2',
+        question:
+            'What medications, supplements, or vitamins are you currently taking?',
+        answer: 'I am currently taking a daily multivitamin, 81mg aspirin as prescribed by my doctor, and vitamin D supplements. No prescription medications.',
+    },
+    {
+        id: '3',
+        question:
+            'Do you have any chronic medical conditions or ongoing health issues?',
+        answer: 'I have well-controlled high blood pressure managed with medication. Blood pressure readings are consistently normal. No other chronic conditions.',
+    },
+    {
+        id: '4',
+        question:
+            "Describe any recent illnesses, infections, or symptoms you've experienced in the past month.",
+        answer: 'I had a mild cold 3 weeks ago with congestion and cough, but fully recovered. Had a routine dental cleaning 2 weeks ago. No fever or other symptoms since.',
+    },
+    {
+        id: '5',
+        question:
+            'Describe any travel outside the country in the last 3 months.',
+        answer: 'I traveled to Canada for vacation 6 weeks ago for one week. No travel to high-risk areas, tropical regions, or areas with disease outbreaks.',
+    },
+    {
+        id: '6',
+        question:
+            'Describe your lifestyle including sleep, diet, exercise, and substance use.',
+        answer: "I get 7-8 hours of sleep nightly, eat a balanced diet, exercise 3 times per week. I occasionally have wine with dinner, don't smoke or use drugs.",
+    },
+    {
+        id: '7',
+        question:
+            "Describe any allergies or adverse reactions you've experienced.",
+        answer: 'I have a mild allergy to peanuts that causes hives. No known drug allergies or severe reactions to medical procedures.',
+    },
+    {
+        id: '8',
+        question:
+            'Please provide information about any history of infectious diseases or high-risk exposures.',
+        answer: 'I have never tested positive for HIV, Hepatitis B, or Hepatitis C. No history of tuberculosis, malaria, or other infectious diseases. Regular health screenings are normal.',
+    },
+    {
+        id: '9',
+        question:
+            'Please share any additional health concerns, family history, or information you think is relevant.',
+        answer: "Family history includes diabetes in grandparents. I'm slightly nervous about needles but have donated before successfully. No other concerns or relevant information.",
+    },
+];
+
 // donation history sample data
 
 export const donationHistory = [
@@ -743,6 +950,7 @@ export const donationHistory = [
     },
 ];
 
+<<<<<<< HEAD
 export const availableTags = [
     { label: 'Blood Information', value: 'blood information' },
     { label: 'Experience', value: 'experience' },
@@ -770,3 +978,197 @@ export const steps = [
             "After donating, you'll rest and enjoy refreshments. Most people feel fine after a short rest.",
     },
 ];
+=======
+export const bloodTypeStats = [
+    {
+        type: 'A+',
+        available: '450ml',
+        used: 8,
+        demand: 'high',
+    },
+    {
+        type: 'A-',
+        available: '200ml',
+        used: 4,
+        demand: 'medium',
+    },
+    {
+        type: 'B+',
+        available: '450ml',
+        used: 5,
+        demand: 'medium',
+    },
+    {
+        type: 'B-',
+        available: '500ml',
+        used: 2,
+        demand: 'low',
+    },
+    {
+        type: 'AB+',
+        available: '500ml',
+        used: 3,
+        demand: 'low',
+    },
+    {
+        type: 'AB-',
+        available: '500ml',
+        used: 1,
+        demand: 'low',
+    },
+    {
+        type: 'O+',
+        available: '1000ml',
+        used: 12,
+        demand: 'very-high',
+    },
+    {
+        type: 'O-',
+        available: '800ml',
+        used: 6,
+        demand: 'high',
+    },
+];
+
+export const mockBloodBags = [
+    {
+        id: 'BB-001',
+        donorId: 'D-1001',
+        donorName: 'John Smith',
+        bloodType: 'A+',
+        collectionDate: '2024-01-15',
+        expiryDate: '2024-02-15',
+        volume: 450,
+        status: 'Available',
+        storage: 'Refrigerator A1',
+        testResults: 'Passed',
+        notes: 'Healthy donor, regular donation',
+        priority: 'normal',
+        temperature: '4°C',
+        lastChecked: '2024-01-20T10:30:00Z',
+    },
+    {
+        id: 'BB-002',
+        donorId: 'D-1002',
+        donorName: 'Sarah Johnson',
+        bloodType: 'O-',
+        collectionDate: '2024-01-16',
+        expiryDate: '2024-02-16',
+        volume: 450,
+        status: 'Reserved',
+        storage: 'Emergency Refrigerator',
+        testResults: 'Passed',
+        notes: 'Universal donor - high priority',
+        priority: 'high',
+        temperature: '4°C',
+        lastChecked: '2024-01-20T11:15:00Z',
+    },
+    {
+        id: 'BB-003',
+        donorId: 'D-1003',
+        donorName: 'Michael Brown',
+        bloodType: 'B+',
+        collectionDate: '2024-01-14',
+        expiryDate: '2024-02-14',
+        volume: 450,
+        status: 'Available',
+        storage: 'Refrigerator B2',
+        testResults: 'Passed',
+        notes: '',
+        priority: 'normal',
+        temperature: '4°C',
+        lastChecked: '2024-01-20T09:45:00Z',
+    },
+    {
+        id: 'BB-004',
+        donorId: 'D-1004',
+        donorName: 'Emily Davis',
+        bloodType: 'AB+',
+        collectionDate: '2024-01-13',
+        expiryDate: '2024-02-13',
+        volume: 450,
+        status: 'Available',
+        storage: 'Refrigerator C1',
+        testResults: 'Passed',
+        notes: 'First-time donor',
+        priority: 'normal',
+        temperature: '4°C',
+        lastChecked: '2024-01-20T08:20:00Z',
+    },
+    {
+        id: 'BB-005',
+        donorId: 'D-1005',
+        donorName: 'David Wilson',
+        bloodType: 'A-',
+        collectionDate: '2024-01-12',
+        expiryDate: '2024-02-12',
+        volume: 450,
+        status: 'Used',
+        storage: 'Archive',
+        testResults: 'Passed',
+        notes: 'Used for emergency surgery',
+        priority: 'normal',
+        temperature: 'N/A',
+        lastChecked: '2024-01-18T14:30:00Z',
+    },
+    {
+        id: 'BB-006',
+        donorId: 'D-1006',
+        donorName: 'Jennifer Lee',
+        bloodType: 'O+',
+        collectionDate: '2024-01-11',
+        expiryDate: '2024-02-11',
+        volume: 450,
+        status: 'Available',
+        storage: 'Refrigerator A3',
+        testResults: 'Passed',
+        notes: '',
+        priority: 'normal',
+        temperature: '4°C',
+        lastChecked: '2024-01-20T12:00:00Z',
+    },
+    {
+        id: 'BB-007',
+        donorId: 'D-1007',
+        donorName: 'Robert Taylor',
+        bloodType: 'B-',
+        collectionDate: '2024-01-10',
+        expiryDate: '2024-02-10',
+        volume: 450,
+        status: 'Expiring Soon',
+        storage: 'Refrigerator B1',
+        testResults: 'Passed',
+        notes: 'Regular donor - expires in 3 days',
+        priority: 'urgent',
+        temperature: '4°C',
+        lastChecked: '2024-01-20T13:15:00Z',
+    },
+    {
+        id: 'BB-008',
+        donorId: 'D-1008',
+        donorName: 'Lisa Anderson',
+        bloodType: 'AB-',
+        collectionDate: '2024-01-09',
+        expiryDate: '2024-02-09',
+        volume: 450,
+        status: 'Reserved',
+        storage: 'Emergency Refrigerator',
+        testResults: 'Passed',
+        notes: 'Rare blood type - reserved for surgery',
+        priority: 'high',
+        temperature: '4°C',
+        lastChecked: '2024-01-20T14:45:00Z',
+    },
+];
+
+export const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+export const urgencyLevels = [
+    {
+        value: 'emergency',
+        label: 'Emergency - Immediate (Life threatening)',
+    },
+    { value: 'urgent', label: 'Urgent - Within 24 hours' },
+    { value: 'normal', label: 'Normal - Within a week' },
+    { value: 'planned', label: 'Planned - Scheduled procedure' },
+];
+>>>>>>> main

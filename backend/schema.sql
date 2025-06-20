@@ -75,7 +75,6 @@ CREATE TABLE IF NOT EXISTS blood_requests(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     staff_id uuid NOT NULL REFERENCES accounts(id),
     priority request_priority NOT NULL,
-    blood_group blood_group NOT NULL,
     title text NOT NULL,
     max_people int NOT NULL,
     start_time timestamptz NOT NULL,
@@ -84,10 +83,25 @@ CREATE TABLE IF NOT EXISTS blood_requests(
     created_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS request_blood_groups(
+    request_id uuid NOT NULL,
+    blood_group blood_group NOT NULL,
+    PRIMARY KEY (request_id, blood_group)
+);
+
+CREATE TYPE appointment_status AS ENUM(
+    'on_process',
+    'approved',
+    'checked_in',
+    'done',
+    'rejected'
+);
+
 CREATE TABLE IF NOT EXISTS appointments(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     request_id uuid NOT NULL REFERENCES blood_requests(id),
     member_id uuid NOT NULL REFERENCES accounts(id),
+    status appointment_status NOT NULL DEFAULT 'on_process'::appointment_status,
 
     UNIQUE (request_id, member_id)
 );

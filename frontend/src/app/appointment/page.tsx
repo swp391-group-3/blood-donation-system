@@ -14,13 +14,12 @@ import {
     Droplet,
     ChartLine,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Form, FormField, FormItem, FormControl } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
 import {
     Select,
     SelectContent,
@@ -56,7 +55,7 @@ export default function AppointmentsPage() {
     });
 
     function handleSearch(data: SearchFormValues) {
-        // Come in future
+        console.log(data);
     }
 
     const getPriorityColor = (priority: string) => {

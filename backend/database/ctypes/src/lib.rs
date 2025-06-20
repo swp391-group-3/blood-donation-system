@@ -2,7 +2,9 @@ use postgres_types::{FromSql, ToSql};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ToSql, FromSql, Serialize, Deserialize, ToSchema)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, ToSql, FromSql, Serialize, Deserialize, ToSchema,
+)]
 #[serde(rename_all = "snake_case")]
 #[postgres(name = "blood_group", rename_all = "snake_case")]
 pub enum BloodGroup {
@@ -59,4 +61,15 @@ pub enum BloodComponent {
 pub enum Gender {
     Male,
     Female,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ToSql, FromSql, Serialize, Deserialize, ToSchema)]
+#[serde(rename_all = "snake_case")]
+#[postgres(name = "appointment_status", rename_all = "snake_case")]
+pub enum AppointmentStatus {
+    OnProcess,
+    Approved,
+    CheckedIn,
+    Done,
+    Rejected,
 }
