@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Download, Share2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { toast } from 'sonner';
 
 const size = 256;
 
@@ -23,23 +24,32 @@ export const QRDialog = ({
     const qrRef = useRef<HTMLDivElement>(null);
 
     const handleDownload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        canvas.width = size;
-        canvas.height = size;
-        const img = new Image();
-        img.src = `data:image/svg+xml,${encodeURIComponent(qrRef.current?.innerHTML || '')}`;
-        img.onload = () => {
-            ctx.drawImage(img, 0, 0);
+        const svgElement = qrRef.current?.querySelector('svg');
+        if (svgElement) {
+            const serializer = new XMLSerializer();
+            const svgBlob = new Blob(
+                [serializer.serializeToString(svgElement)],
+                {
+                    type: 'image/svg+xml',
+                },
+            );
+            const url = URL.createObjectURL(svgBlob);
             const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'qrcode.png';
+            link.href = url;
+            link.download = 'qrcode.svg';
             link.click();
-        };
+            URL.revokeObjectURL(url);
+        }
     };
-    const handleShare = () => {};
+    const handleShare = async () => {
+        toast.promise(navigator.clipboard.writeText(url ?? ''), {
+            loading: 'Loading...',
+            success: () => {
+                return 'Link copied';
+            },
+            error: 'Error',
+        });
+    };
 
     return (
         <Dialog open={!!url} onOpenChange={onReset}>
@@ -48,7 +58,13 @@ export const QRDialog = ({
                     <DialogTitle>{children}</DialogTitle>
                 </DialogHeader>
                 {url && (
-                    <QRCodeSVG size={size} className="mx-auto" value={url} />
+                    <div ref={qrRef}>
+                        <QRCodeSVG
+                            size={size}
+                            className="mx-auto"
+                            value={url}
+                        />
+                    </div>
                 )}
                 <DialogFooter className="flex gap-5">
                     <Button
