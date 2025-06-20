@@ -180,9 +180,9 @@ export default function AppointmentPage() {
                     </CardGrid>
 
                     <QRDialog url={url} onReset={() => setSelected(undefined)}>
-                        <h3 className="font-semibold text-slate-900 text-lg">
+                        <p className="font-semibold text-slate-900 text-lg">
                             Check-in QR
-                        </h3>
+                        </p>
                         <p className="text-xs text-slate-500">#{selected}</p>
                     </QRDialog>
                 </div>
