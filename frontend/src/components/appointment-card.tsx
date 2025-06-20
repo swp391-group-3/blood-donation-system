@@ -12,31 +12,45 @@ import {
     XCircle,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { capitalCase } from 'change-case';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 const statusConfig = {
     on_process: {
-        color: 'amber',
+        color: 'bg-amber-500',
+        ringColor: 'ring-amber-500/20',
+        badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
         icon: Clock,
+        description: 'Under review',
     },
     approved: {
-        color: 'emerald',
+        color: 'bg-emerald-500',
+        ringColor: 'ring-emerald-500/20',
+        badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
         icon: CheckCircle,
+        description: 'Ready to donate',
     },
     checked_in: {
-        color: 'blue',
+        color: 'bg-blue-500',
+        ringColor: 'ring-blue-500/20',
+        badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
         icon: Users,
+        description: 'Currently active',
     },
     done: {
-        color: 'purple',
+        color: 'bg-purple-500',
+        ringColor: 'ring-purple-500/20',
+        badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
         icon: Activity,
+        description: 'Successfully done',
     },
     rejected: {
-        color: 'red',
+        color: 'bg-red-500',
+        ringColor: 'ring-red-500/20',
+        badgeColor: 'bg-red-100 text-red-800 border-red-200',
         icon: XCircle,
+        description: 'Not approved',
     },
 };
 
@@ -67,7 +81,7 @@ export const AppointmentCard = (appointment: Appointment) => {
                 <CardTitle>
                     <div className="flex items-start gap-4 flex-1">
                         <div
-                            className={`p-3 rounded-xl bg-${config.color}-500 ring-${config.color}-500/20 shadow-lg ring-4 ring-opacity-20`}
+                            className={`p-3 rounded-xl ${config.color} ${config.ringColor} shadow-lg ring-4 ring-opacity-20`}
                         >
                             <config.icon className="h-5 w-5 text-white" />
                         </div>
@@ -77,9 +91,9 @@ export const AppointmentCard = (appointment: Appointment) => {
                                     {appointment.title}
                                 </h3>
                                 <Badge
-                                    className={`bg-${config.color}-100 text-${config.color}-800 border-${config.color}-200 border text-xs font-semibold px-2 py-1`}
+                                    className={`${config.badgeColor} border text-xs font-semibold px-2 py-1`}
                                 >
-                                    {capitalCase(appointment.status)}
+                                    {config.description}
                                 </Badge>
                             </div>
                             <div className="flex flex-col gap-4 text-sm text-slate-600 mb-3">

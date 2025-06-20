@@ -7,16 +7,24 @@ import { formatDateTime } from '@/lib/utils';
 
 const donationTypeConfig = {
     whole_blood: {
-        color: 'rose',
+        color: 'bg-rose-500',
+        badgeColor: 'bg-rose-100 text-rose-800 border-rose-200',
+        ringColor: 'ring-rose-500/20',
     },
     power_red: {
-        color: 'red',
+        color: 'bg-red-600',
+        badgeColor: 'bg-red-100 text-red-800 border-red-200',
+        ringColor: 'ring-red-500/20',
     },
     platelet: {
-        color: 'amber',
+        color: 'bg-amber-500',
+        badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+        ringColor: 'ring-amber-500/20',
     },
     plasma: {
-        color: 'blue',
+        color: 'bg-blue-500',
+        badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
+        ringColor: 'ring-blue-500/20',
     },
 };
 
@@ -31,7 +39,7 @@ export const DonationCard = (donation: Donation) => {
             <CardHeader className="p-6">
                 <div className="flex items-start gap-4 mb-4">
                     <div
-                        className={`p-3 rounded-xl bg-${config.color}-500 shadow-lg ring-${config.color}-500/20 ring-4`}
+                        className={`p-3 rounded-xl ${config.color} shadow-lg ${config.ringColor} ring-4`}
                     >
                         <Droplets className="h-5 w-5 text-white" />
                     </div>
@@ -47,7 +55,7 @@ export const DonationCard = (donation: Donation) => {
 
                 <div className="mb-4">
                     <Badge
-                        className={`bg-${config.color}-100 text-${config.color}-800 border-${config.color}-200 border text-xs font-semibold px-2 py-1`}
+                        className={`${config.badgeColor} border text-xs font-semibold px-2 py-1`}
                     >
                         {displayDonationType(donation.type)}
                     </Badge>
