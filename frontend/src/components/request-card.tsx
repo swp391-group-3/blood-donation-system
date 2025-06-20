@@ -8,23 +8,29 @@ import { Progress } from '@radix-ui/react-progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-const priorityConfigs = {
+const priorityConfig = {
     high: {
-        color: 'rose',
+        color: 'bg-rose-500',
+        badgeColor: 'bg-rose-100 text-rose-800 border-rose-200',
         icon: AlertTriangle,
+        ringColor: 'ring-rose-500/20',
     },
     medium: {
-        color: 'amber',
+        color: 'bg-amber-500',
+        badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
         icon: Clock,
+        ringColor: 'ring-amber-500/20',
     },
     low: {
-        color: 'blue',
+        color: 'bg-blue-500',
+        badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
         icon: Calendar,
+        ringColor: 'ring-blue-500/20',
     },
 };
 
 export const RequestCard = (request: BloodRequest) => {
-    const config = priorityConfigs[request.priority];
+    const config = priorityConfig[request.priority];
     const progress = Math.round(
         (request.current_people / request.max_people) * 100,
     );
@@ -33,12 +39,12 @@ export const RequestCard = (request: BloodRequest) => {
     return (
         <Card
             key={request.id}
-            className={`ring-${config.color}-500/20 group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 border-slate-200 rounded-2xl overflow-hidden h-fit`}
+            className={`${config.ringColor} group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 border-slate-200 rounded-2xl overflow-hidden h-fit`}
         >
             <CardHeader className="p-6">
                 <div className="flex items-start gap-4 mb-4">
                     <div
-                        className={`p-3 rounded-xl bg-${config.color}-500 ring-${config.color}-500/20 shadow-lg ring-4`}
+                        className={`p-3 rounded-xl ${config.color} ${config.ringColor} shadow-lg ring-4`}
                     >
                         <config.icon className="h-5 w-5 text-white" />
                     </div>
@@ -46,7 +52,7 @@ export const RequestCard = (request: BloodRequest) => {
                         <CardTitle className="flex items-center gap-5 text-lg font-bold text-slate-900 leading-tight mb-3">
                             {request.title}
                             <Badge
-                                className={`bg-${config.color}-100 text-${config.color}-800 border-${config.color}-200 border text-xs font-semibold px-2 py-1`}
+                                className={`${config.badgeColor} border text-xs font-semibold px-2 py-1`}
                             >
                                 {capitalCase(request.priority)}
                             </Badge>
