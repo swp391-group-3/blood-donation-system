@@ -33,6 +33,7 @@ pub struct Config {
     pub jwt: JwtConfig,
     #[serde(default)]
     pub oidc: HashMap<Provider, OpenIdConnectConfig>,
+    #[serde(default)]
     pub email: EmailConfig,
 }
 
