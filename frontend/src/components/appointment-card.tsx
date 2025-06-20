@@ -65,7 +65,13 @@ const getTimeDisplay = (startTime: Date, endTime: Date): string => {
     }
 };
 
-export const AppointmentCard = (appointment: Appointment) => {
+export const AppointmentCard = ({
+    appointment,
+    onDisplayQR,
+}: {
+    appointment: Appointment;
+    onDisplayQR: () => void;
+}) => {
     const config = statusConfig[appointment.status];
     const timeDisplay = getTimeDisplay(
         appointment.start_time,
@@ -73,10 +79,7 @@ export const AppointmentCard = (appointment: Appointment) => {
     );
 
     return (
-        <Card
-            key={appointment.id}
-            className="group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 border-slate-200 rounded-2xl overflow-hidden"
-        >
+        <Card className="group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 border-slate-200 rounded-2xl overflow-hidden">
             <CardHeader>
                 <CardTitle>
                     <div className="flex items-start gap-4 flex-1">
@@ -147,6 +150,7 @@ export const AppointmentCard = (appointment: Appointment) => {
 
                     <div className="space-y-2">
                         <Button
+                            onClick={onDisplayQR}
                             variant="outline"
                             size="sm"
                             className="w-full border-slate-200 hover:bg-slate-50 rounded"

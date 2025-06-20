@@ -15,6 +15,7 @@ import {
     Clock,
     CheckCircle,
     Activity,
+    Heart,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ import {
 } from '@/components/hero';
 import { CardGrid } from '@/components/card-grid';
 import { AppointmentCard } from '@/components/appointment-card';
+import { QRDialog } from '@/components/qr-dialog';
 
 const getStats = (appointments: Appointment[]): StatsProps[] => {
     return [
@@ -97,6 +99,11 @@ export default function AppointmentPage() {
                         !search || appointment.title.includes(search),
                 ),
         [appointments, status, search],
+    );
+    const [selected, setSelected] = useState<string | undefined>();
+    const url = useMemo(
+        () => (!selected ? undefined : `${window.location.href}/${selected}`),
+        [selected],
     );
 
     if (isPending) {
@@ -166,10 +173,18 @@ export default function AppointmentPage() {
                         {filteredAppointments!.map((appointment) => (
                             <AppointmentCard
                                 key={appointment.id}
-                                {...appointment}
+                                appointment={appointment}
+                                onDisplayQR={() => setSelected(appointment.id)}
                             />
                         ))}
                     </CardGrid>
+
+                    <QRDialog url={url} onReset={() => setSelected(undefined)}>
+                        <h3 className="font-semibold text-slate-900 text-lg">
+                            Check-in QR
+                        </h3>
+                        <p className="text-xs text-slate-500">#{selected}</p>
+                    </QRDialog>
                 </div>
             </div>
         </div>
