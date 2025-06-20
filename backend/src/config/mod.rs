@@ -1,13 +1,13 @@
 pub mod bcrypt;
+pub mod email;
 pub mod jwt;
 pub mod oidc;
-pub mod email;
 
 use std::{collections::HashMap, sync::LazyLock};
 
+use email::EmailConfig;
 use oidc::Provider;
 use serde::Deserialize;
-use email::EmailConfig;
 
 use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectConfig};
 
