@@ -188,7 +188,7 @@ export default function BloodRequestPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                <CardGrid>
+                <CardGrid className="grid md:grid-cols-2 gap-10">
                     {filteredRequests!.map((request, index) => (
                         <RequestCard key={index} {...request} />
                     ))}
