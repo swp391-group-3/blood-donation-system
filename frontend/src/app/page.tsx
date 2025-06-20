@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import {
     ArrowRight,
     CheckCircle,
-    Circle,
     Heart,
     Shield,
     Star,
@@ -34,7 +33,7 @@ export default function LandingPage() {
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed">
                             Your donation can make a significant difference in
-                            someone's life. Join our community of heroes and
+                            community life. Join our community of heroes and
                             help us save lives, one donation at a time.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
@@ -85,7 +84,7 @@ export default function LandingPage() {
                             <div className="w-20 h-1 bg-red-600 mx-auto mb-6"></div>
                             <p className="max-w-2xl mx-auto text-lg text-gray-600">
                                 Donating blood is a simple and straightforward
-                                process. Here's what to expect when you donate.
+                                process. Here is what to expect when you donate.
                             </p>
                         </motion.div>
 
