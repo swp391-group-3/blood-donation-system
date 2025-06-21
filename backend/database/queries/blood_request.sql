@@ -27,6 +27,29 @@ VALUES (
     :blood_group
 );
 
+--! get
+SELECT
+    id,
+    priority,
+    title,
+    (
+        SELECT ARRAY(
+            SELECT blood_group
+            FROM request_blood_groups
+            WHERE request_id = blood_requests.id
+        )
+    ) AS blood_groups,
+    (
+        SELECT COUNT(id)
+        FROM appointments
+        WHERE request_id = blood_requests.id
+    ) as current_people,
+    max_people,
+    start_time,
+    end_time
+FROM blood_requests
+WHERE id = :id AND now() < end_time AND is_active = true;
+
 --! get_all
 SELECT
     id,

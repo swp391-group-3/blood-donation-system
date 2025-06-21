@@ -1,5 +1,6 @@
 mod create;
 mod delete;
+mod get;
 mod get_all;
 mod get_by_member_id;
 mod update;
@@ -9,7 +10,7 @@ use std::{collections::HashSet, sync::Arc};
 use axum::{Router, routing};
 use chrono::{DateTime, Utc};
 use ctypes::{BloodGroup, RequestPriority, Role};
-use database::queries::blood_request::{GetAllBorrowed, GetByMemberIdBorrowed};
+use database::queries::blood_request::{GetAllBorrowed, GetBorrowed, GetByMemberIdBorrowed};
 use model_mapper::Mapper;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -19,11 +20,13 @@ use crate::{middleware, state::ApiState};
 
 pub use create::*;
 pub use delete::*;
+pub use get::*;
 pub use get_all::*;
 pub use get_by_member_id::*;
 pub use update::*;
 
 #[derive(Serialize, ToSchema, Mapper)]
+#[mapper(derive(from(custom = "from_get"), ty = GetBorrowed::<'_>))]
 #[mapper(derive(from(custom = "from_get_all"), ty = GetAllBorrowed::<'_>))]
 #[mapper(derive(from(custom = "from_get_by_member_id"), ty = GetByMemberIdBorrowed::<'_>))]
 pub struct BloodRequest {
@@ -58,5 +61,6 @@ pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
     Router::new()
         .merge(staff_route)
         .merge(member_route)
+        .route("/blood-request/{id}", routing::get(get))
         .route("/blood-request", routing::get(get_all))
 }

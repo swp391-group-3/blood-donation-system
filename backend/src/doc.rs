@@ -45,6 +45,7 @@ impl Modify for SecurityAddon {
         controller::account::update,
 
         controller::blood_request::create,
+        controller::blood_request::get,
         controller::blood_request::get_all,
         controller::blood_request::get_by_member_id,
         controller::blood_request::update,
