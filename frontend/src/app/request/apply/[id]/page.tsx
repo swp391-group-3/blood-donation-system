@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 
 export default function RequestApplyPage() {
     const { id } = useParams<{ id: string }>();
-
     const { data: questions, isPending, error } = useQuestion();
     const mutation = useApplyRequest(id);
 
