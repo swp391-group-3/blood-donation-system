@@ -63,7 +63,7 @@ export const QuestionCard = ({
                                     className={config.textColor}
                                 />
                                 <Label
-                                    htmlFor="yes"
+                                    htmlFor={answerType}
                                     className="flex-1 cursor-pointer flex items-center gap-3"
                                 >
                                     <config.icon
