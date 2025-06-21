@@ -9,7 +9,7 @@ use std::sync::Arc;
 use axum::{Router, routing};
 use chrono::{DateTime, NaiveDate, Utc};
 use ctypes::{BloodGroup, Gender, Role};
-use database::queries::account::{GetAllBorrowed, GetBorrowed};
+use database::queries::account::{GetAllBorrowed, GetBorrowed, GetByRoleBorrowed};
 use model_mapper::Mapper;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -25,6 +25,7 @@ pub use update::*;
 #[derive(Serialize, ToSchema, Mapper)]
 #[mapper(derive(from(custom = "from_get_all"), ty = GetAllBorrowed::<'_>))]
 #[mapper(derive(from(custom = "from_get"), ty = GetBorrowed::<'_>))]
+#[mapper(derive(from(custom = "from_get_by_role"), ty = GetByRoleBorrowed::<'_>))]
 pub struct Account {
     pub role: Role,
     pub email: String,
