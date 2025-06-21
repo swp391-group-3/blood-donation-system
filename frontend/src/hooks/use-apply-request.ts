@@ -5,11 +5,11 @@ import { Answer } from '@/lib/api/dto/answer';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-export const useCreateAppointment = (request_id: string) => {
+export const useApplyRequest = (id: string) => {
     return useMutation({
         mutationFn: async (values: { answers: Answer[] }) => {
             const response = await fetchWrapper(
-                `blood-request/${request_id}/create-appointment`,
+                `blood-request/${id}/create-appointment`,
                 {
                     method: 'POST',
                     headers: {
