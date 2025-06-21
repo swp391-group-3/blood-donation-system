@@ -8,7 +8,15 @@ import { Progress } from '@/components/ui/progress';
 import { useApplyRequest } from '@/hooks/use-apply-request';
 import { useQuestion } from '@/hooks/use-question';
 import { Answer, AnswerType } from '@/lib/api/dto/answer';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import {
+    ArrowLeft,
+    CheckCircle,
+    ChevronLeft,
+    ChevronRight,
+    Eye,
+    EyeOff,
+    Info,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -34,14 +42,14 @@ export default function RequestApplyPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
             <div
                 className={`flex gap-8 ${showQuestionPanel ? '' : 'justify-center'}`}
             >
                 <div
-                    className={`${showQuestionPanel ? 'flex-1' : 'max-w-3xl w-full'}`}
+                    className={`space-y-8 ${showQuestionPanel ? 'flex-1' : 'max-w-3xl w-full'}`}
                 >
-                    <div className="mb-8">
+                    <div>
                         <div className="flex items-center justify-between mb-4">
                             <div></div>
                             <Button
@@ -87,6 +95,45 @@ export default function RequestApplyPage() {
                     >
                         <CardTitle>{questions[step].content}</CardTitle>
                     </QuestionCard>
+                    <div className="flex justify-between items-center">
+                        <Button
+                            variant="outline"
+                            onClick={() => setStep((prev) => prev - 1)}
+                            disabled={step === 0}
+                            size="lg"
+                        >
+                            <ChevronLeft className="h-4 w-4 mr-2" />
+                            Previous
+                        </Button>
+
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Info className="h-4 w-4" />
+                            <span>All information is confidential</span>
+                        </div>
+
+                        {step === questions?.length - 1 ? (
+                            <Button
+                                disabled={
+                                    Object.keys(answers).length <
+                                    questions?.length
+                                }
+                                className="bg-rose-600 hover:bg-rose-700"
+                                size="lg"
+                            >
+                                Review Application
+                                <CheckCircle className="h-4 w-4 ml-2" />
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={() => setStep((prev) => prev + 1)}
+                                className="bg-rose-600 hover:bg-rose-700"
+                                size="lg"
+                            >
+                                Next
+                                <ChevronRight className="h-4 w-4 ml-2" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
                 {showQuestionPanel && (
                     <div className="hidden lg:block w-80 flex-shrink-0">
