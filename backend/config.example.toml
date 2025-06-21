@@ -1,0 +1,18 @@
+database_url = "postgres://user:password@host/database"
+port = 3000
+frontend_url = "http://localhost:3001"
+
+[bcrypt]
+cost = 10
+salt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+[jwt]
+secret = "secret"
+expired_in = 86400
+token_key = "token"
+
+[oidc.google]
+client_id = ""
+client_secret = ""
+issuer_url = ""
+redirect_utl = ""
