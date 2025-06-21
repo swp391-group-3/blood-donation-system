@@ -8,7 +8,7 @@ import { Label } from './ui/label';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
 interface Props {
-    className: string;
+    className?: string;
     value?: AnswerType;
     onChange: (value: AnswerType) => void;
 }
@@ -40,7 +40,7 @@ export const QuestionCard = ({
     return (
         <Card className={className}>
             <CardHeader>{children}</CardHeader>
-            <CardContent className="p-8">
+            <CardContent>
                 <RadioGroup
                     value={value}
                     onValueChange={onChange}
@@ -67,9 +67,9 @@ export const QuestionCard = ({
                                     className="flex-1 cursor-pointer flex items-center gap-3"
                                 >
                                     <config.icon
-                                        className={`h-6 w-6 ${configs[answerType].textColor}`}
+                                        className={`size-4 ${configs[answerType].textColor}`}
                                     />
-                                    <span className="capitalize text-lg font-medium text-gray-900">
+                                    <span className="capitalize font-medium text-gray-900">
                                         {answerType}
                                     </span>
                                 </Label>
