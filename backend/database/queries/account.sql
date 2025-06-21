@@ -65,3 +65,8 @@ WHERE id = :id;
 
 --! delete
 UPDATE accounts SET is_active = false WHERE id = :id;
+
+--! get_by_role : (gender?, address?, birthday?, blood_group?)
+SELECT role, email, phone, name, gender, address, birthday, blood_group, is_active, created_at
+FROM accounts
+WHERE role = :role;

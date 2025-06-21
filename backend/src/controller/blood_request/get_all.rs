@@ -1,28 +1,12 @@
-use std::{collections::HashSet, sync::Arc};
+use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use ctypes::BloodGroup;
 use database::queries;
 
 use crate::{error::Result, state::ApiState, util::jwt::Claims};
 
 use super::BloodRequest;
-
-fn get_compatible(donor: BloodGroup) -> HashSet<BloodGroup> {
-    use BloodGroup::*;
-    match donor {
-        OMinus => [OMinus, OPlus, AMinus, APlus, BMinus, BPlus, ABMinus, ABPlus]
-            .into_iter()
-            .collect(),
-        OPlus => [OPlus, APlus, BPlus, ABPlus].into_iter().collect(),
-        AMinus => [AMinus, APlus, ABMinus, ABPlus].into_iter().collect(),
-        APlus => [APlus, ABPlus].into_iter().collect(),
-        BMinus => [BMinus, BPlus, ABMinus, ABPlus].into_iter().collect(),
-        BPlus => [BPlus, ABPlus].into_iter().collect(),
-        ABMinus => [ABMinus, ABPlus].into_iter().collect(),
-        ABPlus => [ABPlus].into_iter().collect(),
-    }
-}
+use crate::util::blood_compatible::get_compatible;
 
 #[utoipa::path(
     get,
