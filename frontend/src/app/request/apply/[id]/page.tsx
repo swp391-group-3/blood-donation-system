@@ -1,15 +1,14 @@
 'use client';
 
+import { ApplySummary } from '@/components/apply-summary';
 import { QuestionCard } from '@/components/question-card';
 import { QuestionNavigation } from '@/components/question-navigation';
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { useApplyRequest } from '@/hooks/use-apply-request';
 import { useQuestion } from '@/hooks/use-question';
-import { Answer, AnswerType } from '@/lib/api/dto/answer';
+import { Answer } from '@/lib/api/dto/answer';
 import {
-    ArrowLeft,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
@@ -17,7 +16,7 @@ import {
     EyeOff,
     Info,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -31,7 +30,7 @@ export default function RequestApplyPage() {
     );
     const [step, setStep] = useState(0);
     const [showQuestionPanel, setShowQuestionPanel] = useState(true);
-    const mutation = useApplyRequest(id);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     if (isPending) {
         return <div></div>;
@@ -39,6 +38,17 @@ export default function RequestApplyPage() {
     if (error) {
         toast.error(error.message);
         return <div></div>;
+    }
+
+    if (showConfirmation) {
+        return (
+            <ApplySummary
+                id={id}
+                questions={questions}
+                answers={answers}
+                onCancel={() => setShowConfirmation(false)}
+            />
+        );
     }
 
     return (
@@ -117,6 +127,7 @@ export default function RequestApplyPage() {
                                     Object.keys(answers).length <
                                     questions?.length
                                 }
+                                onClick={() => setShowConfirmation(true)}
                                 className="bg-rose-600 hover:bg-rose-700"
                                 size="lg"
                             >

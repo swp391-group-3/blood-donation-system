@@ -9,7 +9,7 @@ export const useApplyRequest = (id: string) => {
     return useMutation({
         mutationFn: async (values: { answers: Answer[] }) => {
             const response = await fetchWrapper(
-                `blood-request/${id}/create-appointment`,
+                `/blood-request/${id}/create-appointment`,
                 {
                     method: 'POST',
                     headers: {
