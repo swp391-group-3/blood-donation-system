@@ -7,6 +7,7 @@ import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { Progress } from '@radix-ui/react-progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 const priorityConfig = {
     high: {
@@ -153,7 +154,7 @@ export const RequestCard = (request: BloodRequest) => {
                 </div>
 
                 <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
-                    Apply Now
+                    <Link href={`/request/apply/${request.id}`}>Apply Now</Link>
                 </Button>
             </CardContent>
         </Card>

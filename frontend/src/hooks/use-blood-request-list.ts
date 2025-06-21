@@ -1,14 +1,16 @@
+'use client';
+
 import { deserialize, fetchWrapper } from '@/lib/api';
 import { BloodRequest } from '@/lib/api/dto/blood-request';
 import { useQuery } from '@tanstack/react-query';
 
-export const useBloodRequest = (id: string) => {
+export const useBloodRequestList = () => {
     return useQuery({
         queryFn: async () => {
-            const response = await fetchWrapper(`/blood-request/${id}`);
+            const response = await fetchWrapper('/blood-request');
 
-            return await deserialize<BloodRequest>(response);
+            return await deserialize<BloodRequest[]>(response);
         },
-        queryKey: ['blood-request', id],
+        queryKey: ['blood-request'],
     });
 };

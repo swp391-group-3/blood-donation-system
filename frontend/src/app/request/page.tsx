@@ -18,7 +18,7 @@ import {
     UserSearch,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
-import { useBloodRequest } from '@/hooks/use-blood-request';
+import { useBloodRequestList } from '@/hooks/use-blood-request-list';
 import { toast } from 'sonner';
 import {
     BloodRequest,
@@ -82,7 +82,7 @@ const getStats = (bloodRequests: BloodRequest[]): StatsProps[] => {
 };
 
 export default function BloodRequestPage() {
-    const { data: bloodRequests, isPending, error } = useBloodRequest();
+    const { data: bloodRequests, isPending, error } = useBloodRequestList();
     const stats = useMemo(
         () => (bloodRequests ? getStats(bloodRequests) : undefined),
         [bloodRequests],
