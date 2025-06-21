@@ -107,7 +107,7 @@ pub async fn create(
                         request_clone.end_time.format("%Y-%m-%d %H:%M"),
                     );
 
-                    let _ = send(account, subject, body).await;
+                    let _ = send(account, subject, body).await?;
                 }
             }
         }
