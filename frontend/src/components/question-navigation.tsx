@@ -5,8 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { useMemo } from 'react';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
-type QuestionStatus = 'answered' | 'unanswered' | 'current';
-
 interface Props {
     questions: Question[];
     answers: Record<number, Answer>;
@@ -32,13 +30,7 @@ export const QuestionNavigation = ({
     step,
     onNavigate,
 }: Props) => {
-    const answeredCount = useMemo(
-        () =>
-            Object.values(answers).filter(
-                (answer) => answer.content !== undefined,
-            ).length,
-        [answers],
-    );
+    const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
 
     const getQuestionStatus = (index: number) => {
         if (index === step) return 'current';
