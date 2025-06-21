@@ -16,6 +16,7 @@ export default function RequestApplyPage() {
         Record<number, { question_id: number; content: AnswerType | undefined }>
     >({});
     const [step, setStep] = useState(0);
+    const [showQuestionPanel, setShowQuestionPanel] = useState(true);
     const mutation = useApplyRequest(id);
 
     if (isPending) {
@@ -27,21 +28,32 @@ export default function RequestApplyPage() {
     }
 
     return (
-        <div>
-            <QuestionCard
-                value={answers[step]?.content}
-                onChange={(value) => {
-                    setAnswers((prev) => ({
-                        ...prev,
-                        [step]: {
-                            question_id: questions[step].id,
-                            content: value,
-                        },
-                    }));
-                }}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div
+                className={`flex gap-8 ${showQuestionPanel ? '' : 'justify-center'}`}
             >
-                <CardTitle>{questions[step].content}</CardTitle>
-            </QuestionCard>
+                <div
+                    className={`${showQuestionPanel ? 'flex-1' : 'max-w-3xl w-full'}`}
+                >
+                    <QuestionCard
+                        value={answers[step]?.content}
+                        onChange={(value) => {
+                            setAnswers((prev) => ({
+                                ...prev,
+                                [step]: {
+                                    question_id: questions[step].id,
+                                    content: value,
+                                },
+                            }));
+                        }}
+                    >
+                        <CardTitle>{questions[step].content}</CardTitle>
+                    </QuestionCard>
+                </div>
+                {showQuestionPanel && (
+                    <div className="hidden lg:block w-80 flex-shrink-0"></div>
+                )}
+            </div>
         </div>
     );
 }
