@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { AnswerType, answerTypes } from '@/lib/api/dto/answer';
 import { PropsWithChildren } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from './ui/label';
+import { Label } from '@/components/ui/label';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
 interface Props {

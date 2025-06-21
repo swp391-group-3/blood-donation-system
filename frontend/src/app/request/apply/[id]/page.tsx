@@ -1,6 +1,8 @@
 'use client';
 
 import { QuestionCard } from '@/components/question-card';
+import { QuestionNavigation } from '@/components/question-navigation';
+import { QuestionStatus } from '@/components/question-status';
 import { CardTitle } from '@/components/ui/card';
 import { useApplyRequest } from '@/hooks/use-apply-request';
 import { useQuestion } from '@/hooks/use-question';
@@ -49,7 +51,14 @@ export default function RequestApplyPage() {
                     </QuestionCard>
                 </div>
                 {showQuestionPanel && (
-                    <div className="hidden lg:block w-80 flex-shrink-0"></div>
+                    <div className="hidden lg:block w-80 flex-shrink-0">
+                        <QuestionNavigation
+                            questions={questions}
+                            answers={answers}
+                            step={step}
+                            onNavigate={(newStep) => setStep(newStep)}
+                        />
+                    </div>
                 )}
             </div>
         </div>
