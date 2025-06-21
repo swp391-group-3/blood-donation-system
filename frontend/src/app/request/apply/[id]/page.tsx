@@ -4,7 +4,7 @@ import { QuestionCard } from '@/components/question-card';
 import { CardTitle } from '@/components/ui/card';
 import { useApplyRequest } from '@/hooks/use-apply-request';
 import { useQuestion } from '@/hooks/use-question';
-import { AnswerType } from '@/lib/api/dto/answer';
+import { Answer, AnswerType } from '@/lib/api/dto/answer';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -12,9 +12,7 @@ import { toast } from 'sonner';
 export default function RequestApplyPage() {
     const { id } = useParams<{ id: string }>();
     const { data: questions, isPending, error } = useQuestion();
-    const [answers, setAnswers] = useState<
-        Record<number, { question_id: number; content: AnswerType | undefined }>
-    >({});
+    const [answers, setAnswers] = useState<Record<number, Answer>>({});
     const [step, setStep] = useState(0);
     const [showQuestionPanel, setShowQuestionPanel] = useState(true);
     const mutation = useApplyRequest(id);
