@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::controller::account::Account;
+use crate::{controller::account::Account, util::blood_compatible::get_compatible};
 use axum::{Json, extract::State};
 use axum_valid::Valid;
 use chrono::{DateTime, Utc};
@@ -11,6 +11,7 @@ use database::{
 };
 use model_mapper::Mapper;
 use serde::Deserialize;
+use std::collections::HashSet;
 use utoipa::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
@@ -79,9 +80,11 @@ pub async fn create(
     }
 
     if request_clone.priority == RequestPriority::High {
+        let request_blood_groups: HashSet<_> = request_clone.blood_groups.iter().cloned().collect();
+
         for account in &accounts {
             if let Some(ref blood_group) = account.blood_group {
-                if request_clone.blood_groups.contains(blood_group) {
+                if !request_blood_groups.is_disjoint(&get_compatible(*blood_group)) {
                     let subject =
                         "URGENT: Immediate Blood Donation Needed – Matches Your Blood Group"
                             .to_string();
