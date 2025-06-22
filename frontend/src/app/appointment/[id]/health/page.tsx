@@ -1,7 +1,6 @@
 'use client';
 
 import { HealthForm } from '@/components/health-form';
-import { MemberCard } from '@/components/member-card';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';

@@ -9,7 +9,7 @@ export const useAppointment = (id: string) => {
     return useQuery({
         queryFn: async () => {
             let response = await fetchWrapper(`/appointment/${id}`);
-            let raw = await deserialize<Appointment>(response);
+            const raw = await deserialize<Appointment>(response);
 
             response = await fetchWrapper(`/account/${raw.member_id}`);
             const appointment = {
