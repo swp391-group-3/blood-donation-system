@@ -44,7 +44,7 @@ pub async fn approve(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Resul
     let subject = "Appointment Approved".to_string();
     let body = format!("Your appointment with id {} has been approved.", id);
 
-    let _ = send(&account, subject, body).await;
+    let _ = send(&account, subject, body).await?;
 
     Ok(())
 }
