@@ -20,23 +20,26 @@ use uuid::Uuid;
     security(("jwt_token" = [])),
 )]
 pub async fn approve(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database_pool.get().await.unwrap();
 
     queries::appointment::update_status()
         .bind(&database, &AppointmentStatus::Approved, &id)
-        .await?;
+        .await
+        .unwrap();
 
     let appointment = queries::appointment::get()
         .bind(&database, &id)
         .map(AppointmentDetail::from)
         .one()
-        .await?;
+        .await
+        .unwrap();
 
     let account = queries::account::get()
         .bind(&database, &appointment.member_id)
         .map(Account::from_get)
         .one()
-        .await?;
+        .await
+        .unwrap();
 
     let subject = "Appointment Approved".to_string();
     let body = format!("Your appointment with id {} has been approved.", id);

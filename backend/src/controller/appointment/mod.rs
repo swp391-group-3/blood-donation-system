@@ -1,10 +1,10 @@
+mod approve;
 mod create;
 mod get;
 mod get_answer;
 mod get_by_member_id;
-mod update_status;
-mod approve;
 mod reject;
+mod update_status;
 
 use std::sync::Arc;
 
@@ -13,13 +13,13 @@ use ctypes::Role;
 
 use crate::{middleware, state::ApiState};
 
+pub use approve::*;
 pub use create::*;
 pub use get::*;
 pub use get_answer::*;
 pub use get_by_member_id::*;
-pub use update_status::*;
-pub use approve::*;
 pub use reject::*;
+pub use update_status::*;
 
 pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
     let staff_router = Router::new()
