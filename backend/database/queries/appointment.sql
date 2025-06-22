@@ -4,7 +4,11 @@ VALUES (:request_id, :member_id)
 RETURNING id;
 
 --! get
-SELECT *
+SELECT 
+    *,
+    (SELECT title FROM blood_requests WHERE id = appointments.request_id) AS title,
+    (SELECT start_time FROM blood_requests WHERE id = appointments.request_id) AS start_time,
+    (SELECT end_time FROM blood_requests WHERE id = appointments.request_id) AS end_time
 FROM appointments
 WHERE id = :id;
 

@@ -7,7 +7,13 @@ mod update_status;
 use std::sync::Arc;
 
 use axum::{Router, routing};
-use ctypes::Role;
+use chrono::{DateTime, Utc};
+use ctypes::{AppointmentStatus, Role};
+use database::queries::appointment::{GetBorrowed, GetByMemberIdBorrowed};
+use model_mapper::Mapper;
+use serde::Serialize;
+use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::{middleware, state::ApiState};
 
@@ -16,6 +22,19 @@ pub use get::*;
 pub use get_answer::*;
 pub use get_by_member_id::*;
 pub use update_status::*;
+
+#[derive(Serialize, ToSchema, Mapper)]
+#[mapper(derive(from, ty = GetByMemberIdBorrowed::<'_>))]
+#[mapper(derive(from, ty = GetBorrowed::<'_>))]
+pub struct Appointment {
+    pub id: Uuid,
+    pub request_id: Uuid,
+    pub member_id: Uuid,
+    pub title: String,
+    pub status: AppointmentStatus,
+    pub start_time: DateTime<Utc>,
+    pub end_time: DateTime<Utc>,
+}
 
 pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
     let staff_router = Router::new()

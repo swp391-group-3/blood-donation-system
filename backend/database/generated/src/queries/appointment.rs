@@ -10,12 +10,47 @@ pub struct UpdateStatusParams {
     pub status: ctypes::AppointmentStatus,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq, Copy)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Get {
     pub id: uuid::Uuid,
     pub request_id: uuid::Uuid,
     pub member_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
+    pub title: String,
+    pub start_time: crate::types::time::TimestampTz,
+    pub end_time: crate::types::time::TimestampTz,
+}
+pub struct GetBorrowed<'a> {
+    pub id: uuid::Uuid,
+    pub request_id: uuid::Uuid,
+    pub member_id: uuid::Uuid,
+    pub status: ctypes::AppointmentStatus,
+    pub title: &'a str,
+    pub start_time: crate::types::time::TimestampTz,
+    pub end_time: crate::types::time::TimestampTz,
+}
+impl<'a> From<GetBorrowed<'a>> for Get {
+    fn from(
+        GetBorrowed {
+            id,
+            request_id,
+            member_id,
+            status,
+            title,
+            start_time,
+            end_time,
+        }: GetBorrowed<'a>,
+    ) -> Self {
+        Self {
+            id,
+            request_id,
+            member_id,
+            status,
+            title: title.into(),
+            start_time,
+            end_time,
+        }
+    }
 }
 #[derive(Debug, Clone, PartialEq)]
 pub struct GetByMemberId {
@@ -126,14 +161,14 @@ pub struct GetQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<Get, tokio_postgres::Error>,
-    mapper: fn(Get) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<GetBorrowed, tokio_postgres::Error>,
+    mapper: fn(GetBorrowed) -> T,
 }
 impl<'c, 'a, 's, C, T: 'c, const N: usize> GetQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(Get) -> R) -> GetQuery<'c, 'a, 's, C, R, N> {
+    pub fn map<R>(self, mapper: fn(GetBorrowed) -> R) -> GetQuery<'c, 'a, 's, C, R, N> {
         GetQuery {
             client: self.client,
             params: self.params,
@@ -289,7 +324,7 @@ impl<'c, 'a, 's, C: GenericClient>
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM appointments WHERE id = $1",
+        "SELECT *, (SELECT title FROM blood_requests WHERE id = appointments.request_id) AS title, (SELECT start_time FROM blood_requests WHERE id = appointments.request_id) AS start_time, (SELECT end_time FROM blood_requests WHERE id = appointments.request_id) AS end_time FROM appointments WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -303,12 +338,15 @@ impl GetStmt {
             client,
             params: [id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<Get, tokio_postgres::Error> {
-                Ok(Get {
+            extractor: |row: &tokio_postgres::Row| -> Result<GetBorrowed, tokio_postgres::Error> {
+                Ok(GetBorrowed {
                     id: row.try_get(0)?,
                     request_id: row.try_get(1)?,
                     member_id: row.try_get(2)?,
                     status: row.try_get(3)?,
+                    title: row.try_get(4)?,
+                    start_time: row.try_get(5)?,
+                    end_time: row.try_get(6)?,
                 })
             },
             mapper: |it| Get::from(it),
