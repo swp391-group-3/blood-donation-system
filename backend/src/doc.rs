@@ -72,6 +72,7 @@ impl Modify for SecurityAddon {
         controller::donation::get,
         controller::donation::get_all,
         controller::donation::get_by_member_id,
+        controller::donation::get_by_appointment_id,
         controller::donation::update,
 
         controller::comment::create,
