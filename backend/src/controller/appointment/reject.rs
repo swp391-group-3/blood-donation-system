@@ -41,7 +41,7 @@ pub async fn reject(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result
     let subject = "Appointment Rejected".to_string();
     let body = format!("Your appointment with id {} has been rejected.", id);
 
-    let _ = send(&account, subject, body).await?;
+    send(&account, subject, body).await?;
 
     Ok(())
 }
