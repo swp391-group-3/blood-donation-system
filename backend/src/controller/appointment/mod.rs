@@ -26,6 +26,8 @@ pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
         .route("/appointment/{id}/answer", routing::get(get_answer))
         .route("/appointment/{id}", routing::get(get))
         .route("/appointment/{id}", routing::post(update_status))
+        .route("/appointment/{id}/approve", routing::patch(approve))
+        .route("/appointment/{id}/reject", routing::patch(reject))
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
             middleware::authorize!(Role::Staff),
@@ -33,8 +35,6 @@ pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
 
     let member_route = Router::new()
         .route("/appointment", routing::get(get_by_member_id))
-        .route("/appointment/{id}/approve", routing::patch(approve))
-        .route("/appointment/{id}/reject", routing::patch(reject))
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
             middleware::authorize!(Role::Member),
