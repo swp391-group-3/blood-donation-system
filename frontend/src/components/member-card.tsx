@@ -5,13 +5,13 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from './ui/badge';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 
-export const AccountCard = ({ account }: { account: Account }) => {
+export const MemberCard = ({ member }: { member: Account }) => {
     return (
         <Card>
             <CardHeader className="pb-4">
                 <CardTitle className="text-base font-semibold flex items-center space-x-2">
                     <User className="h-4 w-4 text-gray-600" />
-                    <span>Patient Information</span>
+                    <span>Member Information</span>
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -20,9 +20,9 @@ export const AccountCard = ({ account }: { account: Account }) => {
                         <User className="h-8 w-8 text-red-600" />
                     </div>
                     <h3 className="font-semibold text-gray-900">
-                        {account.name}
+                        {member.name}
                     </h3>
-                    <p className="text-sm text-gray-500">{account.email}</p>
+                    <p className="text-sm text-gray-500">{member.email}</p>
                 </div>
 
                 <Separator />
@@ -37,21 +37,21 @@ export const AccountCard = ({ account }: { account: Account }) => {
                             className="text-red-600 border-red-200"
                         >
                             <Droplets className="h-3 w-3 mr-1" />
-                            {bloodGroupLabels[account.blood_group]}
+                            {bloodGroupLabels[member.blood_group]}
                         </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Age</span>
                         <span className="text-sm font-medium">
                             {new Date().getFullYear() -
-                                Number(account.birthday.substring(0, 4))}{' '}
+                                Number(member.birthday.substring(0, 4))}{' '}
                             years
                         </span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-600">Gender</span>
                         <span className="text-sm font-medium capitalize">
-                            {account.gender}
+                            {member.gender}
                         </span>
                     </div>
                 </div>
