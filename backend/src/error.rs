@@ -7,7 +7,7 @@ use utoipa::ToSchema;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, Builder)]
 #[error("{:#?}", self)]
 pub struct Error {
     pub status: StatusCode,

@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{
     RequestPartsExt,
     extract::{FromRequestParts, OptionalFromRequestParts},
-    http::request::Parts,
+    http::{StatusCode, request::Parts},
 };
 use axum_extra::extract::{CookieJar, cookie::Cookie};
 use chrono::Local;
@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use tower_sessions::cookie::SameSite;
 use uuid::Uuid;
 
-use crate::{config::CONFIG, error::AuthError, state::ApiState};
+use crate::{config::CONFIG, error::Error, state::ApiState};
 
 #[derive(Serialize, Deserialize)]
 pub struct Claims {
@@ -56,27 +56,39 @@ impl JwtService {
 }
 
 impl FromRequestParts<Arc<ApiState>> for Claims {
-    type Rejection = crate::error::Error;
+    type Rejection = Error;
 
     async fn from_request_parts(
         parts: &mut Parts,
         state: &Arc<ApiState>,
     ) -> Result<Self, Self::Rejection> {
         let jar = parts.extract::<CookieJar>().await.unwrap();
-        let token = jar
-            .get(&CONFIG.jwt.token_key)
-            .ok_or(AuthError::MissingAuthToken)?
-            .value();
+        let token = match jar.get(&CONFIG.jwt.token_key) {
+            Some(token) => token.value(),
+            None => {
+                tracing::warn!("No cookie founded");
+                return Err(Error::builder()
+                    .status(StatusCode::UNAUTHORIZED)
+                    .message("No cookie founded".into())
+                    .build());
+            }
+        };
 
-        let token = jsonwebtoken::decode::<Claims>(
+        let token = match jsonwebtoken::decode::<Claims>(
             token,
             &state.jwt_service.decoding_key,
             &Validation::default(),
-        )
-        .map_err(|error| {
-            tracing::error!(error = ?error);
-            AuthError::InvalidAuthToken
-        })?;
+        ) {
+            Ok(token) => token,
+            Err(error) => {
+                tracing::warn!("Failed to decode token: {} with error: {:#?}", token, error);
+
+                return Err(Error::builder()
+                    .status(StatusCode::UNAUTHORIZED)
+                    .message("Invalid token".into())
+                    .build());
+            }
+        };
 
         Ok(token.claims)
     }
