@@ -21,6 +21,14 @@ pub struct Get {
     pub created_at: crate::types::time::TimestampTz,
 }
 #[derive(Debug, Clone, PartialEq, Copy)]
+pub struct GetByAppointmentId {
+    pub id: uuid::Uuid,
+    pub appointment_id: uuid::Uuid,
+    pub r#type: ctypes::DonationType,
+    pub amount: i32,
+    pub created_at: crate::types::time::TimestampTz,
+}
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub struct GetAll {
     pub id: uuid::Uuid,
     pub appointment_id: uuid::Uuid,
@@ -112,6 +120,70 @@ where
 {
     pub fn map<R>(self, mapper: fn(Get) -> R) -> GetQuery<'c, 'a, 's, C, R, N> {
         GetQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
+pub struct GetByAppointmentIdQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<GetByAppointmentId, tokio_postgres::Error>,
+    mapper: fn(GetByAppointmentId) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByAppointmentIdQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(
+        self,
+        mapper: fn(GetByAppointmentId) -> R,
+    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, R, N> {
+        GetByAppointmentIdQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -354,6 +426,36 @@ impl GetStmt {
                 })
             },
             mapper: |it| Get::from(it),
+        }
+    }
+}
+pub fn get_by_appointment_id() -> GetByAppointmentIdStmt {
+    GetByAppointmentIdStmt(crate::client::async_::Stmt::new(
+        "SELECT id, appointment_id, type, amount, created_at FROM donations WHERE appointment_id = $1",
+    ))
+}
+pub struct GetByAppointmentIdStmt(crate::client::async_::Stmt);
+impl GetByAppointmentIdStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        appointment_id: &'a uuid::Uuid,
+    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, GetByAppointmentId, 1> {
+        GetByAppointmentIdQuery {
+            client,
+            params: [appointment_id],
+            stmt: &mut self.0,
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<GetByAppointmentId, tokio_postgres::Error> {
+                    Ok(GetByAppointmentId {
+                        id: row.try_get(0)?,
+                        appointment_id: row.try_get(1)?,
+                        r#type: row.try_get(2)?,
+                        amount: row.try_get(3)?,
+                        created_at: row.try_get(4)?,
+                    })
+                },
+            mapper: |it| GetByAppointmentId::from(it),
         }
     }
 }

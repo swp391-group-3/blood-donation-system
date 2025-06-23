@@ -95,7 +95,7 @@ export default function AppointmentPage() {
                 ?.filter((appointment) => appointment.status === status)
                 .filter(
                     (appointment) =>
-                        !search || appointment.title.includes(search),
+                        !search || appointment.request.title.includes(search),
                 ),
         [appointments, status, search],
     );

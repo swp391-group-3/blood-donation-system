@@ -125,8 +125,7 @@ CREATE TABLE IF NOT EXISTS healths(
     weight real NOT NULL,
     upper_blood_pressure int NOT NULL,
     lower_blood_pressure int NOT NULL,
-    heart_pulse int NOT NULL,
-    hemoglobin real NOT NULL,
+    heart_rate int NOT NULL,
     is_good_health bool NOT NULL,
     note text,
     created_at timestamptz NOT NULL DEFAULT now()

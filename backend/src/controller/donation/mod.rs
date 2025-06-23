@@ -1,6 +1,7 @@
 mod create;
 mod get;
 mod get_all;
+mod get_by_appointment_id;
 mod get_by_member_id;
 mod update;
 
@@ -9,7 +10,7 @@ use std::sync::Arc;
 use axum::{Router, routing};
 use chrono::{DateTime, Utc};
 use ctypes::{DonationType, Role};
-use database::queries::donation::{Get, GetAll, GetByMemberId};
+use database::queries::donation::{Get, GetAll, GetByAppointmentId, GetByMemberId};
 use model_mapper::Mapper;
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -20,6 +21,7 @@ use crate::{middleware, state::ApiState};
 pub use create::*;
 pub use get::*;
 pub use get_all::*;
+pub use get_by_appointment_id::*;
 pub use get_by_member_id::*;
 pub use update::*;
 
@@ -27,6 +29,7 @@ pub use update::*;
 #[mapper(derive(from(custom = "from_get"), ty = Get))]
 #[mapper(derive(from(custom = "from_get_all"), ty = GetAll))]
 #[mapper(derive(from(custom = "from_get_by_member_id"), ty = GetByMemberId))]
+#[mapper(derive(from(custom = "from_get_by_appointment_id"), ty = GetByAppointmentId))]
 pub struct Donation {
     pub id: Uuid,
     pub appointment_id: Uuid,
@@ -38,6 +41,10 @@ pub struct Donation {
 pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
     let staff_route = Router::new()
         .route("/appointment/{id}/donation", routing::post(create))
+        .route(
+            "/appointment/{id}/donation",
+            routing::get(get_by_appointment_id),
+        )
         .route("/donation/{id}", routing::get(get))
         .route("/donation", routing::get(get_all))
         .route("/donation/{id}", routing::patch(update))

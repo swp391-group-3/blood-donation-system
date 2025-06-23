@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use crate::controller::account::Account;
-use crate::controller::appointment::AppointmentDetail;
 use crate::util::notification::send;
 use crate::{error::Result, state::ApiState};
 use axum::extract::{Path, State};
@@ -28,7 +27,6 @@ pub async fn reject(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result
 
     let appointment = queries::appointment::get()
         .bind(&database, &id)
-        .map(AppointmentDetail::from)
         .one()
         .await?;
 

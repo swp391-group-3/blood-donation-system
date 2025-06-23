@@ -5,9 +5,9 @@
 
 -- 1. Accounts — only the three originals
 INSERT INTO accounts (id, role, email, password, phone, name, gender, address, birthday, blood_group, is_active, created_at) VALUES
-  ('11111111-1111-1111-1111-111111111111','admin','admin@example.com','hashedpw1','+841234567890','Nguyen Van A','male','123 Le Loi St, HCMC','1980-05-10','o_plus',true,'2025-06-01T08:00:00Z'),
-  ('22222222-2222-2222-2222-222222222222','staff','staff1@blood.org','hashedpw2','+849876543210','Tran Thi B','female','456 Nguyen Hue Blvd, HCMC','1990-12-20','a_minus',true,'2025-06-05T09:30:00Z'),
-  ('33333333-3333-3333-3333-333333333333','member','khanghuynh0245@gmail.com','hashedpw3','+848765432109','Le Van C','male','789 Pasteur Ave, HCMC','1995-07-15','b_plus',true,'2025-06-10T14:45:00Z')
+  ('11111111-1111-1111-1111-111111111111','admin','admin@gmail.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+841234567890','Nguyen Van A','male','123 Le Loi St, HCMC','1980-05-10','o_plus',true,'2025-06-01T08:00:00Z'),
+  ('22222222-2222-2222-2222-222222222222','staff','staff@gmail.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+849876543210','Tran Thi B','female','456 Nguyen Hue Blvd, HCMC','1990-12-20','a_minus',true,'2025-06-05T09:30:00Z'),
+  ('33333333-3333-3333-3333-333333333333','member','member@gmail.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+848765432109','Le Van C','male','789 Pasteur Ave, HCMC','1995-07-15','b_plus',true,'2025-06-10T14:45:00Z')
 ON CONFLICT DO NOTHING;
 
 -- 2. Questions
@@ -84,10 +84,10 @@ INSERT INTO answers (question_id, appointment_id, content) VALUES
 ON CONFLICT DO NOTHING;
 
 -- 11. Healths
-INSERT INTO healths (id, appointment_id, temperature, weight, upper_blood_pressure, lower_blood_pressure, heart_pulse, hemoglobin, is_good_health, note, created_at) VALUES
-  ('e1111111-1111-1111-1111-111111111111','a1111111-1111-1111-1111-111111111111',36.6,62.5,120,80,72,13.5,true,'All good','2025-06-15T08:30:00Z'),
-  ('e2222222-2222-2222-2222-222222222222','a2222222-2222-2222-2222-222222222222',36.8,61.0,117,77,69,13.7,true,'Feeling good','2025-06-18T08:30:00Z'),
-  ('e3333333-3333-3333-3333-333333333333','a3333333-3333-3333-3333-333333333333',36.5,59.3,116,76,68,13.6,true,'Ready to donate','2025-06-25T10:30:00Z')
+INSERT INTO healths (id, appointment_id, temperature, weight, upper_blood_pressure, lower_blood_pressure, heart_rate, is_good_health, note, created_at) VALUES
+  ('e1111111-1111-1111-1111-111111111111','a1111111-1111-1111-1111-111111111111',36.6,62.5,120,80,72,true,'All good','2025-06-15T08:30:00Z'),
+  ('e2222222-2222-2222-2222-222222222222','a2222222-2222-2222-2222-222222222222',36.8,61.0,117,77,69,true,'Feeling good','2025-06-18T08:30:00Z'),
+  ('e3333333-3333-3333-3333-333333333333','a3333333-3333-3333-3333-333333333333',36.5,59.3,116,76,68,true,'Ready to donate','2025-06-25T10:30:00Z')
 ON CONFLICT DO NOTHING;
 
 -- 12. Donations

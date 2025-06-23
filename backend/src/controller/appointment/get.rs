@@ -4,23 +4,12 @@ use axum::{
     Json,
     extract::{Path, State},
 };
-use ctypes::AppointmentStatus;
-use database::queries::{self};
-use model_mapper::Mapper;
-use serde::Serialize;
-use utoipa::ToSchema;
+use database::queries;
 use uuid::Uuid;
 
 use crate::{error::Result, state::ApiState};
 
-#[derive(Serialize, ToSchema, Mapper)]
-#[mapper(from, ty = queries::appointment::Get)]
-pub struct AppointmentDetail {
-    pub id: Uuid,
-    pub request_id: Uuid,
-    pub member_id: Uuid,
-    pub status: AppointmentStatus,
-}
+use super::Appointment;
 
 #[utoipa::path(
     get,
@@ -31,21 +20,22 @@ pub struct AppointmentDetail {
         ("id" = Uuid, Path, description = "Appointment id")
     ),
     responses(
-        (status = Status::OK, body = AppointmentDetail)
+        (status = Status::OK, body = Appointment)
     ),
     security(("jwt_token" = []))
 )]
-pub async fn get(
-    state: State<Arc<ApiState>>,
-    Path(id): Path<Uuid>,
-) -> Result<Json<AppointmentDetail>> {
+pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<Appointment>> {
     let database = state.database_pool.get().await?;
 
-    let appointment = queries::appointment::get()
+    let raw = queries::appointment::get()
         .bind(&database, &id)
-        .map(AppointmentDetail::from)
         .one()
         .await?;
+
+    let appointment =
+        Appointment::new(raw.id, raw.member_id, raw.request_id, raw.status, &database)
+            .await
+            .unwrap();
 
     Ok(Json(appointment))
 }

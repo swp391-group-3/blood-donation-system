@@ -12,6 +12,11 @@ SELECT id, appointment_id, type, amount, created_at
 FROM donations
 WHERE id = :id;
 
+--! get_by_appointment_id
+SELECT id, appointment_id, type, amount, created_at
+FROM donations
+WHERE appointment_id = :appointment_id;
+
 --! get_all
 SELECT id, appointment_id, type, amount, created_at
 FROM donations;

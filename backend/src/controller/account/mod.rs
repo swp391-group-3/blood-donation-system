@@ -41,14 +41,22 @@ pub struct Account {
 }
 
 pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
-    Router::new()
+    let admin_router = Router::new()
         .route("/account/create-staff", routing::post(create_staff))
         .route("/account", routing::get(get_all))
-        .route("/account/{id}", routing::get(get))
         .route("/account/{id}", routing::delete(delete))
         .route("/account", routing::put(update))
         .layer(axum::middleware::from_fn_with_state(
-            state,
+            state.clone(),
             middleware::authorize!(Role::Admin),
-        ))
+        ));
+
+    let admin_staff_router = Router::new()
+        .route("/account/{id}", routing::get(get))
+        .layer(axum::middleware::from_fn_with_state(
+            state,
+            middleware::authorize!(Role::Admin, Role::Staff),
+        ));
+
+    Router::new().merge(admin_router).merge(admin_staff_router)
 }

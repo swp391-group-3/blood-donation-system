@@ -4,7 +4,6 @@ import {
     Activity,
     Check,
     CheckCircle,
-    Droplets,
     Thermometer,
     User,
     Weight,
@@ -75,7 +74,7 @@ export const HealthCard = (health: Health) => {
             <CardContent className="p-0">
                 <div className="flex">
                     <div className="flex-1 p-6">
-                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                             <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-100">
                                 <div className="p-2 bg-red-100 rounded-lg">
                                     <Thermometer className="h-5 w-5 text-red-600" />
@@ -127,24 +126,10 @@ export const HealthCard = (health: Health) => {
                                 </div>
                                 <div>
                                     <div className="text-lg font-bold text-slate-900">
-                                        {health.heart_pulse}
+                                        {health.heart_rate}
                                     </div>
                                     <div className="text-xs text-slate-600">
                                         Heart Rate
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                                <div className="p-2 bg-emerald-100 rounded-lg">
-                                    <Droplets className="h-5 w-5 text-emerald-600" />
-                                </div>
-                                <div>
-                                    <div className="text-lg font-bold text-slate-900">
-                                        {health.hemoglobin}
-                                    </div>
-                                    <div className="text-xs text-slate-600">
-                                        Hemoglobin
                                     </div>
                                 </div>
                             </div>

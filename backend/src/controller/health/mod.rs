@@ -31,10 +31,10 @@ pub struct Health {
     pub weight: f32,
     pub upper_blood_pressure: i32,
     pub lower_blood_pressure: i32,
-    pub heart_pulse: i32,
-    pub hemoglobin: f32,
+    pub heart_rate: i32,
     pub is_good_health: bool,
-    pub note: String,
+    #[mapper(with = note.map(|x| x.to_string()))]
+    pub note: Option<String>,
     pub created_at: DateTime<Utc>,
 }
 
