@@ -39,173 +39,56 @@ pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::S
     pub id: uuid::Uuid,
 }
 #[derive(Debug, Clone, PartialEq)]
-pub struct GetByEmail {
+pub struct Account {
     pub id: uuid::Uuid,
+    pub role: ctypes::Role,
+    pub email: String,
     pub password: String,
+    pub phone: String,
+    pub name: String,
+    pub gender: Option<ctypes::Gender>,
+    pub address: Option<String>,
+    pub birthday: Option<crate::types::time::Date>,
+    pub blood_group: Option<ctypes::BloodGroup>,
+    pub is_active: bool,
+    pub created_at: crate::types::time::TimestampTz,
 }
-pub struct GetByEmailBorrowed<'a> {
+pub struct AccountBorrowed<'a> {
     pub id: uuid::Uuid,
+    pub role: ctypes::Role,
+    pub email: &'a str,
     pub password: &'a str,
+    pub phone: &'a str,
+    pub name: &'a str,
+    pub gender: Option<ctypes::Gender>,
+    pub address: Option<&'a str>,
+    pub birthday: Option<crate::types::time::Date>,
+    pub blood_group: Option<ctypes::BloodGroup>,
+    pub is_active: bool,
+    pub created_at: crate::types::time::TimestampTz,
 }
-impl<'a> From<GetByEmailBorrowed<'a>> for GetByEmail {
-    fn from(GetByEmailBorrowed { id, password }: GetByEmailBorrowed<'a>) -> Self {
+impl<'a> From<AccountBorrowed<'a>> for Account {
+    fn from(
+        AccountBorrowed {
+            id,
+            role,
+            email,
+            password,
+            phone,
+            name,
+            gender,
+            address,
+            birthday,
+            blood_group,
+            is_active,
+            created_at,
+        }: AccountBorrowed<'a>,
+    ) -> Self {
         Self {
             id,
+            role,
+            email: email.into(),
             password: password.into(),
-        }
-    }
-}
-#[derive(Debug, Clone, PartialEq)]
-pub struct Get {
-    pub role: ctypes::Role,
-    pub email: String,
-    pub phone: String,
-    pub name: String,
-    pub gender: Option<ctypes::Gender>,
-    pub address: Option<String>,
-    pub birthday: Option<crate::types::time::Date>,
-    pub blood_group: Option<ctypes::BloodGroup>,
-    pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
-}
-pub struct GetBorrowed<'a> {
-    pub role: ctypes::Role,
-    pub email: &'a str,
-    pub phone: &'a str,
-    pub name: &'a str,
-    pub gender: Option<ctypes::Gender>,
-    pub address: Option<&'a str>,
-    pub birthday: Option<crate::types::time::Date>,
-    pub blood_group: Option<ctypes::BloodGroup>,
-    pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
-}
-impl<'a> From<GetBorrowed<'a>> for Get {
-    fn from(
-        GetBorrowed {
-            role,
-            email,
-            phone,
-            name,
-            gender,
-            address,
-            birthday,
-            blood_group,
-            is_active,
-            created_at,
-        }: GetBorrowed<'a>,
-    ) -> Self {
-        Self {
-            role,
-            email: email.into(),
-            phone: phone.into(),
-            name: name.into(),
-            gender,
-            address: address.map(|v| v.into()),
-            birthday,
-            blood_group,
-            is_active,
-            created_at,
-        }
-    }
-}
-#[derive(Debug, Clone, PartialEq)]
-pub struct GetAll {
-    pub role: ctypes::Role,
-    pub email: String,
-    pub phone: String,
-    pub name: String,
-    pub gender: Option<ctypes::Gender>,
-    pub address: Option<String>,
-    pub birthday: Option<crate::types::time::Date>,
-    pub blood_group: Option<ctypes::BloodGroup>,
-    pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
-}
-pub struct GetAllBorrowed<'a> {
-    pub role: ctypes::Role,
-    pub email: &'a str,
-    pub phone: &'a str,
-    pub name: &'a str,
-    pub gender: Option<ctypes::Gender>,
-    pub address: Option<&'a str>,
-    pub birthday: Option<crate::types::time::Date>,
-    pub blood_group: Option<ctypes::BloodGroup>,
-    pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
-}
-impl<'a> From<GetAllBorrowed<'a>> for GetAll {
-    fn from(
-        GetAllBorrowed {
-            role,
-            email,
-            phone,
-            name,
-            gender,
-            address,
-            birthday,
-            blood_group,
-            is_active,
-            created_at,
-        }: GetAllBorrowed<'a>,
-    ) -> Self {
-        Self {
-            role,
-            email: email.into(),
-            phone: phone.into(),
-            name: name.into(),
-            gender,
-            address: address.map(|v| v.into()),
-            birthday,
-            blood_group,
-            is_active,
-            created_at,
-        }
-    }
-}
-#[derive(Debug, Clone, PartialEq)]
-pub struct GetByRole {
-    pub role: ctypes::Role,
-    pub email: String,
-    pub phone: String,
-    pub name: String,
-    pub gender: Option<ctypes::Gender>,
-    pub address: Option<String>,
-    pub birthday: Option<crate::types::time::Date>,
-    pub blood_group: Option<ctypes::BloodGroup>,
-    pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
-}
-pub struct GetByRoleBorrowed<'a> {
-    pub role: ctypes::Role,
-    pub email: &'a str,
-    pub phone: &'a str,
-    pub name: &'a str,
-    pub gender: Option<ctypes::Gender>,
-    pub address: Option<&'a str>,
-    pub birthday: Option<crate::types::time::Date>,
-    pub blood_group: Option<ctypes::BloodGroup>,
-    pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
-}
-impl<'a> From<GetByRoleBorrowed<'a>> for GetByRole {
-    fn from(
-        GetByRoleBorrowed {
-            role,
-            email,
-            phone,
-            name,
-            gender,
-            address,
-            birthday,
-            blood_group,
-            is_active,
-            created_at,
-        }: GetByRoleBorrowed<'a>,
-    ) -> Self {
-        Self {
-            role,
-            email: email.into(),
             phone: phone.into(),
             name: name.into(),
             gender,
@@ -280,205 +163,19 @@ where
         Ok(it)
     }
 }
-pub struct GetByEmailQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct AccountQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetByEmailBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetByEmailBorrowed) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<AccountBorrowed, tokio_postgres::Error>,
+    mapper: fn(AccountBorrowed) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByEmailQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> AccountQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(
-        self,
-        mapper: fn(GetByEmailBorrowed) -> R,
-    ) -> GetByEmailQuery<'c, 'a, 's, C, R, N> {
-        GetByEmailQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetBorrowed) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(self, mapper: fn(GetBorrowed) -> R) -> GetQuery<'c, 'a, 's, C, R, N> {
-        GetQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetAllQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetAllBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetAllBorrowed) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetAllQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(self, mapper: fn(GetAllBorrowed) -> R) -> GetAllQuery<'c, 'a, 's, C, R, N> {
-        GetAllQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetByRoleQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetByRoleBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetByRoleBorrowed) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByRoleQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(self, mapper: fn(GetByRoleBorrowed) -> R) -> GetByRoleQuery<'c, 'a, 's, C, R, N> {
-        GetByRoleQuery {
+    pub fn map<R>(self, mapper: fn(AccountBorrowed) -> R) -> AccountQuery<'c, 'a, 's, C, R, N> {
+        AccountQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -678,36 +375,9 @@ impl<
         )
     }
 }
-pub fn get_by_email() -> GetByEmailStmt {
-    GetByEmailStmt(crate::client::async_::Stmt::new(
-        "SELECT id, password FROM accounts WHERE email = $1",
-    ))
-}
-pub struct GetByEmailStmt(crate::client::async_::Stmt);
-impl GetByEmailStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
-        &'s mut self,
-        client: &'c C,
-        email: &'a T1,
-    ) -> GetByEmailQuery<'c, 'a, 's, C, GetByEmail, 1> {
-        GetByEmailQuery {
-            client,
-            params: [email],
-            stmt: &mut self.0,
-            extractor:
-                |row: &tokio_postgres::Row| -> Result<GetByEmailBorrowed, tokio_postgres::Error> {
-                    Ok(GetByEmailBorrowed {
-                        id: row.try_get(0)?,
-                        password: row.try_get(1)?,
-                    })
-                },
-            mapper: |it| GetByEmail::from(it),
-        }
-    }
-}
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT role, email, phone, name, gender, address, birthday, blood_group, is_active, created_at FROM accounts WHERE id = $1",
+        "SELECT * FROM accounts WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -716,60 +386,137 @@ impl GetStmt {
         &'s mut self,
         client: &'c C,
         id: &'a uuid::Uuid,
-    ) -> GetQuery<'c, 'a, 's, C, Get, 1> {
-        GetQuery {
+    ) -> AccountQuery<'c, 'a, 's, C, Account, 1> {
+        AccountQuery {
             client,
             params: [id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<GetBorrowed, tokio_postgres::Error> {
-                Ok(GetBorrowed {
-                    role: row.try_get(0)?,
-                    email: row.try_get(1)?,
-                    phone: row.try_get(2)?,
-                    name: row.try_get(3)?,
-                    gender: row.try_get(4)?,
-                    address: row.try_get(5)?,
-                    birthday: row.try_get(6)?,
-                    blood_group: row.try_get(7)?,
-                    is_active: row.try_get(8)?,
-                    created_at: row.try_get(9)?,
-                })
-            },
-            mapper: |it| Get::from(it),
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AccountBorrowed, tokio_postgres::Error> {
+                    Ok(AccountBorrowed {
+                        id: row.try_get(0)?,
+                        role: row.try_get(1)?,
+                        email: row.try_get(2)?,
+                        password: row.try_get(3)?,
+                        phone: row.try_get(4)?,
+                        name: row.try_get(5)?,
+                        gender: row.try_get(6)?,
+                        address: row.try_get(7)?,
+                        birthday: row.try_get(8)?,
+                        blood_group: row.try_get(9)?,
+                        is_active: row.try_get(10)?,
+                        created_at: row.try_get(11)?,
+                    })
+                },
+            mapper: |it| Account::from(it),
+        }
+    }
+}
+pub fn get_by_email() -> GetByEmailStmt {
+    GetByEmailStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM accounts WHERE email = $1",
+    ))
+}
+pub struct GetByEmailStmt(crate::client::async_::Stmt);
+impl GetByEmailStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
+        &'s mut self,
+        client: &'c C,
+        email: &'a T1,
+    ) -> AccountQuery<'c, 'a, 's, C, Account, 1> {
+        AccountQuery {
+            client,
+            params: [email],
+            stmt: &mut self.0,
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AccountBorrowed, tokio_postgres::Error> {
+                    Ok(AccountBorrowed {
+                        id: row.try_get(0)?,
+                        role: row.try_get(1)?,
+                        email: row.try_get(2)?,
+                        password: row.try_get(3)?,
+                        phone: row.try_get(4)?,
+                        name: row.try_get(5)?,
+                        gender: row.try_get(6)?,
+                        address: row.try_get(7)?,
+                        birthday: row.try_get(8)?,
+                        blood_group: row.try_get(9)?,
+                        is_active: row.try_get(10)?,
+                        created_at: row.try_get(11)?,
+                    })
+                },
+            mapper: |it| Account::from(it),
+        }
+    }
+}
+pub fn get_by_role() -> GetByRoleStmt {
+    GetByRoleStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM accounts WHERE role = $1",
+    ))
+}
+pub struct GetByRoleStmt(crate::client::async_::Stmt);
+impl GetByRoleStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        role: &'a ctypes::Role,
+    ) -> AccountQuery<'c, 'a, 's, C, Account, 1> {
+        AccountQuery {
+            client,
+            params: [role],
+            stmt: &mut self.0,
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AccountBorrowed, tokio_postgres::Error> {
+                    Ok(AccountBorrowed {
+                        id: row.try_get(0)?,
+                        role: row.try_get(1)?,
+                        email: row.try_get(2)?,
+                        password: row.try_get(3)?,
+                        phone: row.try_get(4)?,
+                        name: row.try_get(5)?,
+                        gender: row.try_get(6)?,
+                        address: row.try_get(7)?,
+                        birthday: row.try_get(8)?,
+                        blood_group: row.try_get(9)?,
+                        is_active: row.try_get(10)?,
+                        created_at: row.try_get(11)?,
+                    })
+                },
+            mapper: |it| Account::from(it),
         }
     }
 }
 pub fn get_all() -> GetAllStmt {
-    GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT role, email, phone, name, gender, address, birthday, blood_group, is_active, created_at FROM accounts",
-    ))
+    GetAllStmt(crate::client::async_::Stmt::new("SELECT * FROM accounts"))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> GetAllQuery<'c, 'a, 's, C, GetAll, 0> {
-        GetAllQuery {
+    ) -> AccountQuery<'c, 'a, 's, C, Account, 0> {
+        AccountQuery {
             client,
             params: [],
             stmt: &mut self.0,
             extractor:
-                |row: &tokio_postgres::Row| -> Result<GetAllBorrowed, tokio_postgres::Error> {
-                    Ok(GetAllBorrowed {
-                        role: row.try_get(0)?,
-                        email: row.try_get(1)?,
-                        phone: row.try_get(2)?,
-                        name: row.try_get(3)?,
-                        gender: row.try_get(4)?,
-                        address: row.try_get(5)?,
-                        birthday: row.try_get(6)?,
-                        blood_group: row.try_get(7)?,
-                        is_active: row.try_get(8)?,
-                        created_at: row.try_get(9)?,
+                |row: &tokio_postgres::Row| -> Result<AccountBorrowed, tokio_postgres::Error> {
+                    Ok(AccountBorrowed {
+                        id: row.try_get(0)?,
+                        role: row.try_get(1)?,
+                        email: row.try_get(2)?,
+                        password: row.try_get(3)?,
+                        phone: row.try_get(4)?,
+                        name: row.try_get(5)?,
+                        gender: row.try_get(6)?,
+                        address: row.try_get(7)?,
+                        birthday: row.try_get(8)?,
+                        blood_group: row.try_get(9)?,
+                        is_active: row.try_get(10)?,
+                        created_at: row.try_get(11)?,
                     })
                 },
-            mapper: |it| GetAll::from(it),
+            mapper: |it| Account::from(it),
         }
     }
 }
@@ -854,40 +601,5 @@ impl DeleteStmt {
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;
         client.execute(stmt, &[id]).await
-    }
-}
-pub fn get_by_role() -> GetByRoleStmt {
-    GetByRoleStmt(crate::client::async_::Stmt::new(
-        "SELECT role, email, phone, name, gender, address, birthday, blood_group, is_active, created_at FROM accounts WHERE role = $1",
-    ))
-}
-pub struct GetByRoleStmt(crate::client::async_::Stmt);
-impl GetByRoleStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-        role: &'a ctypes::Role,
-    ) -> GetByRoleQuery<'c, 'a, 's, C, GetByRole, 1> {
-        GetByRoleQuery {
-            client,
-            params: [role],
-            stmt: &mut self.0,
-            extractor:
-                |row: &tokio_postgres::Row| -> Result<GetByRoleBorrowed, tokio_postgres::Error> {
-                    Ok(GetByRoleBorrowed {
-                        role: row.try_get(0)?,
-                        email: row.try_get(1)?,
-                        phone: row.try_get(2)?,
-                        name: row.try_get(3)?,
-                        gender: row.try_get(4)?,
-                        address: row.try_get(5)?,
-                        birthday: row.try_get(6)?,
-                        blood_group: row.try_get(7)?,
-                        is_active: row.try_get(8)?,
-                        created_at: row.try_get(9)?,
-                    })
-                },
-            mapper: |it| GetByRole::from(it),
-        }
     }
 }

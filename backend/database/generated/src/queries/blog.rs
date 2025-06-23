@@ -6,6 +6,11 @@ pub struct CreateParams<T1: crate::StringSql, T2: crate::StringSql> {
     pub title: T1,
     pub content: T2,
 }
+#[derive(Clone, Copy, Debug)]
+pub struct AddTagParams {
+    pub blog_id: uuid::Uuid,
+    pub tag_id: uuid::Uuid,
+}
 #[derive(Debug)]
 pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql> {
     pub title: Option<T1>,
@@ -19,92 +24,40 @@ pub struct DeleteParams {
     pub account_id: uuid::Uuid,
 }
 #[derive(Debug, Clone, PartialEq)]
-pub struct Get {
+pub struct Blog {
     pub id: uuid::Uuid,
     pub account_id: uuid::Uuid,
     pub title: String,
+    pub description: String,
     pub content: String,
+    pub created_at: crate::types::time::TimestampTz,
 }
-pub struct GetBorrowed<'a> {
+pub struct BlogBorrowed<'a> {
     pub id: uuid::Uuid,
     pub account_id: uuid::Uuid,
     pub title: &'a str,
+    pub description: &'a str,
     pub content: &'a str,
+    pub created_at: crate::types::time::TimestampTz,
 }
-impl<'a> From<GetBorrowed<'a>> for Get {
+impl<'a> From<BlogBorrowed<'a>> for Blog {
     fn from(
-        GetBorrowed {
+        BlogBorrowed {
             id,
             account_id,
             title,
+            description,
             content,
-        }: GetBorrowed<'a>,
+            created_at,
+        }: BlogBorrowed<'a>,
     ) -> Self {
         Self {
             id,
             account_id,
             title: title.into(),
+            description: description.into(),
             content: content.into(),
-        }
-    }
-}
-#[derive(Debug, Clone, PartialEq)]
-pub struct GetAll {
-    pub id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
-    pub title: String,
-    pub content: String,
-}
-pub struct GetAllBorrowed<'a> {
-    pub id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
-    pub title: &'a str,
-    pub content: &'a str,
-}
-impl<'a> From<GetAllBorrowed<'a>> for GetAll {
-    fn from(
-        GetAllBorrowed {
-            id,
-            account_id,
-            title,
-            content,
-        }: GetAllBorrowed<'a>,
-    ) -> Self {
-        Self {
-            id,
-            account_id,
-            title: title.into(),
-            content: content.into(),
-        }
-    }
-}
-#[derive(Debug, Clone, PartialEq)]
-pub struct SearchBlog {
-    pub id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
-    pub title: String,
-    pub content: String,
-}
-pub struct SearchBlogBorrowed<'a> {
-    pub id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
-    pub title: &'a str,
-    pub content: &'a str,
-}
-impl<'a> From<SearchBlogBorrowed<'a>> for SearchBlog {
-    fn from(
-        SearchBlogBorrowed {
-            id,
-            account_id,
-            title,
-            content,
-        }: SearchBlogBorrowed<'a>,
-    ) -> Self {
-        Self {
-            id,
-            account_id,
-            title: title.into(),
-            content: content.into(),
+            created_at,
         }
     }
 }
@@ -171,144 +124,19 @@ where
         Ok(it)
     }
 }
-pub struct GetQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct BlogQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetBorrowed) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<BlogBorrowed, tokio_postgres::Error>,
+    mapper: fn(BlogBorrowed) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> BlogQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(GetBorrowed) -> R) -> GetQuery<'c, 'a, 's, C, R, N> {
-        GetQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetAllQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetAllBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetAllBorrowed) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetAllQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(self, mapper: fn(GetAllBorrowed) -> R) -> GetAllQuery<'c, 'a, 's, C, R, N> {
-        GetAllQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct SearchBlogQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<SearchBlogBorrowed, tokio_postgres::Error>,
-    mapper: fn(SearchBlogBorrowed) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> SearchBlogQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(
-        self,
-        mapper: fn(SearchBlogBorrowed) -> R,
-    ) -> SearchBlogQuery<'c, 'a, 's, C, R, N> {
-        SearchBlogQuery {
+    pub fn map<R>(self, mapper: fn(BlogBorrowed) -> R) -> BlogQuery<'c, 'a, 's, C, R, N> {
+        BlogQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -398,9 +226,48 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::StringSql>
         self.bind(client, &params.account_id, &params.title, &params.content)
     }
 }
+pub fn add_tag() -> AddTagStmt {
+    AddTagStmt(crate::client::async_::Stmt::new(
+        "INSERT INTO blog_tags (blog_id, tag_id) VALUES ($1, $2)",
+    ))
+}
+pub struct AddTagStmt(crate::client::async_::Stmt);
+impl AddTagStmt {
+    pub async fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        blog_id: &'a uuid::Uuid,
+        tag_id: &'a uuid::Uuid,
+    ) -> Result<u64, tokio_postgres::Error> {
+        let stmt = self.0.prepare(client).await?;
+        client.execute(stmt, &[blog_id, tag_id]).await
+    }
+}
+impl<'a, C: GenericClient + Send + Sync>
+    crate::client::async_::Params<
+        'a,
+        'a,
+        'a,
+        AddTagParams,
+        std::pin::Pin<
+            Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+        >,
+        C,
+    > for AddTagStmt
+{
+    fn params(
+        &'a mut self,
+        client: &'a C,
+        params: &'a AddTagParams,
+    ) -> std::pin::Pin<
+        Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+    > {
+        Box::pin(self.bind(client, &params.blog_id, &params.tag_id))
+    }
+}
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT id, account_id, title, content FROM blogs WHERE id = $1",
+        "SELECT * FROM blogs WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -409,26 +276,28 @@ impl GetStmt {
         &'s mut self,
         client: &'c C,
         id: &'a uuid::Uuid,
-    ) -> GetQuery<'c, 'a, 's, C, Get, 1> {
-        GetQuery {
+    ) -> BlogQuery<'c, 'a, 's, C, Blog, 1> {
+        BlogQuery {
             client,
             params: [id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<GetBorrowed, tokio_postgres::Error> {
-                Ok(GetBorrowed {
+            extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
+                Ok(BlogBorrowed {
                     id: row.try_get(0)?,
                     account_id: row.try_get(1)?,
                     title: row.try_get(2)?,
-                    content: row.try_get(3)?,
+                    description: row.try_get(3)?,
+                    content: row.try_get(4)?,
+                    created_at: row.try_get(5)?,
                 })
             },
-            mapper: |it| Get::from(it),
+            mapper: |it| Blog::from(it),
         }
     }
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT id, account_id, title, content FROM blogs ORDER BY created_at DESC",
+        "SELECT * FROM blogs ORDER BY created_at DESC",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -436,50 +305,52 @@ impl GetAllStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> GetAllQuery<'c, 'a, 's, C, GetAll, 0> {
-        GetAllQuery {
+    ) -> BlogQuery<'c, 'a, 's, C, Blog, 0> {
+        BlogQuery {
             client,
             params: [],
             stmt: &mut self.0,
-            extractor:
-                |row: &tokio_postgres::Row| -> Result<GetAllBorrowed, tokio_postgres::Error> {
-                    Ok(GetAllBorrowed {
-                        id: row.try_get(0)?,
-                        account_id: row.try_get(1)?,
-                        title: row.try_get(2)?,
-                        content: row.try_get(3)?,
-                    })
-                },
-            mapper: |it| GetAll::from(it),
+            extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
+                Ok(BlogBorrowed {
+                    id: row.try_get(0)?,
+                    account_id: row.try_get(1)?,
+                    title: row.try_get(2)?,
+                    description: row.try_get(3)?,
+                    content: row.try_get(4)?,
+                    created_at: row.try_get(5)?,
+                })
+            },
+            mapper: |it| Blog::from(it),
         }
     }
 }
-pub fn search_blog() -> SearchBlogStmt {
-    SearchBlogStmt(crate::client::async_::Stmt::new(
-        "SELECT id, account_id, title, content FROM blogs WHERE content LIKE '%' || $1 || '%' ORDER BY created_at",
+pub fn search() -> SearchStmt {
+    SearchStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM blogs WHERE content LIKE '%' || $1 || '%' ORDER BY created_at DESC",
     ))
 }
-pub struct SearchBlogStmt(crate::client::async_::Stmt);
-impl SearchBlogStmt {
+pub struct SearchStmt(crate::client::async_::Stmt);
+impl SearchStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
         content: &'a T1,
-    ) -> SearchBlogQuery<'c, 'a, 's, C, SearchBlog, 1> {
-        SearchBlogQuery {
+    ) -> BlogQuery<'c, 'a, 's, C, Blog, 1> {
+        BlogQuery {
             client,
             params: [content],
             stmt: &mut self.0,
-            extractor:
-                |row: &tokio_postgres::Row| -> Result<SearchBlogBorrowed, tokio_postgres::Error> {
-                    Ok(SearchBlogBorrowed {
-                        id: row.try_get(0)?,
-                        account_id: row.try_get(1)?,
-                        title: row.try_get(2)?,
-                        content: row.try_get(3)?,
-                    })
-                },
-            mapper: |it| SearchBlog::from(it),
+            extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
+                Ok(BlogBorrowed {
+                    id: row.try_get(0)?,
+                    account_id: row.try_get(1)?,
+                    title: row.try_get(2)?,
+                    description: row.try_get(3)?,
+                    content: row.try_get(4)?,
+                    created_at: row.try_get(5)?,
+                })
+            },
+            mapper: |it| Blog::from(it),
         }
     }
 }

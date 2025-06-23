@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS blogs(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     account_id uuid NOT NULL REFERENCES accounts(id),
     title text NOT NULL,
+    description text NOT NULL,
     content text NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
 );

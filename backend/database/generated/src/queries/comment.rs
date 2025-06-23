@@ -11,6 +11,40 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub content: Option<T1>,
     pub id: uuid::Uuid,
 }
+#[derive(Debug, Clone, PartialEq)]
+pub struct Comment {
+    pub id: uuid::Uuid,
+    pub blog_id: uuid::Uuid,
+    pub account_id: uuid::Uuid,
+    pub content: String,
+    pub created_at: crate::types::time::TimestampTz,
+}
+pub struct CommentBorrowed<'a> {
+    pub id: uuid::Uuid,
+    pub blog_id: uuid::Uuid,
+    pub account_id: uuid::Uuid,
+    pub content: &'a str,
+    pub created_at: crate::types::time::TimestampTz,
+}
+impl<'a> From<CommentBorrowed<'a>> for Comment {
+    fn from(
+        CommentBorrowed {
+            id,
+            blog_id,
+            account_id,
+            content,
+            created_at,
+        }: CommentBorrowed<'a>,
+    ) -> Self {
+        Self {
+            id,
+            blog_id,
+            account_id,
+            content: content.into(),
+            created_at,
+        }
+    }
+}
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
 pub struct UuidUuidQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
@@ -74,9 +108,70 @@ where
         Ok(it)
     }
 }
+pub struct CommentQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<CommentBorrowed, tokio_postgres::Error>,
+    mapper: fn(CommentBorrowed) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> CommentQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(self, mapper: fn(CommentBorrowed) -> R) -> CommentQuery<'c, 'a, 's, C, R, N> {
+        CommentQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO comments(blog_id, account_id, content) VALUES($1, $2, $3) RETURNING ID",
+        "INSERT INTO comments(blog_id, account_id, content) VALUES($1, $2, $3) RETURNING id",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
@@ -113,6 +208,36 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         params: &'a CreateParams<T1>,
     ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 3> {
         self.bind(client, &params.blog_id, &params.account_id, &params.content)
+    }
+}
+pub fn get_by_blog_id() -> GetByBlogIdStmt {
+    GetByBlogIdStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM comments WHERE blog_id = $1",
+    ))
+}
+pub struct GetByBlogIdStmt(crate::client::async_::Stmt);
+impl GetByBlogIdStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        blog_id: &'a uuid::Uuid,
+    ) -> CommentQuery<'c, 'a, 's, C, Comment, 1> {
+        CommentQuery {
+            client,
+            params: [blog_id],
+            stmt: &mut self.0,
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<CommentBorrowed, tokio_postgres::Error> {
+                    Ok(CommentBorrowed {
+                        id: row.try_get(0)?,
+                        blog_id: row.try_get(1)?,
+                        account_id: row.try_get(2)?,
+                        content: row.try_get(3)?,
+                        created_at: row.try_get(4)?,
+                    })
+                },
+            mapper: |it| Comment::from(it),
+        }
     }
 }
 pub fn delete() -> DeleteStmt {

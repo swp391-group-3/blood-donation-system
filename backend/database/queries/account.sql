@@ -1,3 +1,5 @@
+--: Account(gender?, address?, birthday?, blood_group?)
+
 --! register (password?)
 INSERT INTO accounts(
     email,
@@ -42,16 +44,23 @@ VALUES (
 )
 RETURNING id;
 
---! get_by_email
-SELECT id, password FROM accounts WHERE email = :email;
-
---! get : (gender?, address?, birthday?, blood_group?)
-SELECT role, email, phone, name, gender, address, birthday, blood_group, is_active, created_at
+--! get : Account
+SELECT * 
 FROM accounts
 WHERE id = :id;
 
---! get_all : (gender?, address?, birthday?, blood_group?)
-SELECT role, email, phone, name, gender, address, birthday, blood_group, is_active, created_at
+--! get_by_email : Account
+SELECT * 
+FROM accounts
+WHERE email = :email;
+
+--! get_by_role : Account
+SELECT * 
+FROM accounts
+WHERE role = :role;
+
+--! get_all : Account
+SELECT *
 FROM accounts;
 
 --! update (phone?, name?, gender?, address?, birthday?)
@@ -65,8 +74,3 @@ WHERE id = :id;
 
 --! delete
 UPDATE accounts SET is_active = false WHERE id = :id;
-
---! get_by_role : (gender?, address?, birthday?, blood_group?)
-SELECT role, email, phone, name, gender, address, birthday, blood_group, is_active, created_at
-FROM accounts
-WHERE role = :role;

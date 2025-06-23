@@ -1,3 +1,5 @@
+--: Donation()
+
 --! create
 INSERT INTO donations(appointment_id, type, amount)
 VALUES (
@@ -7,21 +9,21 @@ VALUES (
 )
 RETURNING id;
 
---! get
-SELECT id, appointment_id, type, amount, created_at
+--! get : Donation
+SELECT *
 FROM donations
 WHERE id = :id;
 
---! get_by_appointment_id
-SELECT id, appointment_id, type, amount, created_at
+--! get_by_appointment_id : Donation
+SELECT *
 FROM donations
 WHERE appointment_id = :appointment_id;
 
---! get_all
+--! get_all : Donation
 SELECT id, appointment_id, type, amount, created_at
 FROM donations;
 
---! get_by_member_id
+--! get_by_member_id : Donation
 SELECT id, appointment_id, type, amount, created_at
 FROM donations
 WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = :member_id);

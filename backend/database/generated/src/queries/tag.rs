@@ -1,21 +1,21 @@
 // This file was generated with `clorinde`. Do not modify.
 
-#[derive(Clone, Copy, Debug)]
-pub struct CreateParams {
-    pub request_id: uuid::Uuid,
-    pub member_id: uuid::Uuid,
-}
-#[derive(Clone, Copy, Debug)]
-pub struct UpdateStatusParams {
-    pub status: ctypes::AppointmentStatus,
+#[derive(Debug, Clone, PartialEq)]
+pub struct Tag {
     pub id: uuid::Uuid,
+    pub name: String,
 }
-#[derive(Debug, Clone, PartialEq, Copy)]
-pub struct Appointment {
+pub struct TagBorrowed<'a> {
     pub id: uuid::Uuid,
-    pub request_id: uuid::Uuid,
-    pub member_id: uuid::Uuid,
-    pub status: ctypes::AppointmentStatus,
+    pub name: &'a str,
+}
+impl<'a> From<TagBorrowed<'a>> for Tag {
+    fn from(TagBorrowed { id, name }: TagBorrowed<'a>) -> Self {
+        Self {
+            id,
+            name: name.into(),
+        }
+    }
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
@@ -80,19 +80,19 @@ where
         Ok(it)
     }
 }
-pub struct AppointmentQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct TagQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<Appointment, tokio_postgres::Error>,
-    mapper: fn(Appointment) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<TagBorrowed, tokio_postgres::Error>,
+    mapper: fn(TagBorrowed) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> AppointmentQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> TagQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(Appointment) -> R) -> AppointmentQuery<'c, 'a, 's, C, R, N> {
-        AppointmentQuery {
+    pub fn map<R>(self, mapper: fn(TagBorrowed) -> R) -> TagQuery<'c, 'a, 's, C, R, N> {
+        TagQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -143,136 +143,71 @@ where
 }
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO appointments(request_id, member_id) VALUES ($1, $2) RETURNING id",
+        "INSERT INTO tags(name) VALUES($1) RETURNING id",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
 impl CreateStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-        request_id: &'a uuid::Uuid,
-        member_id: &'a uuid::Uuid,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 2> {
+        name: &'a T1,
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 1> {
         UuidUuidQuery {
             client,
-            params: [request_id, member_id],
+            params: [name],
             stmt: &mut self.0,
             extractor: |row| Ok(row.try_get(0)?),
             mapper: |it| it,
         }
     }
 }
-impl<'c, 'a, 's, C: GenericClient>
-    crate::client::async_::Params<
-        'c,
-        'a,
-        's,
-        CreateParams,
-        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 2>,
-        C,
-    > for CreateStmt
-{
-    fn params(
-        &'s mut self,
-        client: &'c C,
-        params: &'a CreateParams,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 2> {
-        self.bind(client, &params.request_id, &params.member_id)
-    }
-}
-pub fn get() -> GetStmt {
-    GetStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM appointments WHERE id = $1",
+pub fn get_by_blog_id() -> GetByBlogIdStmt {
+    GetByBlogIdStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = $1)",
     ))
 }
-pub struct GetStmt(crate::client::async_::Stmt);
-impl GetStmt {
+pub struct GetByBlogIdStmt(crate::client::async_::Stmt);
+impl GetByBlogIdStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-        id: &'a uuid::Uuid,
-    ) -> AppointmentQuery<'c, 'a, 's, C, Appointment, 1> {
-        AppointmentQuery {
+        blog_id: &'a uuid::Uuid,
+    ) -> TagQuery<'c, 'a, 's, C, Tag, 1> {
+        TagQuery {
             client,
-            params: [id],
+            params: [blog_id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<Appointment, tokio_postgres::Error> {
-                Ok(Appointment {
+            extractor: |row: &tokio_postgres::Row| -> Result<TagBorrowed, tokio_postgres::Error> {
+                Ok(TagBorrowed {
                     id: row.try_get(0)?,
-                    request_id: row.try_get(1)?,
-                    member_id: row.try_get(2)?,
-                    status: row.try_get(3)?,
+                    name: row.try_get(1)?,
                 })
             },
-            mapper: |it| Appointment::from(it),
+            mapper: |it| Tag::from(it),
         }
     }
 }
-pub fn get_by_member_id() -> GetByMemberIdStmt {
-    GetByMemberIdStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM appointments WHERE member_id = $1",
-    ))
+pub fn get_all() -> GetAllStmt {
+    GetAllStmt(crate::client::async_::Stmt::new("SELECT * FROM tags"))
 }
-pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
-impl GetByMemberIdStmt {
+pub struct GetAllStmt(crate::client::async_::Stmt);
+impl GetAllStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-        member_id: &'a uuid::Uuid,
-    ) -> AppointmentQuery<'c, 'a, 's, C, Appointment, 1> {
-        AppointmentQuery {
+    ) -> TagQuery<'c, 'a, 's, C, Tag, 0> {
+        TagQuery {
             client,
-            params: [member_id],
+            params: [],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<Appointment, tokio_postgres::Error> {
-                Ok(Appointment {
+            extractor: |row: &tokio_postgres::Row| -> Result<TagBorrowed, tokio_postgres::Error> {
+                Ok(TagBorrowed {
                     id: row.try_get(0)?,
-                    request_id: row.try_get(1)?,
-                    member_id: row.try_get(2)?,
-                    status: row.try_get(3)?,
+                    name: row.try_get(1)?,
                 })
             },
-            mapper: |it| Appointment::from(it),
+            mapper: |it| Tag::from(it),
         }
-    }
-}
-pub fn update_status() -> UpdateStatusStmt {
-    UpdateStatusStmt(crate::client::async_::Stmt::new(
-        "UPDATE appointments SET status = $1 WHERE id = $2",
-    ))
-}
-pub struct UpdateStatusStmt(crate::client::async_::Stmt);
-impl UpdateStatusStmt {
-    pub async fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-        status: &'a ctypes::AppointmentStatus,
-        id: &'a uuid::Uuid,
-    ) -> Result<u64, tokio_postgres::Error> {
-        let stmt = self.0.prepare(client).await?;
-        client.execute(stmt, &[status, id]).await
-    }
-}
-impl<'a, C: GenericClient + Send + Sync>
-    crate::client::async_::Params<
-        'a,
-        'a,
-        'a,
-        UpdateStatusParams,
-        std::pin::Pin<
-            Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
-        >,
-        C,
-    > for UpdateStatusStmt
-{
-    fn params(
-        &'a mut self,
-        client: &'a C,
-        params: &'a UpdateStatusParams,
-    ) -> std::pin::Pin<
-        Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
-    > {
-        Box::pin(self.bind(client, &params.status, &params.id))
     }
 }

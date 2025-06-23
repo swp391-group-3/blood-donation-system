@@ -9,16 +9,25 @@ pub struct UpdateParams<T1: crate::StringSql> {
 pub struct GetAll {
     pub id: i32,
     pub content: String,
+    pub is_active: bool,
 }
 pub struct GetAllBorrowed<'a> {
     pub id: i32,
     pub content: &'a str,
+    pub is_active: bool,
 }
 impl<'a> From<GetAllBorrowed<'a>> for GetAll {
-    fn from(GetAllBorrowed { id, content }: GetAllBorrowed<'a>) -> Self {
+    fn from(
+        GetAllBorrowed {
+            id,
+            content,
+            is_active,
+        }: GetAllBorrowed<'a>,
+    ) -> Self {
         Self {
             id,
             content: content.into(),
+            is_active,
         }
     }
 }
@@ -169,7 +178,7 @@ impl CreateStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT id, content FROM questions WHERE is_active = true",
+        "SELECT * FROM questions WHERE is_active = true",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -187,6 +196,7 @@ impl GetAllStmt {
                     Ok(GetAllBorrowed {
                         id: row.try_get(0)?,
                         content: row.try_get(1)?,
+                        is_active: row.try_get(2)?,
                     })
                 },
             mapper: |it| GetAll::from(it),
