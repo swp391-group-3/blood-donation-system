@@ -1,7 +1,6 @@
 mod approve;
 mod create;
 mod get;
-mod get_answer;
 mod get_by_member_id;
 mod reject;
 mod update_status;
@@ -9,40 +8,97 @@ mod update_status;
 use std::sync::Arc;
 
 use axum::{Router, routing};
-use chrono::{DateTime, Utc};
 use ctypes::{AppointmentStatus, Role};
-use database::queries::appointment::{GetBorrowed, GetByMemberIdBorrowed};
+use database::{
+    deadpool_postgres::Object,
+    queries::{self, answer::GetByAppointmentIdBorrowed},
+};
 use model_mapper::Mapper;
 use serde::Serialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::{middleware, state::ApiState};
+use crate::{error::Result, middleware, state::ApiState};
 
 pub use approve::*;
 pub use create::*;
 pub use get::*;
-pub use get_answer::*;
 pub use get_by_member_id::*;
 pub use reject::*;
 pub use update_status::*;
 
-#[derive(Serialize, ToSchema, Mapper)]
-#[mapper(derive(from, ty = GetByMemberIdBorrowed::<'_>))]
-#[mapper(derive(from, ty = GetBorrowed::<'_>))]
+use super::{account::Account, blood_request::BloodRequest, donation::Donation, health::Health};
+
+#[derive(Debug, Serialize, ToSchema, Mapper)]
+#[mapper(from, ty = GetByAppointmentIdBorrowed::<'_>)]
+pub struct Answer {
+    pub question: String,
+    pub answer: String,
+}
+
+#[derive(Serialize, ToSchema)]
 pub struct Appointment {
     pub id: Uuid,
-    pub request_id: Uuid,
-    pub member_id: Uuid,
-    pub title: String,
+    pub member: Account,
+    pub request: BloodRequest,
+    pub answers: Vec<Answer>,
+    pub health: Option<Health>,
+    pub donation: Option<Donation>,
     pub status: AppointmentStatus,
-    pub start_time: DateTime<Utc>,
-    pub end_time: DateTime<Utc>,
+}
+
+impl Appointment {
+    pub async fn new(
+        id: Uuid,
+        member_id: Uuid,
+        request_id: Uuid,
+        status: AppointmentStatus,
+        database: &Object,
+    ) -> Result<Self> {
+        let member = queries::account::get()
+            .bind(database, &member_id)
+            .map(Account::from_get)
+            .one()
+            .await?;
+
+        let request = queries::blood_request::get()
+            .bind(database, &request_id)
+            .map(BloodRequest::from_get)
+            .one()
+            .await?;
+
+        let answers = queries::answer::get_by_appointment_id()
+            .bind(database, &id)
+            .map(|raw| raw.into())
+            .all()
+            .await?;
+
+        let health = queries::health::get_by_appointment_id()
+            .bind(database, &id)
+            .map(Health::from_get_by_appointment_id)
+            .opt()
+            .await?;
+
+        let donation = queries::donation::get_by_appointment_id()
+            .bind(database, &id)
+            .map(Donation::from_get_by_appointment_id)
+            .opt()
+            .await?;
+
+        Ok(Self {
+            id,
+            member,
+            request,
+            answers,
+            health,
+            donation,
+            status,
+        })
+    }
 }
 
 pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
     let staff_router = Router::new()
-        .route("/appointment/{id}/answer", routing::get(get_answer))
         .route("/appointment/{id}", routing::get(get))
         .route("/appointment/{id}", routing::post(update_status))
         .route("/appointment/{id}/approve", routing::patch(approve))

@@ -27,11 +27,13 @@ use super::Appointment;
 pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<Appointment>> {
     let database = state.database_pool.get().await?;
 
-    let appointment = queries::appointment::get()
+    let raw = queries::appointment::get()
         .bind(&database, &id)
-        .map(|raw| Appointment::from(raw))
         .one()
         .await?;
+
+    let appointment =
+        Appointment::new(raw.id, raw.member_id, raw.request_id, raw.status, &database).await?;
 
     Ok(Json(appointment))
 }

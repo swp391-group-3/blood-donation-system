@@ -52,7 +52,6 @@ impl Modify for SecurityAddon {
         controller::blood_request::delete,
 
         controller::appointment::create,
-        controller::appointment::get_answer,
         controller::appointment::get,
         controller::appointment::get_by_member_id,
         controller::appointment::update_status,
