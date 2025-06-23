@@ -97,7 +97,7 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                             Select Donation Type
                                         </FormLabel>
                                         <FormControl>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                                 {donationTypes.map((type) => {
                                                     const config =
                                                         donationTypeConfigs[
@@ -175,7 +175,7 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                 control={form.control}
                                 name="amount"
                                 render={({ field }) => (
-                                    <FormItem className="space-y-4">
+                                    <FormItem className="space-y-4 mb-8">
                                         <FormLabel className="text-base font-medium text-gray-900">
                                             Collection Amount
                                         </FormLabel>
@@ -184,12 +184,11 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                                 <Input
                                                     {...field}
                                                     type="number"
-                                                    className="w-fit"
                                                     required
                                                 />
-                                                <div className="text-gray-600">
+                                                <span>
                                                     ml
-                                                </div>
+                                                </span>
                                             </div>
                                         </FormControl>
                                         <FormMessage />
