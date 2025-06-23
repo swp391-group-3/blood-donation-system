@@ -40,7 +40,7 @@ pub struct Answer {
 pub struct Appointment {
     pub id: Uuid,
     pub member: Account,
-    pub request: BloodRequest,
+    pub request: Option<BloodRequest>,
     pub answers: Vec<Answer>,
     pub health: Option<Health>,
     pub donation: Option<Donation>,
@@ -59,31 +59,36 @@ impl Appointment {
             .bind(database, &member_id)
             .map(Account::from_get)
             .one()
-            .await?;
+            .await
+            .unwrap();
 
         let request = queries::blood_request::get()
             .bind(database, &request_id)
             .map(BloodRequest::from_get)
-            .one()
-            .await?;
+            .opt()
+            .await
+            .unwrap();
 
         let answers = queries::answer::get_by_appointment_id()
             .bind(database, &id)
             .map(|raw| raw.into())
             .all()
-            .await?;
+            .await
+            .unwrap();
 
         let health = queries::health::get_by_appointment_id()
             .bind(database, &id)
             .map(Health::from_get_by_appointment_id)
             .opt()
-            .await?;
+            .await
+            .unwrap();
 
         let donation = queries::donation::get_by_appointment_id()
             .bind(database, &id)
             .map(Donation::from_get_by_appointment_id)
             .opt()
-            .await?;
+            .await
+            .unwrap();
 
         Ok(Self {
             id,

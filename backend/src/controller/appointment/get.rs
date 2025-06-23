@@ -33,7 +33,9 @@ pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Js
         .await?;
 
     let appointment =
-        Appointment::new(raw.id, raw.member_id, raw.request_id, raw.status, &database).await?;
+        Appointment::new(raw.id, raw.member_id, raw.request_id, raw.status, &database)
+            .await
+            .unwrap();
 
     Ok(Json(appointment))
 }
