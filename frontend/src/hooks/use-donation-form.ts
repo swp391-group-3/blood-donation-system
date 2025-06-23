@@ -8,10 +8,10 @@ import z from 'zod';
 
 export const schema = z.object({
     type: z.enum(donationTypes),
-    password: z.coerce.number(),
+    amount: z.coerce.number(),
 });
 
-export const useCreateDonationForm = (appointmentId: string) => {
+export const useDonationForm = (appointmentId: string) => {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
