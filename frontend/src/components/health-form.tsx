@@ -96,7 +96,7 @@ export const HealthForm = ({ appointmentId }: Props) => {
                             />
                             <FormField
                                 control={form.control}
-                                name="heart_pulse"
+                                name="heart_rate"
                                 render={({ field }) => (
                                     <FormItem className="space-y-2">
                                         <FormLabel className="flex items-center space-x-2">

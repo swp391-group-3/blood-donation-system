@@ -9,8 +9,7 @@ import z from 'zod';
 
 export const schema = z
     .object({
-        heart_pulse: z.number().int(),
-        hemoglobin: z.number(),
+        heart_rate: z.number().int(),
         is_good_health: z.boolean(),
         lower_blood_pressure: z.number().int(),
         note: z.string().optional(),
