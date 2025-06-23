@@ -1,6 +1,5 @@
 use std::{collections::HashMap, sync::Arc};
 
-use axum::http::StatusCode;
 use database::{
     deadpool_postgres::{self, Object},
     tokio_postgres::NoTls,
@@ -11,7 +10,7 @@ use lettre::{AsyncSmtpTransport, Tokio1Executor, transport::smtp::authentication
 use crate::{
     config::{CONFIG, oidc::Provider},
     error::{Error, Result},
-    util::{jwt::JwtService, oidc::OpenIdConnectClient},
+    util::{auth::JwtService, auth::OpenIdConnectClient},
 };
 
 pub struct ApiState {

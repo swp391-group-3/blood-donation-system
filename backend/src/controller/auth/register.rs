@@ -1,8 +1,7 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
+use axum::{Json, extract::State, http::StatusCode};
 use axum_extra::extract::CookieJar;
-use axum_valid::Valid;
 use chrono::NaiveDate;
 use ctypes::{BloodGroup, Gender};
 use database::{
@@ -12,21 +11,18 @@ use database::{
 use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
-use validator::Validate;
 
 use crate::{
     config::CONFIG,
-    error::{AuthError, Error, Result},
+    error::{Error, Result},
     state::ApiState,
 };
 
-#[derive(Deserialize, ToSchema, Validate, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper)]
 #[schema(as = auth::register::request)]
 #[mapper(into, ty = RegisterParams::<String, String, String, String, String>)]
 pub struct Request {
-    #[validate(email)]
     pub email: String,
-    #[validate(length(min = 1))]
     pub password: String,
     pub phone: String,
     pub name: String,
@@ -45,32 +41,50 @@ pub struct Request {
 pub async fn register(
     state: State<Arc<ApiState>>,
     jar: CookieJar,
-    Valid(Json(mut request)): Valid<Json<Request>>,
+    Json(mut request): Json<Request>,
 ) -> Result<CookieJar> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let password =
-        bcrypt::hash_with_salt(&request.password, CONFIG.bcrypt.cost, CONFIG.bcrypt.salt)
-            .map_err(|error| {
-                tracing::error!(error =? error);
-                AuthError::InvalidLoginData
-            })?
-            .to_string();
-    request.password = password;
+    request.password =
+        match bcrypt::hash_with_salt(&request.password, CONFIG.bcrypt.cost, CONFIG.bcrypt.salt) {
+            Ok(hashed_password) => hashed_password.to_string(),
+            Err(error) => {
+                tracing::error!(?error, "Failed to hash password");
 
-    let id = queries::account::register()
+                return Err(Error::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .message("Invalid password".into())
+                    .build());
+            }
+        };
+
+    let id = match queries::account::register()
         .params(&database, &request.into())
         .one()
         .await
-        .map_err(|error| {
-            tracing::error!(error =? error);
-            AuthError::AccountExisted
-        })?;
+    {
+        Ok(id) => id,
+        Err(error) => {
+            tracing::error!(?error, "Failed to create account");
 
-    let cookie = state.jwt_service.new_credential(id).map_err(|error| {
-        tracing::error!(error =? error);
-        Error::from(AuthError::InvalidLoginData)
-    })?;
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid register data".into())
+                .build());
+        }
+    };
+
+    let cookie = match state.jwt_service.new_credential(id) {
+        Ok(cookie) => cookie,
+        Err(error) => {
+            tracing::error!(?error, "Failed to generate token");
+
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid register data".into())
+                .build());
+        }
+    };
 
     Ok(jar.add(cookie))
 }
