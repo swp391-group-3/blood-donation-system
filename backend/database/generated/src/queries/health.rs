@@ -7,8 +7,7 @@ pub struct CreateParams<T1: crate::StringSql> {
     pub weight: f32,
     pub upper_blood_pressure: i32,
     pub lower_blood_pressure: i32,
-    pub heart_pulse: i32,
-    pub hemoglobin: f32,
+    pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: Option<T1>,
 }
@@ -18,8 +17,7 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub weight: Option<f32>,
     pub upper_blood_pressure: Option<i32>,
     pub lower_blood_pressure: Option<i32>,
-    pub heart_pulse: Option<i32>,
-    pub hemoglobin: Option<f32>,
+    pub heart_rate: Option<i32>,
     pub is_good_health: Option<bool>,
     pub note: Option<T1>,
     pub id: uuid::Uuid,
@@ -32,8 +30,7 @@ pub struct GetByAppointmentId {
     pub weight: f32,
     pub upper_blood_pressure: i32,
     pub lower_blood_pressure: i32,
-    pub heart_pulse: i32,
-    pub hemoglobin: f32,
+    pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: String,
     pub created_at: crate::types::time::TimestampTz,
@@ -45,8 +42,7 @@ pub struct GetByAppointmentIdBorrowed<'a> {
     pub weight: f32,
     pub upper_blood_pressure: i32,
     pub lower_blood_pressure: i32,
-    pub heart_pulse: i32,
-    pub hemoglobin: f32,
+    pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: &'a str,
     pub created_at: crate::types::time::TimestampTz,
@@ -60,8 +56,7 @@ impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
             weight,
             upper_blood_pressure,
             lower_blood_pressure,
-            heart_pulse,
-            hemoglobin,
+            heart_rate,
             is_good_health,
             note,
             created_at,
@@ -74,8 +69,7 @@ impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
             weight,
             upper_blood_pressure,
             lower_blood_pressure,
-            heart_pulse,
-            hemoglobin,
+            heart_rate,
             is_good_health,
             note: note.into(),
             created_at,
@@ -90,8 +84,7 @@ pub struct GetByMemberId {
     pub weight: f32,
     pub upper_blood_pressure: i32,
     pub lower_blood_pressure: i32,
-    pub heart_pulse: i32,
-    pub hemoglobin: f32,
+    pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: String,
     pub created_at: crate::types::time::TimestampTz,
@@ -103,8 +96,7 @@ pub struct GetByMemberIdBorrowed<'a> {
     pub weight: f32,
     pub upper_blood_pressure: i32,
     pub lower_blood_pressure: i32,
-    pub heart_pulse: i32,
-    pub hemoglobin: f32,
+    pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: &'a str,
     pub created_at: crate::types::time::TimestampTz,
@@ -118,8 +110,7 @@ impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
             weight,
             upper_blood_pressure,
             lower_blood_pressure,
-            heart_pulse,
-            hemoglobin,
+            heart_rate,
             is_good_health,
             note,
             created_at,
@@ -132,8 +123,7 @@ impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
             weight,
             upper_blood_pressure,
             lower_blood_pressure,
-            heart_pulse,
-            hemoglobin,
+            heart_rate,
             is_good_health,
             note: note.into(),
             created_at,
@@ -334,7 +324,7 @@ where
 }
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO healths( appointment_id, temperature, weight, upper_blood_pressure, lower_blood_pressure, heart_pulse, hemoglobin, is_good_health, note ) VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING id",
+        "INSERT INTO healths( appointment_id, temperature, weight, upper_blood_pressure, lower_blood_pressure, heart_rate, is_good_health, note ) VALUES( $1, $2, $3, $4, $5, $6, $7, $8 ) RETURNING id",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
@@ -347,11 +337,10 @@ impl CreateStmt {
         weight: &'a f32,
         upper_blood_pressure: &'a i32,
         lower_blood_pressure: &'a i32,
-        heart_pulse: &'a i32,
-        hemoglobin: &'a f32,
+        heart_rate: &'a i32,
         is_good_health: &'a bool,
         note: &'a Option<T1>,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 9> {
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 8> {
         UuidUuidQuery {
             client,
             params: [
@@ -360,8 +349,7 @@ impl CreateStmt {
                 weight,
                 upper_blood_pressure,
                 lower_blood_pressure,
-                heart_pulse,
-                hemoglobin,
+                heart_rate,
                 is_good_health,
                 note,
             ],
@@ -377,7 +365,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         'a,
         's,
         CreateParams<T1>,
-        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 9>,
+        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 8>,
         C,
     > for CreateStmt
 {
@@ -385,7 +373,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         &'s mut self,
         client: &'c C,
         params: &'a CreateParams<T1>,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 9> {
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 8> {
         self.bind(
             client,
             &params.appointment_id,
@@ -393,8 +381,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
             &params.weight,
             &params.upper_blood_pressure,
             &params.lower_blood_pressure,
-            &params.heart_pulse,
-            &params.hemoglobin,
+            &params.heart_rate,
             &params.is_good_health,
             &params.note,
         )
@@ -426,11 +413,10 @@ impl GetByAppointmentIdStmt {
                     weight: row.try_get(3)?,
                     upper_blood_pressure: row.try_get(4)?,
                     lower_blood_pressure: row.try_get(5)?,
-                    heart_pulse: row.try_get(6)?,
-                    hemoglobin: row.try_get(7)?,
-                    is_good_health: row.try_get(8)?,
-                    note: row.try_get(9)?,
-                    created_at: row.try_get(10)?,
+                    heart_rate: row.try_get(6)?,
+                    is_good_health: row.try_get(7)?,
+                    note: row.try_get(8)?,
+                    created_at: row.try_get(9)?,
                 })
             },
             mapper: |it| GetByAppointmentId::from(it),
@@ -462,11 +448,10 @@ impl GetByMemberIdStmt {
                         weight: row.try_get(3)?,
                         upper_blood_pressure: row.try_get(4)?,
                         lower_blood_pressure: row.try_get(5)?,
-                        heart_pulse: row.try_get(6)?,
-                        hemoglobin: row.try_get(7)?,
-                        is_good_health: row.try_get(8)?,
-                        note: row.try_get(9)?,
-                        created_at: row.try_get(10)?,
+                        heart_rate: row.try_get(6)?,
+                        is_good_health: row.try_get(7)?,
+                        note: row.try_get(8)?,
+                        created_at: row.try_get(9)?,
                     })
                 },
             mapper: |it| GetByMemberId::from(it),
@@ -475,7 +460,7 @@ impl GetByMemberIdStmt {
 }
 pub fn update() -> UpdateStmt {
     UpdateStmt(crate::client::async_::Stmt::new(
-        "UPDATE healths SET temperature = COALESCE($1, temperature), weight = COALESCE($2, weight), upper_blood_pressure = COALESCE($3, upper_blood_pressure), lower_blood_pressure = COALESCE($4, lower_blood_pressure), heart_pulse = COALESCE($5, heart_pulse), hemoglobin = COALESCE($6, hemoglobin), is_good_health = COALESCE($7, is_good_health), note = COALESCE($8, note) WHERE id = $9",
+        "UPDATE healths SET temperature = COALESCE($1, temperature), weight = COALESCE($2, weight), upper_blood_pressure = COALESCE($3, upper_blood_pressure), lower_blood_pressure = COALESCE($4, lower_blood_pressure), heart_rate = COALESCE($5, heart_rate), is_good_health = COALESCE($6, is_good_health), note = COALESCE($7, note) WHERE id = $8",
     ))
 }
 pub struct UpdateStmt(crate::client::async_::Stmt);
@@ -487,8 +472,7 @@ impl UpdateStmt {
         weight: &'a Option<f32>,
         upper_blood_pressure: &'a Option<i32>,
         lower_blood_pressure: &'a Option<i32>,
-        heart_pulse: &'a Option<i32>,
-        hemoglobin: &'a Option<f32>,
+        heart_rate: &'a Option<i32>,
         is_good_health: &'a Option<bool>,
         note: &'a Option<T1>,
         id: &'a uuid::Uuid,
@@ -502,8 +486,7 @@ impl UpdateStmt {
                     weight,
                     upper_blood_pressure,
                     lower_blood_pressure,
-                    heart_pulse,
-                    hemoglobin,
+                    heart_rate,
                     is_good_health,
                     note,
                     id,
@@ -537,8 +520,7 @@ impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
             &params.weight,
             &params.upper_blood_pressure,
             &params.lower_blood_pressure,
-            &params.heart_pulse,
-            &params.hemoglobin,
+            &params.heart_rate,
             &params.is_good_health,
             &params.note,
             &params.id,

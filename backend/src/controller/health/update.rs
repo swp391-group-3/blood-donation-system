@@ -27,8 +27,7 @@ pub struct Request {
     pub weight: Option<f32>,
     pub upper_blood_pressure: Option<i32>,
     pub lower_blood_pressure: Option<i32>,
-    pub heart_pulse: Option<i32>,
-    pub hemoglobin: Option<f32>,
+    pub heart_rate: Option<i32>,
     pub is_good_health: Option<bool>,
     pub note: Option<String>,
 }

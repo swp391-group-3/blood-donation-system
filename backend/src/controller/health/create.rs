@@ -36,10 +36,7 @@ pub struct Request {
     pub lower_blood_pressure: i32,
     // TODO: check heart pulse range
     #[validate(range(exclusive_min = 0))]
-    pub heart_pulse: i32,
-    // TODO: check hemoglobin range
-    #[validate(range(exclusive_min = 0.))]
-    pub hemoglobin: f32,
+    pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: Option<String>,
 }

@@ -121,27 +121,13 @@ export const HealthOverviewCard = ({ healths }: { healths: Health[] }) => {
                                     Blood Pressure
                                 </div>
                             </div>
-                            <div className="text-center p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
-                                <Droplets className="h-5 w-5 text-emerald-600 mx-auto mb-2" />
+                            <div className="text-center p-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
+                                <Activity className="h-5 w-5 text-rose-600 mx-auto mb-2" />
                                 <div className="text-lg font-bold text-slate-900">
-                                    {healths[0].hemoglobin}
+                                    {healths[0].heart_rate}
                                 </div>
                                 <div className="text-xs text-slate-600">
-                                    Hemoglobin
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 p-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Activity className="h-5 w-5 text-rose-600" />
-                                    <span className="text-sm font-medium text-slate-700">
-                                        Heart Rate
-                                    </span>
-                                </div>
-                                <div className="text-xl font-bold text-slate-900">
-                                    {healths[0].heart_pulse} bpm
+                                    Heart Rate
                                 </div>
                             </div>
                         </div>
