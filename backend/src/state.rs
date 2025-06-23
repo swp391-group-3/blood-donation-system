@@ -1,14 +1,18 @@
 use std::{collections::HashMap, sync::Arc};
 
-use database::{deadpool_postgres, tokio_postgres::NoTls};
+use axum::http::StatusCode;
+use database::{
+    deadpool_postgres::{self, Object},
+    tokio_postgres::NoTls,
+};
 use futures::{StreamExt, stream};
 
 use crate::{
     config::{CONFIG, oidc::Provider},
+    error::{Error, Result},
     util::{jwt::JwtService, oidc::OpenIdConnectClient},
 };
 
-#[allow(unused)]
 pub struct ApiState {
     pub database_pool: deadpool_postgres::Pool,
     pub oidc_clients: HashMap<Provider, OpenIdConnectClient>,
@@ -40,5 +44,18 @@ impl ApiState {
             oidc_clients,
             jwt_service: Default::default(),
         })
+    }
+
+    pub async fn database(&self) -> Result<Object> {
+        match self.database_pool.get().await {
+            Ok(database) => Ok(database),
+            Err(error) => {
+                tracing::error!(error =? error);
+
+                Err(Error::builder()
+                    .status(StatusCode::INTERNAL_SERVER_ERROR)
+                    .build())
+            }
+        }
     }
 }
