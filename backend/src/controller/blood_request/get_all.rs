@@ -6,7 +6,7 @@ use database::queries;
 use crate::{error::Result, state::ApiState, util::jwt::Claims};
 
 use super::BloodRequest;
-use crate::util::blood_compatible::get_compatible;
+use crate::util::blood::get_compatible;
 
 #[utoipa::path(
     get,

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{controller::account::Account, util::blood_compatible::get_compatible};
+use crate::{controller::account::Account, util::blood::get_compatible};
 use axum::{Json, extract::State};
 use axum_valid::Valid;
 use chrono::{DateTime, Utc};
