@@ -1,9 +1,7 @@
 'use client';
 
-import { HealthForm } from '@/components/health-form';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent } from '@/components/ui/card';
 import { useAppointment } from '@/hooks/use-appointment';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { Droplets, User } from 'lucide-react';

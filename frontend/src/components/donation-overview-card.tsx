@@ -1,11 +1,10 @@
 import { displayDonationType, Donation } from '@/lib/api/dto/donation';
 import { formatDistanceToNow } from 'date-fns';
-import { Calendar, Clock, Droplets, Heart, Printer, X } from 'lucide-react';
+import { Calendar, Clock, Droplets, Printer, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from './ui/button';
-import QRCode from 'qrcode';
 import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 
 const donationTypeConfig = {
