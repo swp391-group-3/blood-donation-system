@@ -9,13 +9,13 @@ import z from 'zod';
 
 export const schema = z
     .object({
-        heart_rate: z.number().int(),
+        heart_rate: z.coerce.number().int(),
         is_good_health: z.boolean(),
-        lower_blood_pressure: z.number().int(),
+        lower_blood_pressure: z.coerce.number().int(),
         note: z.string().optional(),
-        temperature: z.number().int(),
-        upper_blood_pressure: z.number().int(),
-        weight: z.number().int(),
+        temperature: z.coerce.number(),
+        upper_blood_pressure: z.coerce.number().int(),
+        weight: z.coerce.number().int(),
     })
     .refine((data) => data.lower_blood_pressure < data.upper_blood_pressure, {
         message: 'upper blood pressure must be > lower blood pressure',
