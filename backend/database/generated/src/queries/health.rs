@@ -32,7 +32,7 @@ pub struct GetByAppointmentId {
     pub lower_blood_pressure: i32,
     pub heart_rate: i32,
     pub is_good_health: bool,
-    pub note: String,
+    pub note: Option<String>,
     pub created_at: crate::types::time::TimestampTz,
 }
 pub struct GetByAppointmentIdBorrowed<'a> {
@@ -44,7 +44,7 @@ pub struct GetByAppointmentIdBorrowed<'a> {
     pub lower_blood_pressure: i32,
     pub heart_rate: i32,
     pub is_good_health: bool,
-    pub note: &'a str,
+    pub note: Option<&'a str>,
     pub created_at: crate::types::time::TimestampTz,
 }
 impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
@@ -71,7 +71,7 @@ impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
             lower_blood_pressure,
             heart_rate,
             is_good_health,
-            note: note.into(),
+            note: note.map(|v| v.into()),
             created_at,
         }
     }
@@ -86,7 +86,7 @@ pub struct GetByMemberId {
     pub lower_blood_pressure: i32,
     pub heart_rate: i32,
     pub is_good_health: bool,
-    pub note: String,
+    pub note: Option<String>,
     pub created_at: crate::types::time::TimestampTz,
 }
 pub struct GetByMemberIdBorrowed<'a> {
@@ -98,7 +98,7 @@ pub struct GetByMemberIdBorrowed<'a> {
     pub lower_blood_pressure: i32,
     pub heart_rate: i32,
     pub is_good_health: bool,
-    pub note: &'a str,
+    pub note: Option<&'a str>,
     pub created_at: crate::types::time::TimestampTz,
 }
 impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
@@ -125,7 +125,7 @@ impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
             lower_blood_pressure,
             heart_rate,
             is_good_health,
-            note: note.into(),
+            note: note.map(|v| v.into()),
             created_at,
         }
     }

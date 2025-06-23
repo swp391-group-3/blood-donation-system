@@ -33,7 +33,8 @@ pub struct Health {
     pub lower_blood_pressure: i32,
     pub heart_rate: i32,
     pub is_good_health: bool,
-    pub note: String,
+    #[mapper(with = note.map(|x| x.to_string()))]
+    pub note: Option<String>,
     pub created_at: DateTime<Utc>,
 }
 
