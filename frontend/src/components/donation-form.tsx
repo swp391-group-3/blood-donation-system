@@ -17,6 +17,7 @@ import {
     Droplets,
     FileText,
     Heart,
+    Info,
     Save,
     Shield,
     Sparkles,
@@ -30,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { useDonationForm } from '@/hooks/use-donation-form';
 import { donationTypes } from '@/lib/api/dto/donation';
+import { capitalCase } from 'change-case';
 
 interface Props {
     appointmentId: string;
@@ -182,6 +184,7 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                                 <Input
                                                     {...field}
                                                     type="number"
+                                                    className="w-fit"
                                                     required
                                                 />
                                                 <div className="text-gray-600">
@@ -192,6 +195,36 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                         <FormMessage />
                                     </FormItem>
                                 )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="type"
+                                render={({ field }) =>
+                                    field.value && (
+                                        <Alert>
+                                            <Info className="h-4 w-4" />
+                                            <AlertDescription>
+                                                <span className="font-bold">
+                                                    {capitalCase(field.value)}
+                                                </span>
+                                                donation selected. Expected
+                                                duration:{' '}
+                                                {
+                                                    donationTypeConfigs[
+                                                        field.value
+                                                    ].duration
+                                                }
+                                                .{' '}
+                                                {
+                                                    donationTypeConfigs[
+                                                        field.value
+                                                    ].description
+                                                }
+                                            </AlertDescription>
+                                        </Alert>
+                                    )
+                                }
                             />
                         </div>
                     </CardContent>
@@ -206,7 +239,7 @@ export const DonationForm = ({ appointmentId }: Props) => {
                         ) : (
                             <>
                                 <Save className="h-5 w-5 mr-3" />
-                                Create Donation Record
+                                Create Donation
                             </>
                         )}
                     </Button>
