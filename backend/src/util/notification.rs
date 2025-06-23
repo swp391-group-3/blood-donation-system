@@ -24,20 +24,16 @@ pub async fn send(
     {
         Ok(email) => email,
         Err(error) => {
-            tracing::error!("Failed to create email with error: {:#?}", error);
+            tracing::error!(?error, "Failed to create email");
 
-            return Err(Error::builder()
-                .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .build());
+            return Err(Error::internal());
         }
     };
 
     if let Err(error) = mailer.send(email).await {
-        tracing::error!("Failed to send email with error: {:#?}", error);
+        tracing::error!(?error, "Failed to send email");
 
-        return Err(Error::builder()
-            .status(StatusCode::INTERNAL_SERVER_ERROR)
-            .build());
+        return Err(Error::internal());
     }
 
     Ok(())

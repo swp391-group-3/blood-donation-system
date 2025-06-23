@@ -33,9 +33,7 @@ impl ApiState {
             .then(|(&provider, config)| async move {
                 (
                     provider,
-                    OpenIdConnectClient::from_config(config.clone())
-                        .await
-                        .unwrap(),
+                    OpenIdConnectClient::from_config(config.clone()).await,
                 )
             })
             .collect()
@@ -61,11 +59,9 @@ impl ApiState {
         match self.database_pool.get().await {
             Ok(database) => Ok(database),
             Err(error) => {
-                tracing::error!(error =? error);
+                tracing::error!(?error, "Failed to get database connection");
 
-                Err(Error::builder()
-                    .status(StatusCode::INTERNAL_SERVER_ERROR)
-                    .build())
+                Err(Error::internal())
             }
         }
     }

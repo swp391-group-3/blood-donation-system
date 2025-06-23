@@ -33,3 +33,11 @@ impl IntoResponse for Error {
             .into_response()
     }
 }
+
+impl Error {
+    pub fn internal() -> Error {
+        Error::builder()
+            .status(StatusCode::INTERNAL_SERVER_ERROR)
+            .build()
+    }
+}

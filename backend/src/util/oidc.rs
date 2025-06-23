@@ -1,4 +1,4 @@
-use anyhow::{Context, Result, ensure};
+use axum::http::StatusCode;
 use openidconnect::{
     AuthenticationFlow, AuthorizationCode, CsrfToken, EndpointMaybeSet, EndpointNotSet,
     EndpointSet, Nonce, Scope,
@@ -9,7 +9,10 @@ use openidconnect::{
     url::Url,
 };
 
-use crate::config::oidc::OpenIdConnectConfig;
+use crate::{
+    config::oidc::OpenIdConnectConfig,
+    error::{Error, Result},
+};
 
 type InnerClient = CoreClient<
     EndpointSet,
@@ -26,13 +29,16 @@ pub struct OpenIdConnectClient {
 }
 
 impl OpenIdConnectClient {
-    pub async fn from_config(config: OpenIdConnectConfig) -> Result<Self> {
+    pub async fn from_config(config: OpenIdConnectConfig) -> Self {
         let http_client = reqwest::ClientBuilder::new()
             .redirect(reqwest::redirect::Policy::none())
-            .build()?;
+            .build()
+            .unwrap();
 
         let provider_metadata =
-            CoreProviderMetadata::discover_async(config.issuer_url, &http_client).await?;
+            CoreProviderMetadata::discover_async(config.issuer_url, &http_client)
+                .await
+                .unwrap();
 
         let inner_client = CoreClient::from_provider_metadata(
             provider_metadata,
@@ -41,10 +47,10 @@ impl OpenIdConnectClient {
         )
         .set_redirect_uri(config.redirect_url);
 
-        Ok(Self {
+        Self {
             inner_client,
             http_client,
-        })
+        }
     }
 
     pub fn generate(&self) -> (Url, CsrfToken, Nonce) {
@@ -66,21 +72,52 @@ impl OpenIdConnectClient {
         csrf: CsrfToken,
         nonce: Nonce,
     ) -> Result<CoreIdTokenClaims> {
-        ensure!(state.secret() == csrf.secret(), "Invalid redirect");
+        if state.secret() != csrf.secret() {
+            return Err(Error::builder()
+                .status(StatusCode::FORBIDDEN)
+                .message("CSRF token not matched".into())
+                .build());
+        }
 
-        let token_response = self
-            .inner_client
-            .exchange_code(code)?
+        let token_exchange_request = match self.inner_client.exchange_code(code) {
+            Ok(request) => request,
+            Err(error) => {
+                tracing::error!(?error, "Failed to create token exchange request");
+
+                return Err(Error::internal());
+            }
+        };
+
+        let token_response = match token_exchange_request
             .request_async(&self.http_client)
-            .await?;
+            .await
+        {
+            Ok(response) => response,
+            Err(error) => {
+                tracing::error!(?error, "Failed to exchange token");
+
+                return Err(Error::internal());
+            }
+        };
 
         let id_token_verifier: CoreIdTokenVerifier = self.inner_client.id_token_verifier();
-        let id_token_claims: &CoreIdTokenClaims = token_response
-            .extra_fields()
-            .id_token()
-            .context("Missing id token")?
-            .claims(&id_token_verifier, &nonce)?;
+        let id_token = match token_response.extra_fields().id_token() {
+            Some(id_token) => id_token,
+            None => {
+                tracing::error!("Token exchange return empty token");
 
-        Ok(id_token_claims.clone())
+                return Err(Error::internal());
+            }
+        };
+        let claims = match id_token.claims(&id_token_verifier, &nonce) {
+            Ok(claims) => claims,
+            Err(error) => {
+                tracing::error!(?error, "Failed to decode claims");
+
+                return Err(Error::internal());
+            }
+        };
+
+        Ok(claims.clone())
     }
 }
