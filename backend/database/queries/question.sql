@@ -5,7 +5,7 @@ INSERT INTO questions(content)
 VALUES(:content)
 RETURNING id;
 
---! get_all
+--! get_all : Question
 SELECT *
 FROM questions
 WHERE is_active = true;

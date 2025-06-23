@@ -17,17 +17,17 @@ pub use ping::*;
 
 use super::state::ApiState;
 
-pub fn build(state: Arc<ApiState>) -> Router<Arc<ApiState>> {
+pub fn build() -> Router<Arc<ApiState>> {
     Router::new()
         .route("/", routing::get(ping))
         .merge(auth::build())
         .merge(blog::build())
-        .merge(comment::build(state.clone()))
-        .merge(account::build(state.clone()))
-        .merge(question::build(state.clone()))
-        .merge(blood_request::build(state.clone()))
-        .merge(appointment::build(state.clone()))
-        .merge(health::build(state.clone()))
-        .merge(blood_bag::build(state.clone()))
-        .merge(donation::build(state))
+        .merge(comment::build())
+        .merge(account::build())
+        .merge(question::build())
+        .merge(blood_request::build())
+        .merge(appointment::build())
+        .merge(health::build())
+        .merge(blood_bag::build())
+        .merge(donation::build())
 }

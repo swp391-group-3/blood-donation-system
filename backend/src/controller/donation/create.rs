@@ -3,8 +3,10 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
 use axum_valid::Valid;
+use ctypes::Role;
 use database::{
     client::Params,
     queries::{self, donation::CreateParams},
@@ -15,7 +17,11 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = donation::create::Request)]
@@ -43,15 +49,27 @@ pub struct Request {
 )]
 pub async fn create(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Path(appointment_id): Path<Uuid>,
     Valid(Json(request)): Valid<Json<Request>>,
 ) -> Result<Json<Uuid>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let id = queries::donation::create()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    match queries::donation::create()
         .params(&database, &request.with_appointment_id(appointment_id))
         .one()
-        .await?;
+        .await
+    {
+        Ok(id) => Ok(Json(id)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to create donation");
 
-    Ok(Json(id))
+            Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid donation data".into())
+                .build())
+        }
+    }
 }

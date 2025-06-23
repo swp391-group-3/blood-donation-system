@@ -11,20 +11,20 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub content: Option<T1>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct Comment {
     pub id: uuid::Uuid,
     pub blog_id: uuid::Uuid,
     pub account_id: uuid::Uuid,
     pub content: String,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 pub struct CommentBorrowed<'a> {
     pub id: uuid::Uuid,
     pub blog_id: uuid::Uuid,
     pub account_id: uuid::Uuid,
     pub content: &'a str,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 impl<'a> From<CommentBorrowed<'a>> for Comment {
     fn from(

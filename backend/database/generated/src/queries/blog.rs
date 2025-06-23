@@ -1,10 +1,11 @@
 // This file was generated with `clorinde`. Do not modify.
 
 #[derive(Debug)]
-pub struct CreateParams<T1: crate::StringSql, T2: crate::StringSql> {
+pub struct CreateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
     pub account_id: uuid::Uuid,
     pub title: T1,
-    pub content: T2,
+    pub description: T2,
+    pub content: T3,
 }
 #[derive(Clone, Copy, Debug)]
 pub struct AddTagParams {
@@ -12,9 +13,10 @@ pub struct AddTagParams {
     pub tag_id: uuid::Uuid,
 }
 #[derive(Debug)]
-pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql> {
+pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
     pub title: Option<T1>,
-    pub content: Option<T2>,
+    pub description: Option<T2>,
+    pub content: Option<T3>,
     pub id: uuid::Uuid,
     pub account_id: uuid::Uuid,
 }
@@ -23,28 +25,28 @@ pub struct DeleteParams {
     pub id: uuid::Uuid,
     pub account_id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct Blog {
     pub id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
+    pub name: String,
     pub title: String,
     pub description: String,
     pub content: String,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 pub struct BlogBorrowed<'a> {
     pub id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
+    pub name: &'a str,
     pub title: &'a str,
     pub description: &'a str,
     pub content: &'a str,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 impl<'a> From<BlogBorrowed<'a>> for Blog {
     fn from(
         BlogBorrowed {
             id,
-            account_id,
+            name,
             title,
             description,
             content,
@@ -53,7 +55,7 @@ impl<'a> From<BlogBorrowed<'a>> for Blog {
     ) -> Self {
         Self {
             id,
-            account_id,
+            name: name.into(),
             title: title.into(),
             description: description.into(),
             content: content.into(),
@@ -187,43 +189,66 @@ where
 }
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO blogs (account_id, title, content) VALUES ($1, $2, $3) RETURNING id",
+        "INSERT INTO blogs (account_id, title, description, content) VALUES ($1, $2, $3, $4) RETURNING id",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
 impl CreateStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::StringSql>(
+    pub fn bind<
+        'c,
+        'a,
+        's,
+        C: GenericClient,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >(
         &'s mut self,
         client: &'c C,
         account_id: &'a uuid::Uuid,
         title: &'a T1,
-        content: &'a T2,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 3> {
+        description: &'a T2,
+        content: &'a T3,
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 4> {
         UuidUuidQuery {
             client,
-            params: [account_id, title, content],
+            params: [account_id, title, description, content],
             stmt: &mut self.0,
             extractor: |row| Ok(row.try_get(0)?),
             mapper: |it| it,
         }
     }
 }
-impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::StringSql>
+impl<
+        'c,
+        'a,
+        's,
+        C: GenericClient,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >
     crate::client::async_::Params<
         'c,
         'a,
         's,
-        CreateParams<T1, T2>,
-        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 3>,
+        CreateParams<T1, T2, T3>,
+        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 4>,
         C,
     > for CreateStmt
 {
     fn params(
         &'s mut self,
         client: &'c C,
-        params: &'a CreateParams<T1, T2>,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 3> {
-        self.bind(client, &params.account_id, &params.title, &params.content)
+        params: &'a CreateParams<T1, T2, T3>,
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 4> {
+        self.bind(
+            client,
+            &params.account_id,
+            &params.title,
+            &params.description,
+            &params.content,
+        )
     }
 }
 pub fn add_tag() -> AddTagStmt {
@@ -267,7 +292,7 @@ impl<'a, C: GenericClient + Send + Sync>
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM blogs WHERE id = $1",
+        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, title, description, content, created_at FROM blogs WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -284,7 +309,7 @@ impl GetStmt {
             extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
                 Ok(BlogBorrowed {
                     id: row.try_get(0)?,
-                    account_id: row.try_get(1)?,
+                    name: row.try_get(1)?,
                     title: row.try_get(2)?,
                     description: row.try_get(3)?,
                     content: row.try_get(4)?,
@@ -297,44 +322,15 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM blogs ORDER BY created_at DESC",
+        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, title, description, content, created_at FROM blogs WHERE content is null or (content LIKE '%' || $1 || '%' ) ORDER BY created_at DESC",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-    ) -> BlogQuery<'c, 'a, 's, C, Blog, 0> {
-        BlogQuery {
-            client,
-            params: [],
-            stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
-                Ok(BlogBorrowed {
-                    id: row.try_get(0)?,
-                    account_id: row.try_get(1)?,
-                    title: row.try_get(2)?,
-                    description: row.try_get(3)?,
-                    content: row.try_get(4)?,
-                    created_at: row.try_get(5)?,
-                })
-            },
-            mapper: |it| Blog::from(it),
-        }
-    }
-}
-pub fn search() -> SearchStmt {
-    SearchStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM blogs WHERE content LIKE '%' || $1 || '%' ORDER BY created_at DESC",
-    ))
-}
-pub struct SearchStmt(crate::client::async_::Stmt);
-impl SearchStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-        content: &'a T1,
+        content: &'a Option<T1>,
     ) -> BlogQuery<'c, 'a, 's, C, Blog, 1> {
         BlogQuery {
             client,
@@ -343,7 +339,7 @@ impl SearchStmt {
             extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
                 Ok(BlogBorrowed {
                     id: row.try_get(0)?,
-                    account_id: row.try_get(1)?,
+                    name: row.try_get(1)?,
                     title: row.try_get(2)?,
                     description: row.try_get(3)?,
                     content: row.try_get(4)?,
@@ -356,31 +352,46 @@ impl SearchStmt {
 }
 pub fn update() -> UpdateStmt {
     UpdateStmt(crate::client::async_::Stmt::new(
-        "UPDATE blogs SET title = COALESCE($1, title), content = COALESCE($2, content) WHERE id = $3 AND account_id = $4",
+        "UPDATE blogs SET title = COALESCE($1, title), description = COALESCE($2, description), content = COALESCE($3, content) WHERE id = $4 AND account_id = $5",
     ))
 }
 pub struct UpdateStmt(crate::client::async_::Stmt);
 impl UpdateStmt {
-    pub async fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::StringSql>(
+    pub async fn bind<
+        'c,
+        'a,
+        's,
+        C: GenericClient,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >(
         &'s mut self,
         client: &'c C,
         title: &'a Option<T1>,
-        content: &'a Option<T2>,
+        description: &'a Option<T2>,
+        content: &'a Option<T3>,
         id: &'a uuid::Uuid,
         account_id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;
         client
-            .execute(stmt, &[title, content, id, account_id])
+            .execute(stmt, &[title, description, content, id, account_id])
             .await
     }
 }
-impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql, T2: crate::StringSql>
+impl<
+        'a,
+        C: GenericClient + Send + Sync,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >
     crate::client::async_::Params<
         'a,
         'a,
         'a,
-        UpdateParams<T1, T2>,
+        UpdateParams<T1, T2, T3>,
         std::pin::Pin<
             Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
         >,
@@ -390,13 +401,14 @@ impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql, T2: crate::String
     fn params(
         &'a mut self,
         client: &'a C,
-        params: &'a UpdateParams<T1, T2>,
+        params: &'a UpdateParams<T1, T2, T3>,
     ) -> std::pin::Pin<
         Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
     > {
         Box::pin(self.bind(
             client,
             &params.title,
+            &params.description,
             &params.content,
             &params.id,
             &params.account_id,

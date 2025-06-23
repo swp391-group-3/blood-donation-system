@@ -1,11 +1,14 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use database::queries;
+use ctypes::Role;
+use database::queries::{self, donation::Donation};
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
-
-use super::Donation;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -21,13 +24,20 @@ pub async fn get_by_member_id(
     state: State<Arc<ApiState>>,
     claims: Claims,
 ) -> Result<Json<Vec<Donation>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let donations = queries::donation::get_by_member_id()
+    authorize(&claims, [Role::Member], &database).await?;
+
+    match queries::donation::get_by_member_id()
         .bind(&database, &claims.sub)
-        .map(Donation::from_get_by_member_id)
         .all()
-        .await?;
+        .await
+    {
+        Ok(donations) => Ok(Json(donations)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get donation list");
 
-    Ok(Json(donations))
+            Err(Error::internal())
+        }
+    }
 }

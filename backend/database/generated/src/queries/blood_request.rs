@@ -6,8 +6,8 @@ pub struct CreateParams<T1: crate::StringSql> {
     pub priority: ctypes::RequestPriority,
     pub title: T1,
     pub max_people: i32,
-    pub start_time: crate::types::time::TimestampTz,
-    pub end_time: crate::types::time::TimestampTz,
+    pub start_time: chrono::DateTime<chrono::FixedOffset>,
+    pub end_time: chrono::DateTime<chrono::FixedOffset>,
 }
 #[derive(Clone, Copy, Debug)]
 pub struct AddBloodGroupParams {
@@ -21,17 +21,17 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub max_people: Option<i32>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct BloodRequest {
     pub id: uuid::Uuid,
     pub staff_id: uuid::Uuid,
     pub priority: ctypes::RequestPriority,
     pub title: String,
     pub max_people: i32,
-    pub start_time: crate::types::time::TimestampTz,
-    pub end_time: crate::types::time::TimestampTz,
+    pub start_time: chrono::DateTime<chrono::FixedOffset>,
+    pub end_time: chrono::DateTime<chrono::FixedOffset>,
     pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 pub struct BloodRequestBorrowed<'a> {
     pub id: uuid::Uuid,
@@ -39,10 +39,10 @@ pub struct BloodRequestBorrowed<'a> {
     pub priority: ctypes::RequestPriority,
     pub title: &'a str,
     pub max_people: i32,
-    pub start_time: crate::types::time::TimestampTz,
-    pub end_time: crate::types::time::TimestampTz,
+    pub start_time: chrono::DateTime<chrono::FixedOffset>,
+    pub end_time: chrono::DateTime<chrono::FixedOffset>,
     pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
     fn from(
@@ -276,8 +276,8 @@ impl CreateStmt {
         priority: &'a ctypes::RequestPriority,
         title: &'a T1,
         max_people: &'a i32,
-        start_time: &'a crate::types::time::TimestampTz,
-        end_time: &'a crate::types::time::TimestampTz,
+        start_time: &'a chrono::DateTime<chrono::FixedOffset>,
+        end_time: &'a chrono::DateTime<chrono::FixedOffset>,
     ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 6> {
         UuidUuidQuery {
             client,
@@ -422,40 +422,6 @@ impl GetAllStmt {
         BloodRequestQuery {
             client,
             params: [],
-            stmt: &mut self.0,
-            extractor:
-                |row: &tokio_postgres::Row| -> Result<BloodRequestBorrowed, tokio_postgres::Error> {
-                    Ok(BloodRequestBorrowed {
-                        id: row.try_get(0)?,
-                        staff_id: row.try_get(1)?,
-                        priority: row.try_get(2)?,
-                        title: row.try_get(3)?,
-                        max_people: row.try_get(4)?,
-                        start_time: row.try_get(5)?,
-                        end_time: row.try_get(6)?,
-                        is_active: row.try_get(7)?,
-                        created_at: row.try_get(8)?,
-                    })
-                },
-            mapper: |it| BloodRequest::from(it),
-        }
-    }
-}
-pub fn get_by_member_id() -> GetByMemberIdStmt {
-    GetByMemberIdStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM blood_requests WHERE blood_requests.id IN ( SELECT request_id FROM appointments WHERE member_id = $1 )",
-    ))
-}
-pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
-impl GetByMemberIdStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-        member_id: &'a uuid::Uuid,
-    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 1> {
-        BloodRequestQuery {
-            client,
-            params: [member_id],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<BloodRequestBorrowed, tokio_postgres::Error> {

@@ -22,7 +22,7 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub note: Option<T1>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct Health {
     pub id: uuid::Uuid,
     pub appointment_id: uuid::Uuid,
@@ -33,7 +33,7 @@ pub struct Health {
     pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: Option<String>,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 pub struct HealthBorrowed<'a> {
     pub id: uuid::Uuid,
@@ -45,7 +45,7 @@ pub struct HealthBorrowed<'a> {
     pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: Option<&'a str>,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 impl<'a> From<HealthBorrowed<'a>> for Health {
     fn from(

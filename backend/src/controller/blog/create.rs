@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
-use axum_valid::Valid;
+use axum::{Json, extract::State, http::StatusCode};
 use database::{
     client::Params,
     queries::{self, blog::CreateParams},
@@ -10,21 +9,23 @@ use model_mapper::Mapper;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
-use validator::Validate;
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::Claims,
+};
 
-#[derive(Deserialize, Serialize, ToSchema, Mapper, Validate)]
+#[derive(Deserialize, Serialize, ToSchema, Mapper)]
 #[schema(as = blod::create::Request)]
 #[mapper(
     into(custom = "with_account_id"),
-    ty = CreateParams::<String, String>,
+    ty = CreateParams::<String, String, String>,
     add(field = account_id, ty = Uuid),
 )]
 pub struct Request {
-    #[validate(length(min = 1))]
     pub title: String,
-    #[validate(length(min = 1))]
+    pub description: String,
     pub content: String,
 }
 
@@ -40,14 +41,23 @@ pub struct Request {
 pub async fn create(
     state: State<Arc<ApiState>>,
     claims: Claims,
-    Valid(Json(request)): Valid<Json<Request>>,
+    Json(request): Json<Request>,
 ) -> Result<Json<Uuid>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let id = queries::blog::create()
+    match queries::blog::create()
         .params(&database, &request.with_account_id(claims.sub))
         .one()
-        .await?;
+        .await
+    {
+        Ok(id) => Ok(Json(id)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to create blog");
 
-    Ok(Json(id))
+            Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid blog data".into())
+                .build())
+        }
+    }
 }

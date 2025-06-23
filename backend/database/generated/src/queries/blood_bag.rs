@@ -5,23 +5,23 @@ pub struct CreateParams {
     pub donation_id: uuid::Uuid,
     pub component: ctypes::BloodComponent,
     pub amount: i32,
-    pub expired_time: crate::types::time::TimestampTz,
+    pub expired_time: chrono::DateTime<chrono::FixedOffset>,
 }
 #[derive(Clone, Copy, Debug)]
 pub struct UpdateParams {
     pub component: Option<ctypes::BloodComponent>,
     pub amount: Option<i32>,
-    pub expired_time: Option<crate::types::time::TimestampTz>,
+    pub expired_time: Option<chrono::DateTime<chrono::FixedOffset>>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq, Copy)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
 pub struct BloodBag {
     pub id: uuid::Uuid,
     pub donation_id: uuid::Uuid,
     pub component: ctypes::BloodComponent,
     pub is_used: bool,
     pub amount: i32,
-    pub expired_time: crate::types::time::TimestampTz,
+    pub expired_time: chrono::DateTime<chrono::FixedOffset>,
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
@@ -217,7 +217,7 @@ impl CreateStmt {
         donation_id: &'a uuid::Uuid,
         component: &'a ctypes::BloodComponent,
         amount: &'a i32,
-        expired_time: &'a crate::types::time::TimestampTz,
+        expired_time: &'a chrono::DateTime<chrono::FixedOffset>,
     ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 4> {
         UuidUuidQuery {
             client,
@@ -280,7 +280,7 @@ impl UpdateStmt {
         client: &'c C,
         component: &'a Option<ctypes::BloodComponent>,
         amount: &'a Option<i32>,
-        expired_time: &'a Option<crate::types::time::TimestampTz>,
+        expired_time: &'a Option<chrono::DateTime<chrono::FixedOffset>>,
         id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;

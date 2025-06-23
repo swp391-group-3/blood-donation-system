@@ -1,19 +1,12 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use database::queries::{self, question::GetAllBorrowed};
-use model_mapper::Mapper;
-use serde::Serialize;
-use utoipa::ToSchema;
+use database::queries::{self, question::Question};
 
-use crate::{error::Result, state::ApiState};
-
-#[derive(Serialize, ToSchema, Mapper)]
-#[mapper(from, ty = GetAllBorrowed::<'_>)]
-pub struct Question {
-    pub id: i32,
-    pub content: String,
-}
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 
 #[utoipa::path(
     get,
@@ -25,13 +18,14 @@ pub struct Question {
     )
 )]
 pub async fn get_all(state: State<Arc<ApiState>>) -> Result<Json<Vec<Question>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let questions = queries::question::get_all()
-        .bind(&database)
-        .map(|raw| raw.into())
-        .all()
-        .await?;
+    match queries::question::get_all().bind(&database).all().await {
+        Ok(questions) => Ok(Json(questions)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get question list");
 
-    Ok(Json(questions))
+            Err(Error::internal())
+        }
+    }
 }

@@ -11,7 +11,7 @@ use database::{deadpool_postgres::Object, queries};
 use crate::error::{Error, Result};
 
 pub async fn authorize<const N: usize>(
-    claims: Claims,
+    claims: &Claims,
     required_roles: [Role; N],
     database: &Object,
 ) -> Result<()> {

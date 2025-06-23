@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
+use axum::{Json, extract::State, http::StatusCode};
 use chrono::NaiveDate;
 use ctypes::Gender;
 use model_mapper::Mapper;
@@ -8,7 +8,11 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::Claims,
+};
 use database::{
     client::Params,
     queries::account::UpdateParams,
@@ -44,9 +48,19 @@ pub async fn update(
     claims: Claims,
     Json(request): Json<Request>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
-    queries::account::update()
+    let database = state.database().await?;
+
+    if let Err(error) = queries::account::update()
         .params(&database, &request.with_account_id(claims.sub))
-        .await?;
+        .await
+    {
+        tracing::info!(?error, "Failed to update account");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Failed to update account".into())
+            .build());
+    }
+
     Ok(())
 }

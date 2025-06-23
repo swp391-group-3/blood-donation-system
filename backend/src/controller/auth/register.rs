@@ -74,17 +74,7 @@ pub async fn register(
         }
     };
 
-    let cookie = match state.jwt_service.new_credential(id) {
-        Ok(cookie) => cookie,
-        Err(error) => {
-            tracing::error!(?error, "Failed to generate token");
-
-            return Err(Error::builder()
-                .status(StatusCode::BAD_REQUEST)
-                .message("Invalid register data".into())
-                .build());
-        }
-    };
+    let cookie = state.jwt_service.new_credential(id)?;
 
     Ok(jar.add(cookie))
 }

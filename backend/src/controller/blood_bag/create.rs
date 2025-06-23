@@ -3,10 +3,11 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
 use axum_valid::Valid;
 use chrono::{DateTime, Utc};
-use ctypes::BloodComponent;
+use ctypes::{BloodComponent, Role};
 use database::{
     client::Params,
     queries::{self, blood_bag::CreateParams},
@@ -17,7 +18,11 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = blood_bag::create::Request)]
@@ -48,15 +53,26 @@ pub struct Request {
 )]
 pub async fn create(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Path(donation_id): Path<Uuid>,
     Valid(Json(request)): Valid<Json<Request>>,
 ) -> Result<Json<Uuid>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let id = queries::blood_bag::create()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    match queries::blood_bag::create()
         .params(&database, &request.with_donation_id(donation_id))
         .one()
-        .await?;
-
-    Ok(Json(id))
+        .await
+    {
+        Ok(id) => Ok(Json(id)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to create blood bag");
+            Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid blood bag creation data".into())
+                .build())
+        }
+    }
 }

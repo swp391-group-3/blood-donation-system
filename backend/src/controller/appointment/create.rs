@@ -1,23 +1,27 @@
 use std::{collections::HashSet, sync::Arc};
 
-use anyhow::anyhow;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
+use ctypes::Role;
 use database::{
     client::Params,
     queries::{self, appointment::CreateParams},
 };
-use futures::stream::TryStreamExt;
 use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
-#[derive(Deserialize, ToSchema, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper, Clone)]
 #[mapper(
     into(custom = "with_appointment_id"),
     ty = queries::answer::CreateParams::<String>,
@@ -55,15 +59,24 @@ pub async fn create(
     Path(id): Path<Uuid>,
     Json(request): Json<Request>,
 ) -> Result<Json<Uuid>> {
-    let mut database = state.database_pool.get().await?;
+    let mut database = state.database().await?;
 
-    let question_ids: HashSet<_> = queries::question::get_all()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    let question_ids: HashSet<_> = match queries::question::get_all()
         .bind(&database)
         .map(|raw| raw.id)
-        .iter()
-        .await?
-        .try_collect()
-        .await?;
+        .all()
+        .await
+    {
+        Ok(ids) => ids.into_iter().collect(),
+        Err(error) => {
+            tracing::error!(?error, "Failed to fetch question list");
+
+            return Err(Error::internal());
+        }
+    };
+
     let submitted_question_ids = request
         .answers
         .iter()
@@ -71,12 +84,22 @@ pub async fn create(
         .collect::<HashSet<_>>();
 
     if question_ids != submitted_question_ids {
-        return Err(anyhow!("Missing required questions").into());
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Please answer all question".into())
+            .build());
     }
 
-    let transaction = database.transaction().await?;
+    let transaction = match database.transaction().await {
+        Ok(transaction) => transaction,
+        Err(error) => {
+            tracing::error!(?error, "Failed to create transaction");
 
-    let appointment_id = queries::appointment::create()
+            return Err(Error::internal());
+        }
+    };
+
+    let appointment_id = match queries::appointment::create()
         .params(
             &transaction,
             &CreateParams {
@@ -85,15 +108,41 @@ pub async fn create(
             },
         )
         .one()
-        .await?;
+        .await
+    {
+        Ok(id) => id,
+        Err(error) => {
+            tracing::error!(?error, "Failed to create appointment");
 
-    for answer in request.answers {
-        queries::answer::create()
-            .params(&transaction, &answer.with_appointment_id(appointment_id))
-            .await?;
+            return Err(Error::internal());
+        }
+    };
+
+    for answer in &request.answers {
+        if let Err(error) = queries::answer::create()
+            .params(
+                &transaction,
+                &answer.clone().with_appointment_id(appointment_id),
+            )
+            .await
+        {
+            tracing::error!(?error, "Failed to create answer");
+
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message(format!(
+                    "Answer for question ${} is invalid",
+                    answer.question_id
+                ))
+                .build());
+        }
     }
 
-    transaction.commit().await?;
+    if let Err(error) = transaction.commit().await {
+        tracing::error!(?error, "Failed to commit transaction");
+
+        return Err(Error::internal());
+    }
 
     Ok(Json(appointment_id))
 }

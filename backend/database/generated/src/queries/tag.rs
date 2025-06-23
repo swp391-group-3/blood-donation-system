@@ -1,6 +1,6 @@
 // This file was generated with `clorinde`. Do not modify.
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct Tag {
     pub id: uuid::Uuid,
     pub name: String,

@@ -5,24 +5,24 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub content: T1,
     pub id: i32,
 }
-#[derive(Debug, Clone, PartialEq)]
-pub struct GetAll {
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
+pub struct Question {
     pub id: i32,
     pub content: String,
     pub is_active: bool,
 }
-pub struct GetAllBorrowed<'a> {
+pub struct QuestionBorrowed<'a> {
     pub id: i32,
     pub content: &'a str,
     pub is_active: bool,
 }
-impl<'a> From<GetAllBorrowed<'a>> for GetAll {
+impl<'a> From<QuestionBorrowed<'a>> for Question {
     fn from(
-        GetAllBorrowed {
+        QuestionBorrowed {
             id,
             content,
             is_active,
-        }: GetAllBorrowed<'a>,
+        }: QuestionBorrowed<'a>,
     ) -> Self {
         Self {
             id,
@@ -94,19 +94,19 @@ where
         Ok(it)
     }
 }
-pub struct GetAllQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct QuestionQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetAllBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetAllBorrowed) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<QuestionBorrowed, tokio_postgres::Error>,
+    mapper: fn(QuestionBorrowed) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetAllQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> QuestionQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(GetAllBorrowed) -> R) -> GetAllQuery<'c, 'a, 's, C, R, N> {
-        GetAllQuery {
+    pub fn map<R>(self, mapper: fn(QuestionBorrowed) -> R) -> QuestionQuery<'c, 'a, 's, C, R, N> {
+        QuestionQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -186,20 +186,20 @@ impl GetAllStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> GetAllQuery<'c, 'a, 's, C, GetAll, 0> {
-        GetAllQuery {
+    ) -> QuestionQuery<'c, 'a, 's, C, Question, 0> {
+        QuestionQuery {
             client,
             params: [],
             stmt: &mut self.0,
             extractor:
-                |row: &tokio_postgres::Row| -> Result<GetAllBorrowed, tokio_postgres::Error> {
-                    Ok(GetAllBorrowed {
+                |row: &tokio_postgres::Row| -> Result<QuestionBorrowed, tokio_postgres::Error> {
+                    Ok(QuestionBorrowed {
                         id: row.try_get(0)?,
                         content: row.try_get(1)?,
                         is_active: row.try_get(2)?,
                     })
                 },
-            mapper: |it| GetAll::from(it),
+            mapper: |it| Question::from(it),
         }
     }
 }

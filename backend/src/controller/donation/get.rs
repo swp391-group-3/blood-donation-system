@@ -3,13 +3,17 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
-use database::queries;
+use ctypes::Role;
+use database::queries::{self, donation::Donation};
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
-
-use super::Donation;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -24,14 +28,25 @@ use super::Donation;
     ),
     security(("jwt_token" = []))
 )]
-pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<Donation>> {
-    let database = state.database_pool.get().await?;
+pub async fn get(
+    state: State<Arc<ApiState>>,
+    claims: Claims,
+    Path(id): Path<Uuid>,
+) -> Result<Json<Donation>> {
+    let database = state.database().await?;
 
-    let donation = queries::donation::get()
-        .bind(&database, &id)
-        .map(Donation::from_get)
-        .one()
-        .await?;
+    authorize(&claims, [Role::Staff], &database).await?;
 
-    Ok(Json(donation))
+    match queries::donation::get().bind(&database, &id).opt().await {
+        Ok(Some(donation)) => Ok(Json(donation)),
+        Ok(None) => Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("No donation with given id".into())
+            .build()),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get donation");
+
+            Err(Error::internal())
+        }
+    }
 }

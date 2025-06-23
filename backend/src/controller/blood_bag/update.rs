@@ -3,39 +3,33 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
-use axum_valid::Valid;
 use chrono::{DateTime, FixedOffset, Utc};
-use ctypes::BloodComponent;
+use ctypes::{BloodComponent, Role};
 use database::{
     client::Params,
     queries::{self, blood_bag::UpdateParams},
 };
+use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
-use validator::Validate;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
-#[derive(Deserialize, ToSchema, Validate)]
+#[derive(Deserialize, ToSchema, Mapper)]
 #[schema(as = blood_bag::update::Request)]
+#[mapper(into(custom = "with_donation_id"), ty = UpdateParams, add(field = id, ty = Uuid))]
 pub struct Request {
     pub component: Option<BloodComponent>,
-    #[validate(range(min = 1))]
     pub amount: Option<i32>,
+    #[mapper(with = expired_time.map(|dt| dt.with_timezone(&FixedOffset::east_opt(0).unwrap())))]
     pub expired_time: Option<DateTime<Utc>>,
-}
-
-fn into_update_params(payload: Request, id: Uuid) -> UpdateParams {
-    UpdateParams {
-        component: payload.component,
-        amount: payload.amount,
-        expired_time: payload
-            .expired_time
-            .map(|dt| dt.with_timezone(&FixedOffset::east_opt(0).unwrap())),
-        id,
-    }
 }
 
 #[utoipa::path(
@@ -51,16 +45,25 @@ fn into_update_params(payload: Request, id: Uuid) -> UpdateParams {
 )]
 pub async fn update(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Path(id): Path<Uuid>,
-    Valid(Json(payload)): Valid<Json<Request>>,
+    Json(request): Json<Request>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let params = into_update_params(payload, id);
+    authorize(&claims, [Role::Staff], &database).await?;
 
-    queries::blood_bag::update()
-        .params(&database, &params)
-        .await?;
+    if let Err(error) = queries::blood_bag::update()
+        .params(&database, &request.with_donation_id(id))
+        .await
+    {
+        tracing::error!(?error, "Failed to update blood bag");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Invalid new blood bag data".into())
+            .build());
+    }
 
     Ok(())
 }

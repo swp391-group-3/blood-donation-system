@@ -1,11 +1,12 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use database::queries;
+use database::queries::{self, blood_bag::BloodBag};
 
-use crate::{error::Result, state::ApiState};
-
-use super::BloodBag;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 
 #[utoipa::path(
     get,
@@ -15,13 +16,14 @@ use super::BloodBag;
     security(("jwt_token" = []))
 )]
 pub async fn get_all(state: State<Arc<ApiState>>) -> Result<Json<Vec<BloodBag>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let blood_bags = queries::blood_bag::get_all()
-        .bind(&database)
-        .map(BloodBag::from_get_all)
-        .all()
-        .await?;
+    match queries::blood_bag::get_all().bind(&database).all().await {
+        Ok(blood_bags) => Ok(Json(blood_bags)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get blog list");
 
-    Ok(Json(blood_bags))
+            Err(Error::internal())
+        }
+    }
 }

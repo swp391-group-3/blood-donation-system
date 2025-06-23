@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS blood_requests(
 );
 
 CREATE TABLE IF NOT EXISTS request_blood_groups(
-    request_id uuid NOT NULL,
+    request_id uuid NOT NULL REFERENCES blood_requests(id),
     blood_group blood_group NOT NULL,
     PRIMARY KEY (request_id, blood_group)
 );

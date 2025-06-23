@@ -3,7 +3,9 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
+use ctypes::Role;
 use database::{
     client::Params,
     queries::{self, health::UpdateParams},
@@ -13,7 +15,11 @@ use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[derive(Deserialize, ToSchema, Mapper)]
 #[schema(as = health::update::Request)]
@@ -45,14 +51,25 @@ pub struct Request {
 ) ]
 pub async fn update(
     State(state): State<Arc<ApiState>>,
+    claims: Claims,
     Path(id): Path<Uuid>,
     Json(request): Json<Request>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    queries::health::update()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    if let Err(error) = queries::health::update()
         .params(&database, &request.with_id(id))
-        .await?;
+        .await
+    {
+        tracing::error!(?error, "Failed to upadte health");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Invalid health data".into())
+            .build());
+    }
 
     Ok(())
 }

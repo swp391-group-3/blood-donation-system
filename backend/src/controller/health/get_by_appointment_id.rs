@@ -4,12 +4,15 @@ use axum::{
     Json,
     extract::{Path, State},
 };
-use database::queries;
+use ctypes::Role;
+use database::queries::{self, health::Health};
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
-
-use super::Health;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -26,15 +29,23 @@ use super::Health;
 )]
 pub async fn get_by_appointment_id(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Path(appointment_id): Path<Uuid>,
 ) -> Result<Json<Option<Health>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let health = queries::health::get_by_appointment_id()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    match queries::health::get_by_appointment_id()
         .bind(&database, &appointment_id)
-        .map(Health::from_get_by_appointment_id)
         .opt()
-        .await?;
+        .await
+    {
+        Ok(health) => Ok(Json(health)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get health");
 
-    Ok(Json(health))
+            Err(Error::internal())
+        }
+    }
 }

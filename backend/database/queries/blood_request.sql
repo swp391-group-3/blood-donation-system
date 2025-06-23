@@ -44,15 +44,6 @@ SELECT *
 FROM blood_requests
 WHERE now() < end_time AND is_active = true;
 
---! get_by_member_id : BloodRequest
-SELECT *
-FROM blood_requests
-WHERE blood_requests.id IN (
-    SELECT request_id
-    FROM appointments
-    WHERE member_id = :member_id
-);
-
 --! update (priority?, title?, max_people?)
 UPDATE blood_requests
 SET

@@ -14,7 +14,7 @@ pub struct RegisterParams<
     pub name: T4,
     pub gender: ctypes::Gender,
     pub address: T5,
-    pub birthday: crate::types::time::Date,
+    pub birthday: chrono::NaiveDate,
     pub blood_group: ctypes::BloodGroup,
 }
 #[derive(Debug)]
@@ -35,10 +35,10 @@ pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::S
     pub name: Option<T2>,
     pub gender: Option<ctypes::Gender>,
     pub address: Option<T3>,
-    pub birthday: Option<crate::types::time::Date>,
+    pub birthday: Option<chrono::NaiveDate>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct Account {
     pub id: uuid::Uuid,
     pub role: ctypes::Role,
@@ -48,10 +48,10 @@ pub struct Account {
     pub name: String,
     pub gender: Option<ctypes::Gender>,
     pub address: Option<String>,
-    pub birthday: Option<crate::types::time::Date>,
+    pub birthday: Option<chrono::NaiveDate>,
     pub blood_group: Option<ctypes::BloodGroup>,
     pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 pub struct AccountBorrowed<'a> {
     pub id: uuid::Uuid,
@@ -62,10 +62,10 @@ pub struct AccountBorrowed<'a> {
     pub name: &'a str,
     pub gender: Option<ctypes::Gender>,
     pub address: Option<&'a str>,
-    pub birthday: Option<crate::types::time::Date>,
+    pub birthday: Option<chrono::NaiveDate>,
     pub blood_group: Option<ctypes::BloodGroup>,
     pub is_active: bool,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 impl<'a> From<AccountBorrowed<'a>> for Account {
     fn from(
@@ -250,7 +250,7 @@ impl RegisterStmt {
         name: &'a T4,
         gender: &'a ctypes::Gender,
         address: &'a T5,
-        birthday: &'a crate::types::time::Date,
+        birthday: &'a chrono::NaiveDate,
         blood_group: &'a ctypes::BloodGroup,
     ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 8> {
         UuidUuidQuery {
@@ -542,7 +542,7 @@ impl UpdateStmt {
         name: &'a Option<T2>,
         gender: &'a Option<ctypes::Gender>,
         address: &'a Option<T3>,
-        birthday: &'a Option<crate::types::time::Date>,
+        birthday: &'a Option<chrono::NaiveDate>,
         id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;

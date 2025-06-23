@@ -1,11 +1,10 @@
-use axum::http::StatusCode;
+use database::queries::account::Account;
 use lettre::{
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor, message::header::ContentType,
 };
 
 use crate::{
     CONFIG,
-    controller::account::Account,
     error::{Error, Result},
 };
 

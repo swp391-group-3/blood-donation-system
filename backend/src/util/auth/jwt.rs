@@ -12,7 +12,11 @@ use serde::{Deserialize, Serialize};
 use tower_sessions::cookie::SameSite;
 use uuid::Uuid;
 
-use crate::{config::CONFIG, error::Error, state::ApiState};
+use crate::{
+    config::CONFIG,
+    error::{Error, Result},
+    state::ApiState,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct Claims {
@@ -35,7 +39,7 @@ impl Default for JwtService {
 }
 
 impl JwtService {
-    pub fn new_credential(&self, id: Uuid) -> jsonwebtoken::errors::Result<Cookie<'static>> {
+    pub fn new_credential(&self, id: Uuid) -> Result<Cookie<'static>> {
         let now = Local::now().timestamp() as u64;
 
         let claims = Claims {
@@ -43,7 +47,14 @@ impl JwtService {
             exp: now + CONFIG.jwt.expired_in,
         };
 
-        let token = jsonwebtoken::encode(&Header::default(), &claims, &self.encoding_key)?;
+        let token = match jsonwebtoken::encode(&Header::default(), &claims, &self.encoding_key) {
+            Ok(token) => token,
+            Err(error) => {
+                tracing::error!(?error, "Failed to generate token");
+
+                return Err(Error::internal());
+            }
+        };
 
         let mut cookie = Cookie::new(CONFIG.jwt.token_key.clone(), token);
         // cookie.set_secure(true);
@@ -58,10 +69,7 @@ impl JwtService {
 impl FromRequestParts<Arc<ApiState>> for Claims {
     type Rejection = Error;
 
-    async fn from_request_parts(
-        parts: &mut Parts,
-        state: &Arc<ApiState>,
-    ) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, state: &Arc<ApiState>) -> Result<Self> {
         let jar = parts.extract::<CookieJar>().await.unwrap();
         let token = match jar.get(&CONFIG.jwt.token_key) {
             Some(token) => token.value(),
@@ -95,12 +103,9 @@ impl FromRequestParts<Arc<ApiState>> for Claims {
 }
 
 impl OptionalFromRequestParts<Arc<ApiState>> for Claims {
-    type Rejection = crate::error::Error;
+    type Rejection = Error;
 
-    async fn from_request_parts(
-        parts: &mut Parts,
-        state: &Arc<ApiState>,
-    ) -> Result<Option<Self>, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, state: &Arc<ApiState>) -> Result<Option<Self>> {
         Ok(parts
             .extract_with_state::<Claims, Arc<ApiState>>(state)
             .await

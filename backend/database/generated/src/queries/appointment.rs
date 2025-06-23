@@ -10,7 +10,7 @@ pub struct UpdateStatusParams {
     pub status: ctypes::AppointmentStatus,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq, Copy)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
 pub struct Appointment {
     pub id: uuid::Uuid,
     pub request_id: uuid::Uuid,

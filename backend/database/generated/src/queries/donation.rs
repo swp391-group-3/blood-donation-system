@@ -12,13 +12,13 @@ pub struct UpdateParams {
     pub amount: Option<i32>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq, Copy)]
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
 pub struct Donation {
     pub id: uuid::Uuid,
     pub appointment_id: uuid::Uuid,
     pub r#type: ctypes::DonationType,
     pub amount: i32,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};

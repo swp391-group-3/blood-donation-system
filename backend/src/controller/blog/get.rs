@@ -3,13 +3,15 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
-use database::queries;
+use database::queries::{self, blog::Blog};
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
-
-use super::Blog;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 
 #[utoipa::path(
     get,
@@ -19,17 +21,22 @@ use super::Blog;
         ("id" = Uuid, description = "Blog Id")
     ),
     responses(
-        (status = Status::OK, body = Option<Blog>)
+        (status = Status::OK, body = Blog)
     )
 )]
-pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<Option<Blog>>> {
-    let database = state.database_pool.get().await?;
+pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<Blog>> {
+    let database = state.database().await?;
 
-    let blog = queries::blog::get()
-        .bind(&database, &id)
-        .map(Blog::from_get)
-        .opt()
-        .await?;
+    match queries::blog::get().bind(&database, &id).opt().await {
+        Ok(Some(blog)) => Ok(Json(blog)),
+        Ok(None) => Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("No blog with given id".into())
+            .build()),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get blog");
 
-    Ok(Json(blog))
+            Err(Error::internal())
+        }
+    }
 }
