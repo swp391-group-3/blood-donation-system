@@ -56,6 +56,8 @@ impl Modify for SecurityAddon {
         controller::appointment::get,
         controller::appointment::get_by_member_id,
         controller::appointment::update_status,
+        controller::appointment::approve,
+        controller::appointment::reject,
 
         controller::blog::create,
         controller::blog::get,
