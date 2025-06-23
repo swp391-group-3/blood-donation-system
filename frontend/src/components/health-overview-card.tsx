@@ -6,7 +6,6 @@ import {
     Activity,
     Check,
     CheckCircle,
-    Droplets,
     Shield,
     Thermometer,
     Weight,
