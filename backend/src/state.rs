@@ -6,6 +6,7 @@ use database::{
     tokio_postgres::NoTls,
 };
 use futures::{StreamExt, stream};
+use lettre::{AsyncSmtpTransport, Tokio1Executor, transport::smtp::authentication::Credentials};
 
 use crate::{
     config::{CONFIG, oidc::Provider},
@@ -17,6 +18,7 @@ pub struct ApiState {
     pub database_pool: deadpool_postgres::Pool,
     pub oidc_clients: HashMap<Provider, OpenIdConnectClient>,
     pub jwt_service: JwtService,
+    pub mailer: AsyncSmtpTransport<Tokio1Executor>,
 }
 
 impl ApiState {
@@ -39,10 +41,19 @@ impl ApiState {
             .collect()
             .await;
 
+        let mailer = AsyncSmtpTransport::<Tokio1Executor>::relay("smtp.gmail.com")
+            .unwrap()
+            .credentials(Credentials::new(
+                CONFIG.email.username.to_owned(),
+                CONFIG.email.password.to_owned(),
+            ))
+            .build();
+
         Arc::new(Self {
             database_pool,
             oidc_clients,
             jwt_service: Default::default(),
+            mailer,
         })
     }
 
