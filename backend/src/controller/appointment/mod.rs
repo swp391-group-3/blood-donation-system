@@ -1,11 +1,11 @@
 mod approve;
 mod create;
+mod done;
 mod get;
 mod get_all;
 mod get_answer;
 mod get_by_member_id;
 mod reject;
-mod done;
 
 use std::sync::Arc;
 
@@ -15,12 +15,12 @@ use crate::state::ApiState;
 
 pub use approve::*;
 pub use create::*;
+pub use done::*;
 pub use get::*;
 pub use get_all::*;
 pub use get_answer::*;
 pub use get_by_member_id::*;
 pub use reject::*;
-pub use done::*;
 
 pub fn build() -> Router<Arc<ApiState>> {
     Router::new()

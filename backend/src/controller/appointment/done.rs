@@ -18,11 +18,7 @@ use uuid::Uuid;
     ),
     security(("jwt_token" = [])),
 )]
-pub async fn done(
-    state: State<Arc<ApiState>>,
-    claims: Claims,
-    Path(id): Path<Uuid>,
-) -> Result<()> {
+pub async fn done(state: State<Arc<ApiState>>, claims: Claims, Path(id): Path<Uuid>) -> Result<()> {
     let database = state.database().await?;
 
     authorize(&claims, [Role::Staff], &database).await?;

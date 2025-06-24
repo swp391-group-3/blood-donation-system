@@ -5,7 +5,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use ctypes::{AppointmentStatus,Role};
+use ctypes::{AppointmentStatus, Role};
 use database::{
     client::Params,
     queries::{self, health::CreateParams},
