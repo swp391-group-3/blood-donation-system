@@ -41,6 +41,9 @@ pub struct Request {
     tags = ["Donation", "Appointment"],
     path = "/appointment/{id}/donation",
     operation_id = "donation::create",
+    params(
+        ("id" = Uuid, Path, description = "Appointment id")
+    ),
     request_body = Request,
     responses(
         (status = Status::OK, body = Uuid)
