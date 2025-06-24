@@ -5,6 +5,7 @@ mod get_all;
 mod get_answer;
 mod get_by_member_id;
 mod reject;
+mod done;
 
 use std::sync::Arc;
 
@@ -19,6 +20,7 @@ pub use get_all::*;
 pub use get_answer::*;
 pub use get_by_member_id::*;
 pub use reject::*;
+pub use done::*;
 
 pub fn build() -> Router<Arc<ApiState>> {
     Router::new()
@@ -26,6 +28,7 @@ pub fn build() -> Router<Arc<ApiState>> {
         .route("/appointment/{id}/answer", routing::get(get_answer))
         .route("/appointment/{id}/approve", routing::patch(approve))
         .route("/appointment/{id}/reject", routing::patch(reject))
+        .route("/appointment/{id}/done", routing::patch(done))
         .route("/appointment", routing::get(get_all))
         .route("/appointment/me", routing::get(get_by_member_id))
         .route(
