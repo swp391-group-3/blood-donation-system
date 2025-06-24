@@ -1,9 +1,17 @@
 use std::sync::Arc;
 
-use axum::extract::{Path, State};
+use axum::{
+    extract::{Path, State},
+    http::StatusCode,
+};
+use ctypes::Role;
 use database::queries;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     put,
@@ -18,14 +26,25 @@ use crate::{error::Result, state::ApiState};
 )]
 pub async fn update(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Path(id): Path<i32>,
     new_content: String,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    queries::question::update()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    if let Err(error) = queries::question::update()
         .bind(&database, &new_content, &id)
-        .await?;
+        .await
+    {
+        tracing::error!(?error, "Failed to update question");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Failed to update question".into())
+            .build());
+    }
 
     Ok(())
 }

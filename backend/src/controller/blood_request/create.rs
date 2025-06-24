@@ -1,8 +1,6 @@
 use std::sync::Arc;
 
-use crate::{controller::account::Account, util::blood_compatible::get_compatible};
-use axum::{Json, extract::State};
-use axum_valid::Valid;
+use axum::{Json, extract::State, http::StatusCode};
 use chrono::{DateTime, Utc};
 use ctypes::{BloodGroup, RequestPriority, Role};
 use database::{
@@ -14,14 +12,18 @@ use serde::Deserialize;
 use std::collections::HashSet;
 use utoipa::ToSchema;
 use uuid::Uuid;
-use validator::Validate;
 
 use crate::{
-    error::Result, state::ApiState, util::custom_validator, util::jwt::Claims,
-    util::notification::send,
+    error::{Error, Result},
+    state::ApiState,
+    util::{
+        auth::{Claims, authorize},
+        blood::get_compatible,
+        notification::send,
+    },
 };
 
-#[derive(Deserialize, ToSchema, Mapper, Validate, Clone)]
+#[derive(Deserialize, ToSchema, Mapper, Clone)]
 #[schema(as = blood_request::create::Request)]
 #[mapper(
     into(custom = "with_staff_id"),
@@ -32,13 +34,9 @@ pub struct Request {
     #[mapper(skip)]
     pub blood_groups: Vec<BloodGroup>,
     pub priority: RequestPriority,
-    #[validate(length(min = 1))]
     pub title: String,
-    #[validate(range(min = 1))]
     pub max_people: i32,
-    #[validate(custom(function = "custom_validator::date_time_must_after_now"))]
     pub start_time: DateTime<Utc>,
-    #[validate(custom(function = "custom_validator::date_time_must_after_now"))]
     pub end_time: DateTime<Utc>,
 }
 
@@ -56,41 +54,87 @@ pub struct Request {
 pub async fn create(
     state: State<Arc<ApiState>>,
     claims: Claims,
-    Valid(Json(request)): Valid<Json<Request>>,
+    Json(request): Json<Request>,
 ) -> Result<Json<Uuid>> {
-    let database = state.database_pool.get().await?;
+    let mut database = state.database().await?;
 
-    let request_clone = request.clone();
+    authorize(&claims, [Role::Staff], &database).await?;
 
-    let id = queries::blood_request::create()
-        .params(&database, &request.with_staff_id(claims.sub))
+    let transaction = match database.transaction().await {
+        Ok(transaction) => transaction,
+        Err(error) => {
+            tracing::error!(?error, "Failed to create transaction");
+
+            return Err(Error::internal());
+        }
+    };
+
+    let id = match queries::blood_request::create()
+        .params(&transaction, &request.clone().with_staff_id(claims.sub))
         .one()
-        .await?;
+        .await
+    {
+        Ok(id) => id,
+        Err(error) => {
+            tracing::error!(?error, "Failed to create blood request");
 
-    let accounts = queries::account::get_by_role()
-        .bind(&database, &Role::Member)
-        .map(Account::from_get_by_role)
-        .all()
-        .await?;
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid blood request data".into())
+                .build());
+        }
+    };
 
-    for blood_group in &request_clone.blood_groups {
-        queries::blood_request::add_blood_group()
-            .bind(&database, &id, blood_group)
-            .await?;
+    for blood_group in &request.blood_groups {
+        if let Err(error) = queries::blood_request::add_blood_group()
+            .bind(&transaction, &id, blood_group)
+            .await
+        {
+            tracing::error!(
+                ?error,
+                ?blood_group,
+                request_id =? id,
+                "Failed to add blood to request"
+            );
+
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid blood group".into())
+                .build());
+        }
     }
 
-    if request_clone.priority == RequestPriority::High {
-        let request_blood_groups: HashSet<_> = request_clone.blood_groups.iter().cloned().collect();
+    if let Err(error) = transaction.commit().await {
+        tracing::error!(?error, "Failed to commit transaction");
+    }
 
-        for account in &accounts {
-            if let Some(ref blood_group) = account.blood_group {
-                if !request_blood_groups.is_disjoint(&get_compatible(*blood_group)) {
-                    let subject =
-                        "URGENT: Immediate Blood Donation Needed – Matches Your Blood Group"
-                            .to_string();
+    if request.priority != RequestPriority::High {
+        return Ok(Json(id));
+    }
 
-                    let body = format!(
-                        "Dear {},\n\n\
+    let accounts = match queries::account::get_by_role()
+        .bind(&database, &Role::Member)
+        .all()
+        .await
+    {
+        Ok(accounts) => accounts,
+        Err(error) => {
+            tracing::error!(?error, "Failed to get account list");
+
+            return Err(Error::internal());
+        }
+    };
+
+    let request_blood_groups: HashSet<_> = request.blood_groups.iter().cloned().collect();
+
+    for account in &accounts {
+        if let Some(ref blood_group) = account.blood_group {
+            if !request_blood_groups.is_disjoint(&get_compatible(*blood_group)) {
+                let subject = "URGENT: Immediate Blood Donation Needed – Matches Your Blood Group"
+                    .to_string();
+
+                let body = format!(
+                    "Dear {},\n\n\
                 We are reaching out to you with great urgency.\n\n\
                 A critical situation has arisen, and we are in immediate need of blood donations. \
                 Your registered blood group matches the current emergency requirement.\n\n\
@@ -103,15 +147,14 @@ pub async fn create(
                 Thank you for your prompt attention and compassion.\n\n\
                 Sincerely,\n\
                 Blood Donation Team",
-                        account.name,
-                        request_clone.title,
-                        request_clone.max_people,
-                        request_clone.start_time.format("%Y-%m-%d %H:%M"),
-                        request_clone.end_time.format("%Y-%m-%d %H:%M"),
-                    );
+                    account.name,
+                    request.title,
+                    request.max_people,
+                    request.start_time.format("%Y-%m-%d %H:%M"),
+                    request.end_time.format("%Y-%m-%d %H:%M"),
+                );
 
-                    send(account, subject, body).await?;
-                }
+                send(account, subject, body, &state.mailer).await?;
             }
         }
     }

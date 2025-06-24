@@ -10,3 +10,4 @@ pub mod comment;
 pub mod donation;
 pub mod health;
 pub mod question;
+pub mod tag;

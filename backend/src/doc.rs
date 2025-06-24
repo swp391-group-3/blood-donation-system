@@ -47,14 +47,14 @@ impl Modify for SecurityAddon {
         controller::blood_request::create,
         controller::blood_request::get,
         controller::blood_request::get_all,
-        controller::blood_request::get_by_member_id,
         controller::blood_request::update,
         controller::blood_request::delete,
 
         controller::appointment::create,
         controller::appointment::get,
+        controller::appointment::get_answer,
+        controller::appointment::get_all,
         controller::appointment::get_by_member_id,
-        controller::appointment::update_status,
         controller::appointment::approve,
         controller::appointment::reject,
 
@@ -77,6 +77,7 @@ impl Modify for SecurityAddon {
         controller::donation::update,
 
         controller::comment::create,
+        controller::comment::get_by_blog_id,
         controller::comment::delete,
         controller::comment::update,
 

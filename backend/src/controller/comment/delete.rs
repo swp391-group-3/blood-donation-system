@@ -2,7 +2,10 @@ use axum::extract::{Path, State};
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 use database::queries::{self};
 
 #[utoipa::path(
@@ -18,9 +21,15 @@ use database::queries::{self};
     security(("jwt_token" = []))
 )]
 pub async fn delete(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    queries::comment::delete().bind(&database, &id).await?;
+    // TODO: member can only delete their comment
+
+    if let Err(error) = queries::comment::delete().bind(&database, &id).await {
+        tracing::error!(?error, "Failed to delete question");
+
+        return Err(Error::internal());
+    }
 
     Ok(())
 }

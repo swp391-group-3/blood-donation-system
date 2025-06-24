@@ -3,9 +3,10 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
 use axum_valid::Valid;
-use ctypes::RequestPriority;
+use ctypes::{RequestPriority, Role};
 use database::{
     client::Params,
     queries::{self, blood_request::UpdateParams},
@@ -16,7 +17,11 @@ use utoipa::ToSchema;
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = blood_request::update::Request)]
@@ -46,14 +51,25 @@ pub struct Request {
 )]
 pub async fn update(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Path(id): Path<Uuid>,
     Valid(Json(request)): Valid<Json<Request>>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    queries::blood_request::update()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    if let Err(error) = queries::blood_request::update()
         .params(&database, &request.with_id(id))
-        .await?;
+        .await
+    {
+        tracing::error!(?error, "Failed to update blood request");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Invalid blood request data".into())
+            .build());
+    }
 
     Ok(())
 }

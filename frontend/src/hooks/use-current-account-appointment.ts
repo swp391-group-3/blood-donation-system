@@ -7,10 +7,10 @@ import { useQuery } from '@tanstack/react-query';
 export const useCurrentAccountAppointment = () => {
     return useQuery({
         queryFn: async () => {
-            const response = await fetchWrapper('/appointment');
+            const response = await fetchWrapper('/appointment/me');
 
             return await deserialize<Appointment[]>(response);
         },
-        queryKey: ['appointment'],
+        queryKey: ['appointment', 'me'],
     });
 };

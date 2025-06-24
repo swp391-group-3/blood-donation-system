@@ -1,6 +1,5 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -8,14 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Search,
-    Filter,
-    Calendar,
-    Clock,
-    CheckCircle,
-    Activity,
-} from 'lucide-react';
+import { Filter, Calendar, Clock, CheckCircle, Activity } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { toast } from 'sonner';
 import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
@@ -88,20 +80,19 @@ export default function AppointmentPage() {
         [appointments],
     );
     const [status, setStatus] = useState<Status>('approved');
-    const [search, setSearch] = useState<string | undefined>();
     const filteredAppointments = useMemo(
         () =>
-            appointments
-                ?.filter((appointment) => appointment.status === status)
-                .filter(
-                    (appointment) =>
-                        !search || appointment.request.title.includes(search),
-                ),
-        [appointments, status, search],
+            appointments?.filter(
+                (appointment) => appointment.status === status,
+            ),
+        [appointments, status],
     );
     const [selected, setSelected] = useState<string | undefined>();
     const url = useMemo(
-        () => (!selected ? undefined : `${window.location.href}/${selected}`),
+        () =>
+            !selected
+                ? undefined
+                : `${window.location.href}-management/${selected}/health`,
         [selected],
     );
 
@@ -138,15 +129,7 @@ export default function AppointmentPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div className="mb-12">
                     <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-                            <Input
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Search appointments..."
-                                className="pl-11 border-slate-200 focus:border-blue-300 focus:ring-blue-200 rounded-xl"
-                            />
-                        </div>
+                        <div className="relative flex-1"></div>
                         <Select
                             value={status}
                             onValueChange={(value: Status) => setStatus(value)}

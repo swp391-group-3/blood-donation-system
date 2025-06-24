@@ -1,18 +1,23 @@
 use std::{collections::HashMap, sync::Arc};
 
-use database::{deadpool_postgres, tokio_postgres::NoTls};
+use database::{
+    deadpool_postgres::{self, Object},
+    tokio_postgres::NoTls,
+};
 use futures::{StreamExt, stream};
+use lettre::{AsyncSmtpTransport, Tokio1Executor, transport::smtp::authentication::Credentials};
 
 use crate::{
     config::{CONFIG, oidc::Provider},
-    util::{jwt::JwtService, oidc::OpenIdConnectClient},
+    error::{Error, Result},
+    util::{auth::JwtService, auth::OpenIdConnectClient},
 };
 
-#[allow(unused)]
 pub struct ApiState {
     pub database_pool: deadpool_postgres::Pool,
     pub oidc_clients: HashMap<Provider, OpenIdConnectClient>,
     pub jwt_service: JwtService,
+    pub mailer: AsyncSmtpTransport<Tokio1Executor>,
 }
 
 impl ApiState {
@@ -27,18 +32,36 @@ impl ApiState {
             .then(|(&provider, config)| async move {
                 (
                     provider,
-                    OpenIdConnectClient::from_config(config.clone())
-                        .await
-                        .unwrap(),
+                    OpenIdConnectClient::from_config(config.clone()).await,
                 )
             })
             .collect()
             .await;
 
+        let mailer = AsyncSmtpTransport::<Tokio1Executor>::relay("smtp.gmail.com")
+            .unwrap()
+            .credentials(Credentials::new(
+                CONFIG.email.username.to_owned(),
+                CONFIG.email.password.to_owned(),
+            ))
+            .build();
+
         Arc::new(Self {
             database_pool,
             oidc_clients,
             jwt_service: Default::default(),
+            mailer,
         })
+    }
+
+    pub async fn database(&self) -> Result<Object> {
+        match self.database_pool.get().await {
+            Ok(database) => Ok(database),
+            Err(error) => {
+                tracing::error!(?error, "Failed to get database connection");
+
+                Err(Error::internal())
+            }
+        }
     }
 }

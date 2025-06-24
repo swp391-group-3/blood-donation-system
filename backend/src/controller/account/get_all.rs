@@ -1,11 +1,14 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use database::queries;
+use ctypes::Role;
+use database::queries::{self, account::Account};
 
-use crate::{error::Result, state::ApiState};
-
-use super::Account;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -14,14 +17,17 @@ use super::Account;
     operation_id = "account::get_all",
     security(("jwt_token" = []))
 )]
-pub async fn get_all(state: State<Arc<ApiState>>) -> Result<Json<Vec<Account>>> {
-    let database = state.database_pool.get().await?;
+pub async fn get_all(state: State<Arc<ApiState>>, claims: Claims) -> Result<Json<Vec<Account>>> {
+    let database = state.database().await?;
 
-    let accounts = queries::account::get_all()
-        .bind(&database)
-        .map(Account::from_get_all)
-        .all()
-        .await?;
+    authorize(&claims, [Role::Admin], &database).await?;
 
-    Ok(Json(accounts))
+    match queries::account::get_all().bind(&database).all().await {
+        Ok(accounts) => Ok(Json(accounts)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get account list");
+
+            Err(Error::internal())
+        }
+    }
 }

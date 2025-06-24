@@ -1,10 +1,17 @@
 use std::sync::Arc;
 
-use axum::extract::{Path, State};
+use axum::{
+    extract::{Path, State},
+    http::StatusCode,
+};
 use database::queries::{self};
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::Claims,
+};
 
 #[utoipa::path(
     delete,
@@ -17,14 +24,24 @@ use crate::{error::Result, state::ApiState, util::jwt::Claims};
 )]
 pub async fn delete(
     state: State<Arc<ApiState>>,
-    Path(id): Path<Uuid>,
     claims: Claims,
+    Path(id): Path<Uuid>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    queries::blog::delete()
+    // TODO: member can only delete their blog
+
+    if let Err(error) = queries::blog::delete()
         .bind(&database, &id, &claims.sub)
-        .await?;
+        .await
+    {
+        tracing::error!(?error, "Failed to delete blog");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Invalid blog id".into())
+            .build());
+    }
 
     Ok(())
 }

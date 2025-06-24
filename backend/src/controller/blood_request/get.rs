@@ -3,13 +3,15 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
-use database::queries;
+use database::queries::{self, blood_request::BloodRequest};
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
-
-use super::BloodRequest;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 
 #[utoipa::path(
     get,
@@ -18,13 +20,22 @@ use super::BloodRequest;
     operation_id = "blood_request::get"
 )]
 pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<BloodRequest>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let request = queries::blood_request::get()
+    match queries::blood_request::get()
         .bind(&database, &id)
-        .map(BloodRequest::from_get)
-        .one()
-        .await?;
+        .opt()
+        .await
+    {
+        Ok(Some(request)) => Ok(Json(request)),
+        Ok(None) => Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("No blood request with given id".into())
+            .build()),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get blood request");
 
-    Ok(Json(request))
+            Err(Error::internal())
+        }
+    }
 }

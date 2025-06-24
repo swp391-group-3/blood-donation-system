@@ -3,8 +3,8 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
-use axum_valid::Valid;
 use database::{
     client::Params,
     queries::{self, donation::UpdateParams},
@@ -13,11 +13,13 @@ use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
-use validator::Validate;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 
-#[derive(Deserialize, ToSchema, Mapper, Validate)]
+#[derive(Deserialize, ToSchema, Mapper)]
 #[schema(as = donation::update::Request)]
 #[mapper(
     into(custom = "with_id"),
@@ -26,7 +28,6 @@ use crate::{error::Result, state::ApiState};
 )]
 pub struct Request {
     pub r#type: Option<ctypes::DonationType>,
-    #[validate(range(min = 1))]
     pub amount: Option<i32>,
 }
 
@@ -44,13 +45,21 @@ pub struct Request {
 pub async fn update(
     state: State<Arc<ApiState>>,
     Path(id): Path<Uuid>,
-    Valid(Json(request)): Valid<Json<Request>>,
+    Json(request): Json<Request>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    queries::donation::update()
+    if let Err(error) = queries::donation::update()
         .params(&database, &request.with_id(id))
-        .await?;
+        .await
+    {
+        tracing::error!(?error, "Failed to update donation");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Invalid donation data".into())
+            .build());
+    }
 
     Ok(())
 }

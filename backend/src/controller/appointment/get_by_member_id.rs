@@ -1,12 +1,14 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use database::queries;
-use futures::{StreamExt, TryStreamExt};
+use ctypes::Role;
+use database::queries::{self, appointment::Appointment};
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
-
-use super::Appointment;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -22,25 +24,22 @@ pub async fn get_by_member_id(
     state: State<Arc<ApiState>>,
     claims: Claims,
 ) -> Result<Json<Vec<Appointment>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let appointments = queries::appointment::get_by_member_id()
+    authorize(&claims, [Role::Member], &database).await?;
+
+    let appointments = match queries::appointment::get_by_member_id()
         .bind(&database, &claims.sub)
-        .iter()
-        .await?
-        .then(|raw| {
-            let state = state.clone();
+        .all()
+        .await
+    {
+        Ok(appointments) => appointments,
+        Err(error) => {
+            tracing::error!(?error, "Failed to get appointment list");
 
-            async move {
-                let raw = raw?;
-
-                let database = state.database_pool.get().await?;
-
-                Appointment::new(raw.id, raw.member_id, raw.request_id, raw.status, &database).await
-            }
-        })
-        .try_collect()
-        .await?;
+            return Err(Error::internal());
+        }
+    };
 
     Ok(Json(appointments))
 }

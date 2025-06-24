@@ -12,37 +12,13 @@ pub struct UpdateParams {
     pub amount: Option<i32>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq, Copy)]
-pub struct Get {
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
+pub struct Donation {
     pub id: uuid::Uuid,
     pub appointment_id: uuid::Uuid,
     pub r#type: ctypes::DonationType,
     pub amount: i32,
-    pub created_at: crate::types::time::TimestampTz,
-}
-#[derive(Debug, Clone, PartialEq, Copy)]
-pub struct GetByAppointmentId {
-    pub id: uuid::Uuid,
-    pub appointment_id: uuid::Uuid,
-    pub r#type: ctypes::DonationType,
-    pub amount: i32,
-    pub created_at: crate::types::time::TimestampTz,
-}
-#[derive(Debug, Clone, PartialEq, Copy)]
-pub struct GetAll {
-    pub id: uuid::Uuid,
-    pub appointment_id: uuid::Uuid,
-    pub r#type: ctypes::DonationType,
-    pub amount: i32,
-    pub created_at: crate::types::time::TimestampTz,
-}
-#[derive(Debug, Clone, PartialEq, Copy)]
-pub struct GetByMemberId {
-    pub id: uuid::Uuid,
-    pub appointment_id: uuid::Uuid,
-    pub r#type: ctypes::DonationType,
-    pub amount: i32,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
@@ -107,205 +83,19 @@ where
         Ok(it)
     }
 }
-pub struct GetQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct DonationQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<Get, tokio_postgres::Error>,
-    mapper: fn(Get) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<Donation, tokio_postgres::Error>,
+    mapper: fn(Donation) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> DonationQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(Get) -> R) -> GetQuery<'c, 'a, 's, C, R, N> {
-        GetQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetByAppointmentIdQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetByAppointmentId, tokio_postgres::Error>,
-    mapper: fn(GetByAppointmentId) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByAppointmentIdQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(
-        self,
-        mapper: fn(GetByAppointmentId) -> R,
-    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, R, N> {
-        GetByAppointmentIdQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetAllQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetAll, tokio_postgres::Error>,
-    mapper: fn(GetAll) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetAllQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(self, mapper: fn(GetAll) -> R) -> GetAllQuery<'c, 'a, 's, C, R, N> {
-        GetAllQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetByMemberIdQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetByMemberId, tokio_postgres::Error>,
-    mapper: fn(GetByMemberId) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByMemberIdQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(self, mapper: fn(GetByMemberId) -> R) -> GetByMemberIdQuery<'c, 'a, 's, C, R, N> {
-        GetByMemberIdQuery {
+    pub fn map<R>(self, mapper: fn(Donation) -> R) -> DonationQuery<'c, 'a, 's, C, R, N> {
+        DonationQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -402,7 +192,7 @@ impl<'c, 'a, 's, C: GenericClient>
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT id, appointment_id, type, amount, created_at FROM donations WHERE id = $1",
+        "SELECT * FROM donations WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -411,13 +201,13 @@ impl GetStmt {
         &'s mut self,
         client: &'c C,
         id: &'a uuid::Uuid,
-    ) -> GetQuery<'c, 'a, 's, C, Get, 1> {
-        GetQuery {
+    ) -> DonationQuery<'c, 'a, 's, C, Donation, 1> {
+        DonationQuery {
             client,
             params: [id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<Get, tokio_postgres::Error> {
-                Ok(Get {
+            extractor: |row: &tokio_postgres::Row| -> Result<Donation, tokio_postgres::Error> {
+                Ok(Donation {
                     id: row.try_get(0)?,
                     appointment_id: row.try_get(1)?,
                     r#type: row.try_get(2)?,
@@ -425,13 +215,13 @@ impl GetStmt {
                     created_at: row.try_get(4)?,
                 })
             },
-            mapper: |it| Get::from(it),
+            mapper: |it| Donation::from(it),
         }
     }
 }
 pub fn get_by_appointment_id() -> GetByAppointmentIdStmt {
     GetByAppointmentIdStmt(crate::client::async_::Stmt::new(
-        "SELECT id, appointment_id, type, amount, created_at FROM donations WHERE appointment_id = $1",
+        "SELECT * FROM donations WHERE appointment_id = $1",
     ))
 }
 pub struct GetByAppointmentIdStmt(crate::client::async_::Stmt);
@@ -440,22 +230,21 @@ impl GetByAppointmentIdStmt {
         &'s mut self,
         client: &'c C,
         appointment_id: &'a uuid::Uuid,
-    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, GetByAppointmentId, 1> {
-        GetByAppointmentIdQuery {
+    ) -> DonationQuery<'c, 'a, 's, C, Donation, 1> {
+        DonationQuery {
             client,
             params: [appointment_id],
             stmt: &mut self.0,
-            extractor:
-                |row: &tokio_postgres::Row| -> Result<GetByAppointmentId, tokio_postgres::Error> {
-                    Ok(GetByAppointmentId {
-                        id: row.try_get(0)?,
-                        appointment_id: row.try_get(1)?,
-                        r#type: row.try_get(2)?,
-                        amount: row.try_get(3)?,
-                        created_at: row.try_get(4)?,
-                    })
-                },
-            mapper: |it| GetByAppointmentId::from(it),
+            extractor: |row: &tokio_postgres::Row| -> Result<Donation, tokio_postgres::Error> {
+                Ok(Donation {
+                    id: row.try_get(0)?,
+                    appointment_id: row.try_get(1)?,
+                    r#type: row.try_get(2)?,
+                    amount: row.try_get(3)?,
+                    created_at: row.try_get(4)?,
+                })
+            },
+            mapper: |it| Donation::from(it),
         }
     }
 }
@@ -469,13 +258,13 @@ impl GetAllStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> GetAllQuery<'c, 'a, 's, C, GetAll, 0> {
-        GetAllQuery {
+    ) -> DonationQuery<'c, 'a, 's, C, Donation, 0> {
+        DonationQuery {
             client,
             params: [],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<GetAll, tokio_postgres::Error> {
-                Ok(GetAll {
+            extractor: |row: &tokio_postgres::Row| -> Result<Donation, tokio_postgres::Error> {
+                Ok(Donation {
                     id: row.try_get(0)?,
                     appointment_id: row.try_get(1)?,
                     r#type: row.try_get(2)?,
@@ -483,7 +272,7 @@ impl GetAllStmt {
                     created_at: row.try_get(4)?,
                 })
             },
-            mapper: |it| GetAll::from(it),
+            mapper: |it| Donation::from(it),
         }
     }
 }
@@ -498,13 +287,13 @@ impl GetByMemberIdStmt {
         &'s mut self,
         client: &'c C,
         member_id: &'a uuid::Uuid,
-    ) -> GetByMemberIdQuery<'c, 'a, 's, C, GetByMemberId, 1> {
-        GetByMemberIdQuery {
+    ) -> DonationQuery<'c, 'a, 's, C, Donation, 1> {
+        DonationQuery {
             client,
             params: [member_id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<GetByMemberId, tokio_postgres::Error> {
-                Ok(GetByMemberId {
+            extractor: |row: &tokio_postgres::Row| -> Result<Donation, tokio_postgres::Error> {
+                Ok(Donation {
                     id: row.try_get(0)?,
                     appointment_id: row.try_get(1)?,
                     r#type: row.try_get(2)?,
@@ -512,7 +301,7 @@ impl GetByMemberIdStmt {
                     created_at: row.try_get(4)?,
                 })
             },
-            mapper: |it| GetByMemberId::from(it),
+            mapper: |it| Donation::from(it),
         }
     }
 }

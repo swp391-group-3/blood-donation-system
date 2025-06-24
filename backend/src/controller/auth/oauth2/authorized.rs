@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use axum::{
     extract::{Path, Query, State},
+    http::StatusCode,
     response::{IntoResponse, Redirect},
 };
 use axum_extra::extract::CookieJar;
@@ -12,7 +13,7 @@ use tower_sessions::Session;
 
 use crate::{
     config::{CONFIG, oidc::Provider},
-    error::{AuthError, Result},
+    error::{Error, Result},
     state::ApiState,
 };
 
@@ -31,9 +32,24 @@ pub async fn authorized(
     Path(provider): Path<Provider>,
     Query(query): Query<AuthRequest>,
 ) -> Result<impl IntoResponse> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let (csrf, nonce): (CsrfToken, Nonce) = session.remove(KEY).await.unwrap().unwrap();
+    let (csrf, nonce): (CsrfToken, Nonce) = match session.remove(KEY).await {
+        Ok(Some(value)) => value,
+        Ok(None) => {
+            tracing::warn!("Failed to get stored session");
+
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid call to oauth2 api".into())
+                .build());
+        }
+        Err(error) => {
+            tracing::error!(?error, "Session is not initialized");
+
+            return Err(Error::internal());
+        }
+    };
 
     let claims = state.oidc_clients[&provider]
         .get_claims(
@@ -42,32 +58,34 @@ pub async fn authorized(
             csrf,
             nonce,
         )
-        .await
-        .unwrap();
+        .await?;
 
     tracing::info!(claims =? claims);
 
     let email = claims.email().expect("Account must have email").as_str();
 
-    if let Some(account) = queries::account::get_by_email()
+    let id = match queries::account::get_by_email()
         .bind(&database, &email)
         .opt()
-        .await?
+        .await
     {
-        let id = account.id;
+        Ok(Some(account)) => account.id,
+        Ok(None) => {
+            session.insert(KEY, email).await.unwrap();
 
-        let cookie = state.jwt_service.new_credential(id).map_err(|error| {
-            tracing::error!(error =? error);
-            AuthError::InvalidAuthToken
-        })?;
+            return Ok((
+                jar,
+                Redirect::to(&format!("{}/auth/complete", CONFIG.frontend_url)),
+            ));
+        }
+        Err(error) => {
+            tracing::error!(?error, "Failed to get account");
 
-        return Ok((jar.add(cookie), Redirect::to(&CONFIG.frontend_url)));
-    }
+            return Err(Error::internal());
+        }
+    };
 
-    session.insert(KEY, email).await.unwrap();
+    let cookie = state.jwt_service.new_credential(id)?;
 
-    Ok((
-        jar,
-        Redirect::to(&format!("{}/auth/complete", CONFIG.frontend_url)),
-    ))
+    Ok((jar.add(cookie), Redirect::to(&CONFIG.frontend_url)))
 }

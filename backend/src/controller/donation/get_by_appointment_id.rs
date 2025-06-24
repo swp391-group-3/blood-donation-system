@@ -4,12 +4,15 @@ use axum::{
     Json,
     extract::{Path, State},
 };
-use database::queries;
+use ctypes::Role;
+use database::queries::{self, donation::Donation};
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
-
-use super::Donation;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -20,21 +23,29 @@ use super::Donation;
         ("id" = Uuid, Path, description = "Appointment id")
     ),
     responses(
-        (status = Status::OK, body = Donation)
+        (status = Status::OK, body = Option<Donation>)
     ),
     security(("jwt_token" = []))
 )]
 pub async fn get_by_appointment_id(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Option<Donation>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let donation = queries::donation::get_by_appointment_id()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    match queries::donation::get_by_appointment_id()
         .bind(&database, &id)
-        .map(Donation::from_get_by_appointment_id)
         .opt()
-        .await?;
+        .await
+    {
+        Ok(donation) => Ok(Json(donation)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get donation");
 
-    Ok(Json(donation))
+            Err(Error::internal())
+        }
+    }
 }

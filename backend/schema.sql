@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS blogs(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     account_id uuid NOT NULL REFERENCES accounts(id),
     title text NOT NULL,
+    description text NOT NULL,
     content text NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
 );
@@ -84,7 +85,7 @@ CREATE TABLE IF NOT EXISTS blood_requests(
 );
 
 CREATE TABLE IF NOT EXISTS request_blood_groups(
-    request_id uuid NOT NULL,
+    request_id uuid NOT NULL REFERENCES blood_requests(id),
     blood_group blood_group NOT NULL,
     PRIMARY KEY (request_id, blood_group)
 );

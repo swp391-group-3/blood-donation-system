@@ -2,11 +2,15 @@ use std::sync::Arc;
 
 use axum::{
     extract::{Path, State},
-    response::{IntoResponse, Redirect},
+    response::Redirect,
 };
 use tower_sessions::Session;
 
-use crate::{config::oidc::Provider, state::ApiState};
+use crate::{
+    config::oidc::Provider,
+    error::{Error, Result},
+    state::ApiState,
+};
 
 use super::KEY;
 
@@ -23,10 +27,14 @@ pub async fn oauth2(
     state: State<Arc<ApiState>>,
     session: Session,
     Path(provider): Path<Provider>,
-) -> impl IntoResponse {
+) -> Result<Redirect> {
     let (auth_url, csrf, nonce) = state.oidc_clients[&provider].generate();
 
-    session.insert(KEY, (csrf, nonce)).await.unwrap();
+    if let Err(error) = session.insert(KEY, (csrf, nonce)).await {
+        tracing::error!(?error, "Failed to create oauth2 session");
 
-    Redirect::to(auth_url.as_ref())
+        return Err(Error::internal());
+    }
+
+    Ok(Redirect::to(auth_url.as_ref()))
 }

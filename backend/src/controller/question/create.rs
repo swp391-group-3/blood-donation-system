@@ -1,9 +1,14 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
+use axum::{Json, extract::State, http::StatusCode};
+use ctypes::Role;
 use database::queries;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     post,
@@ -16,13 +21,28 @@ use crate::{error::Result, state::ApiState};
     ),
     security(("jwt_token" = []))
 )]
-pub async fn create(state: State<Arc<ApiState>>, content: String) -> Result<Json<i32>> {
-    let database = state.database_pool.get().await?;
+pub async fn create(
+    state: State<Arc<ApiState>>,
+    claims: Claims,
+    content: String,
+) -> Result<Json<i32>> {
+    let database = state.database().await?;
 
-    let id = queries::question::create()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    match queries::question::create()
         .bind(&database, &content)
         .one()
-        .await?;
+        .await
+    {
+        Ok(id) => Ok(Json(id)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to create question");
 
-    Ok(Json(id))
+            Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid question content".into())
+                .build())
+        }
+    }
 }

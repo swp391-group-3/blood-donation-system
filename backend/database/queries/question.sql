@@ -1,10 +1,12 @@
+--: Question()
+
 --! create
 INSERT INTO questions(content)
 VALUES(:content)
 RETURNING id;
 
---! get_all
-SELECT id, content
+--! get_all : Question
+SELECT *
 FROM questions
 WHERE is_active = true;
 

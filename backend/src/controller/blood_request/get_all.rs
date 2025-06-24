@@ -1,12 +1,15 @@
-use std::sync::Arc;
+use std::{collections::HashSet, sync::Arc};
 
-use axum::{Json, extract::State};
-use database::queries;
+use axum::{Json, extract::State, http::StatusCode};
+use database::queries::{self, blood_request::BloodRequest};
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::Claims,
+};
 
-use super::BloodRequest;
-use crate::util::blood_compatible::get_compatible;
+use crate::util::blood::get_compatible;
 
 #[utoipa::path(
     get,
@@ -18,32 +21,52 @@ pub async fn get_all(
     state: State<Arc<ApiState>>,
     claims: Option<Claims>,
 ) -> Result<Json<Vec<BloodRequest>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let requests = queries::blood_request::get_all()
+    let requests = match queries::blood_request::get_all()
         .bind(&database)
-        .map(BloodRequest::from_get_all)
         .all()
-        .await?;
+        .await
+    {
+        Ok(requests) => requests,
+        Err(error) => {
+            tracing::error!(?error, "Failed to get request list");
 
-    let requests = match claims {
-        Some(claims) => {
-            let account = queries::account::get()
-                .bind(&database, &claims.sub)
-                .one()
-                .await?;
-
-            requests
-                .into_iter()
-                .filter(|request| {
-                    request.blood_groups.is_disjoint(&get_compatible(
-                        account.blood_group.expect("Member must have blood group"),
-                    ))
-                })
-                .collect()
+            return Err(Error::internal());
         }
-        None => requests,
     };
 
-    Ok(Json(requests))
+    let Some(claims) = claims else {
+        return Ok(Json(requests));
+    };
+
+    let account = match queries::account::get()
+        .bind(&database, &claims.sub)
+        .one()
+        .await
+    {
+        Ok(account) => account,
+        Err(error) => {
+            tracing::error!(?error, "Invalid claims");
+
+            return Err(Error::builder().status(StatusCode::UNAUTHORIZED).build());
+        }
+    };
+
+    let compatible_blood_groups = match account.blood_group {
+        Some(blood_group) => get_compatible(blood_group),
+        None => return Ok(Json(requests)),
+    };
+
+    let mut filtered_requests = Vec::new();
+
+    for request in requests {
+        let blood_groups: HashSet<_> = request.blood_groups.iter().cloned().collect();
+
+        if !blood_groups.is_disjoint(&compatible_blood_groups) {
+            filtered_requests.push(request);
+        }
+    }
+
+    Ok(Json(filtered_requests))
 }

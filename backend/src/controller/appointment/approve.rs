@@ -1,10 +1,12 @@
 use std::sync::Arc;
 
-use crate::controller::account::Account;
+use crate::error::Error;
+use crate::util::auth::{Claims, authorize};
 use crate::util::notification::send;
 use crate::{error::Result, state::ApiState};
 use axum::extract::{Path, State};
-use ctypes::AppointmentStatus;
+use axum::http::StatusCode;
+use ctypes::{AppointmentStatus, Role};
 use database::queries::{self};
 use uuid::Uuid;
 
@@ -18,31 +20,52 @@ use uuid::Uuid;
     ),
     security(("jwt_token" = [])),
 )]
-pub async fn approve(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<()> {
-    let database = state.database_pool.get().await.unwrap();
+pub async fn approve(
+    state: State<Arc<ApiState>>,
+    claims: Claims,
+    Path(id): Path<Uuid>,
+) -> Result<()> {
+    let database = state.database().await?;
 
-    queries::appointment::update_status()
+    authorize(&claims, [Role::Staff], &database).await?;
+
+    if let Err(error) = queries::appointment::update_status()
         .bind(&database, &AppointmentStatus::Approved, &id)
         .await
-        .unwrap();
+    {
+        tracing::error!(?error, id =? id, "Failed to approve appointment");
 
-    let appointment = queries::appointment::get()
-        .bind(&database, &id)
-        .one()
-        .await
-        .unwrap();
+        return Err(Error::internal());
+    }
 
-    let account = queries::account::get()
+    let appointment = match queries::appointment::get().bind(&database, &id).one().await {
+        Ok(appointment) => appointment,
+        Err(error) => {
+            tracing::error!(?error, id =? id, "Failed to get appointment");
+
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid appointment id".into())
+                .build());
+        }
+    };
+
+    let account = match queries::account::get()
         .bind(&database, &appointment.member_id)
-        .map(Account::from_get)
         .one()
         .await
-        .unwrap();
+    {
+        Ok(account) => account,
+        Err(error) => {
+            tracing::error!(?error, "No account match appointment");
+            return Err(Error::internal());
+        }
+    };
 
     let subject = "Appointment Approved".to_string();
     let body = format!("Your appointment with id {} has been approved.", id);
 
-    send(&account, subject, body).await?;
+    send(&account, subject, body, &state.mailer).await?;
 
     Ok(())
 }

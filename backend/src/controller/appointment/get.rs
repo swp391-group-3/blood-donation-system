@@ -3,13 +3,17 @@ use std::sync::Arc;
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
-use database::queries;
+use ctypes::Role;
+use database::queries::{self, appointment::Appointment};
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
-
-use super::Appointment;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -24,18 +28,25 @@ use super::Appointment;
     ),
     security(("jwt_token" = []))
 )]
-pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<Appointment>> {
-    let database = state.database_pool.get().await?;
+pub async fn get(
+    state: State<Arc<ApiState>>,
+    claims: Claims,
+    Path(id): Path<Uuid>,
+) -> Result<Json<Appointment>> {
+    let database = state.database().await?;
 
-    let raw = queries::appointment::get()
-        .bind(&database, &id)
-        .one()
-        .await?;
+    authorize(&claims, [Role::Staff], &database).await?;
 
-    let appointment =
-        Appointment::new(raw.id, raw.member_id, raw.request_id, raw.status, &database)
-            .await
-            .unwrap();
+    match queries::appointment::get().bind(&database, &id).opt().await {
+        Ok(Some(appointment)) => Ok(Json(appointment)),
+        Ok(None) => Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("No appointment with given id".into())
+            .build()),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get appointment");
 
-    Ok(Json(appointment))
+            Err(Error::internal())
+        }
+    }
 }

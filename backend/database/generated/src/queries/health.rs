@@ -22,8 +22,8 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub note: Option<T1>,
     pub id: uuid::Uuid,
 }
-#[derive(Debug, Clone, PartialEq)]
-pub struct GetByAppointmentId {
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
+pub struct Health {
     pub id: uuid::Uuid,
     pub appointment_id: uuid::Uuid,
     pub temperature: f32,
@@ -33,9 +33,9 @@ pub struct GetByAppointmentId {
     pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: Option<String>,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
-pub struct GetByAppointmentIdBorrowed<'a> {
+pub struct HealthBorrowed<'a> {
     pub id: uuid::Uuid,
     pub appointment_id: uuid::Uuid,
     pub temperature: f32,
@@ -45,11 +45,11 @@ pub struct GetByAppointmentIdBorrowed<'a> {
     pub heart_rate: i32,
     pub is_good_health: bool,
     pub note: Option<&'a str>,
-    pub created_at: crate::types::time::TimestampTz,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
-impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
+impl<'a> From<HealthBorrowed<'a>> for Health {
     fn from(
-        GetByAppointmentIdBorrowed {
+        HealthBorrowed {
             id,
             appointment_id,
             temperature,
@@ -60,61 +60,7 @@ impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
             is_good_health,
             note,
             created_at,
-        }: GetByAppointmentIdBorrowed<'a>,
-    ) -> Self {
-        Self {
-            id,
-            appointment_id,
-            temperature,
-            weight,
-            upper_blood_pressure,
-            lower_blood_pressure,
-            heart_rate,
-            is_good_health,
-            note: note.map(|v| v.into()),
-            created_at,
-        }
-    }
-}
-#[derive(Debug, Clone, PartialEq)]
-pub struct GetByMemberId {
-    pub id: uuid::Uuid,
-    pub appointment_id: uuid::Uuid,
-    pub temperature: f32,
-    pub weight: f32,
-    pub upper_blood_pressure: i32,
-    pub lower_blood_pressure: i32,
-    pub heart_rate: i32,
-    pub is_good_health: bool,
-    pub note: Option<String>,
-    pub created_at: crate::types::time::TimestampTz,
-}
-pub struct GetByMemberIdBorrowed<'a> {
-    pub id: uuid::Uuid,
-    pub appointment_id: uuid::Uuid,
-    pub temperature: f32,
-    pub weight: f32,
-    pub upper_blood_pressure: i32,
-    pub lower_blood_pressure: i32,
-    pub heart_rate: i32,
-    pub is_good_health: bool,
-    pub note: Option<&'a str>,
-    pub created_at: crate::types::time::TimestampTz,
-}
-impl<'a> From<GetByMemberIdBorrowed<'a>> for GetByMemberId {
-    fn from(
-        GetByMemberIdBorrowed {
-            id,
-            appointment_id,
-            temperature,
-            weight,
-            upper_blood_pressure,
-            lower_blood_pressure,
-            heart_rate,
-            is_good_health,
-            note,
-            created_at,
-        }: GetByMemberIdBorrowed<'a>,
+        }: HealthBorrowed<'a>,
     ) -> Self {
         Self {
             id,
@@ -193,87 +139,19 @@ where
         Ok(it)
     }
 }
-pub struct GetByAppointmentIdQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct HealthQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor:
-        fn(&tokio_postgres::Row) -> Result<GetByAppointmentIdBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetByAppointmentIdBorrowed) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<HealthBorrowed, tokio_postgres::Error>,
+    mapper: fn(HealthBorrowed) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByAppointmentIdQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> HealthQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(
-        self,
-        mapper: fn(GetByAppointmentIdBorrowed) -> R,
-    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, R, N> {
-        GetByAppointmentIdQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct GetByMemberIdQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetByMemberIdBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetByMemberIdBorrowed) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByMemberIdQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(
-        self,
-        mapper: fn(GetByMemberIdBorrowed) -> R,
-    ) -> GetByMemberIdQuery<'c, 'a, 's, C, R, N> {
-        GetByMemberIdQuery {
+    pub fn map<R>(self, mapper: fn(HealthBorrowed) -> R) -> HealthQuery<'c, 'a, 's, C, R, N> {
+        HealthQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -398,28 +276,27 @@ impl GetByAppointmentIdStmt {
         &'s mut self,
         client: &'c C,
         appointment_id: &'a uuid::Uuid,
-    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, GetByAppointmentId, 1> {
-        GetByAppointmentIdQuery {
+    ) -> HealthQuery<'c, 'a, 's, C, Health, 1> {
+        HealthQuery {
             client,
             params: [appointment_id],
             stmt: &mut self.0,
-            extractor: |
-                row: &tokio_postgres::Row,
-            | -> Result<GetByAppointmentIdBorrowed, tokio_postgres::Error> {
-                Ok(GetByAppointmentIdBorrowed {
-                    id: row.try_get(0)?,
-                    appointment_id: row.try_get(1)?,
-                    temperature: row.try_get(2)?,
-                    weight: row.try_get(3)?,
-                    upper_blood_pressure: row.try_get(4)?,
-                    lower_blood_pressure: row.try_get(5)?,
-                    heart_rate: row.try_get(6)?,
-                    is_good_health: row.try_get(7)?,
-                    note: row.try_get(8)?,
-                    created_at: row.try_get(9)?,
-                })
-            },
-            mapper: |it| GetByAppointmentId::from(it),
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<HealthBorrowed, tokio_postgres::Error> {
+                    Ok(HealthBorrowed {
+                        id: row.try_get(0)?,
+                        appointment_id: row.try_get(1)?,
+                        temperature: row.try_get(2)?,
+                        weight: row.try_get(3)?,
+                        upper_blood_pressure: row.try_get(4)?,
+                        lower_blood_pressure: row.try_get(5)?,
+                        heart_rate: row.try_get(6)?,
+                        is_good_health: row.try_get(7)?,
+                        note: row.try_get(8)?,
+                        created_at: row.try_get(9)?,
+                    })
+                },
+            mapper: |it| Health::from(it),
         }
     }
 }
@@ -434,14 +311,14 @@ impl GetByMemberIdStmt {
         &'s mut self,
         client: &'c C,
         member_id: &'a uuid::Uuid,
-    ) -> GetByMemberIdQuery<'c, 'a, 's, C, GetByMemberId, 1> {
-        GetByMemberIdQuery {
+    ) -> HealthQuery<'c, 'a, 's, C, Health, 1> {
+        HealthQuery {
             client,
             params: [member_id],
             stmt: &mut self.0,
             extractor:
-                |row: &tokio_postgres::Row| -> Result<GetByMemberIdBorrowed, tokio_postgres::Error> {
-                    Ok(GetByMemberIdBorrowed {
+                |row: &tokio_postgres::Row| -> Result<HealthBorrowed, tokio_postgres::Error> {
+                    Ok(HealthBorrowed {
                         id: row.try_get(0)?,
                         appointment_id: row.try_get(1)?,
                         temperature: row.try_get(2)?,
@@ -454,7 +331,7 @@ impl GetByMemberIdStmt {
                         created_at: row.try_get(9)?,
                     })
                 },
-            mapper: |it| GetByMemberId::from(it),
+            mapper: |it| Health::from(it),
         }
     }
 }

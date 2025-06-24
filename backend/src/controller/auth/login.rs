@@ -1,24 +1,20 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
+use axum::{Json, extract::State, http::StatusCode};
 use axum_extra::extract::CookieJar;
-use axum_valid::Valid;
 use database::queries;
 use serde::Deserialize;
 use utoipa::ToSchema;
-use validator::Validate;
 
 use crate::{
-    error::{AuthError, Error, Result},
+    error::{Error, Result},
     state::ApiState,
 };
 
-#[derive(Deserialize, ToSchema, Validate)]
+#[derive(Deserialize, ToSchema)]
 #[schema(as = auth::login::Request)]
 pub struct Request {
-    #[validate(email)]
     pub email: String,
-    #[validate(length(min = 1))]
     pub password: String,
 }
 
@@ -31,30 +27,52 @@ pub struct Request {
 pub async fn login(
     state: State<Arc<ApiState>>,
     jar: CookieJar,
-    Valid(Json(request)): Valid<Json<Request>>,
+    Json(request): Json<Request>,
 ) -> Result<CookieJar> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let account = queries::account::get_by_email()
+    let account = match queries::account::get_by_email()
         .bind(&database, &request.email)
         .opt()
-        .await?
-        .ok_or(AuthError::InvalidLoginData)?;
+        .await
+    {
+        Ok(Some(account)) => account,
+        Ok(None) => {
+            tracing::warn!(email = request.email, "No account with given email");
 
-    let is_password_correct = bcrypt::verify(&request.password, &account.password)
-        .map_err(|_| AuthError::InvalidLoginData)?;
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid login credential".into())
+                .build());
+        }
+        Err(error) => {
+            tracing::warn!(?error, "Failed to fetch account");
 
-    if !is_password_correct {
-        return Err(AuthError::InvalidLoginData.into());
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid login credential".into())
+                .build());
+        }
+    };
+
+    match bcrypt::verify(&request.password, &account.password) {
+        Ok(true) => {}
+        Ok(false) => {
+            tracing::warn!("Login failed");
+
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid login credential".into())
+                .build());
+        }
+        Err(error) => {
+            tracing::error!(?error, "Failed to verify password");
+
+            return Err(Error::internal());
+        }
     }
 
-    let cookie = state
-        .jwt_service
-        .new_credential(account.id)
-        .map_err(|error| {
-            tracing::error!(error =? error);
-            Error::from(AuthError::InvalidLoginData)
-        })?;
+    let cookie = state.jwt_service.new_credential(account.id)?;
 
     Ok(jar.add(cookie))
 }

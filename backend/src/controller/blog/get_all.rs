@@ -1,10 +1,22 @@
-use axum::{Json, extract::State};
-use database::queries;
+use axum::{
+    Json,
+    extract::{Query, State},
+};
+use database::queries::{self, blog::Blog};
+use serde::Deserialize;
 use std::sync::Arc;
+use utoipa::ToSchema;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 
-use super::Blog;
+#[derive(Deserialize, ToSchema)]
+#[schema(as = blod::create::Request)]
+pub struct Request {
+    pub query: Option<String>,
+}
 
 #[utoipa::path(
     get,
@@ -14,14 +26,22 @@ use super::Blog;
         (status = 200, description = "Get Blog Successfully", body = Blog)
     )
 )]
-pub async fn get_all(state: State<Arc<ApiState>>) -> Result<Json<Vec<Blog>>> {
-    let database = state.database_pool.get().await?;
+pub async fn get_all(
+    state: State<Arc<ApiState>>,
+    Query(request): Query<Request>,
+) -> Result<Json<Vec<Blog>>> {
+    let database = state.database().await?;
 
-    let blogs = queries::blog::get_all()
-        .bind(&database)
-        .map(Blog::from_get_all)
+    match queries::blog::get_all()
+        .bind(&database, &request.query)
         .all()
-        .await?;
+        .await
+    {
+        Ok(blogs) => Ok(Json(blogs)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get blog list");
 
-    Ok(Json(blogs))
+            Err(Error::internal())
+        }
+    }
 }

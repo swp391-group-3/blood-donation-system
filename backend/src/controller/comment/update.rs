@@ -1,11 +1,15 @@
 use axum::{
     Json,
     extract::{Path, State},
+    http::StatusCode,
 };
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::{error::Result, state::ApiState};
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+};
 use database::queries;
 
 #[utoipa::path(
@@ -24,10 +28,19 @@ pub async fn update(
     Path(id): Path<Uuid>,
     Json(content): Json<String>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
-    queries::comment::update()
+    let database = state.database().await?;
+
+    if let Err(error) = queries::comment::update()
         .bind(&database, &Some(content), &id)
-        .await?;
+        .await
+    {
+        tracing::error!(?error, "Failed to update question");
+
+        return Err(Error::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .message("Invalid new comment".into())
+            .build());
+    }
 
     Ok(())
 }

@@ -1,10 +1,12 @@
---! get
-SELECT id, donation_id, component, is_used, amount, expired_time
+--: BloodBag()
+
+--! get : BloodBag
+SELECT *
 FROM blood_bags
 WHERE id = :id;
 
---! get_all
-SELECT id, donation_id, component, is_used, amount, expired_time
+--! get_all : BloodBag
+SELECT *
 FROM blood_bags;
 
 --! create

@@ -1,3 +1,5 @@
+--: Health(note?)
+
 --! create (note?)
 INSERT INTO healths(
     appointment_id,
@@ -21,12 +23,12 @@ VALUES(
 )
 RETURNING id;
 
---! get_by_appointment_id : (note?)
+--! get_by_appointment_id : Health
 SELECT *
 FROM healths
 WHERE appointment_id = :appointment_id;
 
---! get_by_member_id : (note?)
+--! get_by_member_id : Health
 SELECT *
 FROM healths
 WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = :member_id)

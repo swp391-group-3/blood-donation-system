@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
-use axum_valid::Valid;
+use axum::{Json, extract::State, http::StatusCode};
+use ctypes::Role;
 use database::{
     client::Params,
     queries::{self, account::CreateStaffParams},
@@ -9,27 +9,24 @@ use database::{
 use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
-use validator::Validate;
 
 use crate::{
     config::CONFIG,
-    error::{AuthError, Result},
+    error::{Error, Result},
     state::ApiState,
+    util::auth::{Claims, authorize},
 };
 
-#[derive(Deserialize, ToSchema, Mapper, Validate)]
+#[derive(Deserialize, ToSchema, Mapper)]
 #[schema(as = staff::create::Request)]
 #[mapper(
     into,
     ty = CreateStaffParams::<String, String, String, String>,
 )]
 pub struct Request {
-    #[validate(email)]
     pub email: String,
     pub password: String,
-    #[validate(length(min = 10))]
     pub phone: String,
-    #[validate(length(min = 1))]
     pub name: String,
 }
 
@@ -43,23 +40,35 @@ pub struct Request {
 )]
 pub async fn create_staff(
     state: State<Arc<ApiState>>,
-    Valid(Json(mut request)): Valid<Json<Request>>,
+    claims: Claims,
+    Json(mut request): Json<Request>,
 ) -> Result<()> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let password =
-        bcrypt::hash_with_salt(&request.password, CONFIG.bcrypt.cost, CONFIG.bcrypt.salt)
-            .map_err(|error| {
-                tracing::error!(error =? error);
-                AuthError::InvalidLoginData
-            })?
-            .to_string();
-    request.password = password;
+    authorize(&claims, [Role::Admin], &database).await?;
 
-    queries::account::create_staff()
+    request.password =
+        match bcrypt::hash_with_salt(&request.password, CONFIG.bcrypt.cost, CONFIG.bcrypt.salt) {
+            Ok(hashed_password) => hashed_password.to_string(),
+            Err(error) => {
+                tracing::error!(?error, "Failed to hash password");
+
+                return Err(Error::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .message("Invalid password".into())
+                    .build());
+            }
+        };
+
+    if let Err(error) = queries::account::create_staff()
         .params(&database, &request.into())
         .one()
-        .await?;
+        .await
+    {
+        tracing::error!(?error, "Failed to create staff account");
+
+        return Err(Error::internal());
+    }
 
     Ok(())
 }

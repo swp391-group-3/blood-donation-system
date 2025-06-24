@@ -1,11 +1,14 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use database::queries;
+use ctypes::Role;
+use database::queries::{self, health::Health};
 
-use crate::{error::Result, state::ApiState, util::jwt::Claims};
-
-use super::Health;
+use crate::{
+    error::{Error, Result},
+    state::ApiState,
+    util::auth::{Claims, authorize},
+};
 
 #[utoipa::path(
     get,
@@ -21,13 +24,20 @@ pub async fn get_by_member_id(
     state: State<Arc<ApiState>>,
     claims: Claims,
 ) -> Result<Json<Vec<Health>>> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let healths = queries::health::get_by_member_id()
+    authorize(&claims, [Role::Member], &database).await?;
+
+    match queries::health::get_by_member_id()
         .bind(&database, &claims.sub)
-        .map(Health::from_get_by_member_id)
         .all()
-        .await?;
+        .await
+    {
+        Ok(healths) => Ok(Json(healths)),
+        Err(error) => {
+            tracing::error!(?error, "Failed to get health list");
 
-    Ok(Json(healths))
+            Err(Error::internal())
+        }
+    }
 }

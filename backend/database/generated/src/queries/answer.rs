@@ -6,19 +6,17 @@ pub struct CreateParams<T1: crate::StringSql> {
     pub appointment_id: uuid::Uuid,
     pub content: T1,
 }
-#[derive(Debug, Clone, PartialEq)]
-pub struct GetByAppointmentId {
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
+pub struct Answer {
     pub question: String,
     pub answer: String,
 }
-pub struct GetByAppointmentIdBorrowed<'a> {
+pub struct AnswerBorrowed<'a> {
     pub question: &'a str,
     pub answer: &'a str,
 }
-impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
-    fn from(
-        GetByAppointmentIdBorrowed { question, answer }: GetByAppointmentIdBorrowed<'a>,
-    ) -> Self {
+impl<'a> From<AnswerBorrowed<'a>> for Answer {
+    fn from(AnswerBorrowed { question, answer }: AnswerBorrowed<'a>) -> Self {
         Self {
             question: question.into(),
             answer: answer.into(),
@@ -27,23 +25,19 @@ impl<'a> From<GetByAppointmentIdBorrowed<'a>> for GetByAppointmentId {
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
-pub struct GetByAppointmentIdQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct AnswerQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor:
-        fn(&tokio_postgres::Row) -> Result<GetByAppointmentIdBorrowed, tokio_postgres::Error>,
-    mapper: fn(GetByAppointmentIdBorrowed) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<AnswerBorrowed, tokio_postgres::Error>,
+    mapper: fn(AnswerBorrowed) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetByAppointmentIdQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> AnswerQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(
-        self,
-        mapper: fn(GetByAppointmentIdBorrowed) -> R,
-    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, R, N> {
-        GetByAppointmentIdQuery {
+    pub fn map<R>(self, mapper: fn(AnswerBorrowed) -> R) -> AnswerQuery<'c, 'a, 's, C, R, N> {
+        AnswerQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -150,20 +144,19 @@ impl GetByAppointmentIdStmt {
         &'s mut self,
         client: &'c C,
         appointment_id: &'a uuid::Uuid,
-    ) -> GetByAppointmentIdQuery<'c, 'a, 's, C, GetByAppointmentId, 1> {
-        GetByAppointmentIdQuery {
+    ) -> AnswerQuery<'c, 'a, 's, C, Answer, 1> {
+        AnswerQuery {
             client,
             params: [appointment_id],
             stmt: &mut self.0,
-            extractor: |
-                row: &tokio_postgres::Row,
-            | -> Result<GetByAppointmentIdBorrowed, tokio_postgres::Error> {
-                Ok(GetByAppointmentIdBorrowed {
-                    question: row.try_get(0)?,
-                    answer: row.try_get(1)?,
-                })
-            },
-            mapper: |it| GetByAppointmentId::from(it),
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AnswerBorrowed, tokio_postgres::Error> {
+                    Ok(AnswerBorrowed {
+                        question: row.try_get(0)?,
+                        answer: row.try_get(1)?,
+                    })
+                },
+            mapper: |it| Answer::from(it),
         }
     }
 }

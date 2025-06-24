@@ -15,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useBloodRequest } from '@/hooks/use-blood-request';
+import { toast } from 'sonner';
 
 const statusConfig = {
     on_process: {
@@ -72,11 +74,23 @@ export const AppointmentCard = ({
     appointment: Appointment;
     onDisplayQR: () => void;
 }) => {
+    const {
+        data: request,
+        isPending,
+        error,
+    } = useBloodRequest(appointment.request_id);
+
+    if (isPending) {
+        return <div></div>;
+    }
+
+    if (error) {
+        toast.error(error.message);
+        return <div></div>;
+    }
+
     const config = statusConfig[appointment.status];
-    const timeDisplay = getTimeDisplay(
-        appointment.start_time,
-        appointment.end_time,
-    );
+    const timeDisplay = getTimeDisplay(request.start_time, request.end_time);
 
     return (
         <Card className="group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 border-slate-200 rounded-2xl overflow-hidden">
@@ -91,7 +105,7 @@ export const AppointmentCard = ({
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2">
                                 <h3 className="text-lg font-bold text-slate-900 leading-tight">
-                                    {appointment.title}
+                                    {request.title}
                                 </h3>
                                 <Badge
                                     className={`${config.badgeColor} border text-xs font-semibold px-2 py-1`}
@@ -132,7 +146,7 @@ export const AppointmentCard = ({
                                     </span>
                                     <span className="font-medium text-slate-900">
                                         {formatDateTime(
-                                            new Date(appointment.start_time),
+                                            new Date(request.start_time),
                                         )}
                                     </span>
                                 </div>
@@ -140,7 +154,7 @@ export const AppointmentCard = ({
                                     <span className="text-slate-500">End:</span>
                                     <span className="font-medium text-slate-900">
                                         {formatDateTime(
-                                            new Date(appointment.end_time),
+                                            new Date(request.end_time),
                                         )}
                                     </span>
                                 </div>

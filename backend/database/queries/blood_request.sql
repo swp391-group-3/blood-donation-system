@@ -1,3 +1,5 @@
+--: BloodRequest()
+
 --! create
 INSERT INTO blood_requests(
     staff_id,
@@ -27,11 +29,9 @@ VALUES (
     :blood_group
 );
 
---! get
-SELECT
-    id,
-    priority,
-    title,
+--! get : BloodRequest
+SELECT 
+    *,
     (
         SELECT ARRAY(
             SELECT blood_group
@@ -43,18 +43,13 @@ SELECT
         SELECT COUNT(id)
         FROM appointments
         WHERE request_id = blood_requests.id
-    ) as current_people,
-    max_people,
-    start_time,
-    end_time
+    ) as current_people
 FROM blood_requests
-WHERE id = :id AND now() < end_time AND is_active = true;
+WHERE id = :id AND is_active = true;
 
---! get_all
-SELECT
-    id,
-    priority,
-    title,
+--! get_all : BloodRequest
+SELECT 
+    *,
     (
         SELECT ARRAY(
             SELECT blood_group
@@ -66,39 +61,9 @@ SELECT
         SELECT COUNT(id)
         FROM appointments
         WHERE request_id = blood_requests.id
-    ) as current_people,
-    max_people,
-    start_time,
-    end_time
+    ) as current_people
 FROM blood_requests
 WHERE now() < end_time AND is_active = true;
-
---! get_by_member_id
-SELECT
-    id,
-    priority,
-    title,
-    (
-        SELECT ARRAY(
-            SELECT blood_group
-            FROM request_blood_groups
-            WHERE request_id = blood_requests.id
-        )
-    ) AS blood_groups,
-    (
-        SELECT COUNT(id)
-        FROM appointments
-        WHERE request_id = blood_requests.id
-    ) as current_people,
-    max_people,
-    start_time,
-    end_time
-FROM blood_requests
-WHERE blood_requests.id IN (
-    SELECT request_id
-    FROM appointments
-    WHERE member_id = :member_id
-);
 
 --! update (priority?, title?, max_people?)
 UPDATE blood_requests

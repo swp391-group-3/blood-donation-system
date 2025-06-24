@@ -1,8 +1,7 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
+use axum::{Json, extract::State, http::StatusCode};
 use axum_extra::extract::CookieJar;
-use axum_valid::Valid;
 use chrono::NaiveDate;
 use ctypes::{BloodGroup, Gender};
 use database::{
@@ -13,16 +12,15 @@ use model_mapper::Mapper;
 use serde::Deserialize;
 use tower_sessions::Session;
 use utoipa::ToSchema;
-use validator::Validate;
 
 use crate::{
-    error::{AuthError, Error, Result},
+    error::{Error, Result},
     state::ApiState,
 };
 
 use super::KEY;
 
-#[derive(Deserialize, ToSchema, Validate, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper)]
 #[schema(as = oauth2::complete::request)]
 #[mapper(
     into(custom = "with_email"),
@@ -49,25 +47,44 @@ pub async fn complete(
     state: State<Arc<ApiState>>,
     session: Session,
     jar: CookieJar,
-    Valid(Json(request)): Valid<Json<Request>>,
+    Json(request): Json<Request>,
 ) -> Result<CookieJar> {
-    let database = state.database_pool.get().await?;
+    let database = state.database().await?;
 
-    let email: String = session.remove(KEY).await.unwrap().unwrap();
+    let email: String = match session.remove(KEY).await {
+        Ok(Some(value)) => value,
+        Ok(None) => {
+            tracing::warn!("Failed to get stored session");
 
-    let id = queries::account::register()
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid call to oauth2 api".into())
+                .build());
+        }
+        Err(error) => {
+            tracing::error!(?error, "Session is not initialized");
+
+            return Err(Error::internal());
+        }
+    };
+
+    let id = match queries::account::register()
         .params(&database, &request.with_email(email))
         .one()
         .await
-        .map_err(|error| {
-            tracing::error!(error =? error);
-            AuthError::AccountExisted
-        })?;
+    {
+        Ok(id) => id,
+        Err(error) => {
+            tracing::error!(?error, "Failed to register");
 
-    let cookie = state.jwt_service.new_credential(id).map_err(|error| {
-        tracing::error!(error =? error);
-        Error::from(AuthError::InvalidLoginData)
-    })?;
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Invalid login request".into())
+                .build());
+        }
+    };
+
+    let cookie = state.jwt_service.new_credential(id)?;
 
     Ok(jar.add(cookie))
 }
