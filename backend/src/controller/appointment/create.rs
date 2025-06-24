@@ -5,7 +5,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use ctypes::Role;
+use ctypes::{AppointmentStatus,Role};
 use database::{
     client::Params,
     queries::{self, appointment::CreateParams},
@@ -117,6 +117,15 @@ pub async fn create(
             return Err(Error::internal());
         }
     };
+
+    if let Err(error) = queries::appointment::update_status()
+        .bind(&transaction, &AppointmentStatus::OnProcess, &appointment_id)
+        .await
+    {
+        tracing::error!(?error, id =? id, "Failed to on process appointment");
+
+        return Err(Error::internal());
+    }
 
     for answer in &request.answers {
         if let Err(error) = queries::answer::create()
