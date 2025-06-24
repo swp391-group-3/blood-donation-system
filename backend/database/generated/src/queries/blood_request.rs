@@ -32,6 +32,8 @@ pub struct BloodRequest {
     pub end_time: chrono::DateTime<chrono::FixedOffset>,
     pub is_active: bool,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub blood_groups: Vec<ctypes::BloodGroup>,
+    pub current_people: i64,
 }
 pub struct BloodRequestBorrowed<'a> {
     pub id: uuid::Uuid,
@@ -43,6 +45,8 @@ pub struct BloodRequestBorrowed<'a> {
     pub end_time: chrono::DateTime<chrono::FixedOffset>,
     pub is_active: bool,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub blood_groups: crate::ArrayIterator<'a, ctypes::BloodGroup>,
+    pub current_people: i64,
 }
 impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
     fn from(
@@ -56,6 +60,8 @@ impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
             end_time,
             is_active,
             created_at,
+            blood_groups,
+            current_people,
         }: BloodRequestBorrowed<'a>,
     ) -> Self {
         Self {
@@ -68,6 +74,8 @@ impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
             end_time,
             is_active,
             created_at,
+            blood_groups: blood_groups.map(|v| v).collect(),
+            current_people,
         }
     }
 }
@@ -86,70 +94,6 @@ where
 {
     pub fn map<R>(self, mapper: fn(uuid::Uuid) -> R) -> UuidUuidQuery<'c, 'a, 's, C, R, N> {
         UuidUuidQuery {
-            client: self.client,
-            params: self.params,
-            stmt: self.stmt,
-            extractor: self.extractor,
-            mapper,
-        }
-    }
-    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let row = self.client.query_one(stmt, &self.params).await?;
-        Ok((self.mapper)((self.extractor)(&row)?))
-    }
-    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
-        self.iter().await?.try_collect().await
-    }
-    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
-        let stmt = self.stmt.prepare(self.client).await?;
-        Ok(self
-            .client
-            .query_opt(stmt, &self.params)
-            .await?
-            .map(|row| {
-                let extracted = (self.extractor)(&row)?;
-                Ok((self.mapper)(extracted))
-            })
-            .transpose()?)
-    }
-    pub async fn iter(
-        self,
-    ) -> Result<
-        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
-        tokio_postgres::Error,
-    > {
-        let stmt = self.stmt.prepare(self.client).await?;
-        let it = self
-            .client
-            .query_raw(stmt, crate::slice_iter(&self.params))
-            .await?
-            .map(move |res| {
-                res.and_then(|row| {
-                    let extracted = (self.extractor)(&row)?;
-                    Ok((self.mapper)(extracted))
-                })
-            })
-            .into_stream();
-        Ok(it)
-    }
-}
-pub struct CtypesBloodGroupQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
-    client: &'c C,
-    params: [&'a (dyn postgres_types::ToSql + Sync); N],
-    stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<ctypes::BloodGroup, tokio_postgres::Error>,
-    mapper: fn(ctypes::BloodGroup) -> T,
-}
-impl<'c, 'a, 's, C, T: 'c, const N: usize> CtypesBloodGroupQuery<'c, 'a, 's, C, T, N>
-where
-    C: GenericClient,
-{
-    pub fn map<R>(
-        self,
-        mapper: fn(ctypes::BloodGroup) -> R,
-    ) -> CtypesBloodGroupQuery<'c, 'a, 's, C, R, N> {
-        CtypesBloodGroupQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -353,30 +297,9 @@ impl<'a, C: GenericClient + Send + Sync>
         Box::pin(self.bind(client, &params.request_id, &params.blood_group))
     }
 }
-pub fn get_blood_group() -> GetBloodGroupStmt {
-    GetBloodGroupStmt(crate::client::async_::Stmt::new(
-        "SELECT blood_group FROM request_blood_groups WHERE request_id = $1",
-    ))
-}
-pub struct GetBloodGroupStmt(crate::client::async_::Stmt);
-impl GetBloodGroupStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-        id: &'a uuid::Uuid,
-    ) -> CtypesBloodGroupQuery<'c, 'a, 's, C, ctypes::BloodGroup, 1> {
-        CtypesBloodGroupQuery {
-            client,
-            params: [id],
-            stmt: &mut self.0,
-            extractor: |row| Ok(row.try_get(0)?),
-            mapper: |it| it,
-        }
-    }
-}
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM blood_requests WHERE id = $1 AND now() < end_time AND is_active = true",
+        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people FROM blood_requests WHERE id = $1 AND is_active = true",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -402,6 +325,8 @@ impl GetStmt {
                         end_time: row.try_get(6)?,
                         is_active: row.try_get(7)?,
                         created_at: row.try_get(8)?,
+                        blood_groups: row.try_get(9)?,
+                        current_people: row.try_get(10)?,
                     })
                 },
             mapper: |it| BloodRequest::from(it),
@@ -410,7 +335,7 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM blood_requests WHERE now() < end_time AND is_active = true",
+        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people FROM blood_requests WHERE now() < end_time AND is_active = true",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -435,6 +360,8 @@ impl GetAllStmt {
                         end_time: row.try_get(6)?,
                         is_active: row.try_get(7)?,
                         created_at: row.try_get(8)?,
+                        blood_groups: row.try_get(9)?,
+                        current_people: row.try_get(10)?,
                     })
                 },
             mapper: |it| BloodRequest::from(it),

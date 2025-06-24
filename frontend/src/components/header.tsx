@@ -297,7 +297,7 @@ export const Header = () => {
                             </div>
                         </Link>
                         <Link
-                            href="/donations"
+                            href="/donation"
                             className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >

@@ -29,11 +29,11 @@ pub async fn send(
         }
     };
 
-    if let Err(error) = mailer.send(email).await {
-        tracing::error!(?error, "Failed to send email");
-
-        return Err(Error::internal());
-    }
+    // if let Err(error) = mailer.send(email).await {
+    //     tracing::error!(?error, "Failed to send email");
+    //
+    //     return Err(Error::internal());
+    // }
 
     Ok(())
 }

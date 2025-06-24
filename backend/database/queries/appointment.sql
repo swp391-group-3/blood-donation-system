@@ -15,6 +15,10 @@ SELECT *
 FROM appointments
 WHERE member_id = :member_id;
 
+--! get_all : Appointment
+SELECT *
+FROM appointments;
+
 --! update_status
 UPDATE appointments
 SET status = :status

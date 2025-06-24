@@ -162,32 +162,6 @@ impl CreateStmt {
         }
     }
 }
-pub fn get_by_blog_id() -> GetByBlogIdStmt {
-    GetByBlogIdStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = $1)",
-    ))
-}
-pub struct GetByBlogIdStmt(crate::client::async_::Stmt);
-impl GetByBlogIdStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-        blog_id: &'a uuid::Uuid,
-    ) -> TagQuery<'c, 'a, 's, C, Tag, 1> {
-        TagQuery {
-            client,
-            params: [blog_id],
-            stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<TagBorrowed, tokio_postgres::Error> {
-                Ok(TagBorrowed {
-                    id: row.try_get(0)?,
-                    name: row.try_get(1)?,
-                })
-            },
-            mapper: |it| Tag::from(it),
-        }
-    }
-}
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new("SELECT * FROM tags"))
 }

@@ -13,6 +13,12 @@ VALUES (:blog_id, :tag_id);
 SELECT 
     id,
     (SELECT name FROM accounts WHERE id = blogs.account_id) AS name,
+    (
+        SELECT ARRAY(
+            SELECT name FROM tags
+            WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = :id)
+        )
+    ) AS tags,
     title,
     description,
     content,
@@ -24,6 +30,12 @@ WHERE id = :id;
 SELECT 
     id,
     (SELECT name FROM accounts WHERE id = blogs.account_id) AS name,
+    (
+        SELECT ARRAY(
+            SELECT name FROM tags
+            WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id)
+        )
+    ) AS tags,
     title,
     description,
     content,

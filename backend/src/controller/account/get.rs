@@ -35,7 +35,7 @@ pub async fn get(
 ) -> Result<Json<Option<Account>>> {
     let database = state.database().await?;
 
-    authorize(&claims, [Role::Admin], &database).await?;
+    authorize(&claims, [Role::Staff, Role::Admin], &database).await?;
 
     match queries::account::get().bind(&database, &id).opt().await {
         Ok(account) => Ok(Json(account)),

@@ -30,7 +30,7 @@ pub async fn reject(
     authorize(&claims, [Role::Staff], &database).await?;
 
     if let Err(error) = queries::appointment::update_status()
-        .bind(&database, &AppointmentStatus::Approved, &id)
+        .bind(&database, &AppointmentStatus::Rejected, &id)
         .await
     {
         tracing::error!(?error, id =? id, "Failed to reject appointment");

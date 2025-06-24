@@ -2,7 +2,6 @@ use std::{collections::HashSet, sync::Arc};
 
 use axum::{Json, extract::State, http::StatusCode};
 use database::queries::{self, blood_request::BloodRequest};
-use futures::TryStreamExt;
 
 use crate::{
     error::{Error, Result},
@@ -62,35 +61,7 @@ pub async fn get_all(
     let mut filtered_requests = Vec::new();
 
     for request in requests {
-        let blood_groups = match queries::blood_request::get_blood_group()
-            .bind(&database, &request.id)
-            .iter()
-            .await
-        {
-            Ok(blood_groups) => blood_groups,
-            Err(error) => {
-                tracing::error!(
-                    ?error,
-                    request_id =? request.id,
-                    "Failed to get blood group of request"
-                );
-
-                return Err(Error::internal());
-            }
-        };
-
-        let blood_groups: HashSet<_> = match blood_groups.try_collect().await {
-            Ok(blood_groups) => blood_groups,
-            Err(error) => {
-                tracing::error!(
-                    ?error,
-                    request_id =? request.id,
-                    "Failed to get blood group of request"
-                );
-
-                return Err(Error::internal());
-            }
-        };
+        let blood_groups: HashSet<_> = request.blood_groups.iter().cloned().collect();
 
         if !blood_groups.is_disjoint(&compatible_blood_groups) {
             filtered_requests.push(request);

@@ -1,24 +1,34 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
+import type React from 'react';
+import {
+    User,
+    Droplets,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAppointment } from '@/hooks/use-appointment';
-import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
-import { Droplets, User } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useParams } from 'next/navigation';
+import { useAccount } from '@/hooks/use-account';
+import { useAppointment } from '@/hooks/use-appointment';
 import { toast } from 'sonner';
+import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import { useBloodRequest } from '@/hooks/use-blood-request';
+import { HealthForm } from '@/components/health-form';
 
-export default function AppointmentLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function AppointmentHealthPage() {
     const { id } = useParams<{ id: string }>();
-    const { data: appointment, isPending, error } = useAppointment(id);
+    const { data: appointment } = useAppointment(id);
+    const {
+        data: member,
+        isPending,
+        error,
+    } = useAccount(appointment?.member_id);
+    const { data: request } = useBloodRequest(appointment?.request_id);
 
-    if (isPending) {
+    if (isPending || !request) {
         return <div></div>;
     }
+
     if (error) {
         toast.error(error.message);
         return <div></div>;
@@ -35,7 +45,7 @@ export default function AppointmentLayout({
                             </div>
                             <div>
                                 <h2 className="text-xl font-semibold text-gray-900">
-                                    {appointment.member.name}
+                                    {member.name}
                                 </h2>
                                 <div className="flex items-center space-x-4 mt-1">
                                     <Badge
@@ -45,7 +55,7 @@ export default function AppointmentLayout({
                                         <Droplets className="h-3 w-3 mr-1" />
                                         {
                                             bloodGroupLabels[
-                                                appointment.member.blood_group
+                                                member.blood_group
                                             ]
                                         }
                                     </Badge>
@@ -53,7 +63,7 @@ export default function AppointmentLayout({
                                         Age:{' '}
                                         {new Date().getFullYear() -
                                             Number(
-                                                appointment.member.birthday.substring(
+                                                member.birthday.substring(
                                                     0,
                                                     4,
                                                 ),
@@ -65,7 +75,9 @@ export default function AppointmentLayout({
                     </div>
                 </CardContent>
             </Card>
-            <div>{children}</div>
+            <div>
+                <HealthForm appointmentId={id}/>
+            </div>
         </div>
     );
 }

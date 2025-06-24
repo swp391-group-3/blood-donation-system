@@ -29,6 +29,7 @@ pub struct DeleteParams {
 pub struct Blog {
     pub id: uuid::Uuid,
     pub name: String,
+    pub tags: Vec<String>,
     pub title: String,
     pub description: String,
     pub content: String,
@@ -37,6 +38,7 @@ pub struct Blog {
 pub struct BlogBorrowed<'a> {
     pub id: uuid::Uuid,
     pub name: &'a str,
+    pub tags: crate::ArrayIterator<'a, &'a str>,
     pub title: &'a str,
     pub description: &'a str,
     pub content: &'a str,
@@ -47,6 +49,7 @@ impl<'a> From<BlogBorrowed<'a>> for Blog {
         BlogBorrowed {
             id,
             name,
+            tags,
             title,
             description,
             content,
@@ -56,6 +59,7 @@ impl<'a> From<BlogBorrowed<'a>> for Blog {
         Self {
             id,
             name: name.into(),
+            tags: tags.map(|v| v.into()).collect(),
             title: title.into(),
             description: description.into(),
             content: content.into(),
@@ -292,7 +296,7 @@ impl<'a, C: GenericClient + Send + Sync>
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, title, description, content, created_at FROM blogs WHERE id = $1",
+        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = $1) ) ) AS tags, title, description, content, created_at FROM blogs WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -310,10 +314,11 @@ impl GetStmt {
                 Ok(BlogBorrowed {
                     id: row.try_get(0)?,
                     name: row.try_get(1)?,
-                    title: row.try_get(2)?,
-                    description: row.try_get(3)?,
-                    content: row.try_get(4)?,
-                    created_at: row.try_get(5)?,
+                    tags: row.try_get(2)?,
+                    title: row.try_get(3)?,
+                    description: row.try_get(4)?,
+                    content: row.try_get(5)?,
+                    created_at: row.try_get(6)?,
                 })
             },
             mapper: |it| Blog::from(it),
@@ -322,7 +327,7 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, title, description, content, created_at FROM blogs WHERE content is null or (content LIKE '%' || $1 || '%' ) ORDER BY created_at DESC",
+        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id) ) ) AS tags, title, description, content, created_at FROM blogs WHERE content is null or (content LIKE '%' || $1 || '%' ) ORDER BY created_at DESC",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -340,10 +345,11 @@ impl GetAllStmt {
                 Ok(BlogBorrowed {
                     id: row.try_get(0)?,
                     name: row.try_get(1)?,
-                    title: row.try_get(2)?,
-                    description: row.try_get(3)?,
-                    content: row.try_get(4)?,
-                    created_at: row.try_get(5)?,
+                    tags: row.try_get(2)?,
+                    title: row.try_get(3)?,
+                    description: row.try_get(4)?,
+                    content: row.try_get(5)?,
+                    created_at: row.try_get(6)?,
                 })
             },
             mapper: |it| Blog::from(it),

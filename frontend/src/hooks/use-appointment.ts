@@ -9,7 +9,10 @@ export const useAppointment = (id: string) => {
         queryFn: async () => {
             const response = await fetchWrapper(`/appointment/${id}`);
 
-            return await deserialize<Appointment>(response);
+            const appointment = await deserialize<Appointment>(response);
+            console.log(appointment);
+
+            return appointment
         },
         queryKey: ['appointment', id],
     });

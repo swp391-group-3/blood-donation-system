@@ -237,6 +237,33 @@ impl GetByMemberIdStmt {
         }
     }
 }
+pub fn get_all() -> GetAllStmt {
+    GetAllStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM appointments",
+    ))
+}
+pub struct GetAllStmt(crate::client::async_::Stmt);
+impl GetAllStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+    ) -> AppointmentQuery<'c, 'a, 's, C, Appointment, 0> {
+        AppointmentQuery {
+            client,
+            params: [],
+            stmt: &mut self.0,
+            extractor: |row: &tokio_postgres::Row| -> Result<Appointment, tokio_postgres::Error> {
+                Ok(Appointment {
+                    id: row.try_get(0)?,
+                    request_id: row.try_get(1)?,
+                    member_id: row.try_get(2)?,
+                    status: row.try_get(3)?,
+                })
+            },
+            mapper: |it| Appointment::from(it),
+        }
+    }
+}
 pub fn update_status() -> UpdateStatusStmt {
     UpdateStatusStmt(crate::client::async_::Stmt::new(
         "UPDATE appointments SET status = $1 WHERE id = $2",

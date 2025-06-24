@@ -5,14 +5,12 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use ctypes::Role;
 use database::queries::{self, blood_request::BloodRequest};
 use uuid::Uuid;
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
 };
 
 #[utoipa::path(
@@ -21,14 +19,8 @@ use crate::{
     path = "/blood-request/{id}",
     operation_id = "blood_request::get"
 )]
-pub async fn get(
-    state: State<Arc<ApiState>>,
-    claims: Claims,
-    Path(id): Path<Uuid>,
-) -> Result<Json<BloodRequest>> {
+pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<BloodRequest>> {
     let database = state.database().await?;
-
-    authorize(&claims, [Role::Staff], &database).await?;
 
     match queries::blood_request::get()
         .bind(&database, &id)
