@@ -6,7 +6,7 @@ use axum::{
     http::StatusCode,
 };
 use axum_valid::Valid;
-use ctypes::Role;
+use ctypes::{AppointmentStatus, Role};
 use database::{
     client::Params,
     queries::{self, donation::CreateParams},
@@ -41,6 +41,9 @@ pub struct Request {
     tags = ["Donation", "Appointment"],
     path = "/appointment/{id}/donation",
     operation_id = "donation::create",
+    params(
+        ("id" = Uuid, Path, description = "Appointment id")
+    ),
     request_body = Request,
     responses(
         (status = Status::OK, body = Uuid)
@@ -53,12 +56,21 @@ pub async fn create(
     Path(appointment_id): Path<Uuid>,
     Valid(Json(request)): Valid<Json<Request>>,
 ) -> Result<Json<Uuid>> {
-    let database = state.database().await?;
+    let mut database = state.database().await?;
 
     authorize(&claims, [Role::Staff], &database).await?;
 
-    match queries::donation::create()
-        .params(&database, &request.with_appointment_id(appointment_id))
+    let transaction = match database.transaction().await {
+        Ok(transaction) => transaction,
+        Err(error) => {
+            tracing::error!(?error, "Failed to create transaction");
+
+            return Err(Error::internal());
+        }
+    };
+
+    let donation_id = match queries::donation::create()
+        .params(&transaction, &request.with_appointment_id(appointment_id))
         .one()
         .await
     {
@@ -71,5 +83,22 @@ pub async fn create(
                 .message("Invalid donation data".into())
                 .build())
         }
+    };
+
+    if let Err(error) = queries::appointment::update_status()
+        .bind(&transaction, &AppointmentStatus::Donated, &appointment_id)
+        .await
+    {
+        tracing::error!(?error, id =? appointment_id, "Failed to set donated appointment");
+
+        return Err(Error::internal());
     }
+
+    if let Err(error) = transaction.commit().await {
+        tracing::error!(?error, "Failed to commit transaction");
+
+        return Err(Error::internal());
+    }
+
+    donation_id
 }
