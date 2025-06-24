@@ -118,15 +118,6 @@ pub async fn create(
         }
     };
 
-    if let Err(error) = queries::appointment::update_status()
-        .bind(&transaction, &AppointmentStatus::OnProcess, &appointment_id)
-        .await
-    {
-        tracing::error!(?error, id =? id, "Failed to on process appointment");
-
-        return Err(Error::internal());
-    }
-
     for answer in &request.answers {
         if let Err(error) = queries::answer::create()
             .params(
