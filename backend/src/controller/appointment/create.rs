@@ -61,7 +61,7 @@ pub async fn create(
 ) -> Result<Json<Uuid>> {
     let mut database = state.database().await?;
 
-    authorize(&claims, [Role::Staff], &database).await?;
+    authorize(&claims, [Role::Member], &database).await?;
 
     let question_ids: HashSet<_> = match queries::question::get_all()
         .bind(&database)
