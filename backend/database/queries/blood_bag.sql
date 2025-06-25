@@ -45,7 +45,7 @@ SELECT
 	is_used,
 	amount,
 	expired_time
-FROM blood_bags
+FROM blood_bags;
 
 --! create
 INSERT INTO blood_bags (
