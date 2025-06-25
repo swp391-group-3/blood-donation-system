@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     Hero,
     HeroDescription,
@@ -105,29 +105,20 @@ const isExpired = (date: Date) => new Date(date) <= new Date();
 const isExpiringSoon = (date: Date) =>
     differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
 
-function getStatusColor(bag: BloodBag): string {
-    if (bag.is_used) {
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-
-    const now = new Date();
-    const expiredTime = new Date(bag.expired_time);
-    const soonThreshold = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    if (expiredTime <= now) {
-        return 'bg-red-100 text-red-800 border-red-200';
-    } else if (expiredTime <= soonThreshold) {
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-    } else {
-        return 'bg-green-100 text-green-800 border-green-200';
-    }
-}
-
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
     const [processing, setProcessing] = useState(false);
     const { data: bloodBags, isPending, error } = useBloodStorageList();
+
+    const [localBags, setLocalBags] = useState<BloodBag[]>([]);
+
+    useEffect(() => {
+        if (bloodBags) {
+            setLocalBags(bloodBags);
+        }
+    }, [bloodBags]);
+
     const stats = useMemo(
         () => (bloodBags ? getStats(bloodBags) : undefined),
         [bloodBags],
@@ -142,7 +133,13 @@ export default function BloodStorage() {
         return <div></div>;
     }
 
-    const handleMarkAsUsed = () => {};
+    const handleMarkAsUsed = (id: string) => {
+        setLocalBags((prev) =>
+            prev.map((bag) =>
+                bag.id === id ? { ...bag, is_used: true } : bag,
+            ),
+        );
+    };
 
     return (
         <div className="flex-1 space-y-6 p-6">
@@ -226,7 +223,7 @@ export default function BloodStorage() {
                             </TableHead>
                         </TableHeader>
                         <TableBody>
-                            {bloodBags.map((bag) => (
+                            {localBags.map((bag) => (
                                 <TableRow key={bag.id}>
                                     <TableCell className="p-6">
                                         <div className="flex items-center gap-4">
@@ -423,7 +420,12 @@ export default function BloodStorage() {
                                 Cancel
                             </Button>
                             <Button
-                                onClick={handleMarkAsUsed}
+                                onClick={() => {
+                                    if (selectedBag) {
+                                        handleMarkAsUsed(selectedBag.id);
+                                        setShowUseDialog(false);
+                                    }
+                                }}
                                 disabled={processing}
                                 className="bg-red-600 hover:bg-red-700 text-white"
                             >
