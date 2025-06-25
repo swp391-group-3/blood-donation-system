@@ -17,7 +17,7 @@ use crate::{
 };
 
 #[derive(Deserialize, Serialize, ToSchema, Mapper)]
-#[schema(as = blod::create::Request)]
+#[schema(as = blog::create::Request)]
 #[mapper(
     into(custom = "with_account_id"),
     ty = CreateParams::<String, String, String>,

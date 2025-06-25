@@ -29,12 +29,12 @@ INSERT INTO tags (id, name) VALUES
 ON CONFLICT DO NOTHING;
 
 -- 4. Blogs
-INSERT INTO blogs (id, account_id, title, content, created_at) VALUES
-  ('f1111111-1111-1111-1111-111111111111','22222222-2222-2222-2222-222222222222','Looking for Donors','We need O+ donors this weekend.','2025-06-07T10:00:00Z'),
-  ('f2222222-2222-2222-2222-222222222222','22222222-2222-2222-2222-222222222222','Blood Drive Successful','Thanks to all donors yesterday!','2025-06-08T11:15:00Z'),
-  ('f3333333-3333-3333-3333-333333333333','22222222-2222-2222-2222-222222222222','Platelet Shortage Alert','Low platelet stock—please donate.','2025-06-16T09:00:00Z'),
-  ('f4444444-4444-4444-4444-444444444444','33333333-3333-3333-3333-333333333333','My First Donation','Sharing my first-time donor journey.','2025-06-16T12:30:00Z'),
-  ('f5555555-5555-5555-5555-555555555555','22222222-2222-2222-2222-222222222222','Upcoming Plasma Drive','Join us next week for plasma donations.','2025-06-17T08:45:00Z')
+INSERT INTO blogs (id, account_id, title, description, content, created_at) VALUES
+  ('f1111111-1111-1111-1111-111111111111','22222222-2222-2222-2222-222222222222','Looking for Donors','','We need O+ donors this weekend.','2025-06-07T10:00:00Z'),
+  ('f2222222-2222-2222-2222-222222222222','22222222-2222-2222-2222-222222222222','Blood Drive Successful','','Thanks to all donors yesterday!','2025-06-08T11:15:00Z'),
+  ('f3333333-3333-3333-3333-333333333333','22222222-2222-2222-2222-222222222222','Platelet Shortage Alert','','Low platelet stock—please donate.','2025-06-16T09:00:00Z'),
+  ('f4444444-4444-4444-4444-444444444444','33333333-3333-3333-3333-333333333333','My First Donation','','Sharing my first-time donor journey.','2025-06-16T12:30:00Z'),
+  ('f5555555-5555-5555-5555-555555555555','22222222-2222-2222-2222-222222222222','Upcoming Plasma Drive','','Join us next week for plasma donations.','2025-06-17T08:45:00Z')
 ON CONFLICT DO NOTHING;
 
 -- 5. Blog_Tags
