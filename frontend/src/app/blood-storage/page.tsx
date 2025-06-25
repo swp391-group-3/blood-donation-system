@@ -36,7 +36,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { priorities } from '@/lib/api/dto/blood-request';
 import { capitalCase } from 'change-case';
 import { bloodGroupLabels, bloodGroups } from '@/lib/api/dto/blood-group';
 import { Button } from '@/components/ui/button';
@@ -61,32 +60,39 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 
-const getStats = (bloodInventory: BloodBag[]): StatsProps[] => {
+const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     return [
         {
             label: 'Total Bags',
-            value: 5,
+            value: bloodBags.length,
             icon: Package,
             description: 'Complete Inventory',
             color: 'blue',
         },
         {
             label: 'Available',
-            value: 1,
+            value: bloodBags.filter((bag) => !bag.is_used).length,
             icon: Check,
             description: 'Ready for use',
             color: 'green',
         },
         {
             label: 'Expiring Soon',
-            value: 0,
+            value: bloodBags.filter(
+                (bag) =>
+                    !bag.is_used &&
+                    !isExpired(new Date(bag.expired_time)) &&
+                    isExpiringSoon(new Date(bag.expired_time)),
+            ).length,
             icon: TriangleAlert,
             description: 'Within 7 days',
             color: 'yellow',
         },
         {
             label: 'Expired',
-            value: 0,
+            value: bloodBags.filter(
+                (bag) => !bag.is_used && !isExpired(new Date(bag.expired_time)),
+            ).length,
             icon: CircleX,
             description: 'Requires disposal',
             color: 'rose',
@@ -108,9 +114,7 @@ const isExpiringSoon = (date: Date) =>
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
-    const [processing, setProcessing] = useState(false);
     const { data: bloodBags, isPending, error } = useBloodStorageList();
-
     const [localBags, setLocalBags] = useState<BloodBag[]>([]);
 
     useEffect(() => {
@@ -415,7 +419,6 @@ export default function BloodStorage() {
                             <Button
                                 variant="outline"
                                 onClick={() => setShowUseDialog(false)}
-                                disabled={processing}
                             >
                                 Cancel
                             </Button>
@@ -426,10 +429,9 @@ export default function BloodStorage() {
                                         setShowUseDialog(false);
                                     }
                                 }}
-                                disabled={processing}
                                 className="bg-red-600 hover:bg-red-700 text-white"
                             >
-                                {processing ? 'Processing...' : 'Mark as Used'}
+                                Mark as used
                             </Button>
                         </DialogFooter>
                     </DialogContent>
