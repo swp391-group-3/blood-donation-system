@@ -18,11 +18,11 @@ pub struct UpdateParams {
 pub struct BloodBag {
     pub id: uuid::Uuid,
     pub donation_id: uuid::Uuid,
-    pub blood_group: ctypes::BloodGroup,
     pub component: ctypes::BloodComponent,
     pub is_used: bool,
     pub amount: i32,
     pub expired_time: chrono::DateTime<chrono::FixedOffset>,
+    pub blood_group: ctypes::BloodGroup,
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
@@ -150,7 +150,7 @@ where
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT id, donation_id, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group, component, is_used, amount, expired_time FROM blood_bags WHERE id = $1",
+        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -168,11 +168,11 @@ impl GetStmt {
                 Ok(BloodBag {
                     id: row.try_get(0)?,
                     donation_id: row.try_get(1)?,
-                    blood_group: row.try_get(2)?,
-                    component: row.try_get(3)?,
-                    is_used: row.try_get(4)?,
-                    amount: row.try_get(5)?,
-                    expired_time: row.try_get(6)?,
+                    component: row.try_get(2)?,
+                    is_used: row.try_get(3)?,
+                    amount: row.try_get(4)?,
+                    expired_time: row.try_get(5)?,
+                    blood_group: row.try_get(6)?,
                 })
             },
             mapper: |it| BloodBag::from(it),
@@ -181,7 +181,7 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT id, donation_id, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group, component, is_used, amount, expired_time FROM blood_bags",
+        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -198,11 +198,11 @@ impl GetAllStmt {
                 Ok(BloodBag {
                     id: row.try_get(0)?,
                     donation_id: row.try_get(1)?,
-                    blood_group: row.try_get(2)?,
-                    component: row.try_get(3)?,
-                    is_used: row.try_get(4)?,
-                    amount: row.try_get(5)?,
-                    expired_time: row.try_get(6)?,
+                    component: row.try_get(2)?,
+                    is_used: row.try_get(3)?,
+                    amount: row.try_get(4)?,
+                    expired_time: row.try_get(5)?,
+                    blood_group: row.try_get(6)?,
                 })
             },
             mapper: |it| BloodBag::from(it),

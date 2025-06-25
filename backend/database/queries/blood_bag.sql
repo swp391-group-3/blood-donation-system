@@ -2,8 +2,7 @@
 
 --! get : BloodBag
 SELECT 
-    id,
-    donation_id,
+    *,
     (
         SELECT blood_group
         FROM accounts
@@ -16,18 +15,13 @@ SELECT
                 WHERE id = blood_bags.donation_id
             )
         )
-    ) AS blood_group,
-    component,
-	is_used,
-	amount,
-	expired_time
+    ) AS blood_group
 FROM blood_bags
 WHERE id = :id;
 
 --! get_all : BloodBag
 SELECT 
-    id,
-    donation_id,
+    *,
     (
         SELECT blood_group
         FROM accounts
@@ -40,11 +34,7 @@ SELECT
                 WHERE id = blood_bags.donation_id
             )
         )
-    ) AS blood_group,
-    component,
-	is_used,
-	amount,
-	expired_time
+    ) AS blood_group
 FROM blood_bags;
 
 --! create
