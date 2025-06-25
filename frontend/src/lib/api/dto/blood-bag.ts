@@ -5,8 +5,9 @@ export type BloodComponent = (typeof bloodComponents)[number];
 export interface BloodBag {
     id: string,
     donation_id: string,
-    component: BloodComponent;
+    component: BloodComponent,
     is_used: boolean,
-    amount: number;
-    expired_time: Date;
+    amount: number,
+    expired_time: Date,
+    blood_group: string;
 }
