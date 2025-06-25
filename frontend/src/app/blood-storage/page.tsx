@@ -59,6 +59,13 @@ import {
     differenceInCalendarISOWeeks,
     differenceInCalendarWeeks,
 } from 'date-fns';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 
 const getStats = (bloodInventory: BloodBag[]): StatsProps[] => {
     return [
@@ -99,24 +106,6 @@ const colors: Record<BloodComponent, string> = {
     platelet: 'bg-blue-100 text-blue-800 border-blue-200',
 };
 
-function getStatusText(bag: BloodBag): string {
-    if (bag.is_used) {
-        return 'Used';
-    }
-
-    const now = new Date();
-    const expiredTime = new Date(bag.expired_time);
-    const soonThreshold = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    if (expiredTime <= now) {
-        return 'Expired';
-    } else if (expiredTime <= soonThreshold) {
-        return 'Expiring Soon';
-    } else {
-        return 'Available';
-    }
-}
-
 const isExpired = (date: Date) => new Date(date) <= new Date();
 
 const isExpiringSoon = (date: Date) =>
@@ -148,7 +137,6 @@ export default function BloodStorage() {
         () => (bloodBags ? getStats(bloodBags) : undefined),
         [bloodBags],
     );
-    const [search, setSearch] = useState<String | undefined>();
 
     if (isPending) {
         return <div></div>;
@@ -364,6 +352,71 @@ export default function BloodStorage() {
                         </TableBody>
                     </Table>
                 </div>
+
+                <Dialog open={showUseDialog} onOpenChange={setShowUseDialog}>
+                    <DialogContent className="max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-bold text-slate-900">
+                                Mark Bloog Bag as Used
+                            </DialogTitle>
+                            <DialogDescription className="text-slate-600">
+                                Are you sure want to make this blood bag as used
+                                ?
+                            </DialogDescription>
+                        </DialogHeader>
+                        {selectedBag && (
+                            <div className="py-4 space-y-4">
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
+                                            <Droplet className="h-5 w-5 text-red-600" />
+                                        </div>
+                                        <div>
+                                            <div className="font-semibold text-slate-900">
+                                                Blood Bag Details
+                                            </div>
+                                            <div className="text-sm text-slate-600">
+                                                ID: {selectedBag.id}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <span className="text-slate-500">
+                                                Component:
+                                            </span>
+                                            <div className="font-medium text-slate-900">
+                                                {capitalCase(
+                                                    selectedBag.component,
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-500">
+                                                Amount:
+                                            </span>
+                                            <div className="font-medium text-slate-900">
+                                                {selectedBag.amount} ml
+                                            </div>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <span className="text-slate-500">
+                                                Expiry Date:
+                                            </span>
+                                            <div className="font-medium text-slate-900">
+                                                {formatDateTime(
+                                                    new Date(
+                                                        selectedBag.expired_time,
+                                                    ),
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );
