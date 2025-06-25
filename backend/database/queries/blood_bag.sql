@@ -1,12 +1,40 @@
 --: BloodBag()
 
 --! get : BloodBag
-SELECT *
+SELECT 
+    *,
+    (
+        SELECT blood_group
+        FROM accounts
+        WHERE id = (
+            SELECT member_id
+            FROM appointments
+            WHERE id = (
+                SELECT appointment_id
+                FROM donations
+                WHERE id = blood_bags.donation_id
+            )
+        )
+    ) AS blood_group
 FROM blood_bags
 WHERE id = :id;
 
 --! get_all : BloodBag
-SELECT *
+SELECT 
+    *,
+    (
+        SELECT blood_group
+        FROM accounts
+        WHERE id = (
+            SELECT member_id
+            FROM appointments
+            WHERE id = (
+                SELECT appointment_id
+                FROM donations
+                WHERE id = blood_bags.donation_id
+            )
+        )
+    ) AS blood_group
 FROM blood_bags;
 
 --! create

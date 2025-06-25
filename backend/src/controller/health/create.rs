@@ -5,7 +5,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use ctypes::Role;
+use ctypes::{AppointmentStatus, Role};
 use database::{
     client::Params,
     queries::{self, health::CreateParams},
@@ -58,12 +58,21 @@ pub async fn create(
     Path(appointment_id): Path<Uuid>,
     Json(request): Json<Request>,
 ) -> Result<Json<Uuid>> {
-    let database = state.database().await?;
+    let mut database = state.database().await?;
 
     authorize(&claims, [Role::Staff], &database).await?;
 
-    match queries::health::create()
-        .params(&database, &request.with_appointment_id(appointment_id))
+    let transaction = match database.transaction().await {
+        Ok(transaction) => transaction,
+        Err(error) => {
+            tracing::error!(?error, "Failed to create transaction");
+
+            return Err(Error::internal());
+        }
+    };
+
+    let health_id = match queries::health::create()
+        .params(&transaction, &request.with_appointment_id(appointment_id))
         .one()
         .await
     {
@@ -76,5 +85,22 @@ pub async fn create(
                 .message("Failed to create health".into())
                 .build())
         }
+    };
+
+    if let Err(error) = queries::appointment::update_status()
+        .bind(&transaction, &AppointmentStatus::CheckedIn, &appointment_id)
+        .await
+    {
+        tracing::error!(?error, id =? appointment_id, "Failed to checked in appointment");
+
+        return Err(Error::internal());
     }
+
+    if let Err(error) = transaction.commit().await {
+        tracing::error!(?error, "Failed to commit transaction");
+
+        return Err(Error::internal());
+    }
+
+    health_id
 }

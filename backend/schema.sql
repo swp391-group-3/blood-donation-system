@@ -94,6 +94,7 @@ CREATE TYPE appointment_status AS ENUM(
     'on_process',
     'approved',
     'checked_in',
+    'donated',
     'done',
     'rejected'
 );
