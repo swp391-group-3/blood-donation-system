@@ -115,7 +115,6 @@ export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
     const { data: bloodBags, isPending, error } = useBloodStorageList();
-    const [localBags, setLocalBags] = useState<BloodBag[]>([]);
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
 
     const filteredBags = useMemo(() => {
@@ -137,14 +136,6 @@ export default function BloodStorage() {
         toast.error('Fail to fetch blood storage data');
         return <div></div>;
     }
-
-    const handleMarkAsUsed = (id: string) => {
-        setLocalBags((prev) =>
-            prev.map((bag) =>
-                bag.id === id ? { ...bag, is_used: true } : bag,
-            ),
-        );
-    };
 
     return (
         <div className="flex-1 space-y-6 p-6">
@@ -435,7 +426,6 @@ export default function BloodStorage() {
                             <Button
                                 onClick={() => {
                                     if (selectedBag) {
-                                        handleMarkAsUsed(selectedBag.id);
                                         setShowUseDialog(false);
                                     }
                                 }}
