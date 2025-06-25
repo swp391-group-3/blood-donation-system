@@ -40,22 +40,20 @@ pub async fn get_all(
     let database = state.database().await?;
 
     match queries::blood_bag::get_all().bind(&database).all().await {
-        Ok(blood_bags) => {
-            let mut filtered = blood_bags;
-
+        Ok(mut blood_bags) => {
             if let Some(blood_group) = request.blood_group {
                 let compatible = get_compatible_donors(blood_group);
-                filtered.retain(|bb| compatible.contains(&bb.blood_group));
+                blood_bags.retain(|bb| compatible.contains(&bb.blood_group));
             }
 
             if let Some(component) = request.component {
-                filtered.retain(|bb| bb.component == component);
+                blood_bags.retain(|bb| bb.component == component);
             }
 
-            Ok(Json(filtered))
+            Ok(Json(blood_bags))
         }
         Err(error) => {
-            tracing::error!(?error, "Failed to get blog list");
+            tracing::error!(?error, "Failed to get blood bag list");
 
             Err(Error::internal())
         }
