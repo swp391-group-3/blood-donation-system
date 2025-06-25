@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
     Hero,
     HeroDescription,
@@ -122,7 +122,7 @@ export default function BloodStorage() {
         return bloodBags?.filter(
             (bag) => component === 'all' || bag.component === component,
         );
-    }, [localBags, component]);
+    }, [bloodBags, component]);
 
     const stats = useMemo(
         () => (bloodBags ? getStats(bloodBags) : undefined),
