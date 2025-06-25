@@ -60,6 +60,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useDeleteBloodBag } from '@/hooks/use-delete-bloodbag';
 
 const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     return [
@@ -137,7 +138,8 @@ export default function BloodStorage() {
     const { data: bloodBags, isPending, error } = useBloodStorageList();
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
-
+    const { mutate: deleteBloodBag, isPending: isDeleting } =
+        useDeleteBloodBag();
     const filteredBags = useMemo(() => {
         return (bloodBags ?? []).filter(
             (bag) =>
@@ -469,9 +471,11 @@ export default function BloodStorage() {
                             <Button
                                 onClick={() => {
                                     if (selectedBag) {
+                                        deleteBloodBag(selectedBag.id);
                                         setShowUseDialog(false);
                                     }
                                 }}
+                                disabled={isDeleting}
                                 className="bg-red-600 hover:bg-red-700 text-white"
                             >
                                 Mark as used
