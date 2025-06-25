@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use axum::{extract::{Query, State}, Json};
+use axum::{
+    Json,
+    extract::{Query, State},
+};
 use ctypes::{BloodComponent, BloodGroup};
 use database::queries::{self, blood_bag::BloodBag};
 use serde::Deserialize;
@@ -8,7 +11,8 @@ use utoipa::ToSchema;
 
 use crate::{
     error::{Error, Result},
-    state::ApiState, util::blood::get_compatible_donors,
+    state::ApiState,
+    util::blood::get_compatible_donors,
 };
 
 #[derive(Deserialize, ToSchema)]
@@ -31,7 +35,7 @@ pub struct Request {
 )]
 pub async fn get_all(
     state: State<Arc<ApiState>>,
-    Query(request): Query<Request>
+    Query(request): Query<Request>,
 ) -> Result<Json<Vec<BloodBag>>> {
     let database = state.database().await?;
 
