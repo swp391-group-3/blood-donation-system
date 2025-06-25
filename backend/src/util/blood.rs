@@ -16,3 +16,19 @@ pub fn get_compatible(donor: BloodGroup) -> HashSet<BloodGroup> {
         ABPlus => [ABPlus].into_iter().collect(),
     }
 }
+
+pub fn get_compatible_donors(recipient: BloodGroup) -> HashSet<BloodGroup> {
+    use BloodGroup::*;
+    match recipient {
+        ABPlus => [OMinus, OPlus, AMinus, APlus, BMinus, BPlus, ABMinus, ABPlus]
+            .into_iter()
+            .collect(),
+        ABMinus => [OMinus, AMinus, BMinus, ABMinus].into_iter().collect(),
+        BPlus => [OMinus, OPlus, BMinus, BPlus].into_iter().collect(),
+        BMinus => [OMinus, BMinus].into_iter().collect(),
+        APlus => [OMinus, OPlus, AMinus, APlus].into_iter().collect(),
+        AMinus => [OMinus, AMinus].into_iter().collect(),
+        OPlus => [OMinus, OPlus].into_iter().collect(),
+        OMinus => [OMinus].into_iter().collect(),
+    }
+}
