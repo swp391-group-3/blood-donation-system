@@ -135,18 +135,20 @@ const normalizeBloodGroup = (raw: string): BloodGroup => {
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
-    const { data: bloodBags, isPending, error } = useBloodStorageList();
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
+
     const { mutate: deleteBloodBag, isPending: isDeleting } =
         useDeleteBloodBag();
-    const filteredBags = useMemo(() => {
-        return (bloodBags ?? []).filter(
-            (bag) =>
-                (component === 'all' || bag.component === component) &&
-                (bloodGroup === 'all' || bag.blood_group === bloodGroup),
-        );
-    }, [bloodBags, component, bloodGroup]);
+
+    const {
+        data: bloodBags,
+        isPending,
+        error,
+    } = useBloodStorageList({
+        blood_group: bloodGroup === 'all' ? undefined : bloodGroup,
+        component: component === 'all' ? undefined : component,
+    });
 
     const stats = useMemo(
         () => (bloodBags ? getStats(bloodBags) : undefined),
@@ -262,7 +264,7 @@ export default function BloodStorage() {
                             </TableHead>
                         </TableHeader>
                         <TableBody>
-                            {filteredBags?.map((bag) => (
+                            {bloodBags?.map((bag) => (
                                 <TableRow key={bag.id}>
                                     <TableCell className="p-6">
                                         <div className="flex items-center gap-4">
