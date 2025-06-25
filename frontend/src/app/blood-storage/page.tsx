@@ -60,7 +60,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { useDeleteBloodBag } from '@/hooks/use-delete-bloodbag';
+import { useDeleteBloodBag } from '@/hooks/use-delete-blood-bag';
 
 const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     return [
@@ -403,7 +403,7 @@ export default function BloodStorage() {
                     <DialogContent className="max-w-md">
                         <DialogHeader>
                             <DialogTitle className="text-xl font-bold text-slate-900">
-                                Mark Bloog Bag as Used
+                                Mark Blood Bag as Used
                             </DialogTitle>
                             <DialogDescription className="text-slate-600">
                                 Are you sure want to make this blood bag as used
