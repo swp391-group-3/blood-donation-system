@@ -4,7 +4,6 @@ import {
     Hero,
     HeroDescription,
     HeroKeyword,
-    HeroSummary,
     HeroTitle,
 } from '@/components/hero';
 import { StatsGrid, Stats, Props as StatsProps } from '@/components/stats';
@@ -24,14 +23,12 @@ import {
     Filter,
     Package,
     Plus,
-    Search,
     TriangleAlert,
     XCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useBloodStorageList } from '@/hooks/use-blood-storage-list';
 import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -48,21 +45,18 @@ import {
     TableBody,
     TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
 import Link from 'next/link';
 import { formatDateTime } from '@/lib/utils';
-import {
-    differenceInCalendarISOWeeks,
-    differenceInCalendarWeeks,
-} from 'date-fns';
+import { differenceInCalendarWeeks } from 'date-fns';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -132,6 +126,7 @@ function getStatusColor(bag: BloodBag): string {
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
+    const [processing, setProcessing] = useState(false);
     const { data: bloodBags, isPending, error } = useBloodStorageList();
     const stats = useMemo(
         () => (bloodBags ? getStats(bloodBags) : undefined),
@@ -146,6 +141,8 @@ export default function BloodStorage() {
         toast.error('Fail to fetch blood storage data');
         return <div></div>;
     }
+
+    const handleMarkAsUsed = () => {};
 
     return (
         <div className="flex-1 space-y-6 p-6">
@@ -168,10 +165,12 @@ export default function BloodStorage() {
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col justify-between sm:flex-row gap-4 mb-10">
-                    <Button className="bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 font-medium rounded-xl">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Blood Request
-                    </Button>
+                    <Link href="/request">
+                        <Button className="bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 font-medium rounded-xl">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create Blood Request
+                        </Button>
+                    </Link>
                     <div className="flex gap-3">
                         <Select>
                             <SelectTrigger className="w-fit border-slate-200">
@@ -415,6 +414,22 @@ export default function BloodStorage() {
                                 </div>
                             </div>
                         )}
+                        <DialogFooter className="gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowUseDialog(false)}
+                                disabled={processing}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleMarkAsUsed}
+                                disabled={processing}
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                            >
+                                {processing ? 'Processing...' : 'Mark as Used'}
+                            </Button>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </div>
