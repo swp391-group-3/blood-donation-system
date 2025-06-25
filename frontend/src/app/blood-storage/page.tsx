@@ -135,14 +135,16 @@ export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
     const { data: bloodBags, isPending, error } = useBloodStorageList();
-    console.log(bloodBags);
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
+    const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
 
     const filteredBags = useMemo(() => {
-        return bloodBags?.filter(
-            (bag) => component === 'all' || bag.component === component,
+        return (bloodBags ?? []).filter(
+            (bag) =>
+                (component === 'all' || bag.component === component) &&
+                (bloodGroup === 'all' || bag.blood_group === bloodGroup),
         );
-    }, [bloodBags, component]);
+    }, [bloodBags, component, bloodGroup]);
 
     const stats = useMemo(
         () => (bloodBags ? getStats(bloodBags) : undefined),
@@ -212,12 +214,18 @@ export default function BloodStorage() {
                             </SelectContent>
                         </Select>
 
-                        <Select>
+                        <Select
+                            value={bloodGroup}
+                            onValueChange={(value: BloodGroup | 'all') =>
+                                setBloodGroup(value)
+                            }
+                        >
                             <SelectTrigger className="w-fit border-slate-200">
                                 <Droplet className="h-4 w-4 mr-2" />
                                 <SelectValue placeholder="Blood Group" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem value="all">All</SelectItem>
                                 {bloodGroups.map((group) => (
                                     <SelectItem key={group} value={group}>
                                         {bloodGroupLabels[group]}
