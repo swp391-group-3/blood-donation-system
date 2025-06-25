@@ -45,17 +45,11 @@ pub async fn get_all(
 
             if let Some(blood_group) = request.blood_group {
                 let compatible = get_compatible_donors(blood_group);
-                filtered = filtered
-                    .into_iter()
-                    .filter(|bb| compatible.contains(&bb.blood_group))
-                    .collect();
+                filtered.retain(|bb| compatible.contains(&bb.blood_group));
             }
 
             if let Some(component) = request.component {
-                filtered = filtered
-                    .into_iter()
-                    .filter(|bb| bb.component == component)
-                    .collect();
+                filtered.retain(|bb| bb.component == component);
             }
 
             Ok(Json(filtered))
