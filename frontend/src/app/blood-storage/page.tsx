@@ -11,6 +11,7 @@ import {
     BloodBag,
     BloodComponent,
     bloodComponents,
+    BloodGroup,
 } from '@/lib/api/dto/blood-bag';
 import {
     Activity,
@@ -100,10 +101,21 @@ const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     ];
 };
 
-const colors: Record<BloodComponent, string> = {
+const componentColors: Record<BloodComponent, string> = {
     plasma: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     red_cell: 'bg-red-100 text-red-800 border-red-200',
     platelet: 'bg-blue-100 text-blue-800 border-blue-200',
+};
+
+const bloodGroupColors: Record<BloodGroup, string> = {
+    'O+': 'bg-red-100 text-red-800 border-red-200',
+    'O-': 'bg-red-200 text-red-900 border-red-300',
+    'A+': 'bg-blue-100 text-blue-800 border-blue-200',
+    'A-': 'bg-blue-200 text-blue-900 border-blue-300',
+    'B+': 'bg-green-100 text-green-800 border-green-200',
+    'B-': 'bg-green-200 text-green-900 border-green-300',
+    'AB+': 'bg-purple-100 text-purple-800 border-purple-200',
+    'AB-': 'bg-purple-200 text-purple-900 border-purple-300',
 };
 
 const isExpired = (date: Date) => new Date(date) <= new Date();
@@ -111,10 +123,19 @@ const isExpired = (date: Date) => new Date(date) <= new Date();
 const isExpiringSoon = (date: Date) =>
     differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
 
+const normalizeBloodGroup = (raw: string): BloodGroup => {
+    return raw
+        .replace('plus', '+')
+        .replace('minus', '-')
+        .replace(/_/g, '')
+        .toUpperCase() as BloodGroup;
+};
+
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
     const { data: bloodBags, isPending, error } = useBloodStorageList();
+    console.log(bloodBags);
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
 
     const filteredBags = useMemo(() => {
@@ -215,6 +236,9 @@ export default function BloodStorage() {
                                 Bag Details
                             </TableHead>
                             <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                Blood Group
+                            </TableHead>
+                            <TableHead className="text-center p-6 font-semibold text-slate-900">
                                 Component
                             </TableHead>
                             <TableHead className="text-center p-6 font-semibold text-slate-900">
@@ -256,7 +280,18 @@ export default function BloodStorage() {
                                     <TableCell className="p-6">
                                         <div>
                                             <Badge
-                                                className={`block mx-auto px-3 py-1 font-semibold ${colors[bag.component]}`}
+                                                className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[normalizeBloodGroup(bag.blood_group)]}`}
+                                            >
+                                                {normalizeBloodGroup(
+                                                    bag.blood_group,
+                                                )}
+                                            </Badge>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="p-6">
+                                        <div>
+                                            <Badge
+                                                className={`block mx-auto px-3 py-1 font-semibold ${componentColors[bag.component]}`}
                                             >
                                                 {capitalCase(bag.component)}
                                             </Badge>
