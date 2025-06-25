@@ -116,12 +116,13 @@ export default function BloodStorage() {
     const [showUseDialog, setShowUseDialog] = useState(false);
     const { data: bloodBags, isPending, error } = useBloodStorageList();
     const [localBags, setLocalBags] = useState<BloodBag[]>([]);
+    const [component, setComponent] = useState<BloodComponent | 'all'>('all');
 
-    useEffect(() => {
-        if (bloodBags) {
-            setLocalBags(bloodBags);
-        }
-    }, [bloodBags]);
+    const filteredBags = useMemo(() => {
+        return bloodBags?.filter(
+            (bag) => component === 'all' || bag.component === component,
+        );
+    }, [localBags, component]);
 
     const stats = useMemo(
         () => (bloodBags ? getStats(bloodBags) : undefined),
@@ -173,12 +174,21 @@ export default function BloodStorage() {
                         </Button>
                     </Link>
                     <div className="flex gap-3">
-                        <Select>
-                            <SelectTrigger className="w-fit border-slate-200">
+                        <Select
+                            value={component}
+                            onValueChange={(value: BloodComponent | 'all') =>
+                                setComponent(value)
+                            }
+                        >
+                            <SelectTrigger
+                                onReset={() => setComponent('all')}
+                                className="w-fit border-slate-200"
+                            >
                                 <Filter className="h-4 w-4 mr-2" />
                                 <SelectValue placeholder="Component" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem value="all">All</SelectItem>
                                 {bloodComponents.map((component) => (
                                     <SelectItem
                                         key={component}
@@ -227,7 +237,7 @@ export default function BloodStorage() {
                             </TableHead>
                         </TableHeader>
                         <TableBody>
-                            {localBags.map((bag) => (
+                            {filteredBags?.map((bag) => (
                                 <TableRow key={bag.id}>
                                     <TableCell className="p-6">
                                         <div className="flex items-center gap-4">
