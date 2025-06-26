@@ -20,8 +20,8 @@ export const bloodRequestSchema = z.object({
         )
         .min(1, 'At least one blood group'),
     max_people: z.number().min(1, 'At least one people'),
-    start_time: z.date({ required_error: 'Invalid start time' }),
-    end_time: z.date({ required_error: 'Invalid end time' }),
+    start_time: z.date(),
+    end_time: z.date(),
 });
 
 export const useBloodRequestForm = () => {
@@ -29,7 +29,7 @@ export const useBloodRequestForm = () => {
 
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof bloodRequestSchema>) => {
-            const response = await fetchWrapper('/post/blood-request', {
+            const response = await fetchWrapper('/blood-request', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -42,7 +42,7 @@ export const useBloodRequestForm = () => {
         },
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
-            toast.success('Tạo yêu cầu hiến máu thành công');
+            toast.success('Create blood request successfully');
             queryClient.invalidateQueries({ queryKey: ['blood-requests'] });
         },
     });
