@@ -11,14 +11,16 @@ export const useCreateBloodBags = () => {
 
     return useMutation({
         mutationFn: async ({
+            appointmentId,
             donationId,
             bloodBags,
         }: {
+            appointmentId: string;
             donationId: string;
             bloodBags: CreateBloodBag[];
         }) => {
-            Promise.all(
-                bloodBags.map((bag) =>
+            Promise.all([
+                ...bloodBags.map((bag) =>
                     (async () => {
                         const response = await fetchWrapper(
                             `/donation/${donationId}/blood-bag`,
@@ -35,9 +37,22 @@ export const useCreateBloodBags = () => {
                         await throwIfError(response);
                     })(),
                 ),
-            );
+                (async () => {
+                    const response = await fetchWrapper(
+                        `/appointment/${appointmentId}/done`,
+                        {
+                            method: 'PATCH',
+                        },
+                    );
+
+                    await throwIfError(response);
+                })(),
+            ]);
         },
         onError: (error) => toast.error(error.message),
-        onSuccess: () => router.push('/appointment/management'),
+        onSuccess: () => {
+            toast.info('Successfully add blood bags');
+            router.push('/appointment/management');
+        },
     });
 };
