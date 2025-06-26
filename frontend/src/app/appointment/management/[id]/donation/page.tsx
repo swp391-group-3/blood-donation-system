@@ -125,18 +125,20 @@ export default function AppointmentDonationPage() {
                                     <Button
                                         variant="outline"
                                         size="sm"
+                                        disabled={reject.isPending}
                                         onClick={() => {
-                                            if (
-                                                confirm(
-                                                    'Are you sure you want to reject this donation? This action cannot be undone.',
-                                                )
-                                            ) {
-                                            }
+                                            reject.mutate();
                                         }}
                                         className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all"
                                     >
-                                        <X className="h-4 w-4 mr-2" />
-                                        Reject Donation
+                                        {reject.isPending ? (
+                                            <p>Loading ...</p>
+                                        ) : (
+                                            <>
+                                                <X className="h-4 w-4 mr-2" />
+                                                Reject Donation
+                                            </>
+                                        )}
                                     </Button>
                                     <Button
                                         size="sm"
@@ -148,7 +150,12 @@ export default function AppointmentDonationPage() {
                                                 '_blank',
                                             );
                                             if (printWindow) {
-                                                printWindow.document.write(await generateDonationLabel(apt.donation, apt.member));
+                                                printWindow.document.write(
+                                                    await generateDonationLabel(
+                                                        apt.donation,
+                                                        apt.member,
+                                                    ),
+                                                );
                                                 printWindow.document.close();
                                                 printWindow.focus();
                                             }
@@ -160,6 +167,58 @@ export default function AppointmentDonationPage() {
                                 </div>
                             </CardTitle>
                         </CardHeader>
+                        <CardContent className="p-8">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-slate-900 mb-2">
+                                        {capitalCase(apt.donation.type)}
+                                    </div>
+                                    <div className="text-slate-600">
+                                        Donation Type
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-slate-900 mb-2">
+                                        {apt.donation.amount}ml
+                                    </div>
+                                    <div className="text-slate-600">
+                                        Collection Volume
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-slate-900 mb-2">
+                                        {blood_bags.length}
+                                    </div>
+                                    <div className="text-slate-600">
+                                        Components
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-slate-900 mb-2">
+                                        {totalBagAmount}ml
+                                    </div>
+                                    <div className="text-slate-600">
+                                        Total Processed
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-slate-700">
+                                        Collection Progress
+                                    </span>
+                                    <span className="text-sm text-slate-500">
+                                        {Math.round(completionProgress)}%
+                                    </span>
+                                </div>
+                                <Progress
+                                    value={completionProgress}
+                                    className="h-3 bg-blue-200 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-indigo-600"
+                                />
+                            </div>
+                        </CardContent>
                     </Card>
                 </>
             )}
