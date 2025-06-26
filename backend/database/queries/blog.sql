@@ -26,7 +26,7 @@ SELECT
 FROM blogs
 WHERE id = :id;
 
---! get_all (content?) : Blog
+--! get_all (query?) : Blog
 SELECT 
     id,
     (SELECT name FROM accounts WHERE id = blogs.account_id) AS name,
@@ -41,7 +41,11 @@ SELECT
     content,
     created_at
 FROM blogs
-WHERE content is null or (content LIKE '%' || :content || '%' )
+WHERE 
+    :query::text is null or
+    (title LIKE '%' || :query || '%' ) or
+    (description LIKE '%' || :query || '%' ) or
+    (content LIKE '%' || :query || '%' )
 ORDER BY created_at DESC;
 
 --! update (title?, description?, content?)
