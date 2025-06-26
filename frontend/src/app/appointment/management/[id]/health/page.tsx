@@ -25,8 +25,8 @@ export default function AppointmentHealthPage() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto px-6 py-8">
-            <Card className="mb-8 border-0 shadow-xl shadow-slate-200/50 bg-white/80 backdrop-blur-sm">
+        <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
+            <Card>
                 <CardContent className="p-8">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-6">
