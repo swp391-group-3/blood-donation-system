@@ -4,6 +4,7 @@ import { deserialize, fetchWrapper } from '@/lib/api';
 import { Account } from '@/lib/api/dto/account';
 import { Appointment } from '@/lib/api/dto/appointment';
 import { BloodRequest } from '@/lib/api/dto/blood-request';
+import { Donation } from '@/lib/api/dto/donation';
 import { useQuery } from '@tanstack/react-query';
 
 export const useAppointment = (id: string) => {
@@ -12,7 +13,7 @@ export const useAppointment = (id: string) => {
             let response = await fetchWrapper(`/appointment/${id}`);
             const appointment = await deserialize<Appointment>(response);
 
-            const [member, request, answers] = await Promise.all([
+            const [member, request, answers, donation] = await Promise.all([
                 (async () => {
                     response = await fetchWrapper(
                         `/account/${appointment.member_id}`,
@@ -31,6 +32,12 @@ export const useAppointment = (id: string) => {
                         { answer: string; question: string }[]
                     >(response);
                 })(),
+                (async () => {
+                    response = await fetchWrapper(
+                        `/appointment/${id}/donation`,
+                    );
+                    return await deserialize<Donation>(response);
+                })(),
             ]);
 
             return {
@@ -38,6 +45,7 @@ export const useAppointment = (id: string) => {
                 member,
                 request,
                 answers,
+                donation,
             };
         },
         queryKey: ['appointment', id],
