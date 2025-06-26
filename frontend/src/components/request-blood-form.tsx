@@ -1,7 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Form,
@@ -18,7 +15,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog';
 import {
     Select,
@@ -28,29 +24,16 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { type DateRange } from 'react-day-picker';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useBloodRequestForm } from '@/hooks/use-create-blood-request';
 import { CalendarIcon, Droplet } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { bloodTypes, urgencyLevels } from '../../constants/sample-data';
-
-export const requestBloodSchema = z.object({
-    bloodType: z.string().min(1, 'Please select the blood type'),
-    quantity: z.number().min(1, 'Please input the quantity'),
-    urgency: z.string().min(1, 'Please select the urgency of the request'),
-    reason: z.string().min(1, 'Input the medical reason for this request'),
-    date: z.string().min(1, 'Please select the date of the donation'),
-    terms: z.boolean().refine((val) => val, 'You must confirm legitimacy'),
-    emergency: z.boolean().refine((val) => val, 'Acknowledge emergency policy'),
-});
-export type RequestBloodFormType = z.infer<typeof requestBloodSchema>;
-
+import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import { priorities } from '@/lib/api/dto/blood-request';
+import { MultiSelect } from '@/components/multi-select';
 export default function RequestBloodDialog({
     open,
     onOpenChange,
@@ -58,33 +41,26 @@ export default function RequestBloodDialog({
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }) {
-    const [dateRange, setDateRange] = useState<DateRange | undefined>(
-        undefined,
-    );
-    const form = useForm<RequestBloodFormType>({
-        resolver: zodResolver(requestBloodSchema),
-        defaultValues: {
-            bloodType: 'A+',
-            quantity: 1,
-            urgency: 'normal',
-            reason: '',
-            date: undefined,
-            terms: false,
-            emergency: false,
-        },
-    });
-    const onRequestSubmit = (data: RequestBloodFormType) => {
-        console.log(data);
+    const { form, mutation } = useBloodRequestForm();
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+    const bloodGroupOptions = bloodGroups.map((bg) => ({
+        value: bg,
+        label: bloodGroupLabels[bg],
+    }));
+
+    const onSubmit = (data: any) => {
+        mutation.mutate({
+            ...data,
+            start_time: startDate,
+            end_time: endDate,
+        });
+        onOpenChange(false);
     };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogTrigger asChild>
-                <Button className="bg-white text-red-600 hover:bg-gray-100">
-                    <Droplet className="mr-2 h-4 w-4" />
-                    Request Blood
-                </Button>
-            </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
@@ -98,86 +74,79 @@ export default function RequestBloodDialog({
                 </DialogHeader>
                 <Form {...form}>
                     <form
-                        onSubmit={form.handleSubmit(onRequestSubmit)}
+                        onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-6"
                     >
-                        <div className="grid gap-6">
-                            <div className="grid grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="bloodType"
-                                    render={() => (
-                                        <FormItem>
-                                            <FormLabel>Blood Type</FormLabel>
-                                            <Select>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select Blood Type" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {bloodTypes.map(
-                                                        (type, index) => (
-                                                            <SelectItem
-                                                                key={index}
-                                                                value={type}
-                                                            >
-                                                                {type}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="quantity"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                Quantity (units) *
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    min={1}
-                                                    {...field}
-                                                    value={field.value ?? 1}
-                                                    onChange={(e) =>
-                                                        field.onChange(
-                                                            Number(
-                                                                e.target.value,
-                                                            ),
-                                                        )
-                                                    }
-                                                ></Input>
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Title *</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Enter the request title"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
-                                name="urgency"
+                                name="blood_groups"
+                                render={({ field }) => {
+                                    const selectedOptions =
+                                        bloodGroupOptions.filter((opt) =>
+                                            field.value?.includes(opt.value),
+                                        );
+                                    return (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Blood Group(s) *
+                                            </FormLabel>
+                                            <MultiSelect
+                                                options={bloodGroupOptions}
+                                                selected={selectedOptions}
+                                                onChange={(opts) =>
+                                                    field.onChange(
+                                                        opts.map(
+                                                            (opt) => opt.value,
+                                                        ),
+                                                    )
+                                                }
+                                                placeholder="Select blood groups"
+                                            />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="priority"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Urgency Level *</FormLabel>
-                                        <Select onValueChange={field.onChange}>
+                                        <FormLabel>Priority *</FormLabel>
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select the urgent level" />
+                                                    <SelectValue placeholder="Select priority" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {urgencyLevels.map((item) => (
+                                                {priorities.map((pri) => (
                                                     <SelectItem
-                                                        key={item.value}
-                                                        value={item.value}
+                                                        key={pri}
+                                                        value={pri}
                                                     >
-                                                        {item.label}
+                                                        {pri
+                                                            .charAt(0)
+                                                            .toUpperCase() +
+                                                            pri.slice(1)}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -185,57 +154,98 @@ export default function RequestBloodDialog({
                                     </FormItem>
                                 )}
                             />
+                        </div>
+                        <FormField
+                            control={form.control}
+                            name="max_people"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Max People *</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            min={1}
+                                            placeholder="Enter the max number of people"
+                                            {...field}
+                                            value={field.value ?? 1}
+                                            onChange={(e) =>
+                                                field.onChange(
+                                                    Number(e.target.value),
+                                                )
+                                            }
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
-                                name="reason"
-                                render={({ field }) => (
+                                name="start_time"
+                                render={() => (
                                     <FormItem>
-                                        <FormLabel>Medical Reason</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                rows={3}
-                                                placeholder="Please provide the request reason"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="date"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Require By *</FormLabel>
+                                        <FormLabel>Start Date *</FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
                                                     <Button
                                                         variant="outline"
-                                                        id="dates"
                                                         className={
                                                             'w-full justify-start text-left font-normal' +
-                                                            (!field.value
+                                                            (!startDate
                                                                 ? ' text-muted-foreground'
                                                                 : '')
                                                         }
                                                     >
-                                                        {dateRange?.from &&
-                                                        dateRange?.to
-                                                            ? `${dateRange.from.toLocaleDateString()} - ${dateRange.to.toLocaleDateString()}`
-                                                            : 'Select Date'}
-                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {startDate
+                                                            ? startDate.toLocaleDateString()
+                                                            : 'Select Start Date'}
+                                                        <CalendarIcon className="ml-2 h-4 w-4" />
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0">
                                                 <Calendar
-                                                    mode="range"
-                                                    selected={dateRange}
-                                                    captionLayout="dropdown"
-                                                    onSelect={(dateRange) =>
-                                                        setDateRange(dateRange)
-                                                    }
+                                                    mode="single"
+                                                    selected={startDate}
+                                                    onSelect={setStartDate}
+                                                    className="rounded-lg border shadow-sm"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="end_time"
+                                render={() => (
+                                    <FormItem>
+                                        <FormLabel>End Date *</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant="outline"
+                                                        className={
+                                                            'w-full justify-start text-left font-normal' +
+                                                            (!endDate
+                                                                ? ' text-muted-foreground'
+                                                                : '')
+                                                        }
+                                                    >
+                                                        {endDate
+                                                            ? endDate.toLocaleDateString()
+                                                            : 'Select End Date'}
+                                                        <CalendarIcon className="ml-2 h-4 w-4" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={endDate}
+                                                    onSelect={setEndDate}
                                                     className="rounded-lg border shadow-sm"
                                                 />
                                             </PopoverContent>
@@ -245,12 +255,17 @@ export default function RequestBloodDialog({
                             />
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="outline">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => onOpenChange(false)}
+                            >
                                 Cancel
                             </Button>
                             <Button
                                 type="submit"
                                 className="bg-red-600 hover:bg-red-700"
+                                disabled={mutation.isPending}
                             >
                                 Submit Request
                             </Button>
