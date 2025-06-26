@@ -28,7 +28,7 @@ pub struct DeleteParams {
 #[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct Blog {
     pub id: uuid::Uuid,
-    pub name: String,
+    pub owner: String,
     pub tags: Vec<String>,
     pub title: String,
     pub description: String,
@@ -37,7 +37,7 @@ pub struct Blog {
 }
 pub struct BlogBorrowed<'a> {
     pub id: uuid::Uuid,
-    pub name: &'a str,
+    pub owner: &'a str,
     pub tags: crate::ArrayIterator<'a, &'a str>,
     pub title: &'a str,
     pub description: &'a str,
@@ -48,7 +48,7 @@ impl<'a> From<BlogBorrowed<'a>> for Blog {
     fn from(
         BlogBorrowed {
             id,
-            name,
+            owner,
             tags,
             title,
             description,
@@ -58,7 +58,7 @@ impl<'a> From<BlogBorrowed<'a>> for Blog {
     ) -> Self {
         Self {
             id,
-            name: name.into(),
+            owner: owner.into(),
             tags: tags.map(|v| v.into()).collect(),
             title: title.into(),
             description: description.into(),
@@ -296,7 +296,7 @@ impl<'a, C: GenericClient + Send + Sync>
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = $1) ) ) AS tags, title, description, content, created_at FROM blogs WHERE id = $1",
+        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS owner, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = $1) ) ) AS tags, title, description, content, created_at FROM blogs WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -313,7 +313,7 @@ impl GetStmt {
             extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
                 Ok(BlogBorrowed {
                     id: row.try_get(0)?,
-                    name: row.try_get(1)?,
+                    owner: row.try_get(1)?,
                     tags: row.try_get(2)?,
                     title: row.try_get(3)?,
                     description: row.try_get(4)?,
@@ -327,7 +327,7 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS name, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id) ) ) AS tags, title, description, content, created_at FROM blogs WHERE content is null or (content LIKE '%' || $1 || '%' ) ORDER BY created_at DESC",
+        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS owner, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id) ) ) AS tags, title, description, content, created_at FROM blogs WHERE $1::text is null or (title LIKE '%' || $1 || '%' ) or (description LIKE '%' || $1 || '%' ) or (content LIKE '%' || $1 || '%' ) ORDER BY created_at DESC",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -335,16 +335,16 @@ impl GetAllStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-        content: &'a Option<T1>,
+        query: &'a Option<T1>,
     ) -> BlogQuery<'c, 'a, 's, C, Blog, 1> {
         BlogQuery {
             client,
-            params: [content],
+            params: [query],
             stmt: &mut self.0,
             extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
                 Ok(BlogBorrowed {
                     id: row.try_get(0)?,
-                    name: row.try_get(1)?,
+                    owner: row.try_get(1)?,
                     tags: row.try_get(2)?,
                     title: row.try_get(3)?,
                     description: row.try_get(4)?,

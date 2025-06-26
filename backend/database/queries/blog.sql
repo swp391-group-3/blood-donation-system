@@ -12,7 +12,7 @@ VALUES (:blog_id, :tag_id);
 --! get : Blog
 SELECT 
     id,
-    (SELECT name FROM accounts WHERE id = blogs.account_id) AS name,
+    (SELECT name FROM accounts WHERE id = blogs.account_id) AS owner,
     (
         SELECT ARRAY(
             SELECT name FROM tags
@@ -29,7 +29,7 @@ WHERE id = :id;
 --! get_all (query?) : Blog
 SELECT 
     id,
-    (SELECT name FROM accounts WHERE id = blogs.account_id) AS name,
+    (SELECT name FROM accounts WHERE id = blogs.account_id) AS owner,
     (
         SELECT ARRAY(
             SELECT name FROM tags
