@@ -88,13 +88,18 @@ export default function AppointmentPage() {
         [appointments, status],
     );
     const [selected, setSelected] = useState<string | undefined>();
-    const url = useMemo(
-        () =>
-            !selected
-                ? undefined
-                : `${window.location.href}-management/${selected}/health`,
-        [selected],
-    );
+    const url = useMemo(() => {
+        if (!selected) return undefined;
+
+        const appointment = appointments?.find((apt) => apt.id === selected);
+        if (!appointment) return undefined;
+
+        if (appointment.status === 'approved') {
+            return `${window.location.href}-management/${selected}/health`;
+        } else if (appointment.status === 'checked_in') {
+            return `${window.location.href}-management/${selected}/donation`;
+        }
+    }, [selected, appointments]);
 
     if (isPending) {
         return <div></div>;
