@@ -323,7 +323,7 @@ export default function AppointmentManagementPage() {
                         <TableBody>
                             {filtered.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4}>
+                                    <TableCell colSpan={5}>
                                         <div className="text-center py-12">
                                             <Calendar className="size-16 text-slate-400 mx-auto mb-4" />
                                             <h3 className="text-xl font-semibold text-slate-900 mb-2">
