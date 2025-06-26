@@ -51,8 +51,13 @@ export const requestBloodSchema = z.object({
 });
 export type RequestBloodFormType = z.infer<typeof requestBloodSchema>;
 
-export default function RequestBloodDialog() {
-    const [requestFormOpen, setRequestFormOpen] = useState(false);
+export default function RequestBloodDialog({
+    open,
+    onOpenChange,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}) {
     const [dateRange, setDateRange] = useState<DateRange | undefined>(
         undefined,
     );
@@ -69,12 +74,11 @@ export default function RequestBloodDialog() {
         },
     });
     const onRequestSubmit = (data: RequestBloodFormType) => {
-        console.log(data)
-        setRequestFormOpen(false);
+        console.log(data);
     };
 
     return (
-        <Dialog open={requestFormOpen} onOpenChange={setRequestFormOpen}>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
                 <Button className="bg-white text-red-600 hover:bg-gray-100">
                     <Droplet className="mr-2 h-4 w-4" />
@@ -287,11 +291,7 @@ export default function RequestBloodDialog() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setRequestFormOpen(false)}
-                            >
+                            <Button type="button" variant="outline">
                                 Cancel
                             </Button>
                             <Button
