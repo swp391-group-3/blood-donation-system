@@ -12,6 +12,10 @@ import {
     CheckCircle,
     Plus,
     Info,
+    Droplets,
+    Sparkles,
+    Beaker,
+    Trash2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -40,16 +44,26 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const componentConfigs = {
     red_cell: {
+        icon: Droplets,
         shelfLife: '42 days',
+        color: 'text-red-600',
+        bgColor: 'bg-red-50',
     },
     platelet: {
+        icon: Sparkles,
         shelfLife: '5 days',
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-50',
     },
     plasma: {
+        icon: Beaker,
         shelfLife: '1 year',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-50',
     },
 };
 
@@ -280,7 +294,7 @@ export default function AppointmentDonationPage() {
                                     )}
                                 </div>
                             </CardTitle>
-                            <CardContent className="px-0 py-8">
+                            <CardContent className="px-0 py-8 space-y-8">
                                 <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-6 border border-slate-200">
                                     <h3 className="text-lg font-semibold text-slate-900 mb-6">
                                         Add New Component
@@ -306,20 +320,34 @@ export default function AppointmentDonationPage() {
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {bloodComponents.map(
-                                                        (component) => (
-                                                            <SelectItem
-                                                                key={component}
-                                                                value={
+                                                        (component) => {
+                                                            const config =
+                                                                componentConfigs[
                                                                     component
-                                                                }
-                                                            >
-                                                                <div className="flex items-center space-x-3">
-                                                                    {capitalCase(
-                                                                        component,
-                                                                    )}
-                                                                </div>
-                                                            </SelectItem>
-                                                        ),
+                                                                ];
+
+                                                            return (
+                                                                <SelectItem
+                                                                    key={
+                                                                        component
+                                                                    }
+                                                                    value={
+                                                                        component
+                                                                    }
+                                                                >
+                                                                    <div className="flex items-center space-x-3">
+                                                                        <config.icon
+                                                                            className={`h-5 w-5 ${config.color}`}
+                                                                        />
+                                                                        <span>
+                                                                            {capitalCase(
+                                                                                component,
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                </SelectItem>
+                                                            );
+                                                        },
                                                     )}
                                                 </SelectContent>
                                             </Select>
@@ -390,6 +418,84 @@ export default function AppointmentDonationPage() {
                                         </AlertDescription>
                                     </Alert>
                                 </div>
+                                {bloodBags.length > 0 ? (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h3 className="text-lg font-semibold text-slate-900">
+                                                Added Components (
+                                                {bloodBags.length})
+                                            </h3>
+                                            <span className="text-slate-600 font-medium">
+                                                Total: {totalBagAmount}ml
+                                            </span>
+                                        </div>
+                                        {bloodBags.map((bag, index) => {
+                                            const component =
+                                                bloodComponents.find(
+                                                    (c) => c === bag.component,
+                                                )!;
+                                            const config =
+                                                componentConfigs[component];
+
+                                            return (
+                                                <div
+                                                    key={index}
+                                                    className="flex items-center justify-between p-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-slate-300 transition-all hover:shadow-lg"
+                                                >
+                                                    <div className="flex items-center space-x-4">
+                                                        <div
+                                                            className={`p-3 ${config.bgColor} rounded-xl`}
+                                                        >
+                                                            <config.icon
+                                                                className={`h-6 w-6 ${config.color}`}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-lg font-semibold text-slate-900">
+                                                                {capitalCase(
+                                                                    component,
+                                                                )}
+                                                            </p>
+                                                            <p className="text-sm text-slate-600">
+                                                                {bag.amount}
+                                                                ml • Expires:{' '}
+                                                                {bag.expired_time.toLocaleDateString()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            setBloodBags(
+                                                                (prev) =>
+                                                                    prev.filter(
+                                                                        (
+                                                                            _,
+                                                                            i,
+                                                                        ) =>
+                                                                            i !==
+                                                                            index,
+                                                                    ),
+                                                            )
+                                                        }
+                                                        className="text-red-600 hover:text-red-700 hover:bg-red-50 p-3 rounded-xl transition-all"
+                                                    >
+                                                        <Trash2 className="h-5 w-5" />
+                                                    </Button>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <EmptyState
+                                        className="mx-auto"
+                                        title="No components added yet"
+                                        description="Add blood components after collection and processing"
+                                        icons={[Package]}
+                                    />
+                                )}
                             </CardContent>
                         </CardHeader>
                     </Card>
