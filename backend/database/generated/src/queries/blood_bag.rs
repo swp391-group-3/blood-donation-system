@@ -22,6 +22,7 @@ pub struct BloodBag {
     pub is_used: bool,
     pub amount: i32,
     pub expired_time: chrono::DateTime<chrono::FixedOffset>,
+    pub blood_group: ctypes::BloodGroup,
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
@@ -149,7 +150,7 @@ where
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM blood_bags WHERE id = $1",
+        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags WHERE id = $1",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -171,6 +172,7 @@ impl GetStmt {
                     is_used: row.try_get(3)?,
                     amount: row.try_get(4)?,
                     expired_time: row.try_get(5)?,
+                    blood_group: row.try_get(6)?,
                 })
             },
             mapper: |it| BloodBag::from(it),
@@ -178,7 +180,9 @@ impl GetStmt {
     }
 }
 pub fn get_all() -> GetAllStmt {
-    GetAllStmt(crate::client::async_::Stmt::new("SELECT * FROM blood_bags"))
+    GetAllStmt(crate::client::async_::Stmt::new(
+        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags",
+    ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
@@ -198,6 +202,7 @@ impl GetAllStmt {
                     is_used: row.try_get(3)?,
                     amount: row.try_get(4)?,
                     expired_time: row.try_get(5)?,
+                    blood_group: row.try_get(6)?,
                 })
             },
             mapper: |it| BloodBag::from(it),

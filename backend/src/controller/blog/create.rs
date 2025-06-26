@@ -17,16 +17,17 @@ use crate::{
 };
 
 #[derive(Deserialize, Serialize, ToSchema, Mapper)]
-#[schema(as = blod::create::Request)]
+#[schema(as = blog::create::Request)]
 #[mapper(
     into(custom = "with_account_id"),
-    ty = CreateParams::<String, String, String>,
+    ty = CreateParams::<String, String, String, String, Vec<String>>,
     add(field = account_id, ty = Uuid),
 )]
 pub struct Request {
     pub title: String,
     pub description: String,
     pub content: String,
+    pub tags: Vec<String>,
 }
 
 #[utoipa::path(
