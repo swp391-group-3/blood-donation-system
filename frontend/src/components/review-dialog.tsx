@@ -14,6 +14,8 @@ import { Account } from '@/lib/api/dto/account';
 import { useApppointmentAnswer } from '@/hooks/use-apppointment-answer';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useApproveAppointment } from '@/hooks/use-approve-appointment';
+import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
@@ -38,6 +40,9 @@ export const ReviewDialog = ({
         isPending,
         error,
     } = useApppointmentAnswer(appointment.id);
+
+    const approve = useApproveAppointment(appointment.id);
+    const reject = useRejectAppointment(appointment.id);
 
     if (isPending) {
         return <div></div>;
@@ -139,19 +144,25 @@ export const ReviewDialog = ({
 
                     <div className="flex gap-4 pt-6 border-t border-slate-200">
                         <Button
-                            onClick={() => {}}
+                            disabled={approve.isPending || reject.isPending}
+                            onClick={() => {
+                                approve.mutate();
+                            }}
                             className="flex-1 bg-green-600 hover:bg-green-700 text-white h-12 rounded-xl"
                         >
                             <CheckCircle className="h-5 w-5 mr-2" />
-                            Approve & Schedule
+                            Approve
                         </Button>
                         <Button
-                            onClick={() => {}}
+                            disabled={approve.isPending || reject.isPending}
+                            onClick={() => {
+                                reject.mutate();
+                            }}
                             variant="outline"
                             className="flex-1 border-red-200 text-red-700 hover:bg-red-50 h-12 rounded-xl"
                         >
                             <XCircle className="h-5 w-5 mr-2" />
-                            Reject Application
+                            Reject
                         </Button>
                     </div>
                 </div>
