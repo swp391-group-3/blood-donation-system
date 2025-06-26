@@ -36,30 +36,17 @@ import {
 } from '@/components/hero';
 
 export default function BlogPage() {
-    const [selectedTag, setSelectedTag] = useState<string | null>(null);
+    const [selectedTag, setSelectedTag] = useState<string>('all');
 
     const { data: blogs, isLoading, error } = useBlogList();
-    console.log(blogs);
 
-    const blogsWithExtraField = (blogs ?? []).map((blog) => ({
-        ...blog,
-        tags: ['medical', 'health', 'community', 'education'],
-        owner: 'Nam Dang',
-        created_at: new Date(),
-    }));
+    const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
 
-    const allTags = Array.from(
-        new Set(blogsWithExtraField?.flatMap((blog) => blog.tags)),
-    );
-
-    const filteredBlogs = useMemo(
-        () =>
-            blogsWithExtraField.filter((blog) => {
-                if (!selectedTag || selectedTag === 'all') return true;
-                return blog.tags?.includes(selectedTag);
-            }),
-        [blogsWithExtraField, selectedTag],
-    );
+    const filteredBlogs = useMemo(() => {
+        if (!blogs) return [];
+        if (selectedTag === 'all') return blogs;
+        return blogs.filter((blog) => blog.tags?.includes(selectedTag));
+    }, [blogs, selectedTag]);
 
     if (isLoading) {
         return <div></div>;
@@ -110,6 +97,7 @@ export default function BlogPage() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
+                                <SelectItem value="all">All Tags</SelectItem>
                                 {allTags.map((tag) => (
                                     <SelectItem key={tag} value={tag}>
                                         {tag.charAt(0).toUpperCase() +
@@ -136,6 +124,10 @@ export default function BlogPage() {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
+                    <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Write Blog
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -147,11 +139,11 @@ export default function BlogPage() {
                             <CardHeader className="flex-1 pt-1 pb-2 px-5">
                                 <div className="flex items-center gap-3 mb-3">
                                     <div className="h-8 w-8">
-                                        <AccountPicture name="Nam Dang" />
+                                        <AccountPicture name={blog.owner} />
                                     </div>
                                     <div>
                                         <div className="font-medium text-zinc-900 text-[15px]">
-                                            Nam Dang
+                                            {blog.owner}
                                         </div>
                                         <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
                                             <Clock className="h-3 w-3" />
