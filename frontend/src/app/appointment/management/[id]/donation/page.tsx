@@ -45,6 +45,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/ui/empty-state';
+import { useCreateBloodBags } from '@/hooks/use-create-blood-bags';
 
 const componentConfigs = {
     red_cell: {
@@ -71,6 +72,7 @@ export default function AppointmentDonationPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
     const reject = useRejectAppointment(id);
+    const createBloodBag = useCreateBloodBags();
 
     const [newBloodBag, setNewBloodBag] = useState<CreateBloodBag>({
         amount: 150,
@@ -451,7 +453,7 @@ export default function AppointmentDonationPage() {
                                                             />
                                                         </div>
                                                         <div>
-                                                            <p className="text-lg font-semibold text-slate-900">
+                                                            <p className="font-semibold text-slate-900">
                                                                 {capitalCase(
                                                                     component,
                                                                 )}
@@ -499,6 +501,32 @@ export default function AppointmentDonationPage() {
                             </CardContent>
                         </CardHeader>
                     </Card>
+                    <div className="flex justify-end">
+                        <Button
+                            type="submit"
+                            disabled={createBloodBag.isPending}
+                            onClick={() =>
+                                createBloodBag.mutate({
+                                    appointmentId: apt.id,
+                                    donationId: apt.donation.id,
+                                    bloodBags,
+                                })
+                            }
+                            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 py-6 transition-all"
+                        >
+                            {createBloodBag.isPending ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                                    Completing Donation...
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle className="h-6 w-6 mr-3" />
+                                    Complete Donation
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </>
             )}
         </div>
