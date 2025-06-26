@@ -73,6 +73,9 @@ jobs:
       - name: Init database
         run: psql ${{ steps.postgres.outputs.connection-uri }} -a -f schema.sql
       - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            backend
       - name: Test
         env:
           DATABASE_URL: ${{ steps.postgres.outputs.connection-uri }}
