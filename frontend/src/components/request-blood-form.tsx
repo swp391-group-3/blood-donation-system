@@ -6,6 +6,7 @@ import {
     FormItem,
     FormLabel,
     FormControl,
+    FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,17 +24,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
 import { useBloodRequestForm } from '@/hooks/use-create-blood-request';
-import { CalendarIcon, Droplet } from 'lucide-react';
+import { Droplet } from 'lucide-react';
 import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { priorities } from '@/lib/api/dto/blood-request';
+import { DateTimePicker } from '@/components/date-time-picker';
 import { MultiSelect } from '@/components/multi-select';
+
 export default function RequestBloodDialog({
     open,
     onOpenChange,
@@ -42,22 +39,11 @@ export default function RequestBloodDialog({
     onOpenChange: (open: boolean) => void;
 }) {
     const { form, mutation } = useBloodRequestForm();
-    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
     const bloodGroupOptions = bloodGroups.map((bg) => ({
         value: bg,
         label: bloodGroupLabels[bg],
     }));
-
-    const onSubmit = (data: any) => {
-        mutation.mutate({
-            ...data,
-            start_time: startDate,
-            end_time: endDate,
-        });
-        onOpenChange(false);
-    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -74,7 +60,9 @@ export default function RequestBloodDialog({
                 </DialogHeader>
                 <Form {...form}>
                     <form
-                        onSubmit={form.handleSubmit(onSubmit)}
+                        onSubmit={form.handleSubmit((values) =>
+                            mutation.mutate(values),
+                        )}
                         className="space-y-6"
                     >
                         <FormField
@@ -82,13 +70,14 @@ export default function RequestBloodDialog({
                             name="title"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Title *</FormLabel>
+                                    <FormLabel>Title</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="Enter the request title"
                                             {...field}
                                         />
                                     </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -118,6 +107,7 @@ export default function RequestBloodDialog({
                                                 }
                                                 placeholder="Select blood groups"
                                             />
+                                            <FormMessage />
                                         </FormItem>
                                     );
                                 }}
@@ -127,7 +117,7 @@ export default function RequestBloodDialog({
                                 name="priority"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Priority *</FormLabel>
+                                        <FormLabel>Priority</FormLabel>
                                         <Select
                                             value={field.value}
                                             onValueChange={field.onChange}
@@ -138,19 +128,20 @@ export default function RequestBloodDialog({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {priorities.map((pri) => (
+                                                {priorities.map((priority) => (
                                                     <SelectItem
-                                                        key={pri}
-                                                        value={pri}
+                                                        key={priority}
+                                                        value={priority}
                                                     >
-                                                        {pri
+                                                        {priority
                                                             .charAt(0)
                                                             .toUpperCase() +
-                                                            pri.slice(1)}
+                                                            priority.slice(1)}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -160,7 +151,7 @@ export default function RequestBloodDialog({
                             name="max_people"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Max People *</FormLabel>
+                                    <FormLabel>Max People</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
@@ -175,85 +166,45 @@ export default function RequestBloodDialog({
                                             }
                                         />
                                     </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="start_time"
-                                render={() => (
-                                    <FormItem>
-                                        <FormLabel>Start Date *</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        variant="outline"
-                                                        className={
-                                                            'w-full justify-start text-left font-normal' +
-                                                            (!startDate
-                                                                ? ' text-muted-foreground'
-                                                                : '')
-                                                        }
-                                                    >
-                                                        {startDate
-                                                            ? startDate.toLocaleDateString()
-                                                            : 'Select Start Date'}
-                                                        <CalendarIcon className="ml-2 h-4 w-4" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={startDate}
-                                                    onSelect={setStartDate}
-                                                    className="rounded-lg border shadow-sm"
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="end_time"
-                                render={() => (
-                                    <FormItem>
-                                        <FormLabel>End Date *</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        variant="outline"
-                                                        className={
-                                                            'w-full justify-start text-left font-normal' +
-                                                            (!endDate
-                                                                ? ' text-muted-foreground'
-                                                                : '')
-                                                        }
-                                                    >
-                                                        {endDate
-                                                            ? endDate.toLocaleDateString()
-                                                            : 'Select End Date'}
-                                                        <CalendarIcon className="ml-2 h-4 w-4" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={endDate}
-                                                    onSelect={setEndDate}
-                                                    className="rounded-lg border shadow-sm"
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                        <FormField
+                            control={form.control}
+                            name="start_time"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Start Date</FormLabel>
+                                    <DateTimePicker
+                                        date={field.value}
+                                        onDateChange={(newDate) => {
+                                            form.setValue(
+                                                'start_time',
+                                                newDate,
+                                            );
+                                        }}
+                                    />
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="end_time"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>End Date</FormLabel>
+                                    <DateTimePicker
+                                        date={field.value}
+                                        onDateChange={(newDate) => {
+                                            form.setValue('end_time', newDate);
+                                        }}
+                                    />
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <DialogFooter>
                             <Button
                                 type="button"
