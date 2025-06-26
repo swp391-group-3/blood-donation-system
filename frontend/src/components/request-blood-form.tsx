@@ -243,52 +243,6 @@ export default function RequestBloodDialog({
                                     </FormItem>
                                 )}
                             />
-                            <div className="space-y-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                                <FormField
-                                    control={form.control}
-                                    name="terms"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-row items-start space-x-2 space-y-0">
-                                            <FormControl>
-                                                <Checkbox
-                                                    checked={field.value}
-                                                    onCheckedChange={
-                                                        field.onChange
-                                                    }
-                                                    id="terms"
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="text-sm font-medium leading-none">
-                                                I confirm this is a legitimate
-                                                medical request
-                                            </FormLabel>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="emergency"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-row items-start space-x-2 space-y-0">
-                                            <FormControl>
-                                                <Checkbox
-                                                    checked={field.value}
-                                                    onCheckedChange={
-                                                        field.onChange
-                                                    }
-                                                    id="emergency"
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="text-sm font-medium leading-none">
-                                                I understand that false
-                                                emergency requests may result in
-                                                account suspension
-                                            </FormLabel>
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="outline">
