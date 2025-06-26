@@ -14,3 +14,9 @@ export interface BloodBag {
     expired_time: Date,
     blood_group: BloodGroup;
 }
+
+export interface CreateBloodBag {
+    amount: number,
+    expired_time: Date,
+    blood_group: BloodGroup;
+}
