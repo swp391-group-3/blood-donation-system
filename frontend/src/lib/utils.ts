@@ -55,7 +55,6 @@ export const generateDonationLabel = async (
                 }
                 .content {
                     display: grid;
-                    grid-template-columns: 1fr auto;
                     gap: 20px;
                     align-items: start;
                 }
@@ -142,6 +141,12 @@ export const generateDonationLabel = async (
                 <div class="urgent">⚠️ HANDLE WITH CARE - BIOLOGICAL MATERIAL</div>
 
                 <div class="content">
+                    <div class="qr-section">
+                        <div class="qr-code">
+                            <img id='qrcode' src="${url}" alt="QR Code" style="width: 240; height: 240">
+                        </div>
+                        <div class="qr-label">Scan for Details</div>
+                    </div>
                     <div class="info-section">
                         <div class="info-row">
                             <span class="label-text">Donation ID:</span>
@@ -181,13 +186,6 @@ export const generateDonationLabel = async (
                                 >${new Date().toLocaleTimeString()}</span
                             >
                         </div>
-                    </div>
-
-                    <div class="qr-section">
-                        <div class="qr-code">
-                            <img id='qrcode' src="${url}" alt="QR Code" style="width: 120; height: 120">
-                        </div>
-                        <div class="qr-label">Scan for Details</div>
                     </div>
                 </div>
             </div>
