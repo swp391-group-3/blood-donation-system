@@ -37,7 +37,7 @@ pub async fn authorize<const N: usize>(
     if !required_roles.contains(&account.role) {
         return Err(Error::builder()
             .status(StatusCode::FORBIDDEN)
-            .message(format!("Require you to be one of {:?}", required_roles))
+            .message(format!("Require you to be one of {required_roles:?}"))
             .build());
     }
 

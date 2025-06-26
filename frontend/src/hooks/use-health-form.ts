@@ -9,16 +9,17 @@ import z from 'zod';
 
 export const schema = z
     .object({
-        heart_rate: z.coerce.number().int(),
+        heart_rate: z.number({ coerce: true }).int(),
         is_good_health: z.boolean(),
-        lower_blood_pressure: z.coerce.number().int(),
+        lower_blood_pressure: z.number({ coerce: true }).int(),
         note: z.string().optional(),
-        temperature: z.coerce.number(),
-        upper_blood_pressure: z.coerce.number().int(),
-        weight: z.coerce.number().int(),
+        temperature: z.number({ coerce: true }),
+        upper_blood_pressure: z.number({ coerce: true }).int(),
+        weight: z.number({ coerce: true }).int(),
     })
     .refine((data) => data.lower_blood_pressure < data.upper_blood_pressure, {
         message: 'upper blood pressure must be > lower blood pressure',
+        path: ['upper_blood_pressure', 'lower_blood_pressure'],
     });
 
 export const useHealthForm = (appointmentId: string) => {

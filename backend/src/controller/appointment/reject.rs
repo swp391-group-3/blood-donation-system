@@ -63,7 +63,7 @@ pub async fn reject(
     };
 
     let subject = "Appointment Rejected".to_string();
-    let body = format!("Your appointment with id {} has been rejected.", id);
+    let body = format!("Your appointment with id {id} has been rejected.");
 
     send(&account, subject, body, &state.mailer).await?;
 
