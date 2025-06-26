@@ -1,17 +1,35 @@
 'use client';
-import React from 'react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useMemo, useState } from 'react';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+    Hero,
+    HeroDescription,
+    HeroKeyword,
+    HeroTitle,
+} from '@/components/hero';
+import { StatsGrid, Stats, Props as StatsProps } from '@/components/stats';
+import {
+    BloodBag,
+    BloodComponent,
+    bloodComponents,
+    BloodGroup,
+} from '@/lib/api/dto/blood-bag';
+import {
+    Activity,
+    AlertTriangle,
+    Calendar,
+    Check,
+    CircleX,
+    Droplet,
+    Droplets,
+    Filter,
+    Package,
+    Plus,
+    TriangleAlert,
+    XCircle,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useBloodStorageList } from '@/hooks/use-blood-storage-list';
+import { toast } from 'sonner';
 import {
     Select,
     SelectContent,
@@ -19,459 +37,461 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { capitalCase } from 'change-case';
+import { bloodGroupLabels, bloodGroups } from '@/lib/api/dto/blood-group';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
+    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { formatDateTime } from '@/lib/utils';
+import { differenceInCalendarWeeks } from 'date-fns';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { useDeleteBloodBag } from '@/hooks/use-delete-blood-bag';
 import RequestBloodDialog from '@/components/request-blood-form';
-import {
-    User,
-    Package2,
-    Search,
-    MoreVertical,
-    Droplet,
-    Eye,
-    Edit,
-    RefreshCw,
-} from 'lucide-react';
-import { mockBloodBags, bloodTypeStats } from '../../../constants/sample-data';
-import { TabsContent } from '@radix-ui/react-tabs';
 
-const getStatusColor = (status: string) => {
-    switch (status) {
-        case 'Available':
-            return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-        case 'Reserved':
-            return 'bg-blue-100 text-blue-800 border-blue-200';
-        case 'Used':
-            return 'bg-gray-100 text-gray-800 border-gray-200';
-        case 'Expiring Soon':
-            return 'bg-amber-100 text-amber-800 border-amber-200';
-        case 'Expired':
-            return 'bg-red-100 text-red-800 border-red-200';
-        default:
-            return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
+    return [
+        {
+            label: 'Total Bags',
+            value: bloodBags.length,
+            icon: Package,
+            description: 'Complete Inventory',
+            color: 'blue',
+        },
+        {
+            label: 'Available',
+            value: bloodBags.filter((bag) => !bag.is_used).length,
+            icon: Check,
+            description: 'Ready for use',
+            color: 'green',
+        },
+        {
+            label: 'Expiring Soon',
+            value: bloodBags.filter(
+                (bag) =>
+                    !bag.is_used &&
+                    !isExpired(new Date(bag.expired_time)) &&
+                    isExpiringSoon(new Date(bag.expired_time)),
+            ).length,
+            icon: TriangleAlert,
+            description: 'Within 7 days',
+            color: 'yellow',
+        },
+        {
+            label: 'Expired',
+            value: bloodBags.filter(
+                (bag) => !bag.is_used && !isExpired(new Date(bag.expired_time)),
+            ).length,
+            icon: CircleX,
+            description: 'Requires disposal',
+            color: 'rose',
+        },
+    ];
 };
 
-const getPriorityColor = (priority: string) => {
-    switch (priority) {
-        case 'urgent':
-            return 'bg-red-100 text-red-800 border-red-200';
-        case 'high':
-            return 'bg-orange-100 text-orange-800 border-orange-200';
-        case 'normal':
-            return 'bg-green-100 text-green-800 border-green-200';
-        default:
-            return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+const componentColors: Record<BloodComponent, string> = {
+    plasma: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    red_cell: 'bg-red-100 text-red-800 border-red-200',
+    platelet: 'bg-blue-100 text-blue-800 border-blue-200',
 };
 
-export default function BloodBagsPage() {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+const bloodGroupColors: Record<BloodGroup, string> = {
+    'O+': 'bg-red-100 text-red-800 border-red-200',
+    'O-': 'bg-red-200 text-red-900 border-red-300',
+    'A+': 'bg-blue-100 text-blue-800 border-blue-200',
+    'A-': 'bg-blue-200 text-blue-900 border-blue-300',
+    'B+': 'bg-green-100 text-green-800 border-green-200',
+    'B-': 'bg-green-200 text-green-900 border-green-300',
+    'AB+': 'bg-purple-100 text-purple-800 border-purple-200',
+    'AB-': 'bg-purple-200 text-purple-900 border-purple-300',
+};
+
+const isExpired = (date: Date) => new Date(date) <= new Date();
+
+const isExpiringSoon = (date: Date) =>
+    differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
+
+const normalizeBloodGroup = (raw: string): BloodGroup => {
+    return raw
+        .replace('plus', '+')
+        .replace('minus', '-')
+        .replace(/_/g, '')
+        .toUpperCase() as BloodGroup;
+};
+
+export default function BloodStorage() {
+    const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
+    const [showUseDialog, setShowUseDialog] = useState(false);
+    const [component, setComponent] = useState<BloodComponent | 'all'>('all');
+    const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
+    const [openRequestDialog, setOpenRequestDialog] = useState(false);
+
+    const { mutate: deleteBloodBag, isPending: isDeleting } =
+        useDeleteBloodBag();
+
+    const {
+        data: bloodBags,
+        isPending,
+        error,
+    } = useBloodStorageList({
+        blood_group: bloodGroup === 'all' ? undefined : bloodGroup,
+        component: component === 'all' ? undefined : component,
+    });
+
+    const stats = useMemo(
+        () => (bloodBags ? getStats(bloodBags) : undefined),
+        [bloodBags],
+    );
+
+    if (isPending) {
+        return <div></div>;
+    }
+
+    if (error) {
+        toast.error('Fail to fetch blood storage data');
+        return <div></div>;
+    }
 
     return (
-        <div className="space-y-8 p-6 bg-gradient-to-br from-red-50 via-white to-pink-50 min-h-screen">
-            <div className="relative overflow-hidden rounded-2xl bg-red-600 p-8 text-white shadow-2xl">
-                <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative z-10 flex items-center justify-between">
-                    <div className="space-y-2">
-                        <h1 className="text-4xl font-bold tracking-tight">
-                            Blood Bank Management
-                        </h1>
-                        <p className="text-red-100 text-lg">
-                            Hospital blood inventory tracking and management
-                            system
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <RequestBloodDialog />
-                    </div>
-                </div>
-            </div>
+        <div className="flex-1 space-y-6 p-6">
+            <Hero>
+                <HeroTitle>
+                    Blood Inventory
+                    <HeroKeyword color="rose">Requests</HeroKeyword>
+                </HeroTitle>
+                <HeroDescription>
+                    Monitor blood bag inventory and ensure optimal supply
+                    management
+                </HeroDescription>
+            </Hero>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {bloodTypeStats.map((stat) => (
-                    <Card
-                        key={stat.type}
-                        className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    >
-                        <div className="absolute inset-0 bg-red-50"></div>
-                        <CardContent className="relative p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-red-100 rounded-full">
-                                        <Droplet className="h-5 w-5 text-red-600" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-gray-900">
-                                            {stat.type}
-                                        </h3>
-                                        <p className="text-sm text-gray-600">
-                                            Blood Type
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">
-                                        Available
-                                    </span>
-                                    <span className="font-bold text-green-600">
-                                        {stat.available}
-                                    </span>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+            <StatsGrid>
+                {stats!.map((entry, index) => (
+                    <Stats key={index} {...entry} />
                 ))}
-            </div>
+            </StatsGrid>
 
-            <div className="space-y-4">
-                <div className="flex flex-col lg:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                            placeholder="Search by ID, donor name, blood type"
-                            type="search"
-                            className="pl-10 h-9 border-gray-200 focus:border-red-300 focus:ring-red-200"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex gap-2">
-                        <Select>
-                            <SelectTrigger className="w-[180px] h-12">
-                                <SelectValue placeholder="Filter by status" />
+            <div className="mx-auto max-w-6xl">
+                <div className="flex flex-col justify-between sm:flex-row gap-4 mb-10">
+                    <Button
+                        className="bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 font-medium rounded-xl"
+                        onClick={() => setOpenRequestDialog(true)}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Blood Request
+                    </Button>
+                    <div className="flex gap-3">
+                        <Select
+                            value={component}
+                            onValueChange={(value: BloodComponent | 'all') =>
+                                setComponent(value)
+                            }
+                        >
+                            <SelectTrigger
+                                onReset={() => setComponent('all')}
+                                className="w-fit border-slate-200"
+                            >
+                                <Filter className="h-4 w-4 mr-2" />
+                                <SelectValue placeholder="Component" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">
-                                    All Statuses
-                                </SelectItem>
-                                <SelectItem value="Available">
-                                    Available
-                                </SelectItem>
-                                <SelectItem value="Reserved">
-                                    Reserved
-                                </SelectItem>
-                                <SelectItem value="Used">Used</SelectItem>
-                                <SelectItem value="Expiring Soon">
-                                    Expiring Soon
-                                </SelectItem>
-                                <SelectItem value="Expired">Expired</SelectItem>
+                                <SelectItem value="all">All</SelectItem>
+                                {bloodComponents.map((component) => (
+                                    <SelectItem
+                                        key={component}
+                                        value={component}
+                                    >
+                                        {capitalCase(component)}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
-                        <Select>
-                            <SelectTrigger className="w-[180px] h-12">
-                                <SelectValue placeholder="Filter by blood type" />
+
+                        <Select
+                            value={bloodGroup}
+                            onValueChange={(value: BloodGroup | 'all') =>
+                                setBloodGroup(value)
+                            }
+                        >
+                            <SelectTrigger className="w-fit border-slate-200">
+                                <Droplet className="h-4 w-4 mr-2" />
+                                <SelectValue placeholder="Blood Group" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">
-                                    All Blood Types
-                                </SelectItem>
-                                <SelectItem value="A+">A+</SelectItem>
-                                <SelectItem value="A-">A-</SelectItem>
-                                <SelectItem value="B+">B+</SelectItem>
-                                <SelectItem value="B-">B-</SelectItem>
-                                <SelectItem value="AB+">AB+</SelectItem>
-                                <SelectItem value="AB-">AB-</SelectItem>
-                                <SelectItem value="O+">O+</SelectItem>
-                                <SelectItem value="O-">O-</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Select>
-                            <SelectTrigger className="w-[180px] h-12">
-                                <SelectValue placeholder="Filter by priority" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">
-                                    All Priorities
-                                </SelectItem>
-                                <SelectItem value="urgent">Urgent</SelectItem>
-                                <SelectItem value="high">High</SelectItem>
-                                <SelectItem value="normal">Normal</SelectItem>
+                                <SelectItem value="all">All</SelectItem>
+                                {bloodGroups.map((group) => (
+                                    <SelectItem key={group} value={group}>
+                                        {bloodGroupLabels[group]}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
                 </div>
-            </div>
 
-            <Tabs
-                value={viewMode}
-                onValueChange={(value) =>
-                    setViewMode(value as 'table' | 'grid')
-                }
-            >
-                <TabsList>
-                    <TabsTrigger value="table">Table</TabsTrigger>
-                    <TabsTrigger value="grid">Grid</TabsTrigger>
-                </TabsList>
-                <TabsContent value="table">
-                    <Card className="border-0 shadow-lg overflow-hidden p-4 mt-4">
-                        <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-gray-50">
-                                        <TableHead className="font-semibold">
-                                            Unit Info
-                                        </TableHead>
-                                        <TableHead className="font-semibold">
-                                            Blood Type
-                                        </TableHead>
-                                        <TableHead className="font-semibold">
-                                            Donor
-                                        </TableHead>
-                                        <TableHead className="font-semibold">
-                                            Collection
-                                        </TableHead>
-                                        <TableHead className="font-semibold">
-                                            Expiry Status
-                                        </TableHead>
-                                        <TableHead className="font-semibold text-center">
-                                            Status
-                                        </TableHead>
-                                        <TableHead className="text-right font-semibold">
-                                            Actions
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {mockBloodBags.map((bag) => {
-                                        return (
-                                            <TableRow
-                                                key={bag.id}
-                                                className="hover:bg-gray-50 transition-colors"
-                                            >
-                                                <TableCell>
-                                                    <div className="space-y-1">
-                                                        <div className="font-medium text-gray-900">
-                                                            {bag.id}
-                                                        </div>
-                                                        <div className="text-sm text-gray-500">
-                                                            {bag.volume}ml
-                                                        </div>
+                <div className="rounded-md border">
+                    <Table>
+                        <TableCaption></TableCaption>
+                        <TableHeader>
+                            <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                Bag Details
+                            </TableHead>
+                            <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                Blood Group
+                            </TableHead>
+                            <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                Component
+                            </TableHead>
+                            <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                Amount
+                            </TableHead>
+                            <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                Expiry Date
+                            </TableHead>
+                            <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                Action
+                            </TableHead>
+                        </TableHeader>
+                        <TableBody>
+                            {bloodBags?.map((bag) => (
+                                <TableRow key={bag.id}>
+                                    <TableCell className="p-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center mx-auto gap-4">
+                                                <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center text-red-700 text-sm font-bold shadow-sm border border-white">
+                                                    <Droplets className="h-5 w-5" />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="font-semibold text-slate-900 truncate">
+                                                        ID: {bag.id.slice(0, 8)}
+                                                        ...
                                                     </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="bg-red-50 text-red-700 border-red-200 font-bold"
-                                                    >
-                                                        {bag.bloodType}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="space-y-1">
-                                                        <div className="font-medium text-gray-900">
-                                                            {bag.donorName}
-                                                        </div>
-                                                        <div className="text-sm text-gray-500">
-                                                            ID: {bag.donorId}
-                                                        </div>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="text-sm text-gray-900">
-                                                        {bag.collectionDate}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="pr-4">
-                                                    <div className="space-y-2">
-                                                        <div className="text-sm text-gray-900">
-                                                            {bag.expiryDate}
-                                                        </div>
-                                                        <Progress
-                                                            value={100}
-                                                            className="h-2 [&>div]:bg-red-500"
-                                                        />
-
-                                                        <div className="text-xs font-medium text-red-600">
-                                                            Expired
-                                                        </div>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="flex justify-center items-center">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className={cn(
-                                                            'flex items-center gap-1 w-fit',
-                                                            getStatusColor(
-                                                                bag.status,
-                                                            ),
+                                                    <div className="text-sm text-slate-600 truncate">
+                                                        Donation:{' '}
+                                                        {bag.donation_id.slice(
+                                                            0,
+                                                            8,
                                                         )}
-                                                    >
-                                                        {bag.status}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger
-                                                            asChild
-                                                        >
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                className="h-8 w-8 p-0"
-                                                            >
-                                                                <MoreVertical className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent
-                                                            align="end"
-                                                            className="w-48"
-                                                        >
-                                                            <DropdownMenuItem className="flex items-center gap-2">
-                                                                <Eye className="h-4 w-4" />
-                                                                View Details
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className="flex items-center gap-2 text-red-600">
-                                                                <Droplet className="h-4 w-4" />
-                                                                Request This
-                                                                Unit
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className="flex items-center gap-2">
-                                                                <Edit className="h-4 w-4" />
-                                                                Edit Details
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className="flex items-center gap-2">
-                                                                <RefreshCw className="h-4 w-4" />
-                                                                Update Status
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="grid">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 ">
-                        {mockBloodBags.map((bag) => {
-                            return (
-                                <Card
-                                    key={bag.id}
-                                    className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-                                >
-                                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-pink-500"></div>
-                                    <CardHeader className="pb-3">
-                                        <div className="flex justify-between items-start">
-                                            <div className="space-y-1">
-                                                <CardTitle className="text-lg flex items-center gap-2">
-                                                    <Package2 className="h-5 w-5 text-red-600" />
-                                                    {bag.id}
-                                                </CardTitle>
-                                                <CardDescription className="flex items-center gap-1">
-                                                    <User className="h-3 w-3" />
-                                                    {bag.donorName}
-                                                </CardDescription>
+                                                        ...
+                                                    </div>
+                                                </div>
                                             </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="p-6">
+                                        <div>
                                             <Badge
-                                                variant="outline"
-                                                className="bg-red-50 text-red-800 border-red-200 font-bold text-lg"
+                                                className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[normalizeBloodGroup(bag.blood_group)]}`}
                                             >
-                                                {bag.bloodType}
+                                                {normalizeBloodGroup(
+                                                    bag.blood_group,
+                                                )}
                                             </Badge>
                                         </div>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div className="grid grid-cols-1 gap-3 text-sm">
-                                            <div className="space-y-1 flex justify-between">
-                                                <p className="text-gray-500">
-                                                    Volume
-                                                </p>
-                                                <p className="font-medium">
-                                                    {bag.volume}ml
-                                                </p>
-                                            </div>
-                                            <div className="space-y-1 flex justify-between">
-                                                <p className="text-gray-500">
-                                                    Collection
-                                                </p>
-                                                <p className="font-medium">
-                                                    {bag.collectionDate}
-                                                </p>
+                                    </TableCell>
+                                    <TableCell className="p-6">
+                                        <div>
+                                            <Badge
+                                                className={`block mx-auto px-3 py-1 font-semibold ${componentColors[bag.component]}`}
+                                            >
+                                                {capitalCase(bag.component)}
+                                            </Badge>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="p-6">
+                                        <div className="flex items-center gap-2">
+                                            <div className="mx-auto flex gap-2">
+                                                <Droplets className="h-4 w-4 text-red-500" />
+                                                <span className="font-semibold text-slate-900">
+                                                    {bag.amount} ml
+                                                </span>
                                             </div>
                                         </div>
+                                    </TableCell>
 
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm text-gray-500">
-                                                    Expiry Status
+                                    <TableCell className="p-6">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex gap-2 mx-auto">
+                                                <Calendar className="h-4 w-4 text-slate-400" />
+                                                <span
+                                                    className={`${
+                                                        isExpired(
+                                                            bag.expired_time,
+                                                        )
+                                                            ? 'text-red-600 font-semibold'
+                                                            : isExpiringSoon(
+                                                                    bag.expired_time,
+                                                                )
+                                                              ? 'text-orange-600 font-semibold'
+                                                              : 'text-slate-600'
+                                                    }`}
+                                                >
+                                                    {formatDateTime(
+                                                        new Date(
+                                                            bag.expired_time,
+                                                        ),
+                                                    )}
                                                 </span>
-                                                <span className="text-xs font-medium text-red-600">
-                                                    Expired
-                                                </span>
+                                                {isExpired(
+                                                    bag.expired_time,
+                                                ) && (
+                                                    <XCircle className="w-4 h-4 text-red-500" />
+                                                )}
+                                                {isExpiringSoon(
+                                                    bag.expired_time,
+                                                ) && (
+                                                    <AlertTriangle className="w-4 h-4 text-orange-500" />
+                                                )}
                                             </div>
-                                            <Progress
-                                                value={100}
-                                                className="h-2 [&>div]:bg-red-500"
-                                            />
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                            <Badge
-                                                variant="outline"
-                                                className={cn(
-                                                    'flex items-center gap-1',
-                                                    getStatusColor(bag.status),
+                                    </TableCell>
+                                    <TableCell className="p-6">
+                                        <div className="flex gap-2">
+                                            <div className="mx-auto">
+                                                {!bag.is_used &&
+                                                    !isExpired(
+                                                        bag.expired_time,
+                                                    ) && (
+                                                        <Button
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedBag(
+                                                                    bag,
+                                                                );
+                                                                setShowUseDialog(
+                                                                    true,
+                                                                );
+                                                            }}
+                                                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                                                        >
+                                                            <Activity className="h-3 w-3 mr-1" />
+                                                            Mark as Used
+                                                        </Button>
+                                                    )}
+                                                {bag.is_used && (
+                                                    <Badge className="bg-gray-100 text-gray-800 border-gray-200 px-3 py-1">
+                                                        <Activity className="h-3 w-3 mr-1" />
+                                                        Used
+                                                    </Badge>
                                                 )}
-                                            >
-                                                {bag.status}
-                                            </Badge>
-                                            <Badge
-                                                variant="outline"
-                                                className={getPriorityColor(
-                                                    bag.priority,
+                                                {isExpired(bag.expired_time) &&
+                                                    !bag.is_used && (
+                                                        <Badge className="bg-red-100 text-red-800 border-red-200 px-3 py-1">
+                                                            <XCircle className="h-3 w-3 mr-1" />
+                                                            Expired
+                                                        </Badge>
+                                                    )}
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+
+                <Dialog open={showUseDialog} onOpenChange={setShowUseDialog}>
+                    <DialogContent className="max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-bold text-slate-900">
+                                Mark Blood Bag as Used
+                            </DialogTitle>
+                            <DialogDescription className="text-slate-600">
+                                Are you sure want to make this blood bag as used
+                                ?
+                            </DialogDescription>
+                        </DialogHeader>
+                        {selectedBag && (
+                            <div className="py-4 space-y-4">
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
+                                            <Droplet className="h-5 w-5 text-red-600" />
+                                        </div>
+                                        <div>
+                                            <div className="font-semibold text-slate-900">
+                                                Blood Bag Details
+                                            </div>
+                                            <div className="text-sm text-slate-600">
+                                                ID: {selectedBag.id}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <span className="text-slate-500">
+                                                Component:
+                                            </span>
+                                            <div className="font-medium text-slate-900">
+                                                {capitalCase(
+                                                    selectedBag.component,
                                                 )}
-                                            >
-                                                {bag.priority}
-                                            </Badge>
+                                            </div>
                                         </div>
-                                        <div className="flex gap-2 pt-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="flex-1"
-                                            >
-                                                <Eye className="h-3 w-3 mr-1" />
-                                                View
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                className="flex-1 bg-red-600 hover:bg-red-700"
-                                            >
-                                                <Droplet className="h-3 w-3 mr-1" />
-                                                Request
-                                            </Button>
-                                            <Button variant="outline" size="sm">
-                                                <Edit className="h-3 w-3" />
-                                            </Button>
+                                        <div>
+                                            <span className="text-slate-500">
+                                                Amount:
+                                            </span>
+                                            <div className="font-medium text-slate-900">
+                                                {selectedBag.amount} ml
+                                            </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            );
-                        })}
-                    </div>
-                </TabsContent>
-            </Tabs>
+                                        <div className="col-span-2">
+                                            <span className="text-slate-500">
+                                                Expiry Date:
+                                            </span>
+                                            <div className="font-medium text-slate-900">
+                                                {formatDateTime(
+                                                    new Date(
+                                                        selectedBag.expired_time,
+                                                    ),
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        <DialogFooter className="gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowUseDialog(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    if (selectedBag) {
+                                        deleteBloodBag(selectedBag.id);
+                                        setShowUseDialog(false);
+                                    }
+                                }}
+                                disabled={isDeleting}
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                            >
+                                Mark as used
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
+            <RequestBloodDialog
+                open={openRequestDialog}
+                onOpenChange={setOpenRequestDialog}
+            />
         </div>
     );
 }

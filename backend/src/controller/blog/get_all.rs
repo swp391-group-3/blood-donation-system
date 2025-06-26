@@ -22,6 +22,9 @@ pub struct Request {
     get,
     tag = "Blog",
     path = "/blog",
+    params(
+        ("query" = Option<String>, Query, description = "Filter by blog name"),
+    ),
     responses(
         (status = 200, description = "Get Blog Successfully", body = Blog)
     )
