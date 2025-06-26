@@ -7,15 +7,13 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PropsWithChildren } from 'react';
-import { Appointment } from '@/lib/api/dto/appointment';
 import { toast } from 'sonner';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
-import { Account } from '@/lib/api/dto/account';
-import { useApppointmentAnswer } from '@/hooks/use-apppointment-answer';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useApproveAppointment } from '@/hooks/use-approve-appointment';
 import { useRejectAppointment } from '@/hooks/use-reject-appointment';
+import { useAppointment } from '@/hooks/use-appointent';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
@@ -32,17 +30,12 @@ const getAnswerIcon = (answer: string) => {
 
 export const ReviewDialog = ({
     children,
-    account,
-    appointment,
-}: PropsWithChildren<{ account: Account; appointment: Appointment }>) => {
-    const {
-        data: answers,
-        isPending,
-        error,
-    } = useApppointmentAnswer(appointment.id);
+    appointmentId,
+}: PropsWithChildren<{ appointmentId: string }>) => {
+    const { data: apt, isPending, error } = useAppointment(appointmentId);
 
-    const approve = useApproveAppointment(appointment.id);
-    const reject = useRejectAppointment(appointment.id);
+    const approve = useApproveAppointment(appointmentId);
+    const reject = useRejectAppointment(appointmentId);
 
     if (isPending) {
         return <div></div>;
@@ -59,7 +52,7 @@ export const ReviewDialog = ({
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-slate-900">
-                        Application Review - {account.name}
+                        Application Review - {apt.member.name}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -74,7 +67,7 @@ export const ReviewDialog = ({
                                     Name:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {account.name}
+                                    {apt.member.name}
                                 </div>
                             </div>
                             <div>
@@ -82,7 +75,7 @@ export const ReviewDialog = ({
                                     Blood Group:
                                 </span>
                                 <div className="font-semibold text-red-600">
-                                    {bloodGroupLabels[account.blood_group]}
+                                    {bloodGroupLabels[apt.member.blood_group]}
                                 </div>
                             </div>
                             <div>
@@ -90,7 +83,7 @@ export const ReviewDialog = ({
                                     Email:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {account.email}
+                                    {apt.member.email}
                                 </div>
                             </div>
                             <div>
@@ -98,7 +91,7 @@ export const ReviewDialog = ({
                                     Phone:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {account.phone}
+                                    {apt.member.phone}
                                 </div>
                             </div>
                         </div>
@@ -108,7 +101,7 @@ export const ReviewDialog = ({
                             Screening Questionnaire
                         </h3>
                         <div className="space-y-4">
-                            {answers.map((answer, index) => {
+                            {apt.answers.map((answer, index) => {
                                 return (
                                     <div
                                         key={index}

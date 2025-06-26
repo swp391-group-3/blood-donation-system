@@ -1,6 +1,5 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -9,13 +8,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
-    Droplet,
-    Search,
     Filter,
-    Heart,
     Droplets,
-    User,
-    UserSearch,
     Clock,
     CheckCircle,
     XCircle,
@@ -27,29 +21,11 @@ import {
     PlusSquare,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
-import { useBloodRequestList } from '@/hooks/use-blood-request-list';
 import { toast } from 'sonner';
-import {
-    BloodRequest,
-    priorities,
-    Priority,
-} from '@/lib/api/dto/blood-request';
 import { useMemo, useState } from 'react';
 import { capitalCase } from 'change-case';
-import {
-    BloodGroup,
-    bloodGroups,
-    bloodGroupLabels,
-} from '@/lib/api/dto/blood-group';
-import {
-    Hero,
-    HeroDescription,
-    HeroKeyword,
-    HeroSummary,
-    HeroTitle,
-} from '@/components/hero';
-import { CardGrid } from '@/components/card-grid';
-import { RequestCard } from '@/components/request-card';
+import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import { Hero, HeroDescription, HeroTitle } from '@/components/hero';
 import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
 import { useAppointmentList } from '@/hooks/use-appointment-list';
 import {
@@ -60,14 +36,12 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { useAccount } from '@/hooks/use-account';
 import { AccountPicture } from '@/components/account-picture';
 import { Badge } from '@/components/ui/badge';
 import { ReviewDialog } from '@/components/review-dialog';
 import { Button } from '@/components/ui/button';
-import { useAppointment } from '@/hooks/use-appointment';
-import { useAppointmentDetail } from '@/hooks/use-appointent-context';
 import Link from 'next/link';
+import { useAppointment } from '@/hooks/use-appointent';
 
 const getStats = (appointments: Appointment[]): StatsProps[] => {
     return [
@@ -147,14 +121,8 @@ const priorityConfigs = {
     },
 };
 
-const AppointmentRow = (appointment: Appointment) => {
-    const { data, isPending, error } = useAppointmentDetail(appointment);
-
-    const statusConfig = statusConfigs[appointment.status];
-    const priorityConfig = useMemo(
-        () => (data ? priorityConfigs[data.request.priority] : undefined),
-        [data],
-    );
+const AppointmentRow = ({ id }: { id: string }) => {
+    const { data: apt, isPending, error } = useAppointment(id);
 
     if (isPending) {
         return <TableRow />;
@@ -165,19 +133,22 @@ const AppointmentRow = (appointment: Appointment) => {
         return <TableRow />;
     }
 
+    const statusConfig = statusConfigs[apt.status];
+    const priorityConfig = priorityConfigs[apt.request.priority];
+
     return (
         <TableRow>
             <TableCell className="p-6">
                 <div className="flex items-center gap-4">
                     <div className="size-10">
-                        <AccountPicture name={data.account.name} />
+                        <AccountPicture name={apt.member.name} />
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="font-semibold text-slate-900 truncate">
-                            {data.account.name}
+                            {apt.member.name}
                         </div>
                         <div className="text-sm text-slate-600 truncate">
-                            {data.account.email}
+                            {apt.member.email}
                         </div>
                     </div>
                 </div>
@@ -186,7 +157,7 @@ const AppointmentRow = (appointment: Appointment) => {
                 <div className="flex items-center gap-2">
                     <Droplets className="h-4 w-4 text-red-500" />
                     <span className="font-semibold text-red-600">
-                        {bloodGroupLabels[data.account.blood_group]}
+                        {bloodGroupLabels[apt.member.blood_group]}
                     </span>
                 </div>
             </TableCell>
@@ -198,7 +169,7 @@ const AppointmentRow = (appointment: Appointment) => {
                         <priorityConfig.icon className="size-8" />
                     )}
                     <span className="ml-2">
-                        {capitalCase(data.request.priority)}
+                        {capitalCase(apt.request.priority)}
                     </span>
                 </Badge>
             </TableCell>
@@ -207,17 +178,12 @@ const AppointmentRow = (appointment: Appointment) => {
                     className={`text-md px-3 py-1 font-semibold ${statusConfig.color}`}
                 >
                     <statusConfig.icon className="size-8" />
-                    <span className="ml-2">
-                        {capitalCase(appointment.status)}
-                    </span>
+                    <span className="ml-2">{capitalCase(apt.status)}</span>
                 </Badge>
             </TableCell>
             <TableCell className="p-6">
-                {appointment.status === 'on_process' && (
-                    <ReviewDialog
-                        account={data.account}
-                        appointment={appointment}
-                    >
+                {apt.status === 'on_process' && (
+                    <ReviewDialog appointmentId={id}>
                         <Button
                             size="sm"
                             className="bg-lime-600 hover:bg-lime-700 text-white rounded-lg"
@@ -228,10 +194,8 @@ const AppointmentRow = (appointment: Appointment) => {
                     </ReviewDialog>
                 )}
 
-                {appointment.status === 'approved' && (
-                    <Link
-                        href={`/appointment/management/${appointment.id}/health`}
-                    >
+                {apt.status === 'approved' && (
+                    <Link href={`/appointment/management/${id}/health`}>
                         <Button
                             size="sm"
                             className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
@@ -242,10 +206,8 @@ const AppointmentRow = (appointment: Appointment) => {
                     </Link>
                 )}
 
-                {appointment.status === 'checked_in' && (
-                    <Link
-                        href={`/appointment/management/${appointment.id}/health`}
-                    >
+                {apt.status === 'checked_in' && (
+                    <Link href={`/appointment/management/${id}/health`}>
                         <Button
                             size="sm"
                             className="bg-red-600 hover:bg-red-700 text-white rounded-lg"
@@ -256,10 +218,8 @@ const AppointmentRow = (appointment: Appointment) => {
                     </Link>
                 )}
 
-                {appointment.status === 'donated' && (
-                    <Link
-                        href={`/appointment/management/${appointment.id}/donate`}
-                    >
+                {apt.status === 'donated' && (
+                    <Link href={`/appointment/management/${id}/donate`}>
                         <Button
                             size="sm"
                             className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 rounded-lg"
@@ -378,7 +338,7 @@ export default function AppointmentManagementPage() {
                                 </TableRow>
                             ) : (
                                 filtered.map((apt) => (
-                                    <AppointmentRow key={apt.id} {...apt} />
+                                    <AppointmentRow key={apt.id} id={apt.id} />
                                 ))
                             )}
                         </TableBody>
