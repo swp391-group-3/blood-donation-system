@@ -20,7 +20,6 @@ export const formatDateTime = (value: Date) => {
 export const generateDonationLabel = async (
     donation: Donation,
     member: Account,
-    staff: Account,
 ): Promise<string> => {
     const url = await QRCode.toDataURL(window.location.href);
 
@@ -40,7 +39,7 @@ export const generateDonationLabel = async (
                     border: 2px solid #dc2626;
                     border-radius: 12px;
                     padding: 24px;
-                    max-width: 500px;
+                    width: fit-content;
                     margin: 0 auto;
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 }
@@ -190,12 +189,6 @@ export const generateDonationLabel = async (
                         </div>
                         <div class="qr-label">Scan for Details</div>
                     </div>
-                </div>
-
-                <div class="footer">
-                    <strong>LifeLink Blood Donation Network</strong><br />
-                    Generated: ${new Date().toLocaleString()}<br />
-                    Staff ID: ${staff.email}
                 </div>
             </div>
         </body>
