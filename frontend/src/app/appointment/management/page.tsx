@@ -192,10 +192,10 @@ const AppointmentRow = (appointment: Appointment) => {
             </TableCell>
             <TableCell className="p-6">
                 <Badge
-                    className={`px-3 py-1 font-semibold ${priorityConfig!.color}`}
+                    className={`text-md px-3 py-1 font-semibold ${priorityConfig!.color}`}
                 >
                     {priorityConfig && (
-                        <priorityConfig.icon className="size-4" />
+                        <priorityConfig.icon className="size-8" />
                     )}
                     <span className="ml-2">
                         {capitalCase(data.request.priority)}
@@ -204,9 +204,9 @@ const AppointmentRow = (appointment: Appointment) => {
             </TableCell>
             <TableCell className="p-6">
                 <Badge
-                    className={`px-3 py-1 font-semibold ${statusConfig.color}`}
+                    className={`text-md px-3 py-1 font-semibold ${statusConfig.color}`}
                 >
-                    <statusConfig.icon className="size-4" />
+                    <statusConfig.icon className="size-8" />
                     <span className="ml-2">
                         {capitalCase(appointment.status)}
                     </span>
@@ -378,7 +378,7 @@ export default function AppointmentManagementPage() {
                                 </TableRow>
                             ) : (
                                 filtered.map((apt) => (
-                                    <AppointmentRow {...apt} />
+                                    <AppointmentRow key={apt.id} {...apt} />
                                 ))
                             )}
                         </TableBody>
