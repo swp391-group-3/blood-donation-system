@@ -1,7 +1,9 @@
 export interface Blog {
     id: string;
-    account_id: string;
-    title: string;
-    content: string;
+    owner: string;
     tags: string[];
+    title: string;
+    description: string;
+    content: string;
+    created_at: Date;
 }
