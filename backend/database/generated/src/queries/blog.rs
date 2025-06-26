@@ -1,16 +1,18 @@
 // This file was generated with `clorinde`. Do not modify.
 
 #[derive(Debug)]
-pub struct CreateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
+pub struct CreateParams<
+    T1: crate::StringSql,
+    T2: crate::StringSql,
+    T3: crate::StringSql,
+    T4: crate::StringSql,
+    T5: crate::ArraySql<Item = T4>,
+> {
     pub account_id: uuid::Uuid,
     pub title: T1,
     pub description: T2,
     pub content: T3,
-}
-#[derive(Clone, Copy, Debug)]
-pub struct AddTagParams {
-    pub blog_id: uuid::Uuid,
-    pub tag_id: uuid::Uuid,
+    pub tags: T5,
 }
 #[derive(Debug)]
 pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
@@ -193,7 +195,7 @@ where
 }
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO blogs (account_id, title, description, content) VALUES ($1, $2, $3, $4) RETURNING id",
+        "WITH blog AS ( INSERT INTO blogs (account_id, title, description, content) VALUES ($1, $2, $3, $4) RETURNING id ), new_tags AS ( INSERT INTO tags (name) SELECT DISTINCT tag FROM UNNEST($5::text[]) AS tag ON CONFLICT (name) DO NOTHING RETURNING id ), existing_tags AS ( SELECT id FROM tags WHERE name = ANY($5) ), all_tags AS ( SELECT id FROM new_tags UNION SELECT id FROM existing_tags ), blog_tags_insert AS ( INSERT INTO blog_tags (blog_id, tag_id) SELECT (SELECT id FROM blog), id FROM all_tags ) SELECT id AS blog_id FROM blog",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
@@ -206,6 +208,8 @@ impl CreateStmt {
         T1: crate::StringSql,
         T2: crate::StringSql,
         T3: crate::StringSql,
+        T4: crate::StringSql,
+        T5: crate::ArraySql<Item = T4>,
     >(
         &'s mut self,
         client: &'c C,
@@ -213,10 +217,11 @@ impl CreateStmt {
         title: &'a T1,
         description: &'a T2,
         content: &'a T3,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 4> {
+        tags: &'a T5,
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 5> {
         UuidUuidQuery {
             client,
-            params: [account_id, title, description, content],
+            params: [account_id, title, description, content, tags],
             stmt: &mut self.0,
             extractor: |row| Ok(row.try_get(0)?),
             mapper: |it| it,
@@ -231,67 +236,31 @@ impl<
         T1: crate::StringSql,
         T2: crate::StringSql,
         T3: crate::StringSql,
+        T4: crate::StringSql,
+        T5: crate::ArraySql<Item = T4>,
     >
     crate::client::async_::Params<
         'c,
         'a,
         's,
-        CreateParams<T1, T2, T3>,
-        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 4>,
+        CreateParams<T1, T2, T3, T4, T5>,
+        UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 5>,
         C,
     > for CreateStmt
 {
     fn params(
         &'s mut self,
         client: &'c C,
-        params: &'a CreateParams<T1, T2, T3>,
-    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 4> {
+        params: &'a CreateParams<T1, T2, T3, T4, T5>,
+    ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 5> {
         self.bind(
             client,
             &params.account_id,
             &params.title,
             &params.description,
             &params.content,
+            &params.tags,
         )
-    }
-}
-pub fn add_tag() -> AddTagStmt {
-    AddTagStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO blog_tags (blog_id, tag_id) VALUES ($1, $2)",
-    ))
-}
-pub struct AddTagStmt(crate::client::async_::Stmt);
-impl AddTagStmt {
-    pub async fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-        blog_id: &'a uuid::Uuid,
-        tag_id: &'a uuid::Uuid,
-    ) -> Result<u64, tokio_postgres::Error> {
-        let stmt = self.0.prepare(client).await?;
-        client.execute(stmt, &[blog_id, tag_id]).await
-    }
-}
-impl<'a, C: GenericClient + Send + Sync>
-    crate::client::async_::Params<
-        'a,
-        'a,
-        'a,
-        AddTagParams,
-        std::pin::Pin<
-            Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
-        >,
-        C,
-    > for AddTagStmt
-{
-    fn params(
-        &'a mut self,
-        client: &'a C,
-        params: &'a AddTagParams,
-    ) -> std::pin::Pin<
-        Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
-    > {
-        Box::pin(self.bind(client, &params.blog_id, &params.tag_id))
     }
 }
 pub fn get() -> GetStmt {
