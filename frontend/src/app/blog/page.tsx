@@ -28,6 +28,12 @@ import { useBlogList } from '@/hooks/use-blog-list';
 import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+    Hero,
+    HeroDescription,
+    HeroKeyword,
+    HeroTitle,
+} from '@/components/hero';
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -76,28 +82,16 @@ export default function BlogPage() {
         <div>
             <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-4 justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-50 rounded-lg">
-                                <BookOpen className="w-4 h-4 text-blue-500" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-zinc-900">
-                                    Community Blog
-                                </h1>
-                                <p className="text-zinc-600">
-                                    Stories and insights from our blood donation
-                                    community
-                                </p>
-                            </div>
-                        </div>
-                        <Button asChild>
-                            <Link href="/blog/new">
-                                <Plus />
-                                Write Blog
-                            </Link>
-                        </Button>
-                    </div>
+                    <Hero>
+                        <HeroTitle>
+                            Explore Our
+                            <HeroKeyword color="blue">Blog Posts</HeroKeyword>
+                        </HeroTitle>
+                        <HeroDescription>
+                            Discover insights, tips, and stories from our latest
+                            blog articles
+                        </HeroDescription>
+                    </Hero>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 mb-8">
