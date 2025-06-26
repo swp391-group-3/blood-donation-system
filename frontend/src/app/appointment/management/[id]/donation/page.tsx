@@ -1,7 +1,18 @@
 'use client';
 
 import type React from 'react';
-import { User, Heart, Clock, Target, X, Printer } from 'lucide-react';
+import {
+    User,
+    Heart,
+    Clock,
+    Target,
+    X,
+    Printer,
+    Package,
+    CheckCircle,
+    Plus,
+    Info,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useParams } from 'next/navigation';
@@ -13,11 +24,50 @@ import { DonationForm } from '@/components/donation-form';
 import { formatDateTime, generateDonationLabel } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useRejectAppointment } from '@/hooks/use-reject-appointment';
+import { useMemo, useState } from 'react';
+import {
+    BloodComponent,
+    bloodComponents,
+    CreateBloodBag,
+} from '@/lib/api/dto/blood-bag';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+const componentConfigs = {
+    red_cell: {
+        shelfLife: '42 days',
+    },
+    platelet: {
+        shelfLife: '5 days',
+    },
+    plasma: {
+        shelfLife: '1 year',
+    },
+};
 
 export default function AppointmentDonationPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
     const reject = useRejectAppointment(id);
+
+    const [newBloodBag, setNewBloodBag] = useState<CreateBloodBag>({
+        amount: 150,
+        component: 'red_cell',
+        expired_time: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000),
+    });
+    const [bloodBags, setBloodBags] = useState<CreateBloodBag[]>([]);
+    const totalBagAmount = useMemo(
+        () => bloodBags.reduce((prev, bag) => prev + bag.amount, 0),
+        [bloodBags],
+    );
 
     if (isPending) {
         return <div></div>;
@@ -101,7 +151,7 @@ export default function AppointmentDonationPage() {
             {apt.status === 'donated' && (
                 <>
                     <Card>
-                        <CardHeader>
+                        <CardHeader className="border-b border-blue-200/50">
                             <CardTitle className="flex items-center justify-between">
                                 <div className="flex items-center space-x-3">
                                     <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg shadow-red-500/25">
@@ -167,8 +217,8 @@ export default function AppointmentDonationPage() {
                                 </div>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-8">
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                        <CardContent className="py-8">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-slate-900 mb-2">
                                         {capitalCase(apt.donation.type)}
@@ -187,7 +237,7 @@ export default function AppointmentDonationPage() {
                                 </div>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-slate-900 mb-2">
-                                        {blood_bags.length}
+                                        {bloodBags.length}
                                     </div>
                                     <div className="text-slate-600">
                                         Components
@@ -202,23 +252,146 @@ export default function AppointmentDonationPage() {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Progress Bar */}
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-slate-700">
-                                        Collection Progress
-                                    </span>
-                                    <span className="text-sm text-slate-500">
-                                        {Math.round(completionProgress)}%
-                                    </span>
-                                </div>
-                                <Progress
-                                    value={completionProgress}
-                                    className="h-3 bg-blue-200 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-indigo-600"
-                                />
-                            </div>
                         </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg shadow-green-500/25">
+                                        <Package className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <span className="text-xl font-bold text-slate-900">
+                                            Blood Components
+                                        </span>
+                                        <div className="text-sm text-slate-600 mt-1">
+                                            Add and manage blood components
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    {bloodBags.length > 0 && (
+                                        <Badge className="bg-green-100 text-green-800 border-green-200 px-3 py-1">
+                                            <CheckCircle className="h-4 w-4 mr-1" />
+                                            {bloodBags.length} component
+                                            {bloodBags.length !== 1 ? 's' : ''}
+                                        </Badge>
+                                    )}
+                                </div>
+                            </CardTitle>
+                            <CardContent className="px-0 py-8">
+                                <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl p-6 border border-slate-200">
+                                    <h3 className="text-lg font-semibold text-slate-900 mb-6">
+                                        Add New Component
+                                    </h3>
+                                    <div className="flex flex-col md:flex-row gap-8">
+                                        <div>
+                                            <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                                                Component Type
+                                            </Label>
+                                            <Select
+                                                value={newBloodBag.component}
+                                                onValueChange={(
+                                                    component: BloodComponent,
+                                                ) => {
+                                                    setNewBloodBag((prev) => ({
+                                                        ...prev,
+                                                        component,
+                                                    }));
+                                                }}
+                                            >
+                                                <SelectTrigger className="transition-all w-full">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {bloodComponents.map(
+                                                        (component) => (
+                                                            <SelectItem
+                                                                key={component}
+                                                                value={
+                                                                    component
+                                                                }
+                                                            >
+                                                                <div className="flex items-center space-x-3">
+                                                                    {capitalCase(
+                                                                        component,
+                                                                    )}
+                                                                </div>
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                                                Amount (ml)
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                value={newBloodBag.amount}
+                                                onChange={(e) =>
+                                                    setNewBloodBag((prev) => ({
+                                                        ...prev,
+                                                        amount: Number.parseInt(
+                                                            e.target.value,
+                                                        ),
+                                                    }))
+                                                }
+                                                min="50"
+                                                max="500"
+                                                placeholder="150"
+                                                className="text-center text-lg font-semibold border-2 transition-all"
+                                            />
+                                        </div>
+                                        <div className="flex items-end">
+                                            <Button
+                                                type="button"
+                                                disabled={
+                                                    newBloodBag.amount <= 0
+                                                }
+                                                onClick={() => {
+                                                    setBloodBags((prev) => [
+                                                        ...prev,
+                                                        { ...newBloodBag },
+                                                    ]);
+                                                }}
+                                                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all"
+                                            >
+                                                <Plus className="h-5 w-5 mr-2" />
+                                                Add Component
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <Alert className="mt-6 border-blue-200 bg-blue-50 rounded-xl">
+                                        <Info className="h-5 w-5 text-blue-600" />
+                                        <AlertDescription className="flex text-blue-800">
+                                            {capitalCase(
+                                                bloodComponents.find(
+                                                    (c) =>
+                                                        c ===
+                                                        newBloodBag.component,
+                                                )!,
+                                            )}{' '}
+                                            has a shelf life of{' '}
+                                            <strong>
+                                                {
+                                                    componentConfigs[
+                                                        bloodComponents.find(
+                                                            (c) =>
+                                                                c ===
+                                                                newBloodBag.component,
+                                                        )!
+                                                    ].shelfLife
+                                                }
+                                            </strong>
+                                        </AlertDescription>
+                                    </Alert>
+                                </div>
+                            </CardContent>
+                        </CardHeader>
                     </Card>
                 </>
             )}
