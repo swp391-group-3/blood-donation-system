@@ -14,7 +14,6 @@ import {
     CheckCircle,
     Clock,
     Droplets,
-    FileText,
     Heart,
     Info,
     Save,
