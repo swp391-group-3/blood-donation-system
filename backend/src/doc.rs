@@ -29,6 +29,7 @@ impl Modify for SecurityAddon {
 
         controller::auth::register,
         controller::auth::login,
+        controller::auth::logout,
         controller::auth::oauth2::oauth2,
         controller::auth::oauth2::complete,
         controller::auth::me,
