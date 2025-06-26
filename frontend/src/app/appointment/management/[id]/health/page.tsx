@@ -63,7 +63,7 @@ export default function AppointmentHealthPage() {
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                            <div className="bg-blue-50 rounded-xl p-8 border border-blue-200">
                                 <div className="flex justify-end items-center text-blue-600 text-sm mb-2">
                                     <Clock className="h-4 w-4 mr-2" />
                                     <span className="font-medium">

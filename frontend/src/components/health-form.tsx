@@ -42,265 +42,191 @@ export const HealthForm = ({ appointmentId }: Props) => {
                 )}
             >
                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex text-xl items-center space-x-2">
-                            <Heart className="h-5 w-5 text-red-500" />
-                            <span>Health Assessment Form</span>
+                    <CardHeader className="px-8">
+                        <CardTitle className="flex items-center space-x-3">
+                            <div className="p-2 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg shadow-red-500/25">
+                                <Activity className="size-8 text-white" />
+                            </div>
+                            <span className="text-2xl">
+                                Vital Signs Assessment
+                            </span>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="my-5">
-                        <div className="space-y-8">
-                            <FormField
-                                control={form.control}
-                                name="temperature"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-2">
-                                        <FormLabel className="flex items-center space-x-2">
-                                            <Thermometer className="h-4 w-4 text-red-500" />
-                                            <span>Temperature (°C)</span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="number"
-                                                step="0.1"
-                                                placeholder="36.5"
-                                                required
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="weight"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-2">
-                                        <FormLabel className="flex items-center space-x-2">
-                                            <Weight className="h-4 w-4 text-blue-500" />
-                                            <span>Weight (kg)</span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="number"
-                                                step="1"
-                                                placeholder="70"
-                                                required
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="heart_rate"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-2">
-                                        <FormLabel className="flex items-center space-x-2">
-                                            <Activity className="h-4 w-4 text-pink-500" />
-                                            <span>Heart Rate (bpm)</span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="number"
-                                                step="1"
-                                                placeholder="72"
-                                                required
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="space-y-2">
-                                <Label className="flex items-center space-x-2">
-                                    <Activity className="h-4 w-4 text-purple-500" />
-                                    <span>Blood Pressure (mmHg)</span>
-                                </Label>
-                                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                                    <FormField
-                                        control={form.control}
-                                        name="upper_blood_pressure"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        type="number"
-                                                        step="1"
-                                                        placeholder="120"
-                                                        required
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <span className="text-lg font-bold text-gray-400">
-                                        /
-                                    </span>
-                                    <FormField
-                                        control={form.control}
-                                        name="lower_blood_pressure"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        type="number"
-                                                        step="1"
-                                                        placeholder="80"
-                                                        required
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                            <FormField
-                                control={form.control}
-                                name="note"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-2">
-                                        <FormLabel className="flex items-center space-x-2 mb-3">
-                                            <FileText className="h-4 w-4 text-blue-500" />
-                                            <span>Medical Notes</span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                className="min-h-[100px] resize-none"
-                                                placeholder="Enter any medical observations, concerns, or notes about the donor's condition..."
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="is_good_health"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="flex items-center space-x-2 mb-4">
-                                            <Shield className="h-4 w-4 text-amber-500" />
-                                            <span>
-                                                Donation Eligibility Decision
-                                            </span>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                                <Button
-                                                    type="button"
-                                                    variant={
-                                                        field.value
-                                                            ? 'default'
-                                                            : 'outline'
-                                                    }
-                                                    onClick={() => {
-                                                        form.setValue(
-                                                            'is_good_health',
-                                                            true,
-                                                        );
-                                                    }}
-                                                    className={`h-20 transition-all ${
-                                                        field.value
-                                                            ? 'bg-green-600 hover:bg-green-700 text-white'
-                                                            : 'border-green-200 text-green-700 hover:bg-green-50'
-                                                    }`}
-                                                >
-                                                    <div className="text-center">
-                                                        <CheckCircle className="h-6 w-6 mx-auto mb-1" />
-                                                        <div className="font-semibold">
-                                                            APPROVED
-                                                        </div>
-                                                        <div className="text-sm opacity-90">
-                                                            Eligible for
-                                                            donation
-                                                        </div>
-                                                    </div>
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    variant={
-                                                        !field.value
-                                                            ? 'default'
-                                                            : 'outline'
-                                                    }
-                                                    onClick={() =>
-                                                        form.setValue(
-                                                            'is_good_health',
-                                                            false,
-                                                        )
-                                                    }
-                                                    className={`h-20 transition-all ${
-                                                        !field.value
-                                                            ? 'bg-red-600 hover:bg-red-700 text-white'
-                                                            : 'border-red-200 text-red-700 hover:bg-red-50'
-                                                    }`}
-                                                >
-                                                    <div className="text-center">
-                                                        <AlertCircle className="h-6 w-6 mx-auto mb-1" />
-                                                        <div className="font-semibold">
-                                                            DEFERRED
-                                                        </div>
-                                                        <div className="text-sm opacity-90">
-                                                            Not eligible today
-                                                        </div>
-                                                    </div>
-                                                </Button>
+                    <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <FormField
+                            control={form.control}
+                            name="temperature"
+                            render={({ field }) => (
+                                <FormItem className="space-y-4">
+                                    <FormLabel className="space-y-4">
+                                        <div className="flex items-center space-x-3 mb-4">
+                                            <div className="p-3 bg-red-100 rounded-xl">
+                                                <Thermometer className="h-6 w-6 text-red-600" />
                                             </div>
-                                        </FormControl>
-                                        {field.value && (
-                                            <Alert className="border-green-200 bg-green-50">
-                                                <CheckCircle className="h-4 w-4 text-green-600" />
-                                                <AlertDescription className="text-green-800">
-                                                    Donor approved for donation
-                                                    and will proceed to the
-                                                    donation process.
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-
-                                        {!field.value && (
-                                            <Alert className="border-amber-200 bg-amber-50">
-                                                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                                                <AlertDescription className="text-amber-800">
-                                                    Donor deferred from
-                                                    donation. Please ensure all
-                                                    reasons are documented in
-                                                    medical notes.
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-                                    </FormItem>
-                                )}
-                            />
+                                            <div>
+                                                <Label className="text-lg font-semibold text-slate-900">
+                                                    Body Temperature
+                                                </Label>
+                                                <div className="text-sm text-slate-600">
+                                                    Normal range: 36.1-37.2°C
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <div className="relative">
+                                            <Input
+                                                className="text-center !text-lg font-bold h-12 focus:border-red-500 transition-all"
+                                                placeholder="36.5"
+                                                {...field}
+                                            />
+                                            <div className="text-lg absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">
+                                                °C
+                                            </div>
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="weight"
+                            render={({ field }) => (
+                                <FormItem className="space-y-4">
+                                    <FormLabel className="space-y-4">
+                                        <div className="flex items-center space-x-3 mb-4">
+                                            <div className="p-3 bg-blue-100 rounded-xl">
+                                                <Weight className="h-6 w-6 text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <Label className="text-lg font-semibold text-slate-900">
+                                                    Weight
+                                                </Label>
+                                                <div className="text-sm text-slate-600">
+                                                    Minimum required: 50kg
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <div className="relative">
+                                            <Input
+                                                className="text-center !text-lg font-bold h-12 focus:border-red-500 transition-all"
+                                                placeholder="70"
+                                                {...field}
+                                            />
+                                            <div className="text-lg absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">
+                                                kg
+                                            </div>
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="heart_rate"
+                            render={({ field }) => (
+                                <FormItem className="space-y-4">
+                                    <FormLabel className="space-y-4">
+                                        <div className="flex items-center space-x-3 mb-4">
+                                            <div className="p-3 bg-pink-100 rounded-xl">
+                                                <Activity className="h-6 w-6 text-pink-600" />
+                                            </div>
+                                            <div>
+                                                <Label className="text-lg font-semibold text-slate-900">
+                                                    Heart Rate
+                                                </Label>
+                                                <div className="text-sm text-slate-600">
+                                                    Normal range: 60-100 bpm
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <div className="relative">
+                                            <Input
+                                                className="text-center !text-lg font-bold h-12 focus:border-red-500 transition-all"
+                                                placeholder="72"
+                                                {...field}
+                                            />
+                                            <div className="text-lg absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">
+                                                bpm
+                                            </div>
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <div className="grid gap-2 space-y-4">
+                            <Label className="space-y-4">
+                                <div className="flex items-center space-x-3 mb-4">
+                                    <div className="p-3 bg-purple-100 rounded-xl">
+                                        <Activity className="h-6 w-6 text-purple-600" />
+                                    </div>
+                                    <div>
+                                        <Label className="text-lg font-semibold text-slate-900">
+                                            Blood Pressure
+                                        </Label>
+                                        <div className="text-sm text-slate-600">
+                                            {'Normal: <140/90 mmHg'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </Label>
+                            <div className="w-full grid grid-cols-[1fr_auto_1fr] gap-4 items-center">
+                                <FormField
+                                    control={form.control}
+                                    name="upper_blood_pressure"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-4">
+                                            <FormControl>
+                                                <div className="relative">
+                                                    <Input
+                                                        className="text-center !text-lg font-bold h-12 focus:border-red-500 transition-all"
+                                                        placeholder="70"
+                                                        {...field}
+                                                    />
+                                                    <div className="text-lg absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">
+                                                        sys
+                                                    </div>
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="text-xl font-bold text-slate-400">
+                                    /
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="lower_blood_pressure"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-4">
+                                            <FormControl>
+                                                <div className="relative">
+                                                    <Input
+                                                        className="text-center !text-lg font-bold h-12 focus:border-red-500 transition-all"
+                                                        placeholder="70"
+                                                        {...field}
+                                                    />
+                                                    <div className="text-lg absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">
+                                                        dia
+                                                    </div>
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
-                <div className="flex justify-end space-x-4">
-                    <Button type="button" variant="outline" className="px-6">
-                        Cancel
-                    </Button>
-                    <Button type="submit" disabled={mutation.isPending}>
-                        {mutation.isPending ? (
-                            <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                Saving Assessment...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="h-4 w-4 mr-2" />
-                                Complete Assessment
-                            </>
-                        )}
-                    </Button>
-                </div>
             </form>
         </Form>
     );
