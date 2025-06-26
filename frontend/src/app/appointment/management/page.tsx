@@ -192,16 +192,6 @@ const AppointmentRow = (appointment: Appointment) => {
             </TableCell>
             <TableCell className="p-6">
                 <Badge
-                    className={`px-3 py-1 font-semibold ${statusConfig.color}`}
-                >
-                    <statusConfig.icon className="size-4" />
-                    <span className="ml-2">
-                        {capitalCase(appointment.status)}
-                    </span>
-                </Badge>
-            </TableCell>
-            <TableCell className="p-6">
-                <Badge
                     className={`px-3 py-1 font-semibold ${priorityConfig!.color}`}
                 >
                     {priorityConfig && (
@@ -209,6 +199,16 @@ const AppointmentRow = (appointment: Appointment) => {
                     )}
                     <span className="ml-2">
                         {capitalCase(data.request.priority)}
+                    </span>
+                </Badge>
+            </TableCell>
+            <TableCell className="p-6">
+                <Badge
+                    className={`px-3 py-1 font-semibold ${statusConfig.color}`}
+                >
+                    <statusConfig.icon className="size-4" />
+                    <span className="ml-2">
+                        {capitalCase(appointment.status)}
                     </span>
                 </Badge>
             </TableCell>
@@ -350,10 +350,10 @@ export default function AppointmentManagementPage() {
                                     Blood Type
                                 </TableHead>
                                 <TableHead className="p-6 font-semibold text-slate-900">
-                                    Status
+                                    Priority
                                 </TableHead>
                                 <TableHead className="p-6 font-semibold text-slate-900">
-                                    Priority
+                                    Status
                                 </TableHead>
                                 <TableHead className="p-6 font-semibold text-slate-900">
                                     Action
