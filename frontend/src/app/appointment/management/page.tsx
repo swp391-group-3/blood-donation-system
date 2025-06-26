@@ -24,6 +24,7 @@ import {
     Stethoscope,
     Eye,
     AlertTriangle,
+    PlusSquare,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { useBloodRequestList } from '@/hooks/use-blood-request-list';
@@ -66,6 +67,7 @@ import { ReviewDialog } from '@/components/review-dialog';
 import { Button } from '@/components/ui/button';
 import { useAppointment } from '@/hooks/use-appointment';
 import { useAppointmentDetail } from '@/hooks/use-appointent-context';
+import Link from 'next/link';
 
 const getStats = (appointments: Appointment[]): StatsProps[] => {
     return [
@@ -224,6 +226,48 @@ const AppointmentRow = (appointment: Appointment) => {
                             Review
                         </Button>
                     </ReviewDialog>
+                )}
+
+                {appointment.status === 'approved' && (
+                    <Link
+                        href={`/appointment/management/${appointment.id}/health`}
+                    >
+                        <Button
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                        >
+                            <Stethoscope className="h-3 w-3 mr-1" />
+                            Health Check
+                        </Button>
+                    </Link>
+                )}
+
+                {appointment.status === 'checked_in' && (
+                    <Link
+                        href={`/appointment/management/${appointment.id}/health`}
+                    >
+                        <Button
+                            size="sm"
+                            className="bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                        >
+                            <Droplets className="h-3 w-3 mr-1" />
+                            Donation
+                        </Button>
+                    </Link>
+                )}
+
+                {appointment.status === 'donated' && (
+                    <Link
+                        href={`/appointment/management/${appointment.id}/donate`}
+                    >
+                        <Button
+                            size="sm"
+                            className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 rounded-lg"
+                        >
+                            <PlusSquare className="h-3 w-3 mr-1" />
+                            Add Blood Bags
+                        </Button>
+                    </Link>
                 )}
             </TableCell>
         </TableRow>
