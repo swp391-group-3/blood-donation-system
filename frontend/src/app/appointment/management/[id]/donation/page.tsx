@@ -1,8 +1,8 @@
 'use client';
 
 import type React from 'react';
-import { User, Heart, Clock } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { User, Heart, Clock, Target, X, Printer } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
@@ -10,10 +10,14 @@ import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { useAppointment } from '@/hooks/use-appointent';
 import { capitalCase } from 'change-case';
 import { DonationForm } from '@/components/donation-form';
+import { formatDateTime, generateDonationLabel } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 
 export default function AppointmentDonationPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
+    const reject = useRejectAppointment(id);
 
     if (isPending) {
         return <div></div>;
@@ -92,10 +96,72 @@ export default function AppointmentDonationPage() {
                 </CardContent>
             </Card>
             {apt.status === 'checked_in' && (
-                <DonationForm appointmentId={apt.id}/> 
+                <DonationForm appointmentId={apt.id} />
             )}
             {apt.status === 'donated' && (
-                <div></div>
+                <>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg shadow-red-500/25">
+                                        <Target className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <span className="text-xl font-bold text-slate-900">
+                                            Donation Record
+                                        </span>
+                                        <div className="text-sm text-slate-600 mt-1">
+                                            Creation time:{' '}
+                                            {formatDateTime(
+                                                new Date(
+                                                    apt.donation.created_at,
+                                                ),
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex space-x-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            if (
+                                                confirm(
+                                                    'Are you sure you want to reject this donation? This action cannot be undone.',
+                                                )
+                                            ) {
+                                            }
+                                        }}
+                                        className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all"
+                                    >
+                                        <X className="h-4 w-4 mr-2" />
+                                        Reject Donation
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="bg-white/80 hover:bg-white"
+                                        onClick={async () => {
+                                            const printWindow = window.open(
+                                                '',
+                                                '_blank',
+                                            );
+                                            if (printWindow) {
+                                                printWindow.document.write(await generateDonationLabel(apt.donation, apt.member));
+                                                printWindow.document.close();
+                                                printWindow.focus();
+                                            }
+                                        }}
+                                    >
+                                        <Printer className="h-4 w-4 mr-2" />
+                                        Print Label
+                                    </Button>
+                                </div>
+                            </CardTitle>
+                        </CardHeader>
+                    </Card>
+                </>
             )}
         </div>
     );
