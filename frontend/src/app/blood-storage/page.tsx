@@ -49,7 +49,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import Link from 'next/link';
 import { formatDateTime } from '@/lib/utils';
 import { differenceInCalendarWeeks } from 'date-fns';
 import {
@@ -61,6 +60,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeleteBloodBag } from '@/hooks/use-delete-blood-bag';
+import RequestBloodDialog from '@/components/request-blood-form';
 
 const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     return [
@@ -137,6 +137,7 @@ export default function BloodStorage() {
     const [showUseDialog, setShowUseDialog] = useState(false);
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
+    const [openRequestDialog, setOpenRequestDialog] = useState(false);
 
     const { mutate: deleteBloodBag, isPending: isDeleting } =
         useDeleteBloodBag();
@@ -185,12 +186,13 @@ export default function BloodStorage() {
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col justify-between sm:flex-row gap-4 mb-10">
-                    <Link href="/request">
-                        <Button className="bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 font-medium rounded-xl">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Create Blood Request
-                        </Button>
-                    </Link>
+                    <Button
+                        className="bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 font-medium rounded-xl"
+                        onClick={() => setOpenRequestDialog(true)}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Blood Request
+                    </Button>
                     <div className="flex gap-3">
                         <Select
                             value={component}
@@ -486,6 +488,10 @@ export default function BloodStorage() {
                     </DialogContent>
                 </Dialog>
             </div>
+            <RequestBloodDialog
+                open={openRequestDialog}
+                onOpenChange={setOpenRequestDialog}
+            />
         </div>
     );
 }
