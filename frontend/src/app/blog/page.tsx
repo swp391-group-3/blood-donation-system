@@ -9,21 +9,12 @@ import {
     SelectValue,
     SelectContent,
 } from '@/components/ui/select';
-import { BookOpen, Clock, Filter, Plus, Search, Tag } from 'lucide-react';
+import { Clock, Filter, Plus, Search, Tag } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AccountPicture } from '@/components/account-picture';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
 import { useBlogList } from '@/hooks/use-blog-list';
 import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
