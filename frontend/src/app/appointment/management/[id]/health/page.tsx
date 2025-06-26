@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { User, Droplets, CheckCircle, Heart, Clock } from 'lucide-react';
+import { User, Heart, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useParams } from 'next/navigation';
@@ -27,7 +27,7 @@ export default function AppointmentHealthPage() {
     return (
         <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
             <Card>
-                <CardContent className="p-8">
+                <CardContent className="px-8">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-6">
                             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">

@@ -207,7 +207,7 @@ const AppointmentRow = ({ id }: { id: string }) => {
                 )}
 
                 {apt.status === 'checked_in' && (
-                    <Link href={`/appointment/management/${id}/health`}>
+                    <Link href={`/appointment/management/${id}/donation`}>
                         <Button
                             size="sm"
                             className="bg-red-600 hover:bg-red-700 text-white rounded-lg"

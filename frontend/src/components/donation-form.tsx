@@ -1,6 +1,7 @@
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -11,11 +12,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Beaker,
     CheckCircle,
+    Clock,
     Droplets,
     FileText,
+    Heart,
     Info,
     Save,
     Sparkles,
+    Target,
     Zap,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -33,29 +37,37 @@ const donationTypeConfigs = {
         amount: 450,
         description: 'Standard blood donation',
         duration: '10-15 min',
-        icon: Droplets,
-        color: 'bg-red-500',
+        icon: Heart,
+        color: 'from-red-500 to-red-600',
+        bgColor: 'bg-red-50',
+        borderColor: 'border-red-200',
     },
     power_red: {
         amount: 500,
         description: 'Double red cell donation',
         duration: '25-35 min',
         icon: Zap,
-        color: 'bg-orange-500',
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-50',
+        borderColor: 'border-orange-200',
     },
     platelet: {
         amount: 300,
         description: 'Platelet donation',
         duration: '70-90 min',
         icon: Sparkles,
-        color: 'bg-yellow-500',
+        color: 'from-yellow-500 to-yellow-600',
+        bgColor: 'bg-yellow-50',
+        borderColor: 'border-yellow-200',
     },
     plasma: {
         amount: 600,
         description: 'Plasma donation',
         duration: '45-60 min',
         icon: Beaker,
-        color: 'bg-blue-500',
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-50',
+        borderColor: 'border-blue-200',
     },
 };
 
@@ -72,9 +84,18 @@ export const DonationForm = ({ appointmentId }: Props) => {
             >
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-xl flex items-center space-x-2">
-                            <FileText className="size-8 text-blue-600" />
-                            <span>Create Donation</span>
+                        <CardTitle className="flex items-center space-x-3">
+                            <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg shadow-red-500/25">
+                                <Target className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                                <span className="text-xl font-bold text-slate-900">
+                                    Create New Donation
+                                </span>
+                                <div className="text-sm text-slate-600 mt-1">
+                                    Select donation type and collection volume
+                                </div>
+                            </div>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -84,8 +105,17 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                 name="type"
                                 render={({ field }) => (
                                     <FormItem className="space-y-4">
-                                        <FormLabel className="text-base font-medium text-gray-900">
-                                            Select Donation Type
+                                        <FormLabel>
+                                            <div>
+                                                <p className="text-lg font-semibold text-slate-900 mb-4">
+                                                    Select Donation Type
+                                                </p>
+                                                <p className="text-slate-600 mb-6">
+                                                    Choose the appropriate
+                                                    donation method based on
+                                                    patient needs
+                                                </p>
+                                            </div>
                                         </FormLabel>
                                         <FormControl>
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -108,48 +138,52 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                                                     type,
                                                                 )
                                                             }
-                                                            className={`h-auto p-6 text-left transition-all ${
+                                                            className={`h-auto p-6 text-left transition-all duration-300 rounded-2xl transform hover:scale-105 ${
                                                                 isSelected
-                                                                    ? 'border-red-500 bg-red-50 shadow-md'
-                                                                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                                                    ? `border-2 ${config.borderColor} ${config.bgColor} shadow-xl`
+                                                                    : 'border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow-lg'
                                                             }`}
                                                         >
                                                             <div className="flex items-start space-x-4 w-full">
                                                                 <div
-                                                                    className={`w-12 h-12 rounded-lg flex items-center justify-center ${config.color}`}
+                                                                    className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${config.color} shadow-lg`}
                                                                 >
-                                                                    <config.icon className="h-6 w-6 text-white" />
+                                                                    <config.icon className="h-7 w-7 text-white" />
                                                                 </div>
                                                                 <div className="flex-1">
-                                                                    <div className="flex items-center justify-between mb-2">
-                                                                        <h3 className="capitalize font-semibold text-gray-900">
-                                                                            {
-                                                                                type
-                                                                            }
+                                                                    <div className="flex items-center justify-between mb-3">
+                                                                        <h3 className="text-xl font-bold text-slate-900">
+                                                                            {capitalCase(
+                                                                                type,
+                                                                            )}
                                                                         </h3>
                                                                         {isSelected && (
-                                                                            <CheckCircle className="h-5 w-5 text-red-500" />
+                                                                            <CheckCircle className="h-6 w-6 text-red-500" />
                                                                         )}
                                                                     </div>
-                                                                    <p className="text-sm text-gray-600 mb-2">
+                                                                    <p className="text-slate-600 mb-4 leading-relaxed">
                                                                         {
                                                                             config.description
                                                                         }
                                                                     </p>
-                                                                    <div className="flex items-center space-x-4 text-xs text-gray-500">
-                                                                        <span>
-                                                                            Volume:{' '}
-                                                                            {
-                                                                                config.amount
-                                                                            }
-                                                                            ml
-                                                                        </span>
-                                                                        <span>
-                                                                            Duration:{' '}
-                                                                            {
-                                                                                config.duration
-                                                                            }
-                                                                        </span>
+                                                                    <div className="flex items-center space-x-6 text-sm text-slate-500">
+                                                                        <div className="flex items-center space-x-2">
+                                                                            <Droplets className="h-4 w-4" />
+                                                                            <span className="font-medium">
+                                                                                {
+                                                                                    config.amount
+                                                                                }
+                                                                                ml
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="flex items-center space-x-2">
+                                                                            <Clock className="h-4 w-4" />
+                                                                            <span className="font-medium">
+                                                                                {
+                                                                                    config.duration
+                                                                                }
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -166,45 +200,58 @@ export const DonationForm = ({ appointmentId }: Props) => {
                                 control={form.control}
                                 name="amount"
                                 render={({ field }) => (
-                                    <FormItem className="space-y-4 mb-8">
-                                        <FormLabel className="text-base font-medium text-gray-900">
-                                            Collection Amount
+                                    <FormItem className="text-center mt-16 mb-8">
+                                        <FormLabel>
+                                            <p className="mx-auto text-lg font-semibold text-slate-900 mb-2 block">
+                                                Collection Amount
+                                            </p>
                                         </FormLabel>
+                                        <FormDescription className="text-slate-600 mb-4">
+                                            Adjust the collection volume if
+                                            needed
+                                        </FormDescription>
                                         <FormControl>
-                                            <div className="flex items-center space-x-4">
-                                                <Input
-                                                    {...field}
-                                                    type="number"
-                                                    required
-                                                />
-                                                <span>
-                                                    ml
-                                                </span>
+                                            <div className="flex justify-center">
+                                                <div className="text-center">
+                                                    <div className="relative inline-block">
+                                                        <Input
+                                                            {...field}
+                                                            className="text-center !text-xl font-bold h-16 w-40 border-2 focus:border-red-500 rounded-2xl transition-all pr-12"
+                                                            placeholder="300"
+                                                            min="100"
+                                                            max="1000"
+                                                        />
+                                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium pointer-events-none">
+                                                            ml
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-
                             <FormField
                                 control={form.control}
                                 name="type"
                                 render={({ field }) =>
                                     field.value && (
-                                        <Alert>
-                                            <Info className="h-4 w-4" />
-                                            <AlertDescription>
-                                                <span className="font-bold">
+                                        <Alert className="border-blue-200 bg-blue-50 rounded-xl flex items-center">
+                                            <AlertDescription className="text-blue-800 flex items-center">
+                                                <Info className="text-blue-600 size-6 mr-1" />
+                                                <strong>
                                                     {capitalCase(field.value)}
-                                                </span>
+                                                </strong>{' '}
                                                 donation selected. Expected
                                                 duration:{' '}
-                                                {
-                                                    donationTypeConfigs[
-                                                        field.value
-                                                    ].duration
-                                                }
+                                                <strong>
+                                                    {
+                                                        donationTypeConfigs[
+                                                            field.value
+                                                        ].duration
+                                                    }
+                                                </strong>
                                                 .{' '}
                                                 {
                                                     donationTypeConfigs[
@@ -220,7 +267,11 @@ export const DonationForm = ({ appointmentId }: Props) => {
                     </CardContent>
                 </Card>
                 <div className="flex justify-end">
-                    <Button type="submit" disabled={mutation.isPending}>
+                    <Button
+                        type="submit"
+                        disabled={mutation.isPending}
+                        className="bg-red-600 hover:bg-red-700 py-6 transition-all"
+                    >
                         {mutation.isPending ? (
                             <>
                                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
