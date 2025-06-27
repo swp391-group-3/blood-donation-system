@@ -1,231 +1,183 @@
 'use client';
-import { useState } from 'react';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import Link from 'next/link';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { Input } from '@/components/ui/input';
-import { Form, FormField, FormItem, FormControl } from '@/components/ui/form';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     Select,
-    SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
+    SelectContent,
 } from '@/components/ui/select';
+import { Clock, Filter, Plus, Search, Tag } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AccountPicture } from '@/components/account-picture';
+import { formatDistanceToNow } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+import { useBlogList } from '@/hooks/use-blog-list';
+import { toast } from 'sonner';
+import { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
-    FileText,
-    Plus,
-    Search,
-    Calendar,
-    Tags,
-    CircleCheckBig,
-} from 'lucide-react';
-
-import { blogPosts, bloodDonationTags } from '../../../constants/sample-data';
-
-const schema = z.object({
-    searchTerm: z.string().optional().default(''),
-    tag: z.string().default('all'),
-});
-export type SearchFormValues = z.infer<typeof schema>;
+    Hero,
+    HeroDescription,
+    HeroKeyword,
+    HeroTitle,
+} from '@/components/hero';
 
 export default function BlogPage() {
-    const form = useForm({
-        resolver: zodResolver(schema),
-        defaultValues: {
-            searchTerm: '',
-            tag: 'all',
-        },
-    });
+    const [selectedTag, setSelectedTag] = useState<string>('all');
 
-    const [selectedTab, setSelectedTab] = useState('all');
+    const { data: blogs, isLoading, error } = useBlogList();
 
-    function handleSearch() {
-        // come in future
+    const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
+
+    const filteredBlogs = useMemo(() => {
+        if (!blogs) return [];
+        if (selectedTag === 'all') return blogs;
+        return blogs.filter((blog) => blog.tags?.includes(selectedTag));
+    }, [blogs, selectedTag]);
+
+    if (isLoading) {
+        return <div></div>;
     }
 
+    if (error) {
+        toast.error('Failed to fetch blog list');
+        return <div></div>;
+    }
+
+    const getTimeAgo = (date: Date): string => {
+        return formatDistanceToNow(date, { addSuffix: true });
+    };
+
+    const getExcerpt = (content: string, maxLength = 100): string => {
+        if (content.length <= maxLength) return content;
+        return content.substring(0, maxLength).trim() + '...';
+    };
     return (
-        <div className="space-y-6 p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold">Blog</h1>
-                    <p className="text-zinc-500">
-                        Share stories, tips, and knowledge about blood donation
-                    </p>
+        <div>
+            <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="mb-12">
+                    <Hero>
+                        <HeroTitle>
+                            Explore Our
+                            <HeroKeyword color="blue">Blog Posts</HeroKeyword>
+                        </HeroTitle>
+                        <HeroDescription>
+                            Discover insights, tips, and stories from our latest
+                            blog articles
+                        </HeroDescription>
+                    </Hero>
                 </div>
-                <Button asChild>
-                    <Link href="/dashboard/blog/new">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Write Post
-                    </Link>
-                </Button>
-            </div>
 
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(handleSearch)}
-                    className="flex flex-col lg:flex-row gap-4"
-                >
-                    <FormField
-                        control={form.control}
-                        name="searchTerm"
-                        render={({ field }) => (
-                            <FormItem className="relative flex-1">
-                                <FormControl>
-                                    <div>
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
-                                        <Input
-                                            placeholder="Search blogs by title"
-                                            className="pl-10 h-9"
-                                            {...field}
-                                        />
-                                    </div>
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-
-                    <div className="flex gap-3">
-                        <FormField
-                            control={form.control}
-                            name="tag"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <Select
-                                        value={field.value ?? 'all'}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger className="w-[180px] h-12">
-                                                <Tags className="mr-2 w-4 h-4" />
-                                                <SelectValue placeholder="All Tags" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {bloodDonationTags.map((tag) => (
-                                                <SelectItem
-                                                    key={tag.value}
-                                                    value={tag.value}
-                                                >
-                                                    {tag.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </FormItem>
-                            )}
+                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-zinc-400 h-4 w-4" />
+                        <Input
+                            placeholder="Search blogs..."
+                            type="search"
+                            className="pl-11 border-zinc-200"
                         />
                     </div>
-                </form>
-            </Form>
+                    <Select onValueChange={(value) => setSelectedTag(value)}>
+                        <SelectTrigger className="w-full sm:w-40 border-zinc-200 rounded">
+                            <Tag className="h-4 w-4 mr-2" />
+                            <SelectValue placeholder="All Tags" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="all">All Tags</SelectItem>
+                                {allTags.map((tag) => (
+                                    <SelectItem key={tag} value={tag}>
+                                        {tag.charAt(0).toUpperCase() +
+                                            tag.slice(1)}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <Select>
+                        <SelectTrigger className="w-full sm:w-40 h-11 border-zinc-200 rounded">
+                            <Filter className="h-4 w-4 mr-2" />
+                            <SelectValue placeholder="Sort By" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="recent">
+                                    Most Recent
+                                </SelectItem>
+                                <SelectItem value="oldest">
+                                    Oldest First
+                                </SelectItem>
+                                <SelectItem value="title">Title A-Z</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Write Blog
+                    </Button>
+                </div>
 
-            <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-                <TabsList>
-                    <TabsTrigger value="all">All Posts</TabsTrigger>
-                    <TabsTrigger value="my-posts">My Posts</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value={selectedTab} className="space-y-6">
-                    {blogPosts.length > 0 ? (
-                        <div className="grid gap-6">
-                            {blogPosts.map((post) => (
-                                <Card
-                                    key={post.id}
-                                    className="hover:shadow-md transition-shadow"
-                                >
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="flex-1">
-                                                <CardTitle className="line-clamp-2">
-                                                    <Link
-                                                        href={`/member/blog/${post.id}`}
-                                                        className="hover:text-blue-500"
-                                                    >
-                                                        {post.title}
-                                                    </Link>
-                                                </CardTitle>
-                                                <CardDescription className="line-clamp-2 mt-2">
-                                                    {post.excerpt}
-                                                </CardDescription>
-                                            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredBlogs?.map((blog) => (
+                        <Card
+                            key={blog.id}
+                            className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200"
+                        >
+                            <CardHeader className="flex-1 pt-1 pb-2 px-5">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="h-8 w-8">
+                                        <AccountPicture name={blog.owner} />
+                                    </div>
+                                    <div>
+                                        <div className="font-medium text-zinc-900 text-[15px]">
+                                            {blog.owner}
                                         </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-6 w-6">
-                                                        <AvatarFallback className="text-xs">
-                                                            {
-                                                                post.author
-                                                                    .initials
-                                                            }
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <span>
-                                                        {post.author.name}
-                                                    </span>
-                                                    {post.author.role ===
-                                                        'staff' && (
-                                                        <CircleCheckBig className="w-4 h-4 stroke-green-500" />
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <Calendar className="h-4 w-4" />
-                                                    {new Date(
-                                                        post.publishedAt,
-                                                    ).toLocaleDateString()}
-                                                </div>
-                                            </div>
+                                        <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
+                                            <Clock className="h-3 w-3" />
+                                            {getTimeAgo(blog.created_at)}
                                         </div>
-                                        <div className="flex flex-wrap gap-2 mt-3">
-                                            {post.tags.map((tag) => (
-                                                <Badge
-                                                    key={tag}
-                                                    variant="secondary"
-                                                    className="text-xs"
-                                                >
-                                                    #{tag}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    ) : (
-                        <Card>
-                            <CardContent className="p-12 text-center">
-                                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    No posts found
-                                </h3>
-                                <p className="text-gray-500 mb-4">
-                                    Be the first to share your story!
-                                </p>
-                                <Button asChild>
-                                    <Link href="/dashboard/blog/new">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Write Your First Post
+                                    </div>
+                                </div>
+                                <CardTitle className="block text-base font-semibold text-zinc-900 leading-snug mb-2 line-clamp-2 hover:text-blue-600">
+                                    <Link href={`/blog/${blog.id}`}>
+                                        {blog.title}
                                     </Link>
-                                </Button>
-                            </CardContent>
+                                </CardTitle>
+                                <CardContent className="p-0">
+                                    <p className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]">
+                                        {getExcerpt(blog.content)}
+                                    </p>
+                                </CardContent>
+                            </CardHeader>
+                            <div className="flex-1 flex flex-col justify-end">
+                                <div className="flex flex-wrap gap-1.5 px-5 pb-4">
+                                    {allTags.slice(0, 3).map((tag, index) => (
+                                        <Badge
+                                            key={index}
+                                            variant="outline"
+                                            className="bg-zinc-50 text-zinc-700 border-zinc-200 text-xs px-2 py-0.5"
+                                        >
+                                            {tag}
+                                        </Badge>
+                                    ))}
+                                    {allTags.length > 3 && (
+                                        <Badge
+                                            variant="outline"
+                                            className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
+                                        >
+                                            +{allTags.length - 3}
+                                        </Badge>
+                                    )}
+                                </div>
+                            </div>
                         </Card>
-                    )}
-                </TabsContent>
-            </Tabs>
+                    ))}
+                </div>
+            </main>
         </div>
     );
 }

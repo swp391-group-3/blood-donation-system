@@ -11,7 +11,6 @@ import {
     BloodBag,
     BloodComponent,
     bloodComponents,
-    BloodGroup,
 } from '@/lib/api/dto/blood-bag';
 import {
     Activity,
@@ -38,7 +37,11 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { capitalCase } from 'change-case';
-import { bloodGroupLabels, bloodGroups } from '@/lib/api/dto/blood-group';
+import {
+    bloodGroupLabels,
+    bloodGroups,
+    BloodGroup,
+} from '@/lib/api/dto/blood-group';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -49,7 +52,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import Link from 'next/link';
 import { formatDateTime } from '@/lib/utils';
 import { differenceInCalendarWeeks } from 'date-fns';
 import {
@@ -61,6 +63,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeleteBloodBag } from '@/hooks/use-delete-blood-bag';
+import RequestBloodDialog from '@/components/request-blood-form';
 
 const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     return [
@@ -109,14 +112,14 @@ const componentColors: Record<BloodComponent, string> = {
 };
 
 const bloodGroupColors: Record<BloodGroup, string> = {
-    'O+': 'bg-red-100 text-red-800 border-red-200',
-    'O-': 'bg-red-200 text-red-900 border-red-300',
-    'A+': 'bg-blue-100 text-blue-800 border-blue-200',
-    'A-': 'bg-blue-200 text-blue-900 border-blue-300',
-    'B+': 'bg-green-100 text-green-800 border-green-200',
-    'B-': 'bg-green-200 text-green-900 border-green-300',
-    'AB+': 'bg-purple-100 text-purple-800 border-purple-200',
-    'AB-': 'bg-purple-200 text-purple-900 border-purple-300',
+    o_plus: 'bg-red-100 text-red-800 border-red-200',
+    o_minus: 'bg-red-200 text-red-900 border-red-300',
+    a_plus: 'bg-blue-100 text-blue-800 border-blue-200',
+    a_minus: 'bg-blue-200 text-blue-900 border-blue-300',
+    b_plus: 'bg-green-100 text-green-800 border-green-200',
+    b_minus: 'bg-green-200 text-green-900 border-green-300',
+    a_b_plus: 'bg-purple-100 text-purple-800 border-purple-200',
+    a_b_minus: 'bg-purple-200 text-purple-900 border-purple-300',
 };
 
 const isExpired = (date: Date) => new Date(date) <= new Date();
@@ -137,6 +140,7 @@ export default function BloodStorage() {
     const [showUseDialog, setShowUseDialog] = useState(false);
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
+    const [openRequestDialog, setOpenRequestDialog] = useState(false);
 
     const { mutate: deleteBloodBag, isPending: isDeleting } =
         useDeleteBloodBag();
@@ -185,12 +189,13 @@ export default function BloodStorage() {
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col justify-between sm:flex-row gap-4 mb-10">
-                    <Link href="/request">
-                        <Button className="bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 font-medium rounded-xl">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Create Blood Request
-                        </Button>
-                    </Link>
+                    <Button
+                        className="bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 font-medium rounded-xl"
+                        onClick={() => setOpenRequestDialog(true)}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Blood Request
+                    </Button>
                     <div className="flex gap-3">
                         <Select
                             value={component}
@@ -292,7 +297,7 @@ export default function BloodStorage() {
                                     <TableCell className="p-6">
                                         <div>
                                             <Badge
-                                                className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[normalizeBloodGroup(bag.blood_group)]}`}
+                                                className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[bag.blood_group]}`}
                                             >
                                                 {normalizeBloodGroup(
                                                     bag.blood_group,
@@ -486,6 +491,10 @@ export default function BloodStorage() {
                     </DialogContent>
                 </Dialog>
             </div>
+            <RequestBloodDialog
+                open={openRequestDialog}
+                onOpenChange={setOpenRequestDialog}
+            />
         </div>
     );
 }

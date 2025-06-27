@@ -1,7 +1,10 @@
 'use client';
+
 import { deserialize, fetchWrapper } from '@/lib/api';
-import { BloodBag, BloodComponent, BloodGroup } from '@/lib/api/dto/blood-bag';
+import { BloodBag, BloodComponent } from '@/lib/api/dto/blood-bag';
+import { BloodGroup } from '@/lib/api/dto/blood-group';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+
 interface BloodStorageFilter {
     blood_group?: BloodGroup;
     component?: BloodComponent;
