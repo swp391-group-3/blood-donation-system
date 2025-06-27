@@ -1,8 +1,10 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export const useAddQuestion = () => {
+    const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: async (content: string) => {
             const response = await fetchWrapper('/question', {
@@ -17,6 +19,9 @@ export const useAddQuestion = () => {
         },
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['question'],
+            });
             toast.info('Add question successfully');
         },
     });
