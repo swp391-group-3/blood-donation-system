@@ -84,12 +84,14 @@ SELECT NOT EXISTS (
         FROM appointments
         WHERE id = donations.appointment_id
     ) = :id
-      AND now() < (
-        donations.created_at + 
-        CASE 
-          WHEN donations.type = 'whole_blood' THEN INTERVAL '84 days'
-          WHEN donations.type = 'power_red' THEN INTERVAL '112 days'
-          ELSE INTERVAL '14 days'
-        END
-      )
+        AND now() < (
+            donations.created_at + 
+            CASE 
+                WHEN donations.type = 'whole_blood' THEN INTERVAL '84 days'
+                WHEN donations.type = 'power_red'  THEN INTERVAL '112 days'
+                ELSE INTERVAL '14 days'
+            END
+        )
+    ORDER BY donations.created_at DESC
+    LIMIT 1
 ) AS is_donatable;

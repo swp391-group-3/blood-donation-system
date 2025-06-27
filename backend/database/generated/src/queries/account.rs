@@ -333,16 +333,16 @@ impl RegisterStmt {
     }
 }
 impl<
-        'c,
-        'a,
-        's,
-        C: GenericClient,
-        T1: crate::StringSql,
-        T2: crate::StringSql,
-        T3: crate::StringSql,
-        T4: crate::StringSql,
-        T5: crate::StringSql,
-    >
+    'c,
+    'a,
+    's,
+    C: GenericClient,
+    T1: crate::StringSql,
+    T2: crate::StringSql,
+    T3: crate::StringSql,
+    T4: crate::StringSql,
+    T5: crate::StringSql,
+>
     crate::client::async_::Params<
         'c,
         'a,
@@ -404,15 +404,15 @@ impl CreateStaffStmt {
     }
 }
 impl<
-        'c,
-        'a,
-        's,
-        C: GenericClient,
-        T1: crate::StringSql,
-        T2: crate::StringSql,
-        T3: crate::StringSql,
-        T4: crate::StringSql,
-    >
+    'c,
+    'a,
+    's,
+    C: GenericClient,
+    T1: crate::StringSql,
+    T2: crate::StringSql,
+    T3: crate::StringSql,
+    T4: crate::StringSql,
+>
     crate::client::async_::Params<
         'c,
         'a,
@@ -613,12 +613,12 @@ impl UpdateStmt {
     }
 }
 impl<
-        'a,
-        C: GenericClient + Send + Sync,
-        T1: crate::StringSql,
-        T2: crate::StringSql,
-        T3: crate::StringSql,
-    >
+    'a,
+    C: GenericClient + Send + Sync,
+    T1: crate::StringSql,
+    T2: crate::StringSql,
+    T3: crate::StringSql,
+>
     crate::client::async_::Params<
         'a,
         'a,
@@ -666,7 +666,7 @@ impl DeleteStmt {
 }
 pub fn is_donatable() -> IsDonatableStmt {
     IsDonatableStmt(crate::client::async_::Stmt::new(
-        "SELECT NOT EXISTS ( SELECT 1 FROM donations WHERE ( SELECT member_id FROM appointments WHERE id = donations.appointment_id ) = $1 AND now() < ( donations.created_at + CASE WHEN donations.type = 'whole_blood' THEN INTERVAL '84 days' WHEN donations.type = 'power_red' THEN INTERVAL '112 days' ELSE INTERVAL '14 days' END ) ) AS is_donatable",
+        "SELECT NOT EXISTS ( SELECT 1 FROM donations WHERE ( SELECT member_id FROM appointments WHERE id = donations.appointment_id ) = $1 AND now() < ( donations.created_at + CASE WHEN donations.type = 'whole_blood' THEN INTERVAL '84 days' WHEN donations.type = 'power_red'  THEN INTERVAL '112 days' ELSE INTERVAL '14 days' END ) ORDER BY donations.created_at DESC LIMIT 1 ) AS is_donatable",
     ))
 }
 pub struct IsDonatableStmt(crate::client::async_::Stmt);
