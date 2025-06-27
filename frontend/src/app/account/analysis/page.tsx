@@ -21,6 +21,16 @@ import {
     Legend,
 } from "recharts"
 
+interface LabelProps {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+    name: string;
+}
+
 // Mock data 
 const mockStats = {
     totalUsers: 1247,
@@ -48,89 +58,39 @@ const donationTrends = [
 
 // Updated color palette 
 const bloodGroupData = [
-    { name: "O+", value: 35, color: "#dc2626" },      // Red-600 - most common, warm
-    { name: "A+", value: 28, color: "#ea580c" },      // Orange-600 - second most common
-    { name: "B+", value: 20, color: "#ca8a04" },      // Yellow-600 - visible but not harsh
-    { name: "AB+", value: 8, color: "#16a34a" },      // Green-600 - fresh, positive
-    { name: "O-", value: 5, color: "#2563eb" },       // Blue-600 - universal donor, important
-    { name: "A-", value: 2, color: "#7c3aed" },       // Violet-600 - rare, distinctive
-    { name: "B-", value: 1.5, color: "#c2410c" },     // Orange-700 - slightly different from A+
-    { name: "AB-", value: 0.5, color: "#64748b" },    // Slate-500 - rarest, subtle
+    { name: "O+", value: 35, color: "#dc2626" },
+    { name: "A+", value: 28, color: "#ea580c" },
+    { name: "B+", value: 20, color: "#ca8a04" },
+    { name: "AB+", value: 8, color: "#16a34a" },
+    { name: "O-", value: 5, color: "#2563eb" },
+    { name: "A-", value: 2, color: "#7c3aed" },
+    { name: "B-", value: 1.5, color: "#c2410c" },
+    { name: "AB-", value: 0.5, color: "#64748b" },
 ]
 
-//  tooltip 
-const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="rounded-lg border bg-background p-3 shadow-md">
-                <div className="grid gap-2">
-                    <div className="flex flex-col">
-                        <span className="text-sm font-medium text-foreground">
-                            {label}
-                        </span>
-                        {payload.map((entry, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                                <div
-                                    className="h-2 w-2 rounded-full"
-                                    style={{ backgroundColor: entry.color }}
-                                />
-                                <span className="text-sm text-muted-foreground">
-                                    {entry.name}: {entry.value}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
+
+
+const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    name
+}: Partial<LabelProps>) => {
+
+    if (
+        percent === undefined ||
+        midAngle === undefined ||
+        cx === undefined ||
+        cy === undefined ||
+        innerRadius === undefined ||
+        outerRadius === undefined
+    ) {
+        return null;
     }
-    return null;
-};
 
-//  pie chart tooltip
-const PieTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-        const data = payload[0];
-        return (
-            <div className="rounded-lg border bg-background p-3 shadow-md">
-                <div className="flex items-center gap-2">
-                    <div
-                        className="h-3 w-3 rounded-sm"
-                        style={{ backgroundColor: data.payload.color }}
-                    />
-                    <span className="text-sm font-medium text-foreground">
-                        {data.name}: {data.value}%
-                    </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                    of total donor population
-                </p>
-            </div>
-        );
-    }
-    return null;
-};
-
-// legend component
-const CustomLegend = ({ payload }) => {
-    return (
-        <div className="flex flex-wrap justify-center gap-3 mt-6">
-            {payload.map((entry, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm">
-                    <div
-                        className="h-3 w-3 rounded-sm border border-border/20"
-                        style={{ backgroundColor: entry.color }}
-                    />
-                    <span className="text-foreground font-medium">{entry.value}</span>
-                </div>
-            ))}
-        </div>
-    );
-};
-
-//  pie chart label function
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
-    // Show labels for segments larger than 4% to avoid overcrowding
     if (percent < 0.04) return null;
 
     const RADIAN = Math.PI / 180;
@@ -156,7 +116,6 @@ function Page() {
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
             <div className="max-w-7xl mx-auto space-y-8">
-                {/* Header with improved spacing */}
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
@@ -168,7 +127,6 @@ function Page() {
                     </div>
                 </div>
 
-                {/* Stats Cards  */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <Card className="border-l-4 border-l-blue-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -180,6 +138,20 @@ function Page() {
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
                                 {mockStats.totalUsers.toLocaleString()}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-rose-500">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                                Donations
+                            </CardTitle>
+                            <Droplets className="h-5 w-5 text-rose-500" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-bold text-gray-900">
+                                {mockStats.bloodBagsAvailable}
                             </div>
                         </CardContent>
                     </Card>
@@ -211,22 +183,9 @@ function Page() {
                             </div>
                         </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-rose-500">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                            <CardTitle className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                                Donations
-                            </CardTitle>
-                            <Droplets className="h-5 w-5 text-rose-500"/>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.bloodBagsAvailable}
-                            </div>
-                        </CardContent>
-                    </Card>
+
                 </div>
 
-                {/* Main Content */}
                 <Tabs defaultValue="overview" className="space-y-6">
                     <TabsContent value="overview" className="space-y-6">
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -260,7 +219,8 @@ function Page() {
                                                 tickLine={false}
                                                 tick={{ fill: '#64748b', fontSize: 12 }}
                                             />
-                                            <Tooltip content={<CustomTooltip />} />
+                                            // ! FIX
+                                            <Tooltip />
                                             <Line
                                                 type="monotone"
                                                 dataKey="donations"
@@ -311,12 +271,50 @@ function Page() {
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
-                                            <Tooltip content={<PieTooltip />} />
-                                            <Legend content={<CustomLegend />} />
+                                            <Tooltip />
+                                            <Legend
+                                                layout="horizontal"
+                                                verticalAlign="bottom"
+                                                iconType="circle"
+                                                iconSize={16}
+                                                content={({ payload }) => (
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent: "center",
+                                                            flexWrap: "wrap",
+                                                            gap: "12px",
+                                                            paddingTop: "16px"
+                                                        }}
+                                                    >
+                                                        {payload?.map((entry, index) => (
+                                                            <div
+                                                                key={`legend-item-${index}`}
+                                                                style={{
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    fontSize: "16px",
+                                                                    color: "#333"
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    style={{
+                                                                        width: 14,
+                                                                        height: 14,
+                                                                        borderRadius: "50%",
+                                                                        backgroundColor: entry.color,
+                                                                        marginRight: 6
+                                                                    }}
+                                                                ></div>
+                                                                {entry.value}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            />
                                         </PieChart>
                                     </ResponsiveContainer>
 
-                                    {/* Enhanced summary statistics */}
                                     <div className="mt-6 grid grid-cols-2 gap-4">
                                         <div className="bg-red-50 border border-red-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-red-700 mb-1 flex items-center ">
