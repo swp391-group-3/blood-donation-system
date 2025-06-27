@@ -63,7 +63,7 @@ pub async fn approve(
     };
 
     let subject = "Appointment Approved".to_string();
-    let body = format!("Your appointment with id {} has been approved.", id);
+    let body = format!("Your appointment with id {id} has been approved.");
 
     send(&account, subject, body, &state.mailer).await?;
 

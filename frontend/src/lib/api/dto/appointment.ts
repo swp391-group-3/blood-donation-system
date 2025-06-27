@@ -2,6 +2,7 @@ export const statuses = [
     'on_process',
     'approved',
     'checked_in',
+    'donated',
     'done',
     'rejected',
 ] as const;
