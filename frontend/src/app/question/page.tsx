@@ -18,6 +18,7 @@ import {
     UserSearch,
     FileText,
     Plus,
+    Save,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { useBloodRequestList } from '@/hooks/use-blood-request-list';
@@ -52,6 +53,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { AddQuestionDialog } from '@/components/add-question-dialog';
 
 export default function QuestionPage() {
     const { data: questions, isPending, error } = useQuestionList();
@@ -87,14 +89,22 @@ export default function QuestionPage() {
             </Hero>
 
             <div className="mx-auto max-w-5xl">
-                <div className="relative mb-10">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-                    <Input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search questions..."
-                        className="p-4 pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200"
-                    />
+                <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search questions..."
+                            className="p-4 pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200"
+                        />
+                    </div>
+                    <AddQuestionDialog>
+                        <Button>
+                            <Plus className="w-5 h-5 mr-2" />
+                            New Question
+                        </Button>
+                    </AddQuestionDialog>
                 </div>
                 <div className="rounded-md border">
                     <Table>
@@ -121,10 +131,8 @@ export default function QuestionPage() {
                                     ? 'No questions match your search.'
                                     : 'Start by creating your first screening question.'}
                             </p>
-                            {!search && (
-                                <Button
-                                    className="mt-4 bg-purple-600 hover:bg-purple-700"
-                                >
+                            {search && (
+                                <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700">
                                     <Plus className="w-4 h-4 mr-2" />
                                     Create First Question
                                 </Button>
