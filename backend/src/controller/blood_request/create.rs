@@ -129,7 +129,6 @@ pub async fn create(
 
     for account in &accounts {
         if let Some(ref blood_group) = account.blood_group {
-            
             match queries::account::is_donatable()
                 .bind(&database, &account.id)
                 .one()
