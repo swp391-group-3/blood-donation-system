@@ -29,6 +29,7 @@ impl Modify for SecurityAddon {
 
         controller::auth::register,
         controller::auth::login,
+        controller::auth::logout,
         controller::auth::oauth2::oauth2,
         controller::auth::oauth2::complete,
         controller::auth::me,
@@ -57,6 +58,7 @@ impl Modify for SecurityAddon {
         controller::appointment::get_by_member_id,
         controller::appointment::approve,
         controller::appointment::reject,
+        controller::appointment::done,
 
         controller::blog::create,
         controller::blog::get,

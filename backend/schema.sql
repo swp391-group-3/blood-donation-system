@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS comments(
 
 CREATE TABLE IF NOT EXISTS tags(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name varchar(32) NOT NULL
+    name varchar(32) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS blog_tags(
@@ -94,6 +94,7 @@ CREATE TYPE appointment_status AS ENUM(
     'on_process',
     'approved',
     'checked_in',
+    'donated',
     'done',
     'rejected'
 );

@@ -70,6 +70,7 @@ pub enum AppointmentStatus {
     OnProcess,
     Approved,
     CheckedIn,
+    Donated,
     Done,
     Rejected,
 }

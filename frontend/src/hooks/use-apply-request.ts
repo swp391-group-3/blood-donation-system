@@ -3,9 +3,12 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { Answer } from '@/lib/api/dto/answer';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export const useApplyRequest = (id: string) => {
+    const router = useRouter();
+
     return useMutation({
         mutationFn: async (values: { answers: Answer[] }) => {
             const response = await fetchWrapper(
@@ -23,6 +26,9 @@ export const useApplyRequest = (id: string) => {
             await throwIfError(response);
         },
         onError: (error) => toast.error(error.message),
-        onSuccess: () => toast.info('Submit successfully'),
+        onSuccess: () => {
+            toast.info('Submit successfully');
+            router.push('/appointment');
+        },
     });
 };
