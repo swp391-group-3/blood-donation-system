@@ -93,7 +93,7 @@ export default function RequestBloodDialog({
                                     return (
                                         <FormItem>
                                             <FormLabel>
-                                                Blood Group(s) *
+                                                Blood Group(s)
                                             </FormLabel>
                                             <MultiSelect
                                                 options={bloodGroupOptions}
