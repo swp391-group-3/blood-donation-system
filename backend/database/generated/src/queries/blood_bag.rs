@@ -181,7 +181,7 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags",
+        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT member_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags ORDER BY expired_time ASC",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
