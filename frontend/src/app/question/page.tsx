@@ -41,9 +41,27 @@ import {
 } from '@/components/hero';
 import { CardGrid } from '@/components/card-grid';
 import { RequestCard } from '@/components/request-card';
+import { useQuestionList } from '@/hooks/use-question-list';
 
 export default function QuestionPage() {
+    const { data: questions, isPending, error } = useQuestionList();
     const [search, setSearch] = useState<string | undefined>();
+    const filtered = useMemo(
+        () =>
+            questions?.filter(
+                (question) => !search || question.content.includes(search),
+            ),
+        [questions, search],
+    );
+
+    if (isPending) {
+        return <div></div>;
+    }
+
+    if (error) {
+        toast.error(error.message);
+        return <div></div>;
+    }
 
     return (
         <div className="flex-1 space-y-6 p-6">
@@ -68,9 +86,7 @@ export default function QuestionPage() {
                         className="p-4 pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200"
                     />
                 </div>
-                <div>
-
-                </div>
+                <div></div>
             </div>
         </div>
     );
