@@ -35,7 +35,8 @@ SELECT
             )
         )
     ) AS blood_group
-FROM blood_bags;
+FROM blood_bags
+ORDER BY expired_time ASC;
 
 --! create
 INSERT INTO blood_bags (
