@@ -17,6 +17,9 @@ use crate::{
     get,
     tags = ["Blog", "Comment"],
     path = "/blog/{id}/comment",
+    params(
+        ("id" = Uuid, Path, description = "Blog id")
+    ),
     responses(
         (status = Status::OK, body = Vec<Comment>)
     )

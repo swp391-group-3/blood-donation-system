@@ -15,14 +15,14 @@ pub struct UpdateParams<T1: crate::StringSql> {
 pub struct Comment {
     pub id: uuid::Uuid,
     pub blog_id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
+    pub owner: String,
     pub content: String,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 pub struct CommentBorrowed<'a> {
     pub id: uuid::Uuid,
     pub blog_id: uuid::Uuid,
-    pub account_id: uuid::Uuid,
+    pub owner: &'a str,
     pub content: &'a str,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
@@ -31,7 +31,7 @@ impl<'a> From<CommentBorrowed<'a>> for Comment {
         CommentBorrowed {
             id,
             blog_id,
-            account_id,
+            owner,
             content,
             created_at,
         }: CommentBorrowed<'a>,
@@ -39,7 +39,7 @@ impl<'a> From<CommentBorrowed<'a>> for Comment {
         Self {
             id,
             blog_id,
-            account_id,
+            owner: owner.into(),
             content: content.into(),
             created_at,
         }
@@ -212,7 +212,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
 }
 pub fn get_by_blog_id() -> GetByBlogIdStmt {
     GetByBlogIdStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM comments WHERE blog_id = $1",
+        "SELECT id, blog_id, ( SELECT name FROM accounts WHERE id = comments.account_id ) AS owner, content, created_at FROM comments WHERE blog_id = $1",
     ))
 }
 pub struct GetByBlogIdStmt(crate::client::async_::Stmt);
@@ -231,7 +231,7 @@ impl GetByBlogIdStmt {
                     Ok(CommentBorrowed {
                         id: row.try_get(0)?,
                         blog_id: row.try_get(1)?,
-                        account_id: row.try_get(2)?,
+                        owner: row.try_get(2)?,
                         content: row.try_get(3)?,
                         created_at: row.try_get(4)?,
                     })

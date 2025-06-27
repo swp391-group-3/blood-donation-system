@@ -22,6 +22,9 @@ use crate::{
     post,
     tag = "Comment",
     path = "/blog/{id}/comment",
+    params(
+        ("id" = Uuid, Path, description = "Blog id")
+    ),
     request_body = String,
     responses(
         (status = Status::OK, body = Uuid)
