@@ -224,6 +224,67 @@ where
         Ok(it)
     }
 }
+pub struct BoolQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<bool, tokio_postgres::Error>,
+    mapper: fn(bool) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> BoolQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(self, mapper: fn(bool) -> R) -> BoolQuery<'c, 'a, 's, C, R, N> {
+        BoolQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
 pub fn register() -> RegisterStmt {
     RegisterStmt(crate::client::async_::Stmt::new(
         "INSERT INTO accounts( email, password, role, phone, name, gender, address, birthday, blood_group ) VALUES( $1, COALESCE($2, substr(md5(random()::text), 1, 25)), 'member'::role, $3, $4, $5, $6, $7, $8 ) RETURNING id",
@@ -601,5 +662,26 @@ impl DeleteStmt {
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;
         client.execute(stmt, &[id]).await
+    }
+}
+pub fn is_donatable() -> IsDonatableStmt {
+    IsDonatableStmt(crate::client::async_::Stmt::new(
+        "SELECT NOT EXISTS ( SELECT 1 FROM donations WHERE ( SELECT member_id FROM appointments WHERE id = donations.appointment_id ) = $1 AND now() < ( donations.created_at + CASE WHEN donations.type = 'whole_blood' THEN INTERVAL '84 days' WHEN donations.type = 'power_red' THEN INTERVAL '112 days' ELSE INTERVAL '14 days' END ) ) AS is_donatable",
+    ))
+}
+pub struct IsDonatableStmt(crate::client::async_::Stmt);
+impl IsDonatableStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        id: &'a uuid::Uuid,
+    ) -> BoolQuery<'c, 'a, 's, C, bool, 1> {
+        BoolQuery {
+            client,
+            params: [id],
+            stmt: &mut self.0,
+            extractor: |row| Ok(row.try_get(0)?),
+            mapper: |it| it,
+        }
     }
 }

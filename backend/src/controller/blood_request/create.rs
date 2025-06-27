@@ -129,6 +129,21 @@ pub async fn create(
 
     for account in &accounts {
         if let Some(ref blood_group) = account.blood_group {
+            match queries::account::is_donatable()
+                .bind(&database, &account.id)
+                .one()
+                .await
+            {
+                Ok(true) => {}
+                Ok(false) => {
+                    continue;
+                }
+                Err(error) => {
+                    tracing::error!(?error, "Failed to check if account is donatable");
+                    continue;
+                }
+            };
+
             if !request_blood_groups.is_disjoint(&get_compatible(*blood_group)) {
                 let subject = "URGENT: Immediate Blood Donation Needed – Matches Your Blood Group"
                     .to_string();

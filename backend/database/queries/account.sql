@@ -74,3 +74,22 @@ WHERE id = :id;
 
 --! delete
 UPDATE accounts SET is_active = false WHERE id = :id;
+
+--! is_donatable
+SELECT NOT EXISTS (
+    SELECT 1
+    FROM donations
+    WHERE (
+        SELECT member_id
+        FROM appointments
+        WHERE id = donations.appointment_id
+    ) = :id
+      AND now() < (
+        donations.created_at + 
+        CASE 
+          WHEN donations.type = 'whole_blood' THEN INTERVAL '84 days'
+          WHEN donations.type = 'power_red' THEN INTERVAL '112 days'
+          ELSE INTERVAL '14 days'
+        END
+      )
+) AS is_donatable;
