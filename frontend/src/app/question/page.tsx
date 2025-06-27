@@ -16,6 +16,8 @@ import {
     Droplets,
     User,
     UserSearch,
+    FileText,
+    Plus,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { useBloodRequestList } from '@/hooks/use-blood-request-list';
@@ -42,6 +44,14 @@ import {
 import { CardGrid } from '@/components/card-grid';
 import { RequestCard } from '@/components/request-card';
 import { useQuestionList } from '@/hooks/use-question-list';
+import {
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 
 export default function QuestionPage() {
     const { data: questions, isPending, error } = useQuestionList();
@@ -50,7 +60,7 @@ export default function QuestionPage() {
         () =>
             questions?.filter(
                 (question) => !search || question.content.includes(search),
-            ),
+            ) ?? [],
         [questions, search],
     );
 
@@ -86,7 +96,42 @@ export default function QuestionPage() {
                         className="p-4 pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200"
                     />
                 </div>
-                <div></div>
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="p-6 font-semibold text-slate-900">
+                                    Question
+                                </TableHead>
+                                <TableHead className="p-6 font-semibold text-slate-900">
+                                    Action
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody></TableBody>
+                    </Table>
+                    {filtered.length === 0 && (
+                        <div className="text-center py-12">
+                            <FileText className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                                No questions found
+                            </h3>
+                            <p className="text-slate-600">
+                                {search
+                                    ? 'No questions match your search.'
+                                    : 'Start by creating your first screening question.'}
+                            </p>
+                            {!search && (
+                                <Button
+                                    className="mt-4 bg-purple-600 hover:bg-purple-700"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Create First Question
+                                </Button>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
