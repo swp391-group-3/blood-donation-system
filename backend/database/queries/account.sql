@@ -87,8 +87,7 @@ SELECT NOT EXISTS (
         AND now() < (
             donations.created_at + 
             CASE 
-                WHEN donations.type = 'whole_blood' THEN INTERVAL '84 days'
-                WHEN donations.type = 'power_red'  THEN INTERVAL '112 days'
+                WHEN donations.type IN ('whole_blood', 'power_red') THEN INTERVAL '84 days'
                 ELSE INTERVAL '14 days'
             END
         )
