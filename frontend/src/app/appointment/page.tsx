@@ -95,9 +95,9 @@ export default function AppointmentPage() {
         if (!appointment) return undefined;
 
         if (appointment.status === 'approved') {
-            return `${window.location.href}-management/${selected}/health`;
+            return `${window.location.href}/management/${selected}/health`;
         } else if (appointment.status === 'checked_in') {
-            return `${window.location.href}-management/${selected}/donation`;
+            return `${window.location.href}/management/${selected}/donation`;
         }
     }, [selected, appointments]);
 
