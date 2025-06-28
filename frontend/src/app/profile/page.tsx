@@ -29,19 +29,27 @@ import {
     ExternalLink,
     Copy,
     Star,
+    LoaderCircle,
 } from "lucide-react"
 import { Account } from '@/lib/api/dto/account';
 import { Badge } from '@/components/ui/badge';
-import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import { genders } from '@/lib/api/dto/account';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentAccount } from '@/hooks/use-current-account';
 import { useUpdateAccountForm } from '@/hooks/use-update-account-form';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
 import { AccountPicture } from '@/components/account-picture';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { capitalCase } from 'change-case';
+import { Textarea } from '@/components/ui/textarea';
 // Mock user data
 const mockUser: Account = {
     role: "member",
@@ -278,7 +286,196 @@ function ProfilePage() {
                                             <DialogHeader>
                                                 <DialogTitle>Edit Profile</DialogTitle>
                                             </DialogHeader>
-                                            DIALOG CONTENT
+                                            <Form {...form}>
+                                                <form
+                                                    className="space-y-6"
+                                                    onSubmit={form.handleSubmit((values) =>
+                                                        mutation.mutate(values),
+                                                    )}
+                                                >
+                                                    <Card>
+                                                        <CardHeader>
+                                                            <CardTitle>Basic Information</CardTitle>
+                                                            <CardDescription>
+                                                                Account basic information
+                                                            </CardDescription>
+                                                        </CardHeader>
+                                                        <CardContent className="space-y-6">
+                                                            <div className="grid auto-cols-fr gap-5">
+                                                                <div className="grid gap-2">
+                                                                    <Label>Email</Label>
+                                                                    <Input disabled value={account.email} />
+                                                                </div>
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="name"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="grid gap-2">
+                                                                            <FormLabel>Name</FormLabel>
+                                                                            <FormControl>
+                                                                                <Input
+                                                                                    {...field}
+                                                                                    required
+                                                                                />
+                                                                            </FormControl>
+                                                                            <FormMessage />
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="gender"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="grid gap-2">
+                                                                            <FormLabel>Gender</FormLabel>
+                                                                            <Select
+                                                                                onValueChange={
+                                                                                    field.onChange
+                                                                                }
+                                                                                defaultValue={field.value}
+                                                                            >
+                                                                                <FormControl>
+                                                                                    <SelectTrigger className="w-full">
+                                                                                        <SelectValue placeholder="Select a gender" />
+                                                                                    </SelectTrigger>
+                                                                                </FormControl>
+                                                                                <SelectContent>
+                                                                                    {genders.map(
+                                                                                        (gender, index) => (
+                                                                                            <SelectItem
+                                                                                                key={index}
+                                                                                                value={
+                                                                                                    gender
+                                                                                                }
+                                                                                            >
+                                                                                                {capitalCase(
+                                                                                                    gender,
+                                                                                                )}
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                            <FormMessage />
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="birthday"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="grid gap-2">
+                                                                            <FormLabel>Birthday</FormLabel>
+                                                                            <FormControl>
+                                                                                <Input
+                                                                                    type="date"
+                                                                                    {...field}
+                                                                                    required
+                                                                                />
+                                                                            </FormControl>
+                                                                            <FormMessage />
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <div className="grid gap-2">
+                                                                    <Label>Blood Group</Label>
+                                                                    <Select
+                                                                        disabled
+                                                                        defaultValue={account.blood_group}
+                                                                    >
+                                                                        <FormControl>
+                                                                            <SelectTrigger className="w-full">
+                                                                                <SelectValue placeholder="Select a blood group" />
+                                                                            </SelectTrigger>
+                                                                        </FormControl>
+                                                                        <SelectContent>
+                                                                            {bloodGroups.map(
+                                                                                (bloodGroup, index) => (
+                                                                                    <SelectItem
+                                                                                        key={index}
+                                                                                        value={bloodGroup}
+                                                                                    >
+                                                                                        {
+                                                                                            bloodGroupLabels[
+                                                                                            bloodGroup
+                                                                                            ]
+                                                                                        }
+                                                                                    </SelectItem>
+                                                                                ),
+                                                                            )}
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                    <Card>
+                                                        <CardHeader>
+                                                            <CardTitle>Contact</CardTitle>
+                                                            <CardDescription>
+                                                                Contact information
+                                                            </CardDescription>
+                                                        </CardHeader>
+                                                        <CardContent className="space-y-6">
+                                                            <div className="grid auto-cols-fr gap-5">
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="phone"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="grid gap-2">
+                                                                            <FormLabel>Phone</FormLabel>
+                                                                            <FormControl>
+                                                                                <Input
+                                                                                    type="tel"
+                                                                                    {...field}
+                                                                                    required
+                                                                                />
+                                                                            </FormControl>
+                                                                            <FormMessage />
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                                <FormField
+                                                                    control={form.control}
+                                                                    name="address"
+                                                                    render={({ field }) => (
+                                                                        <FormItem className="grid gap-2">
+                                                                            <FormLabel>Address</FormLabel>
+                                                                            <FormControl>
+                                                                                <Textarea
+                                                                                    {...field}
+                                                                                    required
+                                                                                />
+                                                                            </FormControl>
+                                                                            <FormMessage />
+                                                                        </FormItem>
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={mutation.isPending}
+                                                        data-loading={mutation.isPending}
+                                                        className="group relative disabled:opacity-100"
+                                                    >
+                                                        <span className="group-data-[loading=true]:text-transparent">
+                                                            Update
+                                                        </span>
+                                                        {mutation.isPending && (
+                                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                                <LoaderCircle
+                                                                    className="animate-spin"
+                                                                    size={16}
+                                                                    strokeWidth={2}
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </Button>
+                                                </form>
+                                            </Form>
                                         </DialogContent>
                                     </Dialog>
                                 </div>
