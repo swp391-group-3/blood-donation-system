@@ -33,19 +33,18 @@ import {
 } from "lucide-react"
 import { Account } from '@/lib/api/dto/account';
 import { Badge } from '@/components/ui/badge';
-import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import {  bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { genders } from '@/lib/api/dto/account';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentAccount } from '@/hooks/use-current-account';
 import { useUpdateAccountForm } from '@/hooks/use-update-account-form';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
 import { AccountPicture } from '@/components/account-picture';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { capitalCase } from 'change-case';

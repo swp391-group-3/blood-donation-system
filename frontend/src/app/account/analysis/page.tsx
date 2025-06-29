@@ -189,7 +189,6 @@ function Page() {
                 <Tabs defaultValue="overview" className="space-y-6">
                     <TabsContent value="overview" className="space-y-6">
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                            {/* Donation Trends Chart  */}
                             <Card className="shadow-sm">
                                 <CardHeader className="pb-4">
                                     <CardTitle className="text-xl font-semibold">Donation Trends</CardTitle>
@@ -219,7 +218,6 @@ function Page() {
                                                 tickLine={false}
                                                 tick={{ fill: '#64748b', fontSize: 12 }}
                                             />
-                                            // ! FIX
                                             <Tooltip />
                                             <Line
                                                 type="monotone"
@@ -244,7 +242,6 @@ function Page() {
                                 </CardContent>
                             </Card>
 
-                            {/* Blood Group Distribution */}
                             <Card className="shadow-sm">
                                 <CardHeader className="pb-4">
                                     <CardTitle className="text-xl font-semibold">Blood Group Distribution</CardTitle>
