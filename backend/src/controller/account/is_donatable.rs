@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{Json, extract::State};
 use database::queries;
 
 use crate::{
@@ -27,11 +27,8 @@ pub async fn is_donatable(state: State<Arc<ApiState>>, claims: Claims) -> Result
         Ok(is_donatable) => Ok(Json(is_donatable)),
         Err(error) => {
             tracing::error!(?error, "Failed to check if account is donatable");
-
-            Err(Error::builder()
-                .status(StatusCode::BAD_REQUEST)
-                .message("No account with given id".into())
-                .build())
+        
+            Err(Error::internal())
         }
     }
 }
