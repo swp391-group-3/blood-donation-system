@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     User,
     Droplets,
@@ -146,11 +146,27 @@ const mockAchievements = [
 
 
 function ProfilePage() {
-    const { data: account, isPending, error } = useCurrentAccount();
-    const { mutation, form } = useUpdateAccountForm(account);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("all")
+    const { data: account, isPending, error } = useCurrentAccount();
+    const { mutation, form } = useUpdateAccountForm(account, {
+        onSuccess: () => {
+            setIsEditModalOpen(false)
+        }
+    });
 
+    // 🎯 As soon as `account` is defined, wipe & re‑populate the form:
+    useEffect(() => {
+        if (account) {
+            form.reset({
+                name: account.name,
+                gender: account.gender,
+                birthday: account.birthday,
+                phone: account.phone,
+                address: account.address,
+            });
+        }
+    }, [account, form]);
 
 
     if (isPending) {
@@ -290,8 +306,8 @@ function ProfilePage() {
                                                     <form
                                                         className="space-y-6"
                                                         onSubmit={form.handleSubmit((values) => {
-                                                            console.log(values);
                                                             mutation.mutate(values)
+
                                                         }
                                                         )}
                                                     >
@@ -308,7 +324,6 @@ function ProfilePage() {
                                                                                     <Input
                                                                                         {...field}
                                                                                         required
-                                                                                        defaultValue={account.name}
                                                                                     />
                                                                                 </FormControl>
                                                                                 <FormMessage />
@@ -325,7 +340,7 @@ function ProfilePage() {
                                                                                     onValueChange={
                                                                                         field.onChange
                                                                                     }
-                                                                                    defaultValue={account.gender}
+                                                                                    {...field}
                                                                                 >
                                                                                     <FormControl>
                                                                                         <SelectTrigger className="w-full">
@@ -364,16 +379,12 @@ function ProfilePage() {
                                                                                         type="date"
                                                                                         {...field}
                                                                                         required
-                                                                                        defaultValue={account.birthday}
                                                                                     />
                                                                                 </FormControl>
                                                                                 <FormMessage />
                                                                             </FormItem>
                                                                         )}
                                                                     />
-
-                                                                </div>
-                                                                <div className="grid auto-cols-fr gap-5">
                                                                     <FormField
                                                                         control={form.control}
                                                                         name="phone"
@@ -385,7 +396,6 @@ function ProfilePage() {
                                                                                         type="tel"
                                                                                         {...field}
                                                                                         required
-                                                                                        defaultValue={account.phone}
                                                                                     />
                                                                                 </FormControl>
                                                                                 <FormMessage />
@@ -403,43 +413,40 @@ function ProfilePage() {
                                                                                         {...field}
                                                                                         required
                                                                                         className='resize-none overflow-auto h-20'
-                                                                                        defaultValue={account.address}
                                                                                     />
                                                                                 </FormControl>
                                                                                 <FormMessage />
                                                                             </FormItem>
                                                                         )}
                                                                     />
-                                                                </div>
-                                                                <div className="flex justify-center mt-4">
-                                                                    <Button
-                                                                        type="submit"
-                                                                        disabled={mutation.isPending}
-                                                                        data-loading={mutation.isPending}
-                                                                        className="group relative disabled:opacity-100"
-                                                                    >
-                                                                        <span className="group-data-[loading=true]:text-transparent">
-                                                                            Update
-                                                                        </span>
-                                                                        {mutation.isPending && (
-                                                                            <div className="absolute inset-0 flex items-center justify-center">
-                                                                                <LoaderCircle
-                                                                                    className="animate-spin"
-                                                                                    size={16}
-                                                                                    strokeWidth={2}
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            </div>
-                                                                        )}
-                                                                    </Button>
+                                                                    <div className="flex justify-center ">
+                                                                        <Button
+                                                                            type="submit"
+                                                                            disabled={mutation.isPending}
+                                                                            data-loading={mutation.isPending}
+                                                                            className="group relative disabled:opacity-100"
+                                                                        >
+                                                                            <span className="group-data-[loading=true]:text-transparent">
+                                                                                Update
+                                                                            </span>
+                                                                            {mutation.isPending && (
+                                                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                                                    <LoaderCircle
+                                                                                        className="animate-spin"
+                                                                                        size={16}
+                                                                                        strokeWidth={2}
+                                                                                        aria-hidden="true"
+                                                                                    />
+                                                                                </div>
+                                                                            )}
+                                                                        </Button>
+                                                                    </div>
                                                                 </div>
                                                             </CardContent>
                                                         </Card>
                                                     </form>
-
                                                 </Form>
                                             </div>
-
                                         </DialogContent>
                                     </Dialog>
                                 </div>
