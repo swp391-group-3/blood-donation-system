@@ -27,7 +27,7 @@ pub async fn is_donatable(state: State<Arc<ApiState>>, claims: Claims) -> Result
         Ok(is_donatable) => Ok(Json(is_donatable)),
         Err(error) => {
             tracing::error!(?error, "Failed to check if account is donatable");
-        
+
             Err(Error::internal())
         }
     }
