@@ -63,6 +63,25 @@ pub async fn create(
 
     authorize(&claims, [Role::Member], &database).await?;
 
+    match queries::account::is_donatable()
+        .bind(&database, &claims.sub)
+        .one()
+        .await
+    {
+        Ok(false) => {
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("You are not eligible to donate blood at the moment".into())
+                .build());
+        }
+        Err(error) => {
+            tracing::error!(?error, "Failed to check if account is donatable");
+
+            return Err(Error::internal());
+        }
+        _ => {}
+    }
+
     let question_ids: HashSet<_> = match queries::question::get_all()
         .bind(&database)
         .map(|raw| raw.id)

@@ -134,7 +134,6 @@ pub async fn create(
                 .one()
                 .await
             {
-                Ok(true) => {}
                 Ok(false) => {
                     continue;
                 }
@@ -142,6 +141,7 @@ pub async fn create(
                     tracing::error!(?error, "Failed to check if account is donatable");
                     continue;
                 }
+                _ => {}
             };
 
             if !request_blood_groups.is_disjoint(&get_compatible(*blood_group)) {
