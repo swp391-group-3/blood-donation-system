@@ -18,7 +18,6 @@ import { capitalCase } from 'change-case';
 import { EditProfileModel } from '@/components/edit-profile';
 import { AchievementCard } from '@/components/achivement-card';
 
-
 // Enhanced stats
 const mockStats = {
     totalDonations: 12,
@@ -100,8 +99,7 @@ const mockAchievements = [
     },
 ]
 
-
-function ProfilePage() {
+export default function ProfilePage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("all")
     const { data: account, isPending, error } = useCurrentAccount();
@@ -144,7 +142,6 @@ function ProfilePage() {
         }
         return age
     }
-    const earnedAchievements = mockAchievements.filter((a) => a.earned)
 
     const daysUntilNextDonation = Math.ceil((mockStats.nextDonationDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     const filteredAchievements =
@@ -432,5 +429,3 @@ function ProfilePage() {
         </div >
     )
 }
-
-export default ProfilePage
