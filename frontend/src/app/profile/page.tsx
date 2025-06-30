@@ -17,6 +17,8 @@ import { AccountPicture } from '@/components/account-picture';
 import { capitalCase } from 'change-case';
 import { EditProfileModel } from '@/components/edit-profile';
 import { AchievementCard } from '@/components/achivement-card';
+import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
+import { displayDonationType } from '@/lib/api/dto/donation';
 
 // Enhanced stats
 const mockStats = {
@@ -103,13 +105,14 @@ export default function ProfilePage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("all")
     const { data: account, isPending, error } = useCurrentAccount();
+    const { data: donations } = useCurrentAccountDonation();
     const { mutation, form } = useUpdateAccountForm(account, {
         onSuccess() {
             setIsEditModalOpen(false)
         },
     });
+    const filterDonations = donations?.slice(0, 3);
 
-    // 🎯 As soon as `account` is defined, wipe & re‑populate the form:
     useEffect(() => {
         if (account) {
             form.reset({
@@ -367,27 +370,26 @@ export default function ProfilePage() {
                                         </CardHeader>
                                         <CardContent>
                                             <div className="space-y-4">
-                                                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-medium">Donation completed</p>
-                                                        <p className="text-xs text-gray-500">2 days ago</p>
+                                                {filterDonations?.map(donation => (
+                                                    <div
+                                                        key={donation.id}
+                                                        className="bg-white rounded-2xl shadow-sm border-l-2 border-green-500 p-3 flex flex-col"
+                                                    >
+                                                        <p className="text-lg font-semibold text-gray-800">{donation.amount} ml</p>
+                                                        <div className="mt-2 flex items-center justify-between">
+                                                            <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                                                                {displayDonationType(donation.type)}
+                                                            </span>
+                                                            <span className="text-xs text-gray-500">
+                                                                {new Date(donation.created_at).toLocaleDateString('en-US', {
+                                                                    year: 'numeric',
+                                                                    month: 'short',
+                                                                    day: 'numeric'
+                                                                })}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-medium">Health check passed</p>
-                                                        <p className="text-xs text-gray-500">1 week ago</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg">
-                                                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-medium">Achievement unlocked</p>
-                                                        <p className="text-xs text-gray-500">2 weeks ago</p>
-                                                    </div>
-                                                </div>
+                                                ))}
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -423,9 +425,9 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                         </TabsContent>
-                    </Tabs>
-                </div>
-            </div>
+                    </Tabs >
+                </div >
+            </div >
         </div >
     )
 }
