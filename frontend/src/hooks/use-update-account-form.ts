@@ -3,7 +3,7 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { schema as registerSchema } from './use-register-form';
 import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,7 +16,10 @@ export const schema = registerSchema.omit({
 
 export const useUpdateAccountForm = (
     defaultValues?: z.infer<typeof schema>,
+    opts?: { onSuccess?: () => void }
 ) => {
+    const qc = useQueryClient();
+
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
             const response = await fetchWrapper('/account', {
@@ -31,6 +34,11 @@ export const useUpdateAccountForm = (
             await throwIfError(response);
         },
         onError: (error) => toast.error(error.message),
+        onSuccess: () => {
+            toast.success('Profile updated successfully!');
+            qc.invalidateQueries({ queryKey: ['auth', 'me'] });
+            opts?.onSuccess?.();
+        },
     });
 
     const form = useForm<z.infer<typeof schema>>({
