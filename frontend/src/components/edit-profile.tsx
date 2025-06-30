@@ -8,13 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { genders } from "@/lib/api/dto/account";
 import { capitalCase } from "change-case";
 import { Textarea } from "./ui/textarea";
+import { schema as updateAccountSchema } from "@/hooks/use-update-account-form";
+import { z } from "zod";
+import { UseFormReturn } from "react-hook-form";
+import { UseMutationResult } from "@tanstack/react-query";
 
-
+export type AccountUpdate = z.infer<typeof updateAccountSchema>;
 interface EditProfileProps {
     isOpen: boolean,
     onOpenChange: (open: boolean) => void,
-    form: any,
-    mutation: any
+    form: UseFormReturn<AccountUpdate>;
+    mutation: UseMutationResult<void, Error, AccountUpdate>;
 }
 
 
@@ -24,10 +28,7 @@ export function EditProfileModel({
     form,
     mutation
 }: EditProfileProps) {
-    const handleFormSubmit = (values: any) => {
-        console.log(values);
-        console.log("Handle update");
-
+    const handleFormSubmit = (values: AccountUpdate) => {
         mutation.mutate(values);
     };
     return (

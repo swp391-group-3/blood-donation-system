@@ -16,7 +16,6 @@ import { redirect } from 'next/navigation';
 import { AccountPicture } from '@/components/account-picture';
 import { capitalCase } from 'change-case';
 import { EditProfileModel } from '@/components/edit-profile';
-import { AchievementCard } from '@/components/achivement-card';
 import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import { displayDonationType } from '@/lib/api/dto/donation';
 
@@ -416,13 +415,13 @@ export default function ProfilePage() {
                                 </div>
 
                                 {/* Achievement Grid */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {filteredAchievements.map((achievement) => {
                                         return (
-                                            <AchievementCard achievement={achievement} />
+                                            <AchievementCard key={achievement.id} achievement={achievement} />
                                         )
                                     })}
-                                </div>
+                                </div> */}
                             </div>
                         </TabsContent>
                     </Tabs >
