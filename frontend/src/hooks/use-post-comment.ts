@@ -1,10 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { throwIfError } from './../lib/api/index';
 import { fetchWrapper } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 export const usePostComment = (id: string) => {
     const queryClient = useQueryClient();

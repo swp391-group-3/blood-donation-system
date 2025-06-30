@@ -23,7 +23,7 @@ export default function BlogReadPage() {
     const { data: comments } = useComment(id);
     const { mutation } = usePostComment(id);
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitting] = useState(false);
     const [value, setValue] = useState<Content>('');
 
     const getTimeAgo = (date: Date | string): string => {
