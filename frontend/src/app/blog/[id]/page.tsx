@@ -31,7 +31,7 @@ export default function BlogReadPage() {
     };
 
     const handleSubmitComment = async () => {
-        mutation.mutate(value);
+        mutation.mutate(value as string);
     };
 
     if (isLoading) return <div>Loading...</div>;
