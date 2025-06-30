@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react'
 import {
-    User, Droplets, Shield, Heart, Award, Zap, Target, Users, Trophy, Activity, BarChart3, Clock, MapPinIcon,
+    User, Droplets, Shield, Heart, Trophy, Activity, BarChart3, Clock, MapPinIcon,
     PhoneIcon, MailIcon, CalendarIcon, UserIcon, CakeIcon, ExternalLink, Copy,
 } from "lucide-react"
 import { Badge } from '@/components/ui/badge';
