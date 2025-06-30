@@ -5,19 +5,14 @@ import {
     Droplets,
     Shield,
     Heart,
-    CheckCircle,
     Award,
     Zap,
     Target,
     Users,
     Trophy,
-    Lock,
     Activity,
     BarChart3,
     Clock,
-    Eye,
-    Bookmark,
-    Gift,
     MapPinIcon,
     PhoneIcon,
     MailIcon,
@@ -26,7 +21,6 @@ import {
     CakeIcon,
     ExternalLink,
     Copy,
-    Star,
 } from "lucide-react"
 import { Badge } from '@/components/ui/badge';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
@@ -40,6 +34,7 @@ import { redirect } from 'next/navigation';
 import { AccountPicture } from '@/components/account-picture';
 import { capitalCase } from 'change-case';
 import { EditProfileModel } from '@/components/edit-profile';
+import { AchievementCard } from '@/components/achivement-card';
 
 
 // Enhanced stats
@@ -423,17 +418,6 @@ function ProfilePage() {
                         {/* ACHIEVEMENT */}
                         <TabsContent value="achievement" className="space-y-4">
                             <div className="space-y-8">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-gray-900">Achievements</h2>
-                                        <p className="text-gray-600">Track your donation milestones and rewards</p>
-                                    </div>
-                                    <div className="text-center">
-                                        <p className="text-2xl font-bold text-gray-900">{earnedAchievements.length}</p>
-                                        <p className="text-sm text-gray-600">Earned</p>
-                                    </div>
-                                </div>
-
                                 {/* Category Filter */}
                                 <div className="flex flex-wrap gap-2">
                                     {["all", "milestone", "streak", "impact", "health"].map((category) => (
@@ -453,61 +437,8 @@ function ProfilePage() {
                                 {/* Achievement Grid */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {filteredAchievements.map((achievement) => {
-                                        const Icon = achievement.icon
-                                        const rarityColors = {
-                                            common: "border-gray-200 bg-gray-50",
-                                            rare: "border-blue-200 bg-blue-50",
-                                            epic: "border-green-200 bg-green-50",
-                                            legendary: "border-orange-200 bg-orange-50",
-                                        }
-
                                         return (
-                                            <Card
-                                                key={achievement.id}
-                                                className={`transition-all duration-200 hover:shadow-md ${achievement.earned ? rarityColors[achievement.rarity as keyof typeof rarityColors] : "border-gray-200 bg-gray-50 opacity-60"
-                                                    }`}
-                                            >
-                                                <CardContent className="p-6">
-                                                    <div className="flex items-start justify-between mb-4">
-                                                        <div className={`p-3 rounded-lg ${achievement.earned ? "bg-white shadow-sm" : "bg-gray-200"}`}>
-                                                            <Icon className={`h-6 w-6 ${achievement.earned ? "text-gray-700" : "text-gray-400"}`} />
-                                                        </div>
-                                                        {!achievement.earned && <Lock className="h-4 w-4 text-gray-400" />}
-                                                    </div>
-
-                                                    <h3 className={`font-semibold mb-2 ${achievement.earned ? "text-gray-900" : "text-gray-500"}`}>
-                                                        {achievement.title}
-                                                    </h3>
-                                                    <p className={`text-sm mb-4 ${achievement.earned ? "text-gray-600" : "text-gray-400"}`}>
-                                                        {achievement.description}
-                                                    </p>
-
-                                                    {!achievement.earned && achievement.progress && (
-                                                        <div className="mb-4">
-                                                            <div className="flex justify-between text-xs mb-1">
-                                                                <span className="text-gray-500">Progress</span>
-                                                                <span className="text-gray-500">{achievement.progress}%</span>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    <div className="flex items-center justify-between">
-                                                        <Badge variant="outline" className="text-xs">
-                                                            {achievement.rarity}
-                                                        </Badge>
-                                                        <div className="flex items-center gap-1">
-                                                            <Gift className="h-4 w-4 text-orange-500" />
-                                                            <span className="text-sm font-medium text-gray-600">{achievement.points} pts</span>
-                                                        </div>
-                                                    </div>
-
-                                                    {achievement.earned && achievement.earnedDate && (
-                                                        <div className="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-200">
-                                                            Earned {achievement.earnedDate.toLocaleDateString()}
-                                                        </div>
-                                                    )}
-                                                </CardContent>
-                                            </Card>
+                                            <AchievementCard achievement={achievement} />
                                         )
                                     })}
                                 </div>
