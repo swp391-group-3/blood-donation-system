@@ -6,7 +6,6 @@ import {
 } from "lucide-react"
 import { Badge } from '@/components/ui/badge';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentAccount } from '@/hooks/use-current-account';
