@@ -18,6 +18,7 @@ import { capitalCase } from 'change-case';
 import { EditProfileModel } from '@/components/edit-profile';
 import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import { displayDonationType } from '@/lib/api/dto/donation';
+import { AchievementCard } from '@/components/achievement-card';
 
 // Enhanced stats
 const mockStats = {
@@ -36,7 +37,6 @@ const mockAchievements = [
         id: 1,
         title: "First Drop",
         description: "Complete your first blood donation",
-        icon: Heart,
         category: "milestone",
         earned: true,
         earnedDate: new Date("2023-02-15"),
@@ -47,7 +47,6 @@ const mockAchievements = [
         id: 2,
         title: "Streak Master",
         description: "Maintain a 5-donation streak",
-        icon: Zap,
         category: "streak",
         earned: true,
         earnedDate: new Date("2023-08-20"),
@@ -58,7 +57,6 @@ const mockAchievements = [
         id: 3,
         title: "Life Saver",
         description: "Help save 30+ lives through donations",
-        icon: Award,
         category: "impact",
         earned: true,
         earnedDate: new Date("2023-11-10"),
@@ -69,34 +67,29 @@ const mockAchievements = [
         id: 4,
         title: "Health Champion",
         description: "Maintain 90+ health score for 6 months",
-        icon: Shield,
         category: "health",
         earned: true,
         earnedDate: new Date("2023-12-01"),
-        points: 250,
+        points: 250,    
         rarity: "rare",
     },
     {
         id: 5,
         title: "Perfect Score",
         description: "Achieve 100% health score",
-        icon: Target,
         category: "health",
         earned: false,
         points: 500,
         rarity: "legendary",
-        progress: 95,
     },
     {
         id: 6,
         title: "Community Hero",
         description: "Complete 20 blood donations",
-        icon: Users,
         category: "milestone",
         earned: false,
         points: 400,
         rarity: "epic",
-        progress: 60,
     },
 ]
 
@@ -415,13 +408,13 @@ export default function ProfilePage() {
                                 </div>
 
                                 {/* Achievement Grid */}
-                                {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {filteredAchievements.map((achievement) => {
                                         return (
                                             <AchievementCard key={achievement.id} achievement={achievement} />
                                         )
                                     })}
-                                </div> */}
+                                </div>
                             </div>
                         </TabsContent>
                     </Tabs >
