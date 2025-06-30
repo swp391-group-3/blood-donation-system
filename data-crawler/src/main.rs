@@ -41,10 +41,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let all_links = page
         .find_elements("ul.rcb-secondary-links-container li.rcb-secondary-links a")
         .await?;
-    
+
     for link in all_links {
         if let Some(href) = link.attribute("href").await? {
-            println!("Link: {}", href);
+            if href.starts_with("/donate-blood")
+                && href != "/donate-blood/manage-my-donations/rapidpass.html"
+            {
+                let url = format!("https://www.redcrossblood.org{}", href);
+                let subpage = browser.new_page(&url).await?;
+                subpage.wait_for_navigation().await?;
+                subpage
+                    .execute(
+                        SetDeviceMetricsOverrideParams::builder()
+                            .width(1920)
+                            .height(1080)
+                            .device_scale_factor(1)
+                            .mobile(false)
+                            .build()
+                            .map_err(|e| format!("Failed to build device metrics params: {}", e))?,
+                    )
+                    .await?;
+            }
         }
     }
 
