@@ -1,4 +1,7 @@
-use chromiumoxide::{browser::{Browser, BrowserConfig}, cdp::browser_protocol::emulation::SetDeviceMetricsOverrideParams};
+use chromiumoxide::{
+    browser::{Browser, BrowserConfig},
+    cdp::browser_protocol::emulation::SetDeviceMetricsOverrideParams,
+};
 use futures::StreamExt;
 use std::time::Duration;
 use tokio::time::sleep;
@@ -29,11 +32,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .device_scale_factor(1)
             .mobile(false)
             .build()
-            .map_err(|e| format!("Failed to build device metrics params: {}", e))?
-    ).await?;
+            .map_err(|e| format!("Failed to build device metrics params: {}", e))?,
+    )
+    .await?;
 
     page.wait_for_navigation().await?;
-    
+
     sleep(Duration::from_secs(30)).await;
 
     browser.close().await?;
