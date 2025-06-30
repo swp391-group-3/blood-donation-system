@@ -3,7 +3,8 @@ use chromiumoxide::{
     cdp::browser_protocol::page::PrintToPdfParams,
 };
 use futures::StreamExt;
-use std::{fs::create_dir_all, path::PathBuf};
+use tokio::time::sleep;
+use std::{fs::create_dir_all, path::PathBuf, time::Duration};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -38,7 +39,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let subpage = browser.new_page(&url).await?;
                 subpage.wait_for_navigation().await?;
 
-                let pdf_bytes = subpage.pdf(PrintToPdfParams::default()).await?;
+                let all_buttons = subpage
+                    .find_elements("span[role='presentation']")
+                    .await
+                    .unwrap_or_default();
+
+                if !all_buttons.is_empty() {
+                    for button in all_buttons {
+                        let _ = button.click().await;
+                        sleep(Duration::from_secs(1)).await;
+                    }
+                }
+
+                sleep(Duration::from_secs(15)).await;
+                
+                let mut pdf_params = PrintToPdfParams::default();
+                pdf_params.landscape = Some(true);
+                pdf_params.margin_left = Some(0.0);
+                pdf_params.margin_right = Some(0.0);
+                pdf_params.scale = Some(0.75);
+
+                let pdf_bytes = subpage.pdf(pdf_params).await?;
 
                 let formatted_name = href
                     .trim_start_matches("/donate-blood/blood-donation-process/")
