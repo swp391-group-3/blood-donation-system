@@ -13,7 +13,6 @@ import {
     Trophy,
     Lock,
     Activity,
-    Share2,
     BarChart3,
     Clock,
     Eye,
@@ -25,42 +24,23 @@ import {
     CalendarIcon,
     UserIcon,
     CakeIcon,
-    Edit3,
     ExternalLink,
     Copy,
     Star,
-    LoaderCircle,
 } from "lucide-react"
-import { Account } from '@/lib/api/dto/account';
 import { Badge } from '@/components/ui/badge';
-import {  bloodGroupLabels } from '@/lib/api/dto/blood-group';
-import { genders } from '@/lib/api/dto/account';
+import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentAccount } from '@/hooks/use-current-account';
 import { useUpdateAccountForm } from '@/hooks/use-update-account-form';
 import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
 import { AccountPicture } from '@/components/account-picture';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { capitalCase } from 'change-case';
-import { Textarea } from '@/components/ui/textarea';
-// Mock user data
-const mockUser: Account = {
-    role: "member",
-    email: "john.doe@lifelink.com",
-    name: "John Doe",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main Street, Downtown, New York, NY 10001",
-    birthday: "1990-05-15",
-    blood_group: "o_plus",
-    gender: "male",
-    created_at: new Date("2023-01-15"),
-}
+import { EditProfileModel } from '@/components/edit-profile';
+
 
 // Enhanced stats
 const mockStats = {
@@ -149,9 +129,9 @@ function ProfilePage() {
     const [selectedCategory, setSelectedCategory] = useState("all")
     const { data: account, isPending, error } = useCurrentAccount();
     const { mutation, form } = useUpdateAccountForm(account, {
-        onSuccess: () => {
+        onSuccess() {
             setIsEditModalOpen(false)
-        }
+        },
     });
 
     // 🎯 As soon as `account` is defined, wipe & re‑populate the form:
@@ -211,10 +191,6 @@ function ProfilePage() {
                                         <Shield className="h-3 w-3 mr-1" />
                                         Verified
                                     </Badge>
-                                    <Badge variant="outline" className='text-[13px] border-red-200 text-red-700 rounded-2xl'>
-                                        <Droplets className="h-3 w-3 mr-1" />
-                                        {bloodGroupLabels[mockUser.blood_group]}
-                                    </Badge>
                                     <Badge variant="outline" className="text-xs border-green-200 text-green-700">
                                         <Heart className="h-3 w-3 mr-1" />
                                         Active Donor
@@ -222,47 +198,9 @@ function ProfilePage() {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Action */}
-                        <div>
-                            <Button variant="outline" size="sm">
-                                <Share2 className="h-4 w-4 mr-2" />
-                                Share
-                            </Button>
-                        </div>
                     </div>
                 </div>
 
-                {/* STATS */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <Card className="border-gray-200">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-2xl font-bold text-gray-900">{mockStats.totalDonations}</p>
-                                    <p className="text-sm text-gray-600">Total Donations</p>
-                                </div>
-                                <div className="p-3 bg-red-50 rounded-lg">
-                                    <Droplets className="h-6 w-6 text-red-600" />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-gray-200">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-2xl font-bold text-gray-900">Level {mockStats.currentLevel}</p>
-                                    <p className="text-sm text-gray-600">Current Level</p>
-                                </div>
-                                <div className="p-3 bg-blue-50 rounded-lg">
-                                    <Trophy className="h-6 w-6 text-blue-600" />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
 
                 {/* Tabs content */}
                 <div>
@@ -289,165 +227,12 @@ function ProfilePage() {
                                         <h2 className='text-2xl font-bold text-gray-900'>Profile Information</h2>
                                         <p className='text-gray-600'>Manage your personal details and preferences</p>
                                     </div>
-                                    <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                                        <DialogTrigger asChild>
-                                            <Button>
-                                                <Edit3 className="h-4 w-4 mr-2" />
-                                                Edit Profile
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col">
-                                            <DialogHeader>
-                                                <DialogTitle>Edit Profile</DialogTitle>
-                                            </DialogHeader>
-                                            <div className="overflow-y-auto flex-1 pr-2">
-                                                <Form {...form}>
-                                                    <form
-                                                        className="space-y-6"
-                                                        onSubmit={form.handleSubmit((values) => {
-                                                            mutation.mutate(values)
-
-                                                        }
-                                                        )}
-                                                    >
-                                                        <Card>
-                                                            <CardContent className="space-y-6">
-                                                                <div className="grid auto-cols-fr gap-5">
-                                                                    <FormField
-                                                                        control={form.control}
-                                                                        name="name"
-                                                                        render={({ field }) => (
-                                                                            <FormItem className="grid gap-2">
-                                                                                <FormLabel>Name</FormLabel>
-                                                                                <FormControl>
-                                                                                    <Input
-                                                                                        {...field}
-                                                                                        required
-                                                                                    />
-                                                                                </FormControl>
-                                                                                <FormMessage />
-                                                                            </FormItem>
-                                                                        )}
-                                                                    />
-                                                                    <FormField
-                                                                        control={form.control}
-                                                                        name="gender"
-                                                                        render={({ field }) => (
-                                                                            <FormItem className="grid gap-2">
-                                                                                <FormLabel>Gender</FormLabel>
-                                                                                <Select
-                                                                                    onValueChange={
-                                                                                        field.onChange
-                                                                                    }
-                                                                                    {...field}
-                                                                                >
-                                                                                    <FormControl>
-                                                                                        <SelectTrigger className="w-full">
-                                                                                            <SelectValue placeholder="Select a gender" />
-                                                                                        </SelectTrigger>
-                                                                                    </FormControl>
-                                                                                    <SelectContent>
-                                                                                        {genders.map(
-                                                                                            (gender, index) => (
-                                                                                                <SelectItem
-                                                                                                    key={index}
-                                                                                                    value={
-                                                                                                        gender
-                                                                                                    }
-                                                                                                >
-                                                                                                    {capitalCase(
-                                                                                                        gender,
-                                                                                                    )}
-                                                                                                </SelectItem>
-                                                                                            ),
-                                                                                        )}
-                                                                                    </SelectContent>
-                                                                                </Select>
-                                                                                <FormMessage />
-                                                                            </FormItem>
-                                                                        )}
-                                                                    />
-                                                                    <FormField
-                                                                        control={form.control}
-                                                                        name="birthday"
-                                                                        render={({ field }) => (
-                                                                            <FormItem className="grid gap-2">
-                                                                                <FormLabel>Birthday</FormLabel>
-                                                                                <FormControl>
-                                                                                    <Input
-                                                                                        type="date"
-                                                                                        {...field}
-                                                                                        required
-                                                                                    />
-                                                                                </FormControl>
-                                                                                <FormMessage />
-                                                                            </FormItem>
-                                                                        )}
-                                                                    />
-                                                                    <FormField
-                                                                        control={form.control}
-                                                                        name="phone"
-                                                                        render={({ field }) => (
-                                                                            <FormItem className="grid gap-2">
-                                                                                <FormLabel>Phone</FormLabel>
-                                                                                <FormControl>
-                                                                                    <Input
-                                                                                        type="tel"
-                                                                                        {...field}
-                                                                                        required
-                                                                                    />
-                                                                                </FormControl>
-                                                                                <FormMessage />
-                                                                            </FormItem>
-                                                                        )}
-                                                                    />
-                                                                    <FormField
-                                                                        control={form.control}
-                                                                        name="address"
-                                                                        render={({ field }) => (
-                                                                            <FormItem className="grid gap-2">
-                                                                                <FormLabel>Address</FormLabel>
-                                                                                <FormControl>
-                                                                                    <Textarea
-                                                                                        {...field}
-                                                                                        required
-                                                                                        className='resize-none overflow-auto h-20'
-                                                                                    />
-                                                                                </FormControl>
-                                                                                <FormMessage />
-                                                                            </FormItem>
-                                                                        )}
-                                                                    />
-                                                                    <div className="flex justify-center ">
-                                                                        <Button
-                                                                            type="submit"
-                                                                            disabled={mutation.isPending}
-                                                                            data-loading={mutation.isPending}
-                                                                            className="group relative disabled:opacity-100"
-                                                                        >
-                                                                            <span className="group-data-[loading=true]:text-transparent">
-                                                                                Update
-                                                                            </span>
-                                                                            {mutation.isPending && (
-                                                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                                                    <LoaderCircle
-                                                                                        className="animate-spin"
-                                                                                        size={16}
-                                                                                        strokeWidth={2}
-                                                                                        aria-hidden="true"
-                                                                                    />
-                                                                                </div>
-                                                                            )}
-                                                                        </Button>
-                                                                    </div>
-                                                                </div>
-                                                            </CardContent>
-                                                        </Card>
-                                                    </form>
-                                                </Form>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
+                                    <EditProfileModel
+                                        isOpen={isEditModalOpen}
+                                        onOpenChange={setIsEditModalOpen}
+                                        form={form}
+                                        mutation={mutation}
+                                    />
                                 </div>
                             </div>
 
@@ -491,7 +276,7 @@ function ProfilePage() {
                                                 <UserIcon className="h-4 w-4 text-gray-600" />
                                                 <div>
                                                     <p className="text-sm font-medium text-gray-900">
-                                                        {account.gender.charAt(0).toUpperCase() + account.gender.slice(1)}
+                                                        {capitalCase(account.gender)}
                                                     </p>
                                                     <p className="text-xs text-gray-500">Gender</p>
                                                 </div>
@@ -506,7 +291,7 @@ function ProfilePage() {
                                                     <p className="text-xs text-red-600">Blood Type</p>
                                                 </div>
                                             </div>
-                                            {bloodGroupLabels[account.blood_group] == "O+" && (
+                                            {account.blood_group == "o_minus" && (
                                                 <Badge className="bg-red-100 text-red-700 border-red-200">Universal</Badge>
                                             )}
 
@@ -633,63 +418,6 @@ function ProfilePage() {
                                         </CardContent>
                                     </Card>
                                 </div>
-
-                                {/* Health & Achievements */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    <Card className="border-gray-200">
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2">
-                                                <Shield className="h-5 w-5 text-green-600" />
-                                                Donation Eligibility
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="flex items-center gap-4 p-4 bg-green-50 rounded-lg mb-4">
-                                                <CheckCircle className="h-8 w-8 text-green-600" />
-                                                <div>
-                                                    <p className="font-semibold text-green-800">Eligible to donate</p>
-                                                    <p className="text-sm text-green-600">Ready for donation</p>
-                                                </div>
-                                            </div>
-                                            <Button variant="outline" className="w-full" size="sm">
-                                                <Eye className="h-4 w-4 mr-2" />
-                                                View Health Report
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-
-                                    <Card className="border-gray-200">
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2">
-                                                <Trophy className="h-5 w-5 text-orange-600" />
-                                                Recent Achievements
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="space-y-3">
-                                                {earnedAchievements.slice(-3).map((achievement) => {
-                                                    const Icon = achievement.icon
-                                                    return (
-                                                        <div key={achievement.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                                            <div className="p-2 bg-white rounded-lg border">
-                                                                <Icon className="h-4 w-4 text-gray-600" />
-                                                            </div>
-                                                            <div className="flex-1">
-                                                                <p className="text-sm font-medium">{achievement.title}</p>
-                                                                <p className="text-xs text-gray-500">+{achievement.points} points</p>
-                                                            </div>
-                                                            <Star className="h-4 w-4 text-orange-500" />
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                            <Button variant="outline" className="w-full mt-4" size="sm">
-                                                <Bookmark className="h-4 w-4 mr-2" />
-                                                View All Achievements
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-                                </div>
                             </div>
                         </TabsContent>
                         {/* ACHIEVEMENT */}
@@ -717,7 +445,7 @@ function ProfilePage() {
                                                 : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                                                 }`}
                                         >
-                                            {category.charAt(0).toUpperCase() + category.slice(1)}
+                                            {capitalCase(category)}
                                         </button>
                                     ))}
                                 </div>
