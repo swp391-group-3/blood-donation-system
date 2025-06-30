@@ -54,15 +54,14 @@ pub async fn get_all(
             }
 
             if let Some(blood_group) = request.blood_group {
-                if let Some(mode) = request.mode {
-                    match mode {
-                        Mode::Exact => {
-                            blood_bags.retain(|bb| bb.blood_group == blood_group);
-                        }
-                        Mode::Compatible => {
-                            let compatible = get_compatible_donors(blood_group);
-                            blood_bags.retain(|bb| compatible.contains(&bb.blood_group));
-                        }
+                let mode = request.mode.unwrap_or(Mode::Compatible);
+                match mode {
+                    Mode::Exact => {
+                        blood_bags.retain(|bb| bb.blood_group == blood_group);
+                    }
+                    Mode::Compatible => {
+                        let compatible = get_compatible_donors(blood_group);
+                        blood_bags.retain(|bb| compatible.contains(&bb.blood_group));
                     }
                 }
             }
