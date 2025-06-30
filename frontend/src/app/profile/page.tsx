@@ -240,9 +240,6 @@ export default function ProfilePage() {
                                                     <p className="text-xs text-gray-500">Full Name</p>
                                                 </div>
                                             </div>
-                                            <Button variant="ghost" size="sm">
-                                                <Copy className="h-4 w-4" />
-                                            </Button>
                                         </div>
 
                                         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -299,9 +296,6 @@ export default function ProfilePage() {
                                                     <p className="text-xs text-gray-500">Email Address</p>
                                                 </div>
                                             </div>
-                                            <Button variant="ghost" size="sm">
-                                                <ExternalLink className="h-4 w-4" />
-                                            </Button>
                                         </div>
 
                                         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -312,9 +306,6 @@ export default function ProfilePage() {
                                                     <p className="text-xs text-gray-500">Phone Number</p>
                                                 </div>
                                             </div>
-                                            <Button variant="ghost" size="sm">
-                                                <Copy className="h-4 w-4" />
-                                            </Button>
                                         </div>
 
                                         <div className="p-3 bg-gray-50 rounded-lg">
