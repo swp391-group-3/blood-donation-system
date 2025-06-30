@@ -70,7 +70,7 @@ const mockAchievements = [
         category: "health",
         earned: true,
         earnedDate: new Date("2023-12-01"),
-        points: 250,    
+        points: 250,
         rarity: "rare",
     },
     {
@@ -169,7 +169,22 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </div>
-
+                {/* STATS */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <Card className="border-gray-200">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-2xl font-bold text-gray-900">{donations?.length}</p>
+                                    <p className="text-sm text-gray-600">Total Donations</p>
+                                </div>
+                                <div className="p-3 bg-red-50 rounded-lg">
+                                    <Droplets className="h-6 w-6 text-red-600" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
                 {/* Tabs content */}
                 <div>
