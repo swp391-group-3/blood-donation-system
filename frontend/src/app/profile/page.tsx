@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import {
     User, Droplets, Shield, Heart, Trophy, Activity, BarChart3, Clock, MapPinIcon,
-    PhoneIcon, MailIcon, CalendarIcon, UserIcon, CakeIcon, ExternalLink, Copy,
+    PhoneIcon, MailIcon, CalendarIcon, UserIcon, CakeIcon
 } from "lucide-react"
 import { Badge } from '@/components/ui/badge';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
