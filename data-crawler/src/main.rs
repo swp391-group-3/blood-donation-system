@@ -38,6 +38,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     page.wait_for_navigation().await?;
 
+    let all_links = page
+        .find_elements("ul.rcb-secondary-links-container li.rcb-secondary-links a")
+        .await?;
+    
+    for link in all_links {
+        if let Some(href) = link.attribute("href").await? {
+            println!("Link: {}", href);
+        }
+    }
+
     sleep(Duration::from_secs(30)).await;
 
     browser.close().await?;
