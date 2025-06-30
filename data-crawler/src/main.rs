@@ -1,9 +1,9 @@
 use chromiumoxide::{
     browser::{Browser, BrowserConfig},
-    cdp::browser_protocol::emulation::SetDeviceMetricsOverrideParams,
+    cdp::browser_protocol::{emulation::SetDeviceMetricsOverrideParams, page::PrintToPdfParams},
 };
 use futures::StreamExt;
-use std::time::Duration;
+use std::{fs::create_dir_all, path::PathBuf, time::Duration};
 use tokio::time::sleep;
 
 #[tokio::main]
@@ -42,14 +42,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .find_elements("ul.rcb-secondary-links-container li.rcb-secondary-links a")
         .await?;
 
+    let output_dir = PathBuf::from("output_pdfs");
+    create_dir_all(&output_dir)?;
+
     for link in all_links {
         if let Some(href) = link.attribute("href").await? {
             if href.starts_with("/donate-blood")
                 && href != "/donate-blood/manage-my-donations/rapidpass.html"
             {
                 let url = format!("https://www.redcrossblood.org{}", href);
+                
                 let subpage = browser.new_page(&url).await?;
-                subpage.wait_for_navigation().await?;
                 subpage
                     .execute(
                         SetDeviceMetricsOverrideParams::builder()
@@ -61,6 +64,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             .map_err(|e| format!("Failed to build device metrics params: {}", e))?,
                     )
                     .await?;
+                
+                subpage.wait_for_navigation().await?;
+                
+                let pdf_bytes = subpage
+                    .pdf(PrintToPdfParams::default())
+                    .await?;
+
+                let name = href
+                    .trim_start_matches('/')
+                    .trim_end_matches(".html")
+                    .replace('/', "_")
+                    .replace('-', "_");
+
+                let filename = format!("{}.pdf", name);
+                let path = output_dir.join(filename);
+                tokio::fs::write(path, pdf_bytes).await?;
             }
         }
     }
