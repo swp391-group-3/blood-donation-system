@@ -44,6 +44,7 @@ impl Modify for SecurityAddon {
         controller::account::get,
         controller::account::delete,
         controller::account::update,
+        controller::account::is_donatable,
 
         controller::blood_request::create,
         controller::blood_request::get,
