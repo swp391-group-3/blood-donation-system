@@ -46,7 +46,7 @@ jobs:
       - name: Check Clippy
         run: cargo clippy --all-features --workspace -- -D warnings
       - name: Check rustfmt
-        run: cargo fmt --all-features --all -- --check
+        run: cargo fmt --all -- --check
 
   test:
     runs-on: ${{ matrix.os }}
