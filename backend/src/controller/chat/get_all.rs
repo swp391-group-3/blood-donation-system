@@ -8,7 +8,7 @@ use crate::{error::Result, state::ApiState};
 
 #[utoipa::path(
     get,
-    tag = "Blood Request",
+    tag = "Chat",
     path = "/chat",
     operation_id = "chat::get_all"
 )]
