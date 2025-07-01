@@ -2,7 +2,8 @@ pub mod bcrypt;
 pub mod email;
 pub mod jwt;
 pub mod oidc;
-mod rag;
+#[cfg(feature = "rag")]
+pub mod rag;
 
 use std::{collections::HashMap, sync::LazyLock};
 
@@ -10,9 +11,10 @@ use email::EmailConfig;
 use oidc::Provider;
 use serde::Deserialize;
 
-use crate::config::{
-    bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectConfig, rag::RAGConfig,
-};
+use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectConfig};
+
+#[cfg(feature = "rag")]
+use crate::config::rag::RAGConfig;
 
 const fn default_port() -> u16 {
     3000
@@ -38,6 +40,7 @@ pub struct Config {
     pub oidc: HashMap<Provider, OpenIdConnectConfig>,
     #[serde(default)]
     pub email: EmailConfig,
+    #[cfg(feature = "rag")]
     pub rag: RAGConfig,
 }
 

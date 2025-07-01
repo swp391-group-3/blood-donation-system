@@ -10,17 +10,18 @@ use lettre::{AsyncSmtpTransport, Tokio1Executor, transport::smtp::authentication
 use crate::{
     config::{CONFIG, oidc::Provider},
     error::{Error, Result},
-    util::{
-        auth::{JwtService, OpenIdConnectClient},
-        rag::RAGAgent,
-    },
+    util::auth::{JwtService, OpenIdConnectClient},
 };
+
+#[cfg(feature = "rag")]
+use crate::util::rag::RAGAgent;
 
 pub struct ApiState {
     pub database_pool: deadpool_postgres::Pool,
     pub oidc_clients: HashMap<Provider, OpenIdConnectClient>,
     pub jwt_service: JwtService,
     pub mailer: AsyncSmtpTransport<Tokio1Executor>,
+    #[cfg(feature = "rag")]
     pub rag_agent: RAGAgent,
 }
 
@@ -55,6 +56,7 @@ impl ApiState {
             oidc_clients,
             jwt_service: Default::default(),
             mailer,
+            #[cfg(feature = "rag")]
             rag_agent: RAGAgent::new().await,
         })
     }

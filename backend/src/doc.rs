@@ -23,6 +23,13 @@ impl Modify for SecurityAddon {
 }
 
 #[derive(OpenApi)]
+#[cfg_attr(
+    feature = "rag",
+    openapi(paths(controller::chat::prompt, controller::chat::get_all,))
+)]
+struct ChatDoc;
+
+#[derive(OpenApi)]
 #[openapi(
     paths(
         controller::ping,
@@ -89,9 +96,6 @@ impl Modify for SecurityAddon {
         controller::blood_bag::get,
         controller::blood_bag::delete,
         controller::blood_bag::update,
-
-        controller::chat::prompt,
-        controller::chat::get_all,
     ),
     modifiers(&SecurityAddon),
 )]
@@ -99,6 +103,9 @@ struct ApiDoc;
 
 pub fn build() -> Router<Arc<ApiState>> {
     SwaggerUi::new("/swagger-ui")
-        .url("/api-docs/openapi.json", ApiDoc::openapi())
+        .url(
+            "/api-docs/openapi.json",
+            ApiDoc::openapi().merge_from(ChatDoc::openapi()),
+        )
         .into()
 }
