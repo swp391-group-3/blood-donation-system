@@ -1,59 +1,28 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import {
-    Droplet,
-    Search,
-    Filter,
-    Heart,
-    Droplets,
-    User,
-    UserSearch,
-    FileText,
-    Plus,
-    Save,
-} from 'lucide-react';
-import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
-import { useBloodRequestList } from '@/hooks/use-blood-request-list';
+import { Search, FileText, Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-    BloodRequest,
-    priorities,
-    Priority,
-} from '@/lib/api/dto/blood-request';
 import { useMemo, useState } from 'react';
-import { capitalCase } from 'change-case';
-import {
-    BloodGroup,
-    bloodGroups,
-    bloodGroupLabels,
-} from '@/lib/api/dto/blood-group';
 import {
     Hero,
     HeroDescription,
     HeroKeyword,
-    HeroSummary,
     HeroTitle,
 } from '@/components/hero';
-import { CardGrid } from '@/components/card-grid';
-import { RequestCard } from '@/components/request-card';
 import { useQuestionList } from '@/hooks/use-question-list';
 import {
     Table,
     TableBody,
+    TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { AddQuestionDialog } from '@/components/add-question-dialog';
+import { EditQuestionDialog } from '@/components/edit-question-dialog';
+import { DeleteQuestionDialog } from '@/components/delete-question-dialog';
 
 export default function QuestionPage() {
     const { data: questions, isPending, error } = useQuestionList();
@@ -118,7 +87,52 @@ export default function QuestionPage() {
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody></TableBody>
+                        <TableBody>
+                            {filtered.map((question, index) => (
+                                <TableRow>
+                                    <TableCell className="p-6 font-medium text-slate-900 ">
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-800 text-sm font-bold shadow-sm border border-purple-200">
+                                                {index}
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="font-medium text-slate-900 leading-relaxed">
+                                                    {question.content}
+                                                </div>
+                                                <div className="text-xs text-slate-500 mt-1">
+                                                    Question #{question.id}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="flex gap-4 mt-4">
+                                        <EditQuestionDialog question={question}>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="border-blue-200 text-blue-700 hover:bg-blue-50 rounded-lg"
+                                            >
+                                                <Edit className="h-3 w-3 mr-1" />
+                                                Edit
+                                            </Button>
+                                        </EditQuestionDialog>
+
+                                        <DeleteQuestionDialog
+                                            question={question}
+                                        >
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="border-red-200 text-red-700 hover:bg-red-50 rounded-lg"
+                                            >
+                                                <Trash2 className="h-3 w-3 mr-1" />
+                                                Delete
+                                            </Button>
+                                        </DeleteQuestionDialog>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
                     </Table>
                     {filtered.length === 0 && (
                         <div className="text-center py-12">
