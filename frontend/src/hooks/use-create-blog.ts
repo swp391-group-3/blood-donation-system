@@ -5,15 +5,17 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-export const schema = z.object({
+export const blogPostSchema = z.object({
     title: z.string().min(1, 'Must inclucde blog title'),
+    description: z.string().min(1, 'Must include blog description'),
+    tags: z.array(z.string()),
     content: z.string().min(1, 'Must include blog content'),
 });
 
 export const useCreateBlogFrom = () => {
     const mutation = useMutation({
-        mutationFn: async (values: z.infer<typeof schema>) => {
-            const response = await fetchWrapper('/blog/new', {
+        mutationFn: async (values: z.infer<typeof blogPostSchema>) => {
+            const response = await fetchWrapper('/blog', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -25,11 +27,11 @@ export const useCreateBlogFrom = () => {
         },
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
-            toast.info('Create Blog Success Fully');
+            toast.info('Create Blog Successfully');
         },
     });
-    const form = useForm<z.infer<typeof schema>>({
-        resolver: zodResolver(schema),
+    const form = useForm<z.infer<typeof blogPostSchema>>({
+        resolver: zodResolver(blogPostSchema),
         defaultValues: {},
     });
     return {

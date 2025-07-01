@@ -195,7 +195,7 @@ where
 }
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "WITH blog AS ( INSERT INTO blogs (account_id, title, description, content) VALUES ($1, $2, $3, $4) RETURNING id ), new_tags AS ( INSERT INTO tags (name) SELECT DISTINCT tag FROM UNNEST($5::text[]) AS tag ON CONFLICT (name) DO NOTHING RETURNING id ), existing_tags AS ( SELECT id FROM tags WHERE name = ANY($5) ), all_tags AS ( SELECT id FROM new_tags UNION SELECT id FROM existing_tags ), blog_tags_insert AS ( INSERT INTO blog_tags (blog_id, tag_id) SELECT (SELECT id FROM blog), id FROM all_tags ) SELECT id AS blog_id FROM blog",
+        "WITH blog AS ( INSERT INTO blogs (account_id, title, description, content) VALUES ($1, $2, $3, $4) RETURNING id ), new_tags AS ( INSERT INTO tags (name) SELECT DISTINCT tag FROM UNNEST($5::text[]) AS tag ON CONFLICT DO NOTHING RETURNING id ), existing_tags AS ( SELECT id FROM tags WHERE name = ANY($5) ), all_tags AS ( SELECT id FROM new_tags UNION SELECT id FROM existing_tags ), blog_tags_insert AS ( INSERT INTO blog_tags (blog_id, tag_id) SELECT (SELECT id FROM blog), id FROM all_tags ) SELECT id AS blog_id FROM blog",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
