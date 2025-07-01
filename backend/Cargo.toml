@@ -30,6 +30,7 @@ tokio = { version = "1.45.0", features = ["full"] }
 tokio-stream = { version = "0.1.17", features = ["fs"] }
 tower-http = { version = "0.6.4", features = ["cors", "trace"] }
 tower-sessions = "0.14.0"
+tower-sessions-redis-store = "0.16.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt", "chrono", "env-filter"] }
 utoipa = { version = "5.3.1", features = ["chrono", "uuid"] }
