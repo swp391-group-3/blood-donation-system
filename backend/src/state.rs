@@ -6,7 +6,6 @@ use database::{
 };
 use futures::{StreamExt, stream};
 use lettre::{AsyncSmtpTransport, Tokio1Executor, transport::smtp::authentication::Credentials};
-use rig::{agent::Agent, providers::gemini};
 
 use crate::{
     config::{CONFIG, oidc::Provider},

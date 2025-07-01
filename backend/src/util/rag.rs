@@ -1,22 +1,23 @@
-use database::{client::Params, deadpool_postgres::Object, tokio_postgres};
 use futures::StreamExt;
 use qdrant_client::{
     Qdrant,
     qdrant::{CreateCollectionBuilder, Distance, QueryPointsBuilder, VectorParamsBuilder},
 };
 use rig::{
-    Embed, agent::Agent, embeddings::EmbeddingsBuilder, message::Message, providers::gemini,
+    Embed, agent::Agent, completion::Chat, embeddings::EmbeddingsBuilder, message::Message,
+    providers::gemini,
 };
 use rig_qdrant::QdrantVectorStore;
 use serde::Serialize;
 use tokio::fs;
 use tokio_stream::wrappers::ReadDirStream;
-use uuid::Uuid;
+use tower_sessions::Session;
 
-use crate::config::CONFIG;
+use crate::{config::CONFIG, error::Error};
 
 const GEMINI_EMBEDING_SIZE: u64 = 768;
 const DOCUMENT_PATH: &str = "docs";
+const HISTORY_KEY: &str = "history";
 
 #[derive(Embed, Serialize, Clone, Debug, Eq, PartialEq, Default)]
 pub struct Document {
@@ -86,5 +87,56 @@ impl RAGAgent {
             .build();
 
         Self { agent }
+    }
+
+    pub async fn get_histories(session: &Session) -> Result<Vec<Message>, Error> {
+        match session.get(HISTORY_KEY).await {
+            Ok(Some(histories)) => Ok(histories),
+            Ok(None) => {
+                tracing::info!("New chat session created");
+                Ok(vec![])
+            }
+            Err(error) => {
+                tracing::error!(?error, "Failed to get chat session");
+                Err(Error::internal())
+            }
+        }
+    }
+
+    async fn append_histories(
+        messages: &[Message],
+        histories: &[Message],
+        session: &Session,
+    ) -> Result<(), Error> {
+        let histories = [messages, histories].concat();
+
+        match session.insert(HISTORY_KEY, histories).await {
+            Ok(_) => Ok(()),
+            Err(error) => {
+                tracing::error!(?error, "Failed to save chat session");
+                Err(Error::internal())
+            }
+        }
+    }
+
+    pub async fn chat(&self, prompt: String, session: &Session) -> Result<String, Error> {
+        let histories = Self::get_histories(session).await?;
+
+        let response = match self.agent.chat(prompt.as_str(), histories.clone()).await {
+            Ok(response) => response,
+            Err(error) => {
+                tracing::error!(?error, "Failed to chat with agent");
+                return Err(Error::internal());
+            }
+        };
+
+        Self::append_histories(
+            &[Message::user(prompt), Message::assistant(response.clone())],
+            &histories,
+            session,
+        )
+        .await?;
+
+        Ok(response)
     }
 }
