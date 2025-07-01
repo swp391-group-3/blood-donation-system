@@ -18,6 +18,8 @@ RUN cargo build --release --all-features
 
 FROM debian:bookworm AS application
 
+ENV LANG C.UTF-8
+
 RUN apt-get update \
     && apt-get install libssl3 ca-certificates -y \
     && apt-get clean
