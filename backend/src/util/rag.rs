@@ -89,7 +89,7 @@ impl RAGAgent {
         Self { agent }
     }
 
-    pub async fn get_histories(session: &Session) -> Result<Vec<Message>, Error> {
+    pub async fn get_histories(&self, session: &Session) -> Result<Vec<Message>, Error> {
         match session.get(HISTORY_KEY).await {
             Ok(Some(histories)) => Ok(histories),
             Ok(None) => {
@@ -104,6 +104,7 @@ impl RAGAgent {
     }
 
     async fn append_histories(
+        &self,
         messages: &[Message],
         histories: &[Message],
         session: &Session,
@@ -120,7 +121,7 @@ impl RAGAgent {
     }
 
     pub async fn chat(&self, prompt: String, session: &Session) -> Result<String, Error> {
-        let histories = Self::get_histories(session).await?;
+        let histories = self.get_histories(session).await?;
 
         let response = match self.agent.chat(prompt.as_str(), histories.clone()).await {
             Ok(response) => response,
@@ -130,7 +131,7 @@ impl RAGAgent {
             }
         };
 
-        Self::append_histories(
+        self.append_histories(
             &[Message::user(prompt), Message::assistant(response.clone())],
             &histories,
             session,

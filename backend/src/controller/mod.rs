@@ -4,6 +4,7 @@ pub mod auth;
 pub mod blog;
 pub mod blood_bag;
 pub mod blood_request;
+pub mod chat;
 pub mod comment;
 pub mod donation;
 pub mod health;
@@ -30,4 +31,5 @@ pub fn build() -> Router<Arc<ApiState>> {
         .merge(health::build())
         .merge(blood_bag::build())
         .merge(donation::build())
+        .merge(chat::build())
 }
