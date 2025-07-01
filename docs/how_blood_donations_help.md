@@ -137,4 +137,20 @@ Emily's Story: A Letter from Mom and Dad
 
 Like many blood recipients, Emily will need lifesaving transfusions for the foreseeable future. One blood donation may help save up to three lives. For more information about blood donation or to schedule an appointment, please visit http://www.redcrossblood.org/give
 
- Learn More About Our Nation's Blood Needs and Blood Supply
+ Learn More About Our Nation's Blood Needs and Blood Supply 
+
+## Hi, I'm Clara!
+
+Chat with me!
+
+Chat with me!
+
+## Hi, I'm Clara!
+
+Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
+
+How can I help?
+
+   
+
+### LOADING

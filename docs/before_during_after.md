@@ -156,20 +156,4 @@ Find a convenient blood drive near you and schedule an appointment to donate tod
 
  
 
- Make Your Appointment 
-
-## Hi, I'm Clara!
-
-Chat with me!
-
-Chat with me!
-
-## Hi, I'm Clara!
-
-Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
-
-How can I help?
-
-   
-
-### LOADING
+ Make Your Appointment
