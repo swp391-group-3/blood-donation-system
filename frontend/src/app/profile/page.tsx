@@ -187,15 +187,15 @@ export default function ProfilePage() {
 
                 {/* Tabs content */}
                 <div>
-                    <Tabs defaultValue='profile' className='space-y-4'>
+                    <Tabs defaultValue='overview' className='space-y-4'>
                         <TabsList className='grid grid-cols-1 lg:grid-cols-3 mb-8'>
+                        <TabsTrigger value='overview'>
+                                <BarChart3 className='mr-2 h-4 w-4 text-gray-700' />
+                                Overview
+                            </TabsTrigger>
                             <TabsTrigger value='profile'>
                                 <User className='mr-2 h-4 w-4 text-gray-700' />
                                 Profile
-                            </TabsTrigger>
-                            <TabsTrigger value='overview'>
-                                <BarChart3 className='mr-2 h-4 w-4 text-gray-700' />
-                                Overview
                             </TabsTrigger>
                             <TabsTrigger value='achievement'>
                                 <Trophy className='mr-2 h-4 w-4 text-gray-700' />
