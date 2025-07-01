@@ -59,7 +59,7 @@ services:
       RAG__GEMINI_API_KEY: ${GEMINI_API_KEY}
       RAG__CONTEXT_SAMPLE: ${RAG_CONTEXT_SAMPLE}
     image: ${REGISTRY}/backend:latest
-    restart: always
+    restart: no
     volumes:
       - type: bind
         source: ./docs
