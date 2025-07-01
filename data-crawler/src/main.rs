@@ -24,7 +24,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let Some(href) = link.attribute("href").await? else {
             continue;
         };
-        
+
         if href.starts_with("/donate-blood")
             && href != "/donate-blood/manage-my-donations/rapidpass.html"
         {

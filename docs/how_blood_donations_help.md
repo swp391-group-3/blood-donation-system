@@ -113,6 +113,10 @@ Marquita was diagnosed with Sickle Cell Disease at birth. Every six weeks she re
 
   Play Video
 
+Supermodel Niki Taylor Reunites with Superhero Blood Donors
+
+In 2001 Niki Taylor was critically injured in a car accident and received over 100 blood transfusions. In 2013, she reunited with some of the Red Cross blood donors who helped save her life.
+
 ###### Patients with Chronic Diseases
 
 **Ideal Donation Type:** A single whole blood donation can help more than one person.    
@@ -129,20 +133,8 @@ Marquita was diagnosed with Sickle Cell Disease at birth. Every six weeks she re
 
   Play Video
 
- Learn More About Our Nation's Blood Needs and Blood Supply 
+Emily's Story: A Letter from Mom and Dad
 
-## Hi, I'm Clara!
+Like many blood recipients, Emily will need lifesaving transfusions for the foreseeable future. One blood donation may help save up to three lives. For more information about blood donation or to schedule an appointment, please visit http://www.redcrossblood.org/give
 
-Chat with me!
-
-Chat with me!
-
-## Hi, I'm Clara!
-
-Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
-
-How can I help?
-
-   
-
-### LOADING
+ Learn More About Our Nation's Blood Needs and Blood Supply

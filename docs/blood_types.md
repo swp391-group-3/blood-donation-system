@@ -375,7 +375,7 @@ AB-
 
   
 
-38%
+37%
 
 47%
 
@@ -387,7 +387,7 @@ African-American
 
   
 
-40%
+39%
 
 53%
 
@@ -679,4 +679,26 @@ Now that you know how your blood type can help recipients, please schedule an ap
 
  Find a blood drive near you
 
- Make Your Appointment
+ Make Your Appointment 
+
+## Hi, I'm Clara!
+
+Chat with me!
+
+Chat with me!
+
+## Hi, I'm Clara!
+
+Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
+
+How can I help?
+
+   
+
+### LOADING
+
+![](/content/dam/redcross/imported-images/redcross-logo.png)
+
+# 
+
+ Close

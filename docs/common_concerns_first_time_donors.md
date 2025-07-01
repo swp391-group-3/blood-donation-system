@@ -242,3 +242,19 @@ We answer the most frequently asked questions in the new Be a Hero Donor Guide. 
 <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1259313941211836&ev=PageView&noscript=1"/>
 
 ![](https://accretivemedia.go2cloud.org/aff_i?offer_id=57&aff_id=1&source=lp)
+
+## Hi, I'm Clara!
+
+Chat with me!
+
+Chat with me!
+
+## Hi, I'm Clara!
+
+Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
+
+How can I help?
+
+   
+
+### LOADING
