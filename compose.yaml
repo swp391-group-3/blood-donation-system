@@ -61,7 +61,9 @@ services:
     image: ${REGISTRY}/backend:latest
     restart: always
     volumes:
-      - ./docs:./docs
+      - type: bind
+        source: ./docs
+        target: /app/docs
     ports:
       - 3000:3000
     networks:

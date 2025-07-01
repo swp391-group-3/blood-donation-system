@@ -44,7 +44,7 @@ jobs:
           workspaces: |
             backend
       - name: Check Clippy
-        run: cargo clippy --workspace -- -D warnings
+        run: cargo clippy --all-features --workspace -- -D warnings
       - name: Check rustfmt
         run: cargo fmt --all -- --check
 
