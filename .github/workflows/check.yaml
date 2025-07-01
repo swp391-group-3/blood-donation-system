@@ -93,6 +93,6 @@ jobs:
       - name: Test
         env:
           DATABASE_URL: ${{ steps.postgres.outputs.connection-uri }}
-          RAG__GEMINI_API_KEY: ${GEMINI_API_KEY}
+          RAG__GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           cargo test --target ${{ matrix.target }}
