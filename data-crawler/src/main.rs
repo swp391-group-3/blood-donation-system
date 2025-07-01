@@ -1,6 +1,5 @@
 use chromiumoxide::{
     browser::{Browser, BrowserConfig},
-    cdp::browser_protocol::page::PrintToPdfParams,
 };
 use futures::StreamExt;
 use tokio::time::sleep;
@@ -26,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .find_elements("ul.rcb-secondary-links-container li.rcb-secondary-links a")
         .await?;
 
-    let output_dir = PathBuf::from("output_pdfs");
+    let output_dir = PathBuf::from("output_htmls");
     create_dir_all(&output_dir)?;
 
     for link in all_links {
@@ -51,15 +50,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
 
-                sleep(Duration::from_secs(15)).await;
+                sleep(Duration::from_secs(5)).await;
                 
-                let mut pdf_params = PrintToPdfParams::default();
-                pdf_params.landscape = Some(true);
-                pdf_params.margin_left = Some(0.0);
-                pdf_params.margin_right = Some(0.0);
-                pdf_params.scale = Some(0.75);
-
-                let pdf_bytes = subpage.pdf(pdf_params).await?;
+                let html_content = subpage.content().await?;
 
                 let formatted_name = href
                     .trim_start_matches("/donate-blood/blood-donation-process/")
@@ -69,16 +62,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .replace('/', "_")
                     .replace('-', "_");
 
-                let filename = format!("{}.pdf", formatted_name);
+                let filename = format!("{}.html", formatted_name);
                 let path = output_dir.join(filename);
-                tokio::fs::write(path, pdf_bytes).await?;
-
-                subpage.close().await?;
+                tokio::fs::write(path, html_content).await?;
             }
         }
     }
 
-    page.close().await?;
     browser.close().await?;
     handle.await?;
 
