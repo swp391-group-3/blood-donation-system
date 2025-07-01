@@ -1,18 +1,10 @@
 use tower_sessions::{
-    Expiry, SessionManagerLayer,
+    Expiry, MemoryStore, SessionManagerLayer,
     cookie::{SameSite, time::Duration},
 };
-use tower_sessions_redis_store::{
-    RedisStore,
-    fred::prelude::{ClientLike, Config, Pool},
-};
 
-pub async fn session() -> SessionManagerLayer<RedisStore<Pool>> {
-    let pool = Pool::new(Config::default(), None, None, None, 6).unwrap();
-
-    pool.wait_for_connect().await.unwrap();
-
-    let session_store = RedisStore::new(pool);
+pub fn session() -> SessionManagerLayer<MemoryStore> {
+    let session_store = MemoryStore::default();
 
     SessionManagerLayer::new(session_store)
         .with_secure(false)
