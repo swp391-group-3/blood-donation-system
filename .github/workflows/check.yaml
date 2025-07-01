@@ -58,7 +58,12 @@ jobs:
         image: qdrant/qdrant:latest
         ports:
           - 6333:6333
-        options: --ulimit nofile=10000:10000
+        options: >-
+          --health-cmd "curl -f http://localhost:6333 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+          --ulimit nofile=10000:10000
     env:
       PGHOST: localhost
       PGDATABASE: ${{ secrets.PG_DB }}
@@ -92,10 +97,15 @@ jobs:
           mv ../docs docs
       - name: Wait for Qdrant
         run: |
-          until curl -s http://localhost:6333; do
-            echo "Waiting for Qdrant...";
-            sleep 1;
+          echo "Waiting for Qdrant to start..."
+          for i in {1..10}; do
+            if curl -sSf http://localhost:6333 >/dev/null; then
+              echo "Qdrant is ready!"
+              exit 0
+            fi
+            sleep 3
           done
+          exit 1
       - name: Test
         env:
           DATABASE_URL: ${{ steps.postgres.outputs.connection-uri }}
