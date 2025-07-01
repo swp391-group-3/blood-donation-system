@@ -19,7 +19,10 @@ jsonwebtoken = "9.3.1"
 lettre = { version = "0.11.17",  default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls", "tokio1", "rustls-tls"] }
 model-mapper = "0.6.1"
 openidconnect = "4.0.0"
+qdrant-client = "1.14.0"
 rand = "0.9.1"
+rig-core = { version = "=0.9.1", features = ["derive", "rayon"] }
+rig-qdrant = "=0.1.9"
 serde = { version = "1.0.219", features = ["derive"] }
 strum = { version = "0.27.1", features = ["derive"] }
 thiserror = "2.0.12"
