@@ -25,6 +25,20 @@ services:
     networks:
       - network
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    container_name: qdrant
+    ports:
+      - 6333:6333
+      - 6334:6334
+    expose:
+      - 6333
+      - 6334
+      - 6335
+    volumes:
+      - qdrant:/qdrant/storage
+
   backend:
     container_name: blood-donation-system-backend
     environment:
@@ -41,8 +55,13 @@ services:
       OIDC__MICROSOFT__REDIRECT_URL: ${MICROSOFT_REDIRECT_URL}
       EMAIL__USERNAME: ${EMAIL_USERNAME}
       EMAIL__PASSWORD: ${EMAIL_PASSWORD}
+      RAG__QDRANT_URL: ${QDRANT_URL}
+      RAG__GEMINI_API_KEY: ${GEMINI_API_KEY}
+      RAG__CONTEXT_SAMPLE: ${RAG_CONTEXT_SAMPLE}
     image: ${REGISTRY}/backend:latest
     restart: always
+    volumes:
+      - ./docs:./docs
     ports:
       - 3000:3000
     networks:
@@ -69,6 +88,9 @@ networks:
 volumes:
   database:
     name: blood-donation-system-database
+    external: true
+  qdrant:
+    name: blood-donation-system-qdrant
     external: true
   cloudbeaver:
     name: blood-donation-system-cloudbeaver

@@ -16,3 +16,6 @@ client_id = ""
 client_secret = ""
 issuer_url = ""
 redirect_utl = ""
+
+[rag]
+gemini_api_key=""
