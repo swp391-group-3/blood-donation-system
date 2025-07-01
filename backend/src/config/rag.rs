@@ -8,10 +8,6 @@ fn default_collection_name() -> String {
     "rig-collection".to_string()
 }
 
-fn default_gemini_api_key() -> String {
-    "".to_string()
-}
-
 fn default_system_prompt() -> String {
     r#"
 You are a highly knowledgeable and helpful AI assistant specializing in blood donation. Your primary function is to provide accurate, comprehensive, and up-to-date information regarding all aspects of blood donation.
