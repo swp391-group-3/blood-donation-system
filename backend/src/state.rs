@@ -13,7 +13,7 @@ use crate::{
     error::{Error, Result},
     util::{
         auth::{JwtService, OpenIdConnectClient},
-        rag::init_rag,
+        rag::RAGAgent,
     },
 };
 
@@ -22,7 +22,7 @@ pub struct ApiState {
     pub oidc_clients: HashMap<Provider, OpenIdConnectClient>,
     pub jwt_service: JwtService,
     pub mailer: AsyncSmtpTransport<Tokio1Executor>,
-    pub rag_agent: Agent<gemini::completion::CompletionModel>,
+    pub rag_agent: RAGAgent,
 }
 
 impl ApiState {
@@ -56,7 +56,7 @@ impl ApiState {
             oidc_clients,
             jwt_service: Default::default(),
             mailer,
-            rag_agent: init_rag().await,
+            rag_agent: RAGAgent::new().await,
         })
     }
 
