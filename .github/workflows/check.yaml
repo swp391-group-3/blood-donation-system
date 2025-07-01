@@ -53,12 +53,6 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
-    services:
-      qdrant:
-        image: qdrant/qdrant:latest
-        ports:
-          - 6333:6333
-        options: --ulimit nofile=10000:10000
     env:
       PGHOST: localhost
       PGDATABASE: ${{ secrets.PG_DB }}
@@ -87,18 +81,8 @@ jobs:
         with:
           workspaces: |
             backend
-      - name: Move docs
-        run: |
-          mv ../docs docs
-      - name: Wait for Qdrant
-        run: |
-          until curl -s http://localhost:6333; do
-            echo "Waiting for Qdrant...";
-            sleep 1;
-          done
       - name: Test
         env:
           DATABASE_URL: ${{ steps.postgres.outputs.connection-uri }}
-          RAG__GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           cargo test --target ${{ matrix.target }}
