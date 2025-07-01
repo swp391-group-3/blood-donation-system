@@ -37,6 +37,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let md = HtmlToMarkdown::builder()
                 .skip_tags(vec!["script", "style", "header", "footer"])
                 .add_handler(vec!["a"], |e: Element| Some(e.content.to_string()))
+                .add_handler(vec!["img"], |e: Element| {
+                    e.attrs
+                        .iter()
+                        .find(|a| a.name.local.as_ref() == "alt")
+                        .map(|a| format!("![{}]", a.value))
+                })
                 .build()
                 .convert(&html)
                 .unwrap();
@@ -88,6 +94,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let md_raw = HtmlToMarkdown::builder()
                 .skip_tags(vec!["script", "style", "header", "footer"])
                 .add_handler(vec!["a"], |e: Element| Some(e.content.to_string()))
+                .add_handler(vec!["img"], |e: Element| {
+                    e.attrs
+                        .iter()
+                        .find(|a| a.name.local.as_ref() == "alt")
+                        .map(|a| format!("![{}]", a.value))
+                })
                 .build()
                 .convert(&html)
                 .unwrap();
@@ -128,6 +140,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let md_raw = HtmlToMarkdown::builder()
                 .skip_tags(vec!["script", "style", "header", "footer"])
                 .add_handler(vec!["a"], |e: Element| Some(e.content.to_string()))
+                .add_handler(vec!["img"], |e: Element| {
+                    e.attrs
+                        .iter()
+                        .find(|a| a.name.local.as_ref() == "alt")
+                        .map(|a| format!("![{}]", a.value))
+                })
                 .build()
                 .convert(&html)
                 .unwrap();
@@ -167,6 +185,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let md_raw = HtmlToMarkdown::builder()
                 .skip_tags(vec!["script", "style", "header", "footer"])
                 .add_handler(vec!["a"], |e: Element| Some(e.content.to_string()))
+                .add_handler(vec!["img"], |e: Element| {
+                    e.attrs
+                        .iter()
+                        .find(|a| a.name.local.as_ref() == "alt")
+                        .map(|a| format!("![{}]", a.value))
+                })
                 .build()
                 .convert(&html)
                 .unwrap();
