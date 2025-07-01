@@ -15,7 +15,7 @@ use tower_sessions::Session;
 
 use crate::{config::CONFIG, error::Error};
 
-const GEMINI_EMBEDING_SIZE: u64 = 768;
+const GEMINI_EMBEDING_SIZE: u64 = 3072;
 const DOCUMENT_PATH: &str = "docs";
 const HISTORY_KEY: &str = "history";
 
@@ -48,7 +48,7 @@ pub struct RAGAgent {
 impl RAGAgent {
     pub async fn new() -> Self {
         let client = gemini::Client::new(&CONFIG.rag.gemini_api_key);
-        let embedding_model = client.embedding_model(gemini::embedding::EMBEDDING_004);
+        let embedding_model = client.embedding_model("gemini-embedding-exp-03-07");
 
         let embeddings = EmbeddingsBuilder::new(embedding_model.clone())
             .documents(Document::read_all().await)
