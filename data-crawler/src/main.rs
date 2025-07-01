@@ -1,9 +1,7 @@
-use chromiumoxide::{
-    browser::{Browser, BrowserConfig},
-};
+use chromiumoxide::browser::{Browser, BrowserConfig};
 use futures::StreamExt;
-use tokio::time::sleep;
-use std::{fs::create_dir_all, path::PathBuf, time::Duration};
+use htmd::{Element, HtmlToMarkdown};
+use std::{fs::create_dir_all, path::PathBuf};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -25,7 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .find_elements("ul.rcb-secondary-links-container li.rcb-secondary-links a")
         .await?;
 
-    let output_dir = PathBuf::from("output_htmls");
+    let output_dir = PathBuf::from("output_mds");
     create_dir_all(&output_dir)?;
 
     for link in all_links {
@@ -38,21 +36,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let subpage = browser.new_page(&url).await?;
                 subpage.wait_for_navigation().await?;
 
-                let all_buttons = subpage
-                    .find_elements("span[role='presentation']")
-                    .await
-                    .unwrap_or_default();
-
-                if !all_buttons.is_empty() {
-                    for button in all_buttons {
-                        let _ = button.click().await;
-                        sleep(Duration::from_secs(1)).await;
-                    }
-                }
-
-                sleep(Duration::from_secs(5)).await;
-                
-                let html_content = subpage.content().await?;
+                let html = subpage.content().await?;
+                let md = HtmlToMarkdown::builder()
+                    .skip_tags(vec!["script", "style", "header", "footer"])
+                    .add_handler(vec!["a"], |e: Element| Some(e.content.to_string()))
+                    .build()
+                    .convert(&html)
+                    .unwrap();
 
                 let formatted_name = href
                     .trim_start_matches("/donate-blood/blood-donation-process/")
@@ -62,13 +52,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .replace('/', "_")
                     .replace('-', "_");
 
-                let filename = format!("{}.html", formatted_name);
+                let filename = format!("{}.md", formatted_name);
                 let path = output_dir.join(filename);
-                tokio::fs::write(path, html_content).await?;
+                tokio::fs::write(path, md).await?;
+
+                subpage.close().await?;
             }
         }
     }
 
+    page.close().await?;
     browser.close().await?;
     handle.await?;
 
