@@ -18,6 +18,5 @@ ctypes = { path = "../ctypes" }
 "public.gender" = "ctypes::Gender"
 "public.blood_component" = "ctypes::BloodComponent"
 "public.appointment_status" = "ctypes::AppointmentStatus"
-"public.chat_role" = "ctypes::ChatRole"
 "pg_catalog.date" = "chrono::NaiveDate"
 "pg_catalog.timestamptz" = "chrono::DateTime<chrono::FixedOffset>"
