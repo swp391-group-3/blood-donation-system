@@ -4,7 +4,7 @@ use qdrant_client::{
     qdrant::{CreateCollectionBuilder, Distance, QueryPointsBuilder, VectorParamsBuilder},
 };
 use rig::{
-    Embed, agent::Agent, completion::Chat, embeddings::EmbeddingsBuilder, message::Message,
+    Embed, OneOrMany, agent::Agent, completion::Chat, embeddings::EmbeddingModel, message::Message,
     providers::gemini,
 };
 use rig_qdrant::QdrantVectorStore;
@@ -50,12 +50,15 @@ impl RAGAgent {
         let client = gemini::Client::new(&CONFIG.rag.gemini_api_key);
         let embedding_model = client.embedding_model("gemini-embedding-exp-03-07");
 
-        let embeddings = EmbeddingsBuilder::new(embedding_model.clone())
-            .documents(Document::read_all().await)
-            .unwrap()
-            .build()
-            .await
-            .unwrap();
+        let docs = Document::read_all().await;
+
+        let mut embeddings = Vec::with_capacity(docs.len());
+
+        for doc in docs {
+            let embedding = embedding_model.embed_text(&doc.content).await.unwrap();
+
+            embeddings.push((doc, OneOrMany::one(embedding)));
+        }
 
         let qdrant = Qdrant::from_url(&CONFIG.rag.qdrant_url).build().unwrap();
 
