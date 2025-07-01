@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .find_elements("ul.rcb-secondary-links-container li.rcb-secondary-links a")
         .await?;
 
-    let output_dir = PathBuf::from("output_mds");
+    let output_dir = PathBuf::from("../docs");
     create_dir_all(&output_dir)?;
 
     for link in all_links {
