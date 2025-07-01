@@ -162,16 +162,3 @@ CREATE TABLE IF NOT EXISTS blood_bags(
     amount int NOT NULL,
     expired_time timestamptz NOT NULL
 );
-
-CREATE TYPE chat_role AS ENUM (
-    'user',
-    'assistant'
-);
-
-CREATE TABLE IF NOT EXISTS chat_histories(
-    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    account_id uuid NOT NULL REFERENCES accounts(id),
-    role chat_role NOT NULL,
-    content text NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT now()
-);

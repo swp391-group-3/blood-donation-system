@@ -6,7 +6,6 @@ pub mod appointment;
 pub mod blog;
 pub mod blood_bag;
 pub mod blood_request;
-pub mod chat_history;
 pub mod comment;
 pub mod donation;
 pub mod health;
