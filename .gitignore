@@ -4,3 +4,5 @@
 **/.next
 **/config.toml
 **/tsconfig.tsbuildinfo
+**/.qdrant*
+**/storage
