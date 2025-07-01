@@ -89,7 +89,7 @@ impl Modify for SecurityAddon {
         controller::blood_bag::get,
         controller::blood_bag::delete,
         controller::blood_bag::update,
-        
+
         controller::chat::prompt,
         controller::chat::get_all,
     ),
