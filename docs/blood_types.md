@@ -375,9 +375,9 @@ AB-
 
   
 
-59%
+38%
 
-65%
+48%
 
 Caucasian
 
@@ -387,9 +387,9 @@ African-American
 
   
 
-60%
+40%
 
-69%
+54%
 
 Asian
 
@@ -665,13 +665,13 @@ O
 
  View all child parent pairings
 
-![Child parent pairings blood chart.](/content/dam/redcrossblood/rcb/donate-blood/components/blood-types-chart.jpg.transform/1288/q70/feature/image.jpeg)
+![Child parent pairings blood chart.]
 
 _\* Note: If you have questions about paternity testing or about blood group inheritance, your primary care physician should be able to provide you with an appropriate referral. Testing difficulties can cause exceptions to the above patterns. ABO blood typing is not sufficient to prove or disprove paternity or maternity._  
 
 Schedule an Appointment
 
-![Person wearing hat, reading glasses and headphones laying on cot giving a thumbs up.](/content/dam/redcrossblood/rcb/donate-blood/components/378x257-common-concerns-save-lives.jpg.transform/1288/q82/feature/image.jpeg)
+![Person wearing hat, reading glasses and headphones laying on cot giving a thumbs up.]
 
 #### Ready to Help Save a Life?
 
@@ -679,10 +679,4 @@ Now that you know how your blood type can help recipients, please schedule an ap
 
  Find a blood drive near you
 
- Make Your Appointment 
-
-![](/content/dam/redcross/imported-images/redcross-logo.png)
-
-# 
-
- Close
+ Make Your Appointment

@@ -1,8 +1,8 @@
 Give Blood | Donation Basics 
 
-![](https://d.adroll.com/cm/b/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/bombora/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/experian/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/g/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/index/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/n/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/o/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/outbrain/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/pubmatic/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/taboola/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/triplelift/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/x/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)
+![]![]![]![]![]![]![]![]![]![]![]![]
 
-![](https://x.adroll.com/attribution/trigger?fpc=57fe2a162d8549eaa46e1bc5852b5df6&advertisable_eid=4V6SPSUFKVD2LNRWXAR54S&conversion_type=PageView&conversion_value=0.0&currency=USC&flg=1&pv=13472103990.895157&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html)
+![]
 
 # Blood Donation Basics
 
@@ -12,21 +12,21 @@ Give Blood | Donation Basics
 
 When you arrive at the Big Red Bus® or donor center, simply check in with a valid photo ID and fill out a private Donor Health Questionnaire (DHQ).
 
- ![](https://oneblood.scene7.com/is/image/oneblood/registration-8790:teaserLeftRight) 
+ 
 
 ## 2\. Health Screening
 
 We check your temperature, pulse, blood pressure, cholesterol, and hemoglobin level. We also review your medical history and determine your eligibility status for donating blood based on your responses to the DHQ.
 
- ![](https://oneblood.scene7.com/is/image/oneblood/health-screening-lauren-8790:teaserLeftRight) 
+ 
 
 ## 3\. Donation
 
 Sit back, relax, and save lives! If you are giving a whole blood donation, the procedure only takes about 10-15 minutes, followed by a brief period for rest and refreshments.  
 
-![Woman donating blood](https://oneblood.scene7.com/is/image/oneblood/donation-8937%3AMedium?ts=1729696580368&dpr=off)
+![Woman donating blood]
 
- ![location](/etc.clientlibs/oneblood/clientlibs/clientlib-site/resources/images/Location-red.svg)  Find a Drive
+ ![location]  Find a Drive
 
 Find a Donation Center or Blood DriveSave a Life
 
@@ -40,19 +40,19 @@ Blood has four basic components and eight unique blood types. Learn about why bl
 
 slide 1 to 3 of 3
 
-![Donation blood bags](https://www.oneblood.org/content/dam/oneblood/graphics/images/blood-bags-2957269Lg-clean-1920px.jpg)
+![Donation blood bags]
 
 # 
 
 Blood circulates through our body and delivers essential substances like oxygen and nutrients to the body’s cells.
 
-![Emergency personel in action](https://www.oneblood.org/content/dam/oneblood/graphics/images/hospital-emergency-639815060-edit-1920px.jpg)
+![Emergency personel in action]
 
 # 
 
 Every two seconds of every day, someone needs blood.
 
-![Surgeons in the operating room with face covering](https://www.oneblood.org/content/dam/oneblood/graphics/images/surgery-operation-1332387000-1920px.jpg)
+![Surgeons in the operating room with face covering]
 
 # 
 
@@ -86,7 +86,7 @@ During a double red blood cell donation we only collect your red blood cells, ex
 
 During a platelet donation, we only collect your platelets, returning the rest of the blood components. This specialized donation process is known as automation, or apheresis.
 
-![Donor donating blood at a OneBlood Big Red Bus](https://oneblood.scene7.com/is/image/oneblood/donor-fb-2697286487590767567)
+![Donor donating blood at a OneBlood Big Red Bus]
 
 # Can I Donate Blood?
 
@@ -94,7 +94,7 @@ If you have previously been deferred, don't worry. You may still be eligible to 
 
 Learn More
 
-![phlebotomist handing donor an ipad](https://oneblood.scene7.com/is/image/oneblood/ipad-8268-1920px%3AHP-Teaser-420x48--DESK-?ts=1734713513140&dpr=off)
+![phlebotomist handing donor an ipad]
 
 # How Can I Help the Most People?
 
@@ -102,7 +102,7 @@ There are eight different blood types and each one holds a unique power to save 
 
 Learn More
 
-![group of people with blood types](https://oneblood.scene7.com/is/image/oneblood/blood-types-people-1920px%3AHP-Teaser-420x48--DESK-?ts=1729696837914&dpr=off)
+![group of people with blood types]
 
 # Current Promotions & Incentives
 
@@ -110,7 +110,7 @@ Get your OneBlood Fourth of July T-shirt and a $20 eGift card when you donate!
 
 Learn More
 
-   ![](https://oneblood.scene7.com/is/image/oneblood/4thJuly-incentive-web1:square310x310) 
+   
 
 ##### 
 
@@ -118,9 +118,7 @@ Learn More
 
  Close 
 
-![](https://data.adxcel-ec2.com/pixel/?ad_log=referer&action=content&pixid=d42d7a50-8720-4af0-92e9-eaef21550808)
-
-![](https://bat.bing.com/action/0?ti=56352197&tm=al001&Ver=2&mid=a6f021a0-0ba8-45be-97ad-2ec7cbd19da4&bo=2&sid=1dfd4780568211f0abda19b1576077ab&vid=1dfd4ca0568211f0b61a297b467cf0ae&vids=0&msclkid=N&uach=pv%3D19.0.0&pi=918639831&lg=en-US&sw=1536&sh=864&sc=24&nwd=1&tl=Give%20Blood%20%7C%20Donation%20Basics&kw=Donation&p=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics.html&r=&lt=2687&pt=1751380870300,,,,,5,5,5,5,5,,9,163,164,166,1520,1520,2687,,,&pn=0,0&mtp=1&evt=pageLoad&sv=1&asc=G&cdb=AQIT&rn=846356)
+![]
 
 ## Now Chatting
 
@@ -140,4 +138,4 @@ Olark launch button clip path
 
 Chat
 
-![Cookiebot session tracker icon loaded](https://imgsct.cookiebot.com/1.gif?dgi=0f23623f-34b4-4ae5-a0d0-3e3fc93fef65)
+![Cookiebot session tracker icon loaded]

@@ -34,7 +34,7 @@ Giving the "right" type of blood donation - based on your blood type and patient
 
 Whole Blood Donation
 
-![Person pointing at Red Cross pin on their shirt.](/content/dam/redcrossblood/rcb/donate-blood/components/eligibility-whole-blood-donation.jpg.transform/1288/q82/feature/image.jpeg)
+![Person pointing at Red Cross pin on their shirt.]
 
 ###### Whole Blood Donation
 
@@ -54,7 +54,7 @@ Whole blood is the most flexible type of donation. It can be transfused in its o
 
 Power Red Donation
 
-![Two people with red bandage around arm flexing biced and smiling.](/content/dam/redcrossblood/rcb/donate-blood/components/470x600-Power-Red-Eligibility.jpg.transform/1288/q82/feature/image.jpeg)
+![Two people with red bandage around arm flexing biced and smiling.]
 
 ###### Power Red Donation
 
@@ -80,7 +80,7 @@ With just a little extra time at your appointment, you can donate more red cells
 
 Platelet Donation
 
-![Person wearing headphones sitting in cot donating platelets and smiling.](/content/dam/redcrossblood/rcb/donate-blood/components/470x600-Platelet-Donation-Eligibility.jpg.transform/1288/q82/feature/image.jpeg)
+![Person wearing headphones sitting in cot donating platelets and smiling.]
 
 ###### Platelet Donation
 
@@ -104,7 +104,7 @@ Platelets are collected at Red Cross donation centers only, and are not collecte
 
 Plasma Donation
 
-![Person with headphones around back of neck sitting in cot donating plasma and smiling.](/content/dam/redcrossblood/rcb/donate-blood/components/eligibility-plasma-donation.jpg.transform/1288/q82/feature/image.jpeg)
+![Person with headphones around back of neck sitting in cot donating plasma and smiling.]
 
 ###### Plasma Donation
 
@@ -126,7 +126,7 @@ Plasma is collected at select Red Cross donation centers. Learn more about plas
 
 Blood Types and Components
 
- ![Icon of red and grey blood drops.](/content/dam/redcrossblood/rcb/icons-and-badges/About-Blood-Types.png.transform/282/q70/feature/image.png) LEARN MORE ABOUT BLOOD TYPES 
+ ![Icon of red and grey blood drops.] LEARN MORE ABOUT BLOOD TYPES 
 
 About Blood Types
 
@@ -134,7 +134,7 @@ There are actually more than 8 different blood types, some of which are not comp
 
  LEARN MORE ABOUT BLOOD TYPES 
 
- ![Icon of red blood cells and a blood bag.](/content/dam/redcrossblood/rcb/icons-and-badges/About-Blood-Components.png.transform/282/q70/feature/image.png) LEARN MORE ABOUT BLOOD COMPONENTS 
+ ![Icon of red blood cells and a blood bag.] LEARN MORE ABOUT BLOOD COMPONENTS 
 
 About Blood Components
 
@@ -148,4 +148,20 @@ Preparing to Donate
 
 Read our tips for small, easy steps that will make your donation as smooth and efficient as possible. Learn what to do before, during and after your donation to have a great donation experience.
 
- Learn More
+ Learn More 
+
+## Hi, I'm Clara!
+
+Chat with me!
+
+Chat with me!
+
+## Hi, I'm Clara!
+
+Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
+
+How can I help?
+
+   
+
+### LOADING

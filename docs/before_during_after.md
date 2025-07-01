@@ -33,7 +33,7 @@ Before Your Donation
 
 ### Before Your Donation
 
- ![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-appointment.png.transform/282/q70/feature/image.png) FIND A DRIVE 
+  FIND A DRIVE 
 
 Make an Appointment
 
@@ -41,7 +41,7 @@ Select a donation type and find a convenient time that works best for you.
 
  FIND A DRIVE 
 
- ![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-iron-food.png.transform/282/q70/feature/image.png) More About Iron 
+  More About Iron 
 
 Get the Dish on Nutrition
 
@@ -49,7 +49,7 @@ Have iron-rich foods, such as red meat, fish, poultry, beans, spinach, iron-fort
 
  More About Iron 
 
- ![](/content/dam/redcrossblood/rcb/icons-and-badges/good-nights-sleep.png.transform/282/q70/feature/image.png) LEARN MORE 
+  LEARN MORE 
 
 Be Well Rested and Hydrate
 
@@ -67,19 +67,13 @@ Day of Donation
 
 ### On the Day of Your Donation
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-rapidpass.png.transform/282/q70/feature/image.png)
-
 RapidPass®
 
 To expedite your donation, start your RapidPass® on the day of your appointment.
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-photo-id.png.transform/282/q70/feature/image.png)
-
 Photo ID
 
 Please bring your donor card, driver's license or two other forms of identification.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-medication-list.svg)
 
 Medication List
 
@@ -117,20 +111,14 @@ After Your Donation
 
 ### After Your Donation
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/cookie-snack.png.transform/282/q70/feature/image.png)
-
 Enjoy a Snack
 
 Relax for a few minutes in our refreshment & recovery area — have some cookies or other snacks — you’ve earned it!
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-tell-others.svg)
 
 Tell Others About Your Good Deed
 
 The gratification of giving blood is a feeling you'll want to share.  
   
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/glass-water.svg)
 
 Drink Extra Liquids
 
@@ -148,7 +136,7 @@ Drink an extra four (8 oz.) glasses of liquids and avoid alcohol over the next 2
 
 Donate Blood Now
 
-![Help Save a Life by Giving Blood](/content/dam/redcrossblood/rcb/donors-with-masks/Male_donor_with_mask_donating_blood.jpg.transform/1288/q82/feature/image.jpeg)
+![Help Save a Life by Giving Blood]
 
 #### Ready to Help Save a Life?
 

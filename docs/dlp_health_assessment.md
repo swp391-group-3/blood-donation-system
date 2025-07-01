@@ -22,7 +22,7 @@ Home
 
 ## Free Health Screening and Blood Tests
 
-![Your Health Screening](/content/dam/redcross/local/news-articles/los-angeles/latino-blood-donors/BARBARA_MARISCAL_PHOTO_THUMBNAIL.jpg.img.jpeg)
+![Your Health Screening]
 
 Your Health Screening
 
@@ -34,19 +34,13 @@ Prior to donating blood, all donors will receive a free health screening. At the
 
 Prior to donating blood, all donors will receive a free health screening. At the time of your donation, your blood pressure, hemoglobin and pulse will be checked. We record these vitals in your online donor profile. You can access this information as well as past health information obtained during prior donations, at any time. We encourage you to share your results with your healthcare provider at your next visit.
 
-![](/content/dam/redcrossblood/african-american-blood-donors/Blood-Pressure.png.transform/282/q70/feature/image.png)
-
 Blood Pressure
 
 The Red Cross checks your blood pressure before every donation. When untreated, high blood pressure can increase the risk of heart attack, stroke and other health complications. Also known as hypertension, the condition usually has no symptoms, and is often called the "silent killer."
 
-![](/content/dam/redcrossblood/african-american-blood-donors/Pulse.png.transform/282/q70/feature/image.png)
-
 Pulse
 
 Your pulse will be checked before every Red Cross blood donation. Staff will measure the number of times your heart beats per minute and count any irregular heartbeats. Your pulse rate gives insights into your heart rhythm and how well your heart may be working. A heart rate that is too fast, too slow, or irregular can indicate an underlying condition.
-
-![](/content/dam/redcrossblood/african-american-blood-donors/Hemoglobin-Levels.png.transform/282/q70/feature/image.png)
 
 Hemoglobin
 
@@ -54,15 +48,15 @@ The Red Cross checks your hemoglobin before every donation to ensure that you ar
 
 ### After each blood donation, your unit will be sent to our labs to undergo the following:
 
-![Sickle Cell Trait Screening](/content/dam/redcrossblood/african-american-blood-donors/Sickle-Cell-Trait-Testing.png.transform/282/q70/feature/image.png)
+![Sickle Cell Trait Screening]
 
 **Sickle Cell Trait Screening**  
 
-![Rh Blood Type](/content/dam/redcrossblood/african-american-blood-donors/Blood-Type-RH-Testing.png.transform/282/q70/feature/image.png)
+![Rh Blood Type]
 
 **Blood Type/Rh Testing**
 
-![Infectiuos Disease](/content/dam/redcrossblood/african-american-blood-donors/Infectious-Disease-Testing.png.transform/282/q70/feature/image.png)
+![Infectiuos Disease]
 
 **Infectious Disease Testing**
 

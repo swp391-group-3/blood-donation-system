@@ -28,13 +28,11 @@ Home
 
 To ensure the safety of both patients and donors, these are some of the requirements donors must meet to be eligible to donate blood based on their donation type. To explore a list of eligibility information, Search by Keyword or Browse All. 
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-icon.png.transform/282/q70/feature/image.png)
-
 **Now, more people can donate blood**. Learn about recent eligibility changes for those who spent time in Europe, and the elimination of questions based on gender and sexual orientation in our Eligibility FAQs. More information also on our LGBTQ+ Donors page.
 
 Requirements by Donation Type
 
-![Whole Blood Donation Requirements](/content/dam/redcrossblood/rcb/donate-blood/components/donation-type-whole-blood.jpg.transform/1288/q82/feature/image.jpeg)
+![Whole Blood Donation Requirements]
 
 ###### Whole Blood Donation
 
@@ -51,7 +49,7 @@ Learn more about donating whole blood >>
 
  MAKE AN APPOINTMENT 
 
-![Power Red Blood Donation Requirements](/content/dam/redcrossblood/rcb/donate-blood/components/donation-type-power-red.jpg.transform/1288/q82/feature/image.jpeg)
+![Power Red Blood Donation Requirements]
 
 ###### Power Red Donation
 
@@ -68,7 +66,7 @@ Learn more about donating Power Red >>
 
  MAKE AN APPOINTMENT 
 
-![Platelet Donation Requirements](/content/dam/redcrossblood/rcb/donate-blood/components/donation-type-platelet.jpg.transform/1288/q82/feature/image.jpeg)
+![Platelet Donation Requirements]
 
 ###### Platelet Donation
 
@@ -85,7 +83,7 @@ Learn more about donating platelets >>
 
  MAKE AN APPOINTMENT 
 
-![AB Elite Plasma Donation Requirements](/content/dam/redcrossblood/rcb/donate-blood/components/donation-type-plasma.jpg.transform/1288/q82/feature/image.jpeg)
+![AB Elite Plasma Donation Requirements]
 
 ###### AB Elite Plasma Donation
 
@@ -109,15 +107,11 @@ Common Reasons People Can't Donate
 
 Even if you were deferred in the past, you may be eligible to donate now.
 
-![](/content/dam/redcrossblood/rcoassets/Web_1_sick_241x164.jpg.transform/1288/q82/feature/image.jpeg)
-
 Cold, Flu and Other Types of Illness
 
 If you don’t feel well on the day of your donation, please call to cancel. We’ll be happy to see you 24 hours after your symptoms pass.
 
 Illness Deferrals
-
-![](/content/dam/redcrossblood/rcb/donate-blood/components/310x310-medication.jpg.transform/1288/q82/feature/image.jpeg)
 
 Information About Medications
 
@@ -125,15 +119,11 @@ Most medications will not disqualify you from being able to donate blood, but ma
 
 Medication Deferrals
 
-![](/content/dam/redcrossblood/rcb/donate-blood/components/310x310-anemia.jpg.transform/1288/q82/feature/image.jpeg)
-
 Low Iron
 
 If you were unable to donate due to low iron, you may still be able to donate in the future. The Red Cross recommends taking steps to help increase your iron level.
 
 Learn More
-
-![](/content/dam/redcrossblood/rcb/donate-blood/components/310x310-travel.jpg.transform/1288/q82/feature/image.jpeg)
 
 Travel Outside of the United States
 
@@ -155,25 +145,17 @@ Other Ways to Help
 
 Even if you aren't eligible to donate, you can still make a difference.
 
-![](/content/dam/redcrossblood/rcb/donors-with-masks/Donor_mask_3.jpg.transform/1288/q82/feature/image.jpeg)
-
 Host a Blood Drive
 
 Learn How
-
-![](/content/dam/redcrossblood/rcb/donors-with-masks/Donor_sticker.jpg.transform/1288/q82/feature/image.jpeg)
 
 Start a Virtual Blood Drive
 
 Visit SleevesUp
 
-![](/content/dam/redcrossblood/home-page-images/financial-donation.jpg.transform/1288/q82/feature/image.jpeg)
-
 Make a Financial Donation
 
 Donate Now
-
-![](/content/dam/redcrossblood/rcb/donors-with-masks/worker_scanning_donor_card.jpg.transform/1288/q82/feature/image.jpeg)
 
 Become a Volunteer
 
@@ -206,8 +188,6 @@ This list is not complete. Specially trained technical staff are available at ea
 \*\* Healthy means that you feel well and can perform normal activities. If you have a chronic condition such as diabetes, healthy also means that you are being treated and the condition is under control. If you are not feeling well on the day of your donation, please contact us to reschedule.
 
 \+ Please note higher requirements may apply in certain cases. Check with your donor center to confirm.
-
-![](/content/dam/redcross/imported-images/redcross-logo.png)
 
 # 
 

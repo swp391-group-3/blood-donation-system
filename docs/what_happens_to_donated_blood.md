@@ -42,8 +42,6 @@ Ever wondered exactly what happens to your blood donation at the American Red Cr
 
 ### Learn About Each Step of the Blood Journey
 
-![](/content/dam/redcrossblood/rcb/donate-blood/components/839x473-the-donation.jpg.transform/1288/q82/feature/image.jpeg)
-
 Step One
 
 The Donation
@@ -53,8 +51,6 @@ The Donation
 *   For a whole blood donation, about 1 pint of blood is collected; several small test tubes of blood are also collected for testing.
 *   Your donation, test tubes and your donor record are labeled with an identical bar code label.
 *   Your donation is kept on ice before being taken to a Red Cross center for processing; the test tubes go to the lab.
-
-![](/content/dam/redcrossblood/rcb/donate-blood/components/488x536-centrifuges.jpg.transform/1288/q82/feature/image.jpeg)
 
 Step Two
 
@@ -66,7 +62,7 @@ Processing
 *   Red cells and platelets are leuko-reduced, which means your white cells are removed in order to reduce the possibility of the recipient having a reaction to the transfusion.
 *   Each component is packaged as a “unit,” a standardized amount that doctors will use when transfusing a patient.
 
-![Testing a blood sample](/content/dam/redcrossblood/rcb/home-page/components/Lab_Testing_Blood.jpg.transform/1288/q82/feature/image.jpeg)
+![Testing a blood sample]
 
 Step Three
 
@@ -77,8 +73,6 @@ Testing
 *   Test results are transferred electronically to the processing center within 24 hours.
 *   If a test result is positive, your donation will be discarded and you will be notified (our test results are confidential and are only shared with the donor, except as may be required by law).
 
-![](/content/dam/redcrossblood/rcb/donate-blood/components/blood-storage.jpg.transform/1288/q82/feature/image.jpeg)
-
 Step Four
 
 Storage
@@ -88,16 +82,12 @@ Storage
 *   Platelets are stored at room temperature in agitators for up to five days.
 *   Plasma and cryo are frozen and stored in freezers for up to one year.
 
-![](/content/dam/redcrossblood/rcb/donate-blood/components/839x839-step-five.jpg.transform/1288/q82/feature/image.jpeg)
-
 Step Five
 
 Distribution
 
 *   Blood is available to be shipped to hospitals 24 hours a day, 7 days a week.
 *   Hospitals typically keep some blood units on their shelves, but may call for more at any time, such as in case of large scale emergencies.
-
-![](/content/dam/redcrossblood/rcb/donate-blood/components/what-happens-to-donated-blood-pt6.jpg.transform/1288/q82/feature/image.jpeg)
 
 Step Six
 

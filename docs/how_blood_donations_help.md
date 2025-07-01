@@ -50,10 +50,6 @@ A positive, A negative, B positive, O positive, AB positive and AB negative
 
   Play Video
 
-The Lindsey Crowder Story
-
-When Lisa Crowder's daughter Lindsey was 2 years old, she was diagnosed with acute lymphoblastic leukemia. Red Cross blood donors helped save her life. Give more life to patients like Lindsey. Make an appointment to give blood at http://www.redcrossblood.org/give
-
 ###### Trauma Patients
 
 **Ideal Donation Type**

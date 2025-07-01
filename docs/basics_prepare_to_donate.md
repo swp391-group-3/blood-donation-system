@@ -1,8 +1,8 @@
 Donating Blood | What to Expect 
 
-![](https://d.adroll.com/cm/b/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/bombora/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/experian/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/g/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/index/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/n/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/o/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/outbrain/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/pubmatic/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/taboola/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/triplelift/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/x/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)
+![]![]![]![]![]![]![]![]![]![]![]![]
 
-![](https://x.adroll.com/attribution/trigger?fpc=57fe2a162d8549eaa46e1bc5852b5df6&advertisable_eid=4V6SPSUFKVD2LNRWXAR54S&conversion_type=PageView&conversion_value=0.0&currency=USC&flg=1&pv=58463925335.47631&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html)
+![]
 
 # Ready To Become a Blood Donor?
 
@@ -18,9 +18,9 @@ Donating blood is a quick and easy way to make a lifesaving impact. Here is ever
   
 **Review eligibility criteria:** Familiarize yourself with the eligibility requirements to ensure you meet the necessary criteria.
 
- ![](https://oneblood.scene7.com/is/image/oneblood/donor-fb-peace-sign:teaserLeftRight) 
+ 
 
- ![location](/etc.clientlibs/oneblood/clientlibs/clientlib-site/resources/images/Location-red.svg)  Find a Drive
+ ![location]  Find a Drive
 
 Find a Donation Center or Blood DriveSave a Life
 
@@ -62,9 +62,9 @@ Take a donation selfie to commemorate your meaningful accomplishment with friend
 
 Take a donation selfie to commemorate your meaningful accomplishment with friends and family! Don't forget to use #oneblood when you post!
 
-![Donor donating blood](https://oneblood.scene7.com/is/image/oneblood/donor-fb-153368)
+![Donor donating blood]
 
-![Fourth of July T-shirt and $20 eGift Card](https://oneblood.scene7.com/is/image/oneblood/4thJuly-incentive-web2?qlt=82&ts=1751371290443&$50-50Card$&dpr=off)
+![Fourth of July T-shirt and $20 eGift Card]
 
 ## Maximize Your Rewards
 
@@ -78,19 +78,19 @@ After your blood donation, remember to rest and avoid strenuous activities, stay
 
 You just helped save a life, so take the remainder of the day to relax and rejuvenate. Remember to avoid strenuous activities such as going to the gym or lifting heavy objects.
 
-![icon of person resting](https://oneblood.scene7.com/is/content/oneblood/icon-prepare-rest?ts=1729697105744&$IconLarge$&dpr=off)
+![icon of person resting]
 
 # Stay Hydrated
 
 Drink plenty of fluids, especially water, to help replenish your body and maintain good hydration.
 
-![hydration icon](https://oneblood.scene7.com/is/content/oneblood/icon-prepare-hydrate?ts=1729697137434&$IconLarge$&dpr=off)
+![hydration icon]
 
 # Have a Snack
 
 Enjoy a light, healthy snack to help restore your energy levels.
 
-![snack icon](https://oneblood.scene7.com/is/content/oneblood/icon-prepare-snack?ts=1729697136165&$IconLarge$&dpr=off)
+![snack icon]
 
 ## Sign In to Your Donor Portal
 
@@ -100,19 +100,19 @@ Explore the features available in your portal, where you can access exciting rew
 
 slide 1 to 3 of 3
 
-![Health Check](https://www.oneblood.org/content/dam/oneblood/graphics/images/healthcheck-1146913659-1920px.jpg)
+![Health Check ]
 
 # 
 
 Review your latest health summary results and gain valuable insights into your well-being.
 
-![Cards available on in the reward store](https://www.oneblood.org/content/dam/oneblood/graphics/images/find-partners-blur-with-hand.jpg)
+![Cards available on in the reward store]
 
 # 
 
 Enjoy the convenience of redeeming your rewards all in one place, where you can select from a variety of eGift Cards.
 
-![My OneBlood Journey Logo](https://www.oneblood.org/content/dam/oneblood/graphics/images/journey-of-blood-map-pin-1169236505.jpg)
+![My OneBlood Journey Logo]
 
 # 
 
@@ -126,9 +126,7 @@ Check out your OneBlood Journey, a program that will notify you when your donati
 
  Close 
 
-![](https://data.adxcel-ec2.com/pixel/?ad_log=referer&action=content&pixid=d42d7a50-8720-4af0-92e9-eaef21550808)
-
-![](https://bat.bing.com/action/0?ti=56352197&tm=al001&Ver=2&mid=fd2985af-e2e5-4c4a-a0ce-dbab0f25cce6&bo=2&sid=1dfd4780568211f0abda19b1576077ab&vid=1dfd4ca0568211f0b61a297b467cf0ae&vids=0&msclkid=N&uach=pv%3D19.0.0&pi=918639831&lg=en-US&sw=1536&sh=864&sc=24&nwd=1&tl=Donating%20Blood%20%7C%20What%20to%20Expect&kw=Donation&p=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fbasics%2Fprepare-to-donate.html&r=&lt=1968&pt=1751380876240,,,,,6,6,6,6,6,,10,271,272,274,1434,1435,1968,,,&pn=0,0&mtp=1&evt=pageLoad&sv=1&asc=G&cdb=AQIT&rn=273043)
+![]
 
 ## Now Chatting
 
@@ -148,4 +146,4 @@ Olark launch button clip path
 
 Chat
 
-![Cookiebot session tracker icon loaded](https://imgsct.cookiebot.com/1.gif?dgi=0f23623f-34b4-4ae5-a0d0-3e3fc93fef65)
+![Cookiebot session tracker icon loaded]

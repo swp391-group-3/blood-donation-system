@@ -1,18 +1,14 @@
 Blood Type B-Negative | Learn More 
 
-![](https://d.adroll.com/cm/b/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/bombora/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/experian/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/g/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/index/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/n/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/o/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/outbrain/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/pubmatic/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/taboola/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/triplelift/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)![](https://d.adroll.com/cm/x/out?adroll_fpc=57fe2a162d8549eaa46e1bc5852b5df6-1751379858168&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&advertisable=4V6SPSUFKVD2LNRWXAR54S)
-
-![](https://x.adroll.com/attribution/trigger?fpc=57fe2a162d8549eaa46e1bc5852b5df6&advertisable_eid=4V6SPSUFKVD2LNRWXAR54S&conversion_type=PageView&conversion_value=0.0&currency=USC&flg=1&pv=74705529577.01147&arrfrr=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html)
-
 # How To Target Your Type B-Negative
 
- ![location](/etc.clientlibs/oneblood/clientlibs/clientlib-site/resources/images/Location-red.svg)  Find a Drive
+ ![location]  Find a Drive
 
 Find a Donation Center or Blood DriveSave a Life
 
 Donate
 
-![target your type logo](https://oneblood.scene7.com/is/image/oneblood/target-your-type-logo?qlt=82&ts=1729696983628&fmt=png-alpha&dpr=off "Print")
+![target your type logo]
 
 B-
 
@@ -34,17 +30,17 @@ Every two seconds, someone needs blood. The need for blood is constant, for reas
 
   Your browser does not support the video tag.
 
-![video thumbnail](/content/dam/oneblood/graphics/video-covers/video-cover-Bneg.png)Play
+![video thumbnail]Play
 
-![man donating blood on the big red bus](https://oneblood.scene7.com/is/image/oneblood/man-donating-blood-fb-889779%3A50-50-Card-DESK?ts=1729696920770&dpr=off)
+![man donating blood on the big red bus]
 
 ## Maximize YourDonation Power
 
 The most powerful part of B- blood can be found in the red blood cells. Here are your recommendation donation procedures:
 
- ![](/content/dam/oneblood/icons/icon-whole-blood.svg) Whole Blood 
+ ![] Whole Blood 
 
- ![](/content/dam/oneblood/icons/icon-double-red.svg) Double Red Cell 
+ ![] Double Red Cell 
 
 # Fast Facts:
 
@@ -86,7 +82,7 @@ People with blood types B-, B+, O+, or O- can receive your platelets.
 
 People with blood types B+, B-, O+, or O- can receive your plasma.
 
-![Image of multiple blood donation bags in a tray.](https://oneblood.scene7.com/is/image/oneblood/blood-bags-Bneg-0030)
+![Image of multiple blood donation bags in a tray.]
 
 ## Making an Impact
 
@@ -98,9 +94,9 @@ Unlock the power of your blood type and save more lives.
 
 Read the Story
 
- ![](/content/dam/oneblood/marketing/stories/share-your-story/recipient/pulse-survivors-MOB.jpg)
+ ![]
 
-![Pulse survivors](https://oneblood.scene7.com/is/image/oneblood/pulse-survivors-NEW?qlt=82&ts=1729697106368&dpr=off)
+![Pulse survivors]
 
 ## Learn About Donation Procedures
 
@@ -112,7 +108,7 @@ This is our most common procedure, drawing a pint of blood containing all blood 
 
 Learn More
 
-![Blood 101](https://oneblood.scene7.com/is/content/oneblood/icon-whole-blood?ts=1729697137943&$IconSmall$&dpr=off)
+![Blood 101]
 
 # Double Red Cell
 
@@ -120,7 +116,7 @@ During a double red blood cell donation, we only collect your red blood cells, e
 
 Learn More
 
-![Blood Drive](https://oneblood.scene7.com/is/content/oneblood/icon-double-red?ts=1729697135365&$IconSmall$&dpr=off)
+![Blood Drive]
 
 # Platelets
 
@@ -128,7 +124,7 @@ During a platelet donation, we only collect your platelets, returning the rest o
 
 Learn More
 
-![Donate](https://oneblood.scene7.com/is/content/oneblood/icon-platelet?ts=1729697135161&$IconSmall$&dpr=off)
+![Donate]
 
 ##### 
 
@@ -136,17 +132,4 @@ Learn More
 
  Close 
 
-![](https://data.adxcel-ec2.com/pixel/?ad_log=referer&action=content&pixid=d42d7a50-8720-4af0-92e9-eaef21550808)
-
-![](https://bat.bing.com/action/0?ti=56352197&tm=al001&Ver=2&mid=41f7b884-b732-479a-ae6a-4c4bfb62da68&bo=2&sid=1dfd4780568211f0abda19b1576077ab&vid=1dfd4ca0568211f0b61a297b467cf0ae&vids=0&msclkid=N&uach=pv%3D19.0.0&pi=918639831&lg=en-US&sw=1536&sh=864&sc=24&nwd=1&tl=Blood%20Type%20B-Negative%20%7C%20Learn%20More&p=https%3A%2F%2Fwww.oneblood.org%2Fgive-blood%2Fblood-types%2Fb-negative.html&r=&lt=2067&pt=1751380898749,,,,,9,9,9,9,9,,12,222,315,226,1591,1591,2067,,,&pn=0,0&mtp=1&evt=pageLoad&sv=1&asc=G&cdb=AQIT&rn=488757)
-
-## Contact us
-
-We're sorry, live chat representatives are not available at this time. Some of our most commonly asked questions can be found by visiting our Customer Service FAQ page.  
-If you can't find what you're looking for, please visit our Contact Us.
-
-Olark launch button clip path
-
-Live Chat
-
-![Cookiebot session tracker icon loaded](https://imgsct.cookiebot.com/1.gif?dgi=0f23623f-34b4-4ae5-a0d0-3e3fc93fef65)
+![Cookiebot session tracker icon loaded]
