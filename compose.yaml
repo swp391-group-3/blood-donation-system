@@ -41,6 +41,8 @@ services:
       OIDC__MICROSOFT__REDIRECT_URL: ${MICROSOFT_REDIRECT_URL}
       EMAIL__USERNAME: ${EMAIL_USERNAME}
       EMAIL__PASSWORD: ${EMAIL_PASSWORD}
+      RAG__QDRANT_URL: ${QDRANT_URL}
+      RAG__GEMINI_API_KEY: ${GEMINI_API_KEY}
     image: ${REGISTRY}/backend:latest
     restart: always
     ports:
