@@ -42,12 +42,12 @@ const fn default_context_sample() -> usize {
 #[derive(Debug, Clone, Deserialize)]
 pub struct RAGConfig {
     #[serde(default = "default_qdrant_url")]
-    qdrant_url: String,
+    pub qdrant_url: String,
     #[serde(default = "default_collection_name")]
-    collection_name: String,
-    gemini_api_key: String,
+    pub collection_name: String,
+    pub gemini_api_key: String,
     #[serde(default = "default_system_prompt")]
-    system_prompt: String,
+    pub system_prompt: String,
     #[serde(default = "default_context_sample")]
-    context_sample: usize
+    pub context_sample: usize
 }

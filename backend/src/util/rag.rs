@@ -1,0 +1,78 @@
+use futures::StreamExt;
+use qdrant_client::{
+    Qdrant,
+    qdrant::{CreateCollectionBuilder, Distance, QueryPointsBuilder, VectorParamsBuilder},
+};
+use rig::{Embed, agent::Agent, embeddings::EmbeddingsBuilder, providers::gemini};
+use rig_qdrant::QdrantVectorStore;
+use serde::Serialize;
+use tokio::fs;
+use tokio_stream::wrappers::ReadDirStream;
+
+use crate::config::CONFIG;
+
+const GEMINI_EMBEDING_SIZE: u64 = 768;
+const DOCUMENT_PATH: &str = "docs";
+
+#[derive(Embed, Serialize, Clone, Debug, Eq, PartialEq, Default)]
+pub struct Document {
+    file_name: String,
+    #[embed]
+    content: String,
+}
+
+impl Document {
+    async fn read_all() -> Vec<Document> {
+        ReadDirStream::new(fs::read_dir(DOCUMENT_PATH).await.unwrap())
+            .map(|raw| raw.unwrap().path())
+            .then(|path| async move {
+                Document {
+                    file_name: path.file_name().unwrap().to_string_lossy().to_string(),
+                    content: fs::read_to_string(path).await.unwrap(),
+                }
+            })
+            .collect()
+            .await
+    }
+}
+
+pub async fn init_rag() -> Agent<gemini::completion::CompletionModel> {
+    let client = gemini::Client::new(&CONFIG.rag.gemini_api_key);
+    let embedding_model = client.embedding_model(gemini::embedding::EMBEDDING_004);
+
+    let embeddings = EmbeddingsBuilder::new(embedding_model.clone())
+        .documents(Document::read_all().await)
+        .unwrap()
+        .build()
+        .await
+        .unwrap();
+
+    let qdrant = Qdrant::from_url(&CONFIG.rag.qdrant_url).build().unwrap();
+
+    if !qdrant
+        .collection_exists(&CONFIG.rag.collection_name)
+        .await
+        .unwrap()
+    {
+        qdrant
+            .create_collection(
+                CreateCollectionBuilder::new(&CONFIG.rag.collection_name).vectors_config(
+                    VectorParamsBuilder::new(GEMINI_EMBEDING_SIZE, Distance::Cosine),
+                ),
+            )
+            .await
+            .unwrap();
+    }
+
+    let query_params = QueryPointsBuilder::new(&CONFIG.rag.collection_name).with_payload(true);
+    let vector_store =
+        QdrantVectorStore::new(qdrant, embedding_model.clone(), query_params.build());
+
+    vector_store.insert_documents(embeddings).await.unwrap();
+
+    client
+        .agent(gemini::completion::GEMINI_2_0_FLASH)
+        .preamble(&CONFIG.rag.system_prompt)
+        .dynamic_context(CONFIG.rag.context_sample, vector_store)
+        .build()
+}

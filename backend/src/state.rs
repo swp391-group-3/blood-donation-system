@@ -6,11 +6,15 @@ use database::{
 };
 use futures::{StreamExt, stream};
 use lettre::{AsyncSmtpTransport, Tokio1Executor, transport::smtp::authentication::Credentials};
+use rig::{agent::Agent, providers::gemini};
 
 use crate::{
     config::{CONFIG, oidc::Provider},
     error::{Error, Result},
-    util::{auth::JwtService, auth::OpenIdConnectClient},
+    util::{
+        auth::{JwtService, OpenIdConnectClient},
+        rag::init_rag,
+    },
 };
 
 pub struct ApiState {
@@ -18,6 +22,7 @@ pub struct ApiState {
     pub oidc_clients: HashMap<Provider, OpenIdConnectClient>,
     pub jwt_service: JwtService,
     pub mailer: AsyncSmtpTransport<Tokio1Executor>,
+    pub rag_agent: Agent<gemini::completion::CompletionModel>,
 }
 
 impl ApiState {
@@ -51,6 +56,7 @@ impl ApiState {
             oidc_clients,
             jwt_service: Default::default(),
             mailer,
+            rag_agent: init_rag().await,
         })
     }
 
