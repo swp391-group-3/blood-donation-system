@@ -38,7 +38,6 @@ pub struct Config {
     pub oidc: HashMap<Provider, OpenIdConnectConfig>,
     #[serde(default)]
     pub email: EmailConfig,
-    #[serde(default)]
     pub rag: RAGConfig,
 }
 

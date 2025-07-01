@@ -105,22 +105,9 @@ pub struct RAGConfig {
     pub qdrant_url: String,
     #[serde(default = "default_collection_name")]
     pub collection_name: String,
-    #[serde(default = "default_gemini_api_key")]
     pub gemini_api_key: String,
     #[serde(default = "default_system_prompt")]
     pub system_prompt: String,
     #[serde(default = "default_context_sample")]
     pub context_sample: usize,
-}
-
-impl Default for RAGConfig {
-    fn default() -> Self {
-        Self {
-            qdrant_url: default_qdrant_url(),
-            collection_name: default_collection_name(),
-            gemini_api_key: default_gemini_api_key(),
-            system_prompt: default_system_prompt(),
-            context_sample: default_context_sample(),
-        }
-    }
 }
