@@ -10,7 +10,9 @@ use email::EmailConfig;
 use oidc::Provider;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectConfig, rag::RAGConfig};
+use crate::config::{
+    bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectConfig, rag::RAGConfig,
+};
 
 const fn default_port() -> u16 {
     3000

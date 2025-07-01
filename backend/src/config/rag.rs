@@ -49,5 +49,5 @@ pub struct RAGConfig {
     #[serde(default = "default_system_prompt")]
     pub system_prompt: String,
     #[serde(default = "default_context_sample")]
-    pub context_sample: usize
+    pub context_sample: usize,
 }
