@@ -60,6 +60,8 @@ services:
       RAG__CONTEXT_SAMPLE: ${RAG_CONTEXT_SAMPLE}
     image: ${REGISTRY}/backend:latest
     restart: always
+    volumes:
+      - ./docs:./docs
     ports:
       - 3000:3000
     networks:
