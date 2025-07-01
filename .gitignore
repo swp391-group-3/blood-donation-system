@@ -6,3 +6,4 @@
 **/tsconfig.tsbuildinfo
 **/.qdrant*
 **/storage
+**/snapshots

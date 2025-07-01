@@ -79,6 +79,7 @@ jobs:
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       QDRANT_URL: ${{ secrets.QDRANT_URL }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      RAG_CONTEXT_SAMPLE: ${{ secrets.RAG_CONTEXT_SAMPLE }}
     steps:
       - name: Checkout Develop
         uses: actions/checkout@v3

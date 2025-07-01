@@ -35,6 +35,10 @@ You are an AI assistant with a single, critical function: to answer questions ba
     "#.to_string()
 }
 
+const fn default_context_sample() -> usize {
+    5
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct RAGConfig {
     #[serde(default = "default_qdrant_url")]
@@ -44,4 +48,6 @@ pub struct RAGConfig {
     gemini_api_key: String,
     #[serde(default = "default_system_prompt")]
     system_prompt: String,
+    #[serde(default = "default_context_sample")]
+    context_sample: usize
 }

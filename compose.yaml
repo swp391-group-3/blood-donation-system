@@ -57,6 +57,7 @@ services:
       EMAIL__PASSWORD: ${EMAIL_PASSWORD}
       RAG__QDRANT_URL: ${QDRANT_URL}
       RAG__GEMINI_API_KEY: ${GEMINI_API_KEY}
+      RAG__CONTEXT_SAMPLE: ${RAG_CONTEXT_SAMPLE}
     image: ${REGISTRY}/backend:latest
     restart: always
     ports:
