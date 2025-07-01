@@ -89,7 +89,7 @@ jobs:
             backend
       - name: Move docs
         run: |
-          mv docs backend/docs
+          mv ../docs docs
       - name: Test
         env:
           DATABASE_URL: ${{ steps.postgres.outputs.connection-uri }}
