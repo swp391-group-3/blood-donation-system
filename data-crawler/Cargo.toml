@@ -1,0 +1,10 @@
+[package]
+name = "data-crawler"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+chromiumoxide = "0.7.0"
+futures = "0.3.31"
+htmd = "0.2.2"
+tokio = { version = "1.45.1", features = ["full"] }
