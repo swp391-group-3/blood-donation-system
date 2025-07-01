@@ -200,7 +200,7 @@ export default function BlogCreatePage() {
                                             <FormField
                                                 control={form.control}
                                                 name="content"
-                                                render={({ field }) => (
+                                                render={() => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             Content
