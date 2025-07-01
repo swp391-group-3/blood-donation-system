@@ -90,6 +90,12 @@ jobs:
       - name: Move docs
         run: |
           mv ../docs docs
+      - name: Wait for Qdrant
+        run: |
+          until curl -s http://localhost:6333; do
+            echo "Waiting for Qdrant...";
+            sleep 1;
+          done
       - name: Test
         env:
           DATABASE_URL: ${{ steps.postgres.outputs.connection-uri }}
