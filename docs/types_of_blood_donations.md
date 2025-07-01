@@ -148,20 +148,4 @@ Preparing to Donate
 
 Read our tips for small, easy steps that will make your donation as smooth and efficient as possible. Learn what to do before, during and after your donation to have a great donation experience.
 
- Learn More 
-
-## Hi, I'm Clara!
-
-Chat with me!
-
-Chat with me!
-
-## Hi, I'm Clara!
-
-Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
-
-How can I help?
-
-   
-
-### LOADING
+ Learn More

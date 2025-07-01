@@ -161,22 +161,6 @@ Become a Volunteer
 
 Volunteer Today
 
-## Hi, I'm Clara!
-
-Chat with me!
-
-Chat with me!
-
-## Hi, I'm Clara!
-
-Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
-
-How can I help?
-
-   
-
-### LOADING
-
  Important Note to Donors
 
 This list is not complete. Specially trained technical staff are available at each blood collection center and details of each donor’s health and activities are discussed in a confidential setting prior to blood donation. The majority of donor eligibility rules are specified by the Food and Drug Administration for every collection center in the country. Other rules are determined by the medical professionals at specific blood centers, or with other regulatory bodies. Therefore, rules may differ between programs. Donor eligibility rules are intended to protect the health and safety of the donor as well as the patient who will receive the transfusion. The criteria listed are provided as guidelines to assist you in determining whether you may be eligible to be a blood donor. The final determination of eligibility is made at the time of donation. The guidelines listed below were last revised on 08/01/17. There may have been some changes to these criteria since the last revision date. The most up-to-date eligibility information can be obtained by contacting the Donor Client Support Center at 1-866-236-3276.   
