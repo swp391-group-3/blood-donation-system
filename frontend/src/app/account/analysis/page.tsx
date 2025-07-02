@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { useGetAllAccounts } from "@/hooks/use-get-all-account";
+import { useGetAllDonation } from "@/hooks/use-get-all-donation";
 import { useGetAllRequest } from "@/hooks/use-get-all-request";
 import {
     Users,
@@ -110,12 +111,13 @@ const renderCustomizedLabel = ({
 function Page() {
     const { data: accounts } = useGetAllAccounts();
     const { data: bloodRequests } = useGetAllRequest();
+    const { data: donations } = useGetAllDonation();
     console.log(bloodRequests);
-    
+
     const stats = {
         totalUsers: accounts?.length,
         activeRequests: bloodRequests?.length,
-        todayDonations: 8,
+        donations: donations?.length,
         bloodBagsAvailable: 156,
         pendingAppointments: 45,
     }
@@ -157,7 +159,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {stats.bloodBagsAvailable}
+                                {stats.donations}
                             </div>
                         </CardContent>
                     </Card>
