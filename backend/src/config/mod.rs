@@ -1,6 +1,6 @@
 pub mod bcrypt;
-pub mod cors;
 pub mod blood_threshold;
+pub mod cors;
 pub mod email;
 pub mod jwt;
 pub mod oidc;
@@ -9,11 +9,13 @@ pub mod rag;
 
 use std::sync::LazyLock;
 
+use blood_threshold::BloodThresholdConfig;
+use cors::CorsConfig;
 use email::EmailConfig;
 use oidc::OpenIdConnectConfig;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, blood_threshold::BloodThresholdConfig, cors::CorsConfig, jwt::JwtConfig};
+use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig};
 
 #[cfg(feature = "rag")]
 use crate::config::rag::RAGConfig;
