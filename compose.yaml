@@ -47,7 +47,7 @@ services:
       DATABASE_URL: postgres://${PG_USER}:${PG_PASS}@database/${PG_DB}
 
       BCRYPT__COST: ${BCRYPT_COST}
-      BCRYPT__SALT: ${BCRYP_SALT}
+      BCRYPT__SALT: ${BCRYPT_SALT}
 
       EMAIL__USERNAME: ${EMAIL_USERNAME}
       EMAIL__PASSWORD: ${EMAIL_PASSWORD}
@@ -85,6 +85,8 @@ services:
   frontend:
     container_name: blood-donation-system-frontend
     image: ${REGISTRY}/frontend:latest
+    environment:
+      API_URL: ${API_URL}
     restart: always
     ports:
       - 3001:3000

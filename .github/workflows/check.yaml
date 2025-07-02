@@ -86,7 +86,7 @@ jobs:
           DATABASE_URL: postgres://${{ secrets.PG_USER }}:${{ secrets.PG_PASS }}@database/${{ secrets.PG_DB }}
 
           BCRYPT__COST: ${{ secrets.BCRYPT_COST }}
-          BCRYPT__SALT: ${{ secrets.BCRYP_SALT }}
+          BCRYPT__SALT: ${{ secrets.BCRYPT_SALT }}
 
           EMAIL__USERNAME: ${{ secrets.EMAIL_USERNAME }}
           EMAIL__PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
