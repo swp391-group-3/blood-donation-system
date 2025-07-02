@@ -69,13 +69,15 @@ const renderCustomizedLabel = ({
 };
 
 function Page() {
-    const { data: accounts = []} = useGetAllAccounts();
+    const { data: accounts = [] } = useGetAllAccounts();
     const { data: bloodRequests = [] } = useGetAllRequest();
     const { data: donations = [] } = useGetAllDonation();
     const { data: bloodBags } = useGetAllBloodBag();
     const dataTrend = getTrendData(donations, bloodRequests);
-    const bloodGroupData = getBloodGroupData(accounts);
-    
+    const bloodGroupData = getBloodGroupData(accounts).sort((a, b) => b.value - a.value);
+    console.log(bloodGroupData);
+
+
     const stats = {
         totalUsers: accounts?.length,
         activeRequests: bloodRequests?.length,
@@ -284,20 +286,20 @@ function Page() {
                                         <div className="bg-red-50 border border-red-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-red-700 mb-1 flex items-center ">
                                                 Most Common Type
-                                                <span className="text-2xl font-bold text-red-600 ml-3">O+</span>
+                                                <span className="text-2xl font-bold text-red-600 ml-3">
+                                                    {bloodGroupData[0].name}
+                                                </span>
                                             </div>
-                                            <div className="text-sm text-red-600">
-                                                35% of donors
-                                            </div>
+                                            <div className="text-sm text-red-600">{(bloodGroupData[0].value / accounts.length * 100).toFixed(2)}%</div>
                                         </div>
                                         <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-blue-700 mb-1">
                                                 Rarest Type
-                                                <span className="text-2xl font-bold text-blue-600 ml-3"> AB-</span>
+                                                <span className="text-2xl font-bold text-blue-600 ml-3">
+                                                    {bloodGroupData[1].name}
+                                                </span>
                                             </div>
-                                            <div className="text-sm text-blue-600">
-                                                0.5% of donors
-                                            </div>
+                                            <div className="text-sm text-blue-600">{(bloodGroupData[1].value / accounts .length * 100).toFixed(2)}%</div>
                                         </div>
                                     </div>
                                 </CardContent>

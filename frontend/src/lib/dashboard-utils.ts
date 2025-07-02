@@ -62,11 +62,9 @@ function initBloodGroupData() {
 
 export function getBloodGroupData(accounts: Account[]) {
     const bloodGroupData = initBloodGroupData();
-    console.log("bloodGroupData", bloodGroupData);
     
     accounts.forEach(account => {
         const bucket = bloodGroupData.find(b => b.name === bloodGroupLabels[account.blood_group]);
-        console.log("Bucket", bucket);
         
         if (bucket) {
             bucket.value += 1;
