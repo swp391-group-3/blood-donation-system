@@ -73,10 +73,7 @@ pub async fn authorized(
         Ok(None) => {
             session.insert(KEY, email).await.unwrap();
 
-            return Ok((
-                jar,
-                Redirect::to(&format!("{}/auth/complete", CONFIG.frontend_url)),
-            ));
+            return Ok((jar, Redirect::to(&CONFIG.oidc.register_redirect)));
         }
         Err(error) => {
             tracing::error!(?error, "Failed to get account");
@@ -87,5 +84,5 @@ pub async fn authorized(
 
     let cookie = state.jwt_service.new_credential(id)?;
 
-    Ok((jar.add(cookie), Redirect::to(&CONFIG.frontend_url)))
+    Ok((jar.add(cookie), Redirect::to(&CONFIG.oidc.login_redirect)))
 }

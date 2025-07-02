@@ -10,7 +10,7 @@ use openidconnect::{
 };
 
 use crate::{
-    config::oidc::OpenIdConnectConfig,
+    config::oidc::OpenIdConnectClientConfig,
     error::{Error, Result},
 };
 
@@ -29,7 +29,7 @@ pub struct OpenIdConnectClient {
 }
 
 impl OpenIdConnectClient {
-    pub async fn from_config(config: OpenIdConnectConfig) -> Self {
+    pub async fn from_config(config: OpenIdConnectClientConfig) -> Self {
         let http_client = reqwest::ClientBuilder::new()
             .redirect(reqwest::redirect::Policy::none())
             .build()
