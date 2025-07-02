@@ -54,14 +54,13 @@ pub async fn alert_low_stock(state: Arc<ApiState>) -> Result<(), Box<dyn Error>>
 
             if current_amount < *threshold {
                 low_stock_flag = true;
-                body.push_str(format!(
+                body.push_str(&format!(
                     "<tr>
-                        <td>{:?}</td>
-                        <td>{:?}</td>
-                        <td>{}</td>
-                        <td>{}</td>
-                    </tr>",
-                    blood_group, component, current_amount, threshold
+                        <td>{blood_group:?}</td>
+                        <td>{component:?}</td>
+                        <td>{current_amount}</td>
+                        <td>{threshold}</td>
+                    </tr>"
                 ));
             }
         }
