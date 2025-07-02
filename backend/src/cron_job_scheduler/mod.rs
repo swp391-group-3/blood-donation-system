@@ -10,7 +10,7 @@ pub async fn build(state: Arc<ApiState>) -> Result<JobScheduler, JobSchedulerErr
     let sched = JobScheduler::new().await?;
 
     sched
-        .add(Job::new_async("*/10 * * * * *", move |_uuid, _l| {
+        .add(Job::new_async("0 */5 * * * *", move |_uuid, _l| {
             let job_state = state.clone();
             Box::pin(async move {
                 match blood_storage::alert_low_stock(job_state).await {
