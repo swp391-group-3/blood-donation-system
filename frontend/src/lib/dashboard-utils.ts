@@ -1,16 +1,13 @@
+import { Account } from "./api/dto/account";
+import { bloodGroupLabels } from "./api/dto/blood-group";
 import { BloodRequest } from "./api/dto/blood-request";
 import { Donation } from "./api/dto/donation";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
+const Months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
 
-interface Trend {
-    month: keyof typeof MONTHS;
-    donations: number;
-    requests: number;
-}
 
 function initTrendData() {
-    return MONTHS.map(mon => ({
+    return Months.map(mon => ({
         month: mon,
         donations: 0,
         requests: 0,
@@ -32,4 +29,49 @@ export function getTrendData(donations: Donation[], requests: BloodRequest[]) {
     });
 
     return trends
+}
+
+export interface LabelProps {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+    name: string;
+}
+
+
+const bloodGroupColors = [
+    { name: "O+", color: "#dc2626" },
+    { name: "A+", color: "#ea580c" },
+    { name: "B+", color: "#ca8a04" },
+    { name: "AB+", color: "#16a34a" },
+    { name: "O-", color: "#2563eb" },
+    { name: "A-", color: "#7c3aed" },
+    { name: "B-", color: "#c2410c" },
+    { name: "AB-", color: "#64748b" },
+]
+function initBloodGroupData() {
+    return bloodGroupColors.map(b => ({
+        name: b.name,
+        value: 0,
+        color: b.color
+    }))
+}
+
+export function getBloodGroupData(accounts: Account[]) {
+    const bloodGroupData = initBloodGroupData();
+    console.log("bloodGroupData", bloodGroupData);
+    
+    accounts.forEach(account => {
+        const bucket = bloodGroupData.find(b => b.name === bloodGroupLabels[account.blood_group]);
+        console.log("Bucket", bucket);
+        
+        if (bucket) {
+            bucket.value += 1;
+        } 
+    });
+
+    return bloodGroupData;
 }

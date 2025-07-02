@@ -5,8 +5,7 @@ import { useGetAllAccounts } from "@/hooks/use-get-all-account";
 import { useGetAllBloodBag } from "@/hooks/use-get-all-blood-bag";
 import { useGetAllDonation } from "@/hooks/use-get-all-donation";
 import { useGetAllRequest } from "@/hooks/use-get-all-request";
-import { BloodRequest } from "@/lib/api/dto/blood-request";
-import { getTrendData } from "@/lib/dashboard-utils";
+import { getBloodGroupData, getTrendData, LabelProps } from "@/lib/dashboard-utils";
 import {
     Users,
     Activity,
@@ -26,33 +25,6 @@ import {
     Cell,
     Legend,
 } from "recharts"
-
-interface LabelProps {
-    cx: number;
-    cy: number;
-    midAngle: number;
-    innerRadius: number;
-    outerRadius: number;
-    percent: number;
-    name: string;
-}
-
-
-
-
-// Updated color palette 
-const bloodGroupData = [
-    { name: "O+", value: 35, color: "#dc2626" },
-    { name: "A+", value: 28, color: "#ea580c" },
-    { name: "B+", value: 20, color: "#ca8a04" },
-    { name: "AB+", value: 8, color: "#16a34a" },
-    { name: "O-", value: 5, color: "#2563eb" },
-    { name: "A-", value: 2, color: "#7c3aed" },
-    { name: "B-", value: 1.5, color: "#c2410c" },
-    { name: "AB-", value: 0.5, color: "#64748b" },
-]
-
-
 
 const renderCustomizedLabel = ({
     cx,
@@ -97,12 +69,13 @@ const renderCustomizedLabel = ({
 };
 
 function Page() {
-    const { data: accounts } = useGetAllAccounts();
+    const { data: accounts = []} = useGetAllAccounts();
     const { data: bloodRequests = [] } = useGetAllRequest();
     const { data: donations = [] } = useGetAllDonation();
     const { data: bloodBags } = useGetAllBloodBag();
     const dataTrend = getTrendData(donations, bloodRequests);
-
+    const bloodGroupData = getBloodGroupData(accounts);
+    
     const stats = {
         totalUsers: accounts?.length,
         activeRequests: bloodRequests?.length,
@@ -307,7 +280,6 @@ function Page() {
                                             />
                                         </PieChart>
                                     </ResponsiveContainer>
-
                                     <div className="mt-6 grid grid-cols-2 gap-4">
                                         <div className="bg-red-50 border border-red-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-red-700 mb-1 flex items-center ">
