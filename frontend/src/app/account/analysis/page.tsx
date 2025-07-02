@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { useGetAllAccounts } from "@/hooks/use-get-all-account";
+import { useGetAllBloodBag } from "@/hooks/use-get-all-blood-bag";
 import { useGetAllDonation } from "@/hooks/use-get-all-donation";
 import { useGetAllRequest } from "@/hooks/use-get-all-request";
 import {
@@ -112,14 +113,14 @@ function Page() {
     const { data: accounts } = useGetAllAccounts();
     const { data: bloodRequests } = useGetAllRequest();
     const { data: donations } = useGetAllDonation();
-    console.log(bloodRequests);
+    const { data: bloodBags } = useGetAllBloodBag();
+    console.log(bloodBags);
 
     const stats = {
         totalUsers: accounts?.length,
         activeRequests: bloodRequests?.length,
         donations: donations?.length,
-        bloodBagsAvailable: 156,
-        pendingAppointments: 45,
+        bloodBagsAvailable: bloodBags?.length,
     }
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
