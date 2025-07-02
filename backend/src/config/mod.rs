@@ -13,7 +13,7 @@ use email::EmailConfig;
 use oidc::OpenIdConnectConfig;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectClientConfig};
+use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig};
 
 #[cfg(feature = "rag")]
 use crate::config::rag::RAGConfig;
