@@ -28,7 +28,7 @@ services:
   qdrant:
     image: qdrant/qdrant:latest
     restart: always
-    container_name: qdrant
+    container_name: blood-donation-system-qdrant
     ports:
       - 6333:6333
       - 6334:6334
@@ -38,6 +38,8 @@ services:
       - 6335
     volumes:
       - qdrant:/qdrant/storage
+    networks:
+      - network
 
   backend:
     container_name: blood-donation-system-backend
