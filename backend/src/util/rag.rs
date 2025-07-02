@@ -4,11 +4,7 @@ use qdrant_client::{
     qdrant::{CreateCollectionBuilder, Distance, QueryPointsBuilder, VectorParamsBuilder},
 };
 use rig::{
-    Embed,
-    agent::Agent,
-    completion::Chat,
-    embeddings::EmbeddingsBuilder,
-    message::Message,
+    Embed, agent::Agent, completion::Chat, embeddings::EmbeddingsBuilder, message::Message,
     providers::gemini,
 };
 use rig_qdrant::QdrantVectorStore;
