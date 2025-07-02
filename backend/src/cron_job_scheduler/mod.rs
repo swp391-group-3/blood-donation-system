@@ -13,9 +13,8 @@ pub async fn build(state: Arc<ApiState>) -> Result<JobScheduler, JobSchedulerErr
         .add(Job::new_async("0 */5 * * * *", move |_uuid, _l| {
             let job_state = state.clone();
             Box::pin(async move {
-                match blood_storage::alert_low_stock(job_state).await {
-                    Err(error) => tracing::error!(?error, "Failed to alert low blood stock"),
-                    _ => {}
+                if let Err(error) = blood_storage::alert_low_stock(job_state).await {
+                    tracing::error!(?error, "Failed to alert low blood stock")
                 }
             })
         })?)
