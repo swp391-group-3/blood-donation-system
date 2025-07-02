@@ -31,14 +31,14 @@ pub async fn alert_low_stock(state: Arc<ApiState>) -> Result<(), Box<dyn Error>>
     let mut body =
         String::from("WARNING!!!\n\nThe following blood components are below safe levels:\n");
 
-    for (group, component_map) in &CONFIG.blood.thresholds {
+    for (blood_group, component_map) in &CONFIG.blood.thresholds {
         for (component, threshold) in component_map {
-            let current_amount = *stock_map.get(&(*group, *component)).unwrap_or(&0);
+            let current_amount = *stock_map.get(&(*blood_group, *component)).unwrap_or(&0);
 
             if current_amount < *threshold {
                 body.push_str(&format!(
                     "- {:?} {:?}: {}ml (threshold: {}ml)\n",
-                    group, component, current_amount, threshold
+                    blood_group, component, current_amount, threshold
                 ));
             }
         }
