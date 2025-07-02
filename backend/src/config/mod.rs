@@ -1,4 +1,5 @@
 pub mod bcrypt;
+pub mod cors;
 pub mod email;
 pub mod jwt;
 pub mod oidc;
@@ -7,6 +8,7 @@ pub mod rag;
 
 use std::{collections::HashMap, sync::LazyLock};
 
+use cors::CorsConfig;
 use email::EmailConfig;
 use oidc::Provider;
 use serde::Deserialize;
@@ -20,17 +22,14 @@ const fn default_port() -> u16 {
     3000
 }
 
-fn default_frontend_url() -> String {
-    "http://localhost:3001".to_string()
-}
-
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub database_url: String,
     #[serde(default = "default_port")]
     pub port: u16,
-    #[serde(default = "default_frontend_url")]
-    pub frontend_url: String,
+
+    #[serde(default)]
+    pub cors: CorsConfig,
 
     #[serde(default)]
     pub bcrypt: BcryptConfig,
