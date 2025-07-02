@@ -1,9 +1,5 @@
 use serde::Deserialize;
 
-fn default_qdrant_url() -> String {
-    "http://localhost:6334".to_string()
-}
-
 fn default_collection_name() -> String {
     "rig-collection".to_string()
 }
@@ -91,19 +87,17 @@ Key Directives:
     "#.to_string()
 }
 
-const fn default_context_sample() -> usize {
-    5
-}
-
 #[derive(Debug, Clone, Deserialize)]
 pub struct RAGConfig {
-    #[serde(default = "default_qdrant_url")]
     pub qdrant_url: String,
+
     #[serde(default = "default_collection_name")]
     pub collection_name: String,
+
     pub gemini_api_key: String,
+
     #[serde(default = "default_system_prompt")]
     pub system_prompt: String,
-    #[serde(default = "default_context_sample")]
+
     pub context_sample: usize,
 }

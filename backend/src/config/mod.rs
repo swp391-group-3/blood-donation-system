@@ -6,14 +6,14 @@ pub mod oidc;
 #[cfg(feature = "rag")]
 pub mod rag;
 
-use std::{collections::HashMap, sync::LazyLock};
+use std::sync::LazyLock;
 
 use cors::CorsConfig;
 use email::EmailConfig;
-use oidc::Provider;
+use oidc::OpenIdConnectConfig;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectConfig};
+use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectClientConfig};
 
 #[cfg(feature = "rag")]
 use crate::config::rag::RAGConfig;
@@ -35,10 +35,8 @@ pub struct Config {
 
     pub jwt: JwtConfig,
 
-    #[serde(default)]
-    pub oidc: HashMap<Provider, OpenIdConnectConfig>,
+    pub oidc: OpenIdConnectConfig,
 
-    #[serde(default)]
     pub email: EmailConfig,
 
     #[cfg(feature = "rag")]
