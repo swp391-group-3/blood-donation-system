@@ -30,13 +30,17 @@ pub struct Config {
 
     #[serde(default)]
     pub cors: CorsConfig,
+
     pub bcrypt: BcryptConfig,
-    #[serde(default)]
+
     pub jwt: JwtConfig,
+
     #[serde(default)]
     pub oidc: HashMap<Provider, OpenIdConnectConfig>,
+
     #[serde(default)]
     pub email: EmailConfig,
+
     #[cfg(feature = "rag")]
     pub rag: RAGConfig,
 }
