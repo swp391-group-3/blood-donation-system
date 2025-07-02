@@ -27,6 +27,7 @@ rand = "0.9.1"
 rig-core = { version = "=0.11.1", features = ["derive", "rayon"], optional = true }
 rig-qdrant = { version =  "=0.1.12", optional = true }
 serde = { version = "1.0.219", features = ["derive"] }
+serde_with = "3.14.0"
 strum = { version = "0.27.1", features = ["derive"] }
 thiserror = "2.0.12"
 tokio = { version = "1.45.0", features = ["full"] }
