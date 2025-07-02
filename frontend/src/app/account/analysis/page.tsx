@@ -37,59 +37,7 @@ interface LabelProps {
     name: string;
 }
 
-// mock blood request
-const sampleBloodRequests: BloodRequest[] = [
-    {
-        id: "11111111-aaaa-bbbb-cccc-000000000001",
-        priority: "low",
-        title: "Emergency O− for trauma unit",
-        blood_groups: ["o_plus"],
-        current_people: 2,
-        max_people: 10,
-        start_time: new Date("2025-06-18T08:00:00Z"),
-        end_time: new Date("2025-06-18T12:00:00Z"),
-    },
-    {
-        id: "22222222-aaaa-bbbb-cccc-000000000002",
-        priority: 'medium',
-        title: "Routine A+ donor drive",
-        blood_groups: ["a_plus"],
-        current_people: 5,
-        max_people: 15,
-        start_time: new Date("2025-07-01T09:00:00Z"),
-        end_time: new Date("2025-07-01T13:00:00Z"),
-    },
-    {
-        id: "33333333-aaaa-bbbb-cccc-000000000003",
-        priority: 'high',
-        title: "Platelet (B+) for oncology",
-        blood_groups: ["b_plus"],
-        current_people: 1,
-        max_people: 8,
-        start_time: new Date("2025-07-10T07:30:00Z"),
-        end_time: new Date("2025-07-10T11:30:00Z"),
-    },
-    {
-        id: "44444444-aaaa-bbbb-cccc-000000000004",
-        priority: 'high',
-        title: "AB− registry topping up",
-        blood_groups: ["a_b_minus"],
-        current_people: 3,
-        max_people: 5,
-        start_time: new Date("2025-08-05T10:00:00Z"),
-        end_time: new Date("2025-08-05T14:00:00Z"),
-    },
-    {
-        id: "55555555-aaaa-bbbb-cccc-000000000005",
-        priority: 'medium',
-        title: "Mixed group community drive",
-        blood_groups: ["a_plus", "o_plus", "b_plus", "a_b_plus"],
-        current_people: 12,
-        max_people: 20,
-        start_time: new Date("2025-08-20T08:30:00Z"),
-        end_time: new Date("2025-08-20T12:30:00Z"),
-    },
-];
+
 
 
 // Updated color palette 
@@ -150,10 +98,10 @@ const renderCustomizedLabel = ({
 
 function Page() {
     const { data: accounts } = useGetAllAccounts();
-    const { data: bloodRequests } = useGetAllRequest();
+    const { data: bloodRequests = [] } = useGetAllRequest();
     const { data: donations = [] } = useGetAllDonation();
     const { data: bloodBags } = useGetAllBloodBag();
-    const dataTrend = getTrendData(donations, sampleBloodRequests);
+    const dataTrend = getTrendData(donations, bloodRequests);
 
     const stats = {
         totalUsers: accounts?.length,
