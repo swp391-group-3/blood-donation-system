@@ -11,7 +11,6 @@ password = "password"
 [jwt]
 secret = "secret"
 expired_in = 86400
-token_key = "token"
 
 [oidc]
 login_redirect = "http://localhost:3000"
