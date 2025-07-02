@@ -1,5 +1,6 @@
 mod config;
 mod controller;
+mod cron_job_scheduler;
 mod doc;
 mod error;
 mod middleware;
@@ -48,6 +49,8 @@ async fn main() -> anyhow::Result<()> {
         )
         .init();
 
+    let _scheduler = cron_job_scheduler::build().await?;
+    
     let app = build_app().await;
 
     let listener = TcpListener::bind(SocketAddr::new([0, 0, 0, 0].into(), CONFIG.port)).await?;
