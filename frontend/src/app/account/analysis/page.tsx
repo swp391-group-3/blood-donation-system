@@ -5,6 +5,8 @@ import { useGetAllAccounts } from "@/hooks/use-get-all-account";
 import { useGetAllBloodBag } from "@/hooks/use-get-all-blood-bag";
 import { useGetAllDonation } from "@/hooks/use-get-all-donation";
 import { useGetAllRequest } from "@/hooks/use-get-all-request";
+import { BloodRequest } from "@/lib/api/dto/blood-request";
+import { getTrendData } from "@/lib/dashboard-utils";
 import {
     Users,
     Activity,
@@ -35,23 +37,60 @@ interface LabelProps {
     name: string;
 }
 
-
-
-// Chart data - 
-const donationTrends = [
-    { month: "Jan", donations: 65, requests: 45 },
-    { month: "Feb", donations: 78, requests: 52 },
-    { month: "Mar", donations: 90, requests: 48 },
-    { month: "Apr", donations: 81, requests: 61 },
-    { month: "May", donations: 95, requests: 55 },
-    { month: "Jun", donations: 87, requests: 67 },
-    { month: "Jul", donations: 92, requests: 60 },
-    { month: "Aug", donations: 85, requests: 58 },
-    { month: "Sep", donations: 88, requests: 62 },
-    { month: "Oct", donations: 94, requests: 70 },
-    { month: "Nov", donations: 90, requests: 66 },
-    { month: "Dec", donations: 97, requests: 71 },
+// mock blood request
+const sampleBloodRequests: BloodRequest[] = [
+    {
+        id: "11111111-aaaa-bbbb-cccc-000000000001",
+        priority: "low",
+        title: "Emergency O− for trauma unit",
+        blood_groups: ["o_plus"],
+        current_people: 2,
+        max_people: 10,
+        start_time: new Date("2025-06-18T08:00:00Z"),
+        end_time: new Date("2025-06-18T12:00:00Z"),
+    },
+    {
+        id: "22222222-aaaa-bbbb-cccc-000000000002",
+        priority: 'medium',
+        title: "Routine A+ donor drive",
+        blood_groups: ["a_plus"],
+        current_people: 5,
+        max_people: 15,
+        start_time: new Date("2025-07-01T09:00:00Z"),
+        end_time: new Date("2025-07-01T13:00:00Z"),
+    },
+    {
+        id: "33333333-aaaa-bbbb-cccc-000000000003",
+        priority: 'high',
+        title: "Platelet (B+) for oncology",
+        blood_groups: ["b_plus"],
+        current_people: 1,
+        max_people: 8,
+        start_time: new Date("2025-07-10T07:30:00Z"),
+        end_time: new Date("2025-07-10T11:30:00Z"),
+    },
+    {
+        id: "44444444-aaaa-bbbb-cccc-000000000004",
+        priority: 'high',
+        title: "AB− registry topping up",
+        blood_groups: ["a_b_minus"],
+        current_people: 3,
+        max_people: 5,
+        start_time: new Date("2025-08-05T10:00:00Z"),
+        end_time: new Date("2025-08-05T14:00:00Z"),
+    },
+    {
+        id: "55555555-aaaa-bbbb-cccc-000000000005",
+        priority: 'medium',
+        title: "Mixed group community drive",
+        blood_groups: ["a_plus", "o_plus", "b_plus", "a_b_plus"],
+        current_people: 12,
+        max_people: 20,
+        start_time: new Date("2025-08-20T08:30:00Z"),
+        end_time: new Date("2025-08-20T12:30:00Z"),
+    },
 ];
+
 
 // Updated color palette 
 const bloodGroupData = [
@@ -112,9 +151,10 @@ const renderCustomizedLabel = ({
 function Page() {
     const { data: accounts } = useGetAllAccounts();
     const { data: bloodRequests } = useGetAllRequest();
-    const { data: donations } = useGetAllDonation();
+    const { data: donations = [] } = useGetAllDonation();
     const { data: bloodBags } = useGetAllBloodBag();
-    console.log(bloodBags);
+    const dataTrend = getTrendData(donations, sampleBloodRequests);
+    console.log(dataTrend);
 
     const stats = {
         totalUsers: accounts?.length,
@@ -135,7 +175,7 @@ function Page() {
                         </p>
                     </div>
                 </div>
-
+                {/* STATS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <Card className="border-l-4 border-l-blue-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -208,7 +248,7 @@ function Page() {
                                 <CardContent>
                                     <ResponsiveContainer width="100%" height={300}>
                                         <LineChart
-                                            data={donationTrends}
+                                            data={dataTrend}
                                             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                                         >
                                             <CartesianGrid
