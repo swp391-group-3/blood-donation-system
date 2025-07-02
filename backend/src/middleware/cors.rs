@@ -9,7 +9,7 @@ use tower_http::cors::CorsLayer;
 
 use crate::config::CONFIG;
 
-pub const CORS_ALLOW_HEADERS: [HeaderName; 7] = [
+const ALLOW_HEADERS: [HeaderName; 7] = [
     ORIGIN,
     AUTHORIZATION,
     ACCESS_CONTROL_ALLOW_ORIGIN,
@@ -18,7 +18,7 @@ pub const CORS_ALLOW_HEADERS: [HeaderName; 7] = [
     ACCESS_CONTROL_ALLOW_METHODS,
     ACCESS_CONTROL_ALLOW_HEADERS,
 ];
-pub const CORS_ALLOW_METHODS: [Method; 5] = [
+const ALLOW_METHODS: [Method; 5] = [
     Method::GET,
     Method::POST,
     Method::DELETE,
@@ -34,8 +34,8 @@ pub fn cors() -> CorsLayer {
 
     CorsLayer::new()
         .allow_origin(allow_origins)
-        .allow_headers(CORS_ALLOW_HEADERS)
-        .expose_headers(CORS_ALLOW_HEADERS)
+        .allow_headers(ALLOW_HEADERS)
+        .expose_headers(ALLOW_HEADERS)
         .allow_credentials(true)
-        .allow_methods(CORS_ALLOW_METHODS)
+        .allow_methods(ALLOW_METHODS)
 }
