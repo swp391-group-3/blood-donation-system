@@ -26,8 +26,11 @@ pub const CORS_ALLOW_METHODS: [Method; 5] = [
     Method::PUT,
 ];
 
+const DEVELOPMENT_ORIGIN: &str = "http://localhost:3000";
+
 pub fn cors() -> CorsLayer {
-    let allow_origins = [CONFIG.frontend_url.parse::<HeaderValue>().unwrap()];
+    let allow_origins = [&CONFIG.frontend_url, DEVELOPMENT_ORIGIN]
+        .map(|origin| origin.parse::<HeaderValue>().unwrap());
 
     CorsLayer::new()
         .allow_origin(allow_origins)
