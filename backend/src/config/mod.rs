@@ -30,8 +30,6 @@ pub struct Config {
 
     #[serde(default)]
     pub cors: CorsConfig,
-
-    #[serde(default)]
     pub bcrypt: BcryptConfig,
     #[serde(default)]
     pub jwt: JwtConfig,
