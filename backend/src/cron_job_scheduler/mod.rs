@@ -1,3 +1,5 @@
+mod blood_storage;
+
 use tokio_cron_scheduler::{Job, JobScheduler, JobSchedulerError};
 
 pub async fn build() -> Result<JobScheduler, JobSchedulerError> {
@@ -5,7 +7,7 @@ pub async fn build() -> Result<JobScheduler, JobSchedulerError> {
 
     sched
         .add(Job::new("*/1 * * * * *", |_uuid, _l| {
-            println!("I run every second");
+            blood_storage::check_storage();
         })?)
         .await?;
 
