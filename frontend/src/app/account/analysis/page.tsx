@@ -154,7 +154,6 @@ function Page() {
     const { data: donations = [] } = useGetAllDonation();
     const { data: bloodBags } = useGetAllBloodBag();
     const dataTrend = getTrendData(donations, sampleBloodRequests);
-    console.log(dataTrend);
 
     const stats = {
         totalUsers: accounts?.length,

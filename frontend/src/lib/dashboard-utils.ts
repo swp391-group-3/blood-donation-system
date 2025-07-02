@@ -17,17 +17,18 @@ function initTrendData() {
     }))
 }
 
-export function getTrendData(donations: Donation[], requests: BloodRequest[])  {
+export function getTrendData(donations: Donation[], requests: BloodRequest[]) {
     const trends = initTrendData();
 
     donations.forEach(d => {
         const idx = new Date(d.created_at).getMonth();
-        trends[idx].donations += d.amount;
+        trends[idx].donations += 1;
     });
 
     requests.forEach(r => {
-        const idx = r.start_time.getMonth(); // r.start_time is a Date
-        trends[idx].requests += r.max_people;
+        const idx = r.start_time.getMonth();
+        trends[idx].requests += 1;
+
     });
 
     return trends
