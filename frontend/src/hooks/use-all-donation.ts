@@ -2,7 +2,7 @@ import { deserialize, fetchWrapper } from "@/lib/api"
 import { Donation } from "@/lib/api/dto/donation"
 import { useQuery } from "@tanstack/react-query"
 
-export const useGetAllDonation = () => {
+export const useAllDonation = () => {
     return useQuery({
         queryFn: async () => {
             const response = await fetchWrapper("/donation")

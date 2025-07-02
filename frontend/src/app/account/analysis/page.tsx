@@ -1,10 +1,10 @@
 "use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
-import { useGetAllAccounts } from "@/hooks/use-get-all-account";
-import { useGetAllBloodBag } from "@/hooks/use-get-all-blood-bag";
-import { useGetAllDonation } from "@/hooks/use-get-all-donation";
-import { useGetAllRequest } from "@/hooks/use-get-all-request";
+import { useBloodRequestList } from "@/hooks/use-blood-request-list";
+import { useAllAccounts } from "@/hooks/use-all-account";
+import { useAllBloodBag } from "@/hooks/use-all-blood-bag";
+import { useAllDonation } from "@/hooks/use-all-donation";
 import { getBloodGroupData, getTrendData, LabelProps } from "@/lib/dashboard-utils";
 import {
     Users,
@@ -69,13 +69,12 @@ const renderCustomizedLabel = ({
 };
 
 function Page() {
-    const { data: accounts = [] } = useGetAllAccounts();
-    const { data: bloodRequests = [] } = useGetAllRequest();
-    const { data: donations = [] } = useGetAllDonation();
-    const { data: bloodBags } = useGetAllBloodBag();
+    const { data: accounts = [] } = useAllAccounts();
+    const { data: bloodRequests = [] } = useBloodRequestList();
+    const { data: donations = [] } = useAllDonation();
+    const { data: bloodBags } = useAllBloodBag();
     const dataTrend = getTrendData(donations, bloodRequests);
     const bloodGroupData = getBloodGroupData(accounts).sort((a, b) => b.value - a.value);
-    console.log(bloodGroupData);
 
 
     const stats = {

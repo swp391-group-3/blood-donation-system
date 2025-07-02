@@ -3,7 +3,7 @@ import { BloodBag } from "@/lib/api/dto/blood-bag"
 import { useQuery } from "@tanstack/react-query"
 
 
-export const useGetAllBloodBag = ()=>{
+export const useAllBloodBag = ()=>{
     return useQuery({
         queryFn: async ()=>{
             const response = await fetchWrapper("/blood-bag")

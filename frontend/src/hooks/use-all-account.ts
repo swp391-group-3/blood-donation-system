@@ -3,7 +3,7 @@ import { Account } from "@/lib/api/dto/account";
 import { useQuery } from "@tanstack/react-query"
 
 
-export const useGetAllAccounts = ()=>{
+export const useAllAccounts = ()=>{
     return useQuery({
         queryFn: async () => {
             const response = await fetchWrapper("/account");
