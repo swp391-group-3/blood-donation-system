@@ -89,7 +89,7 @@ export default function QuestionPage() {
                         </TableHeader>
                         <TableBody>
                             {filtered.map((question, index) => (
-                                <TableRow>
+                                <TableRow key={question.id}>
                                     <TableCell className="p-6 font-medium text-slate-900 ">
                                         <div className="flex items-start gap-4">
                                             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-800 text-sm font-bold shadow-sm border border-purple-200">
