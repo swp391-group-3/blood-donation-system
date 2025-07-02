@@ -98,7 +98,6 @@ pub async fn alert_low_stock(state: Arc<ApiState>) -> Result<(), Box<dyn Error>>
     for account in &accounts {
         let subject = "URGENT: Low Blood Stock Alert".to_string();
         send(account, subject, body.clone(), &state.mailer).await?;
-        println!("Sent alert email to {}", account.email);
     }
 
     Ok(())
