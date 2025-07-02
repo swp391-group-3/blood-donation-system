@@ -7,7 +7,7 @@ mod middleware;
 mod state;
 mod util;
 
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 
 use axum::Router;
 #[cfg(test)]
@@ -22,9 +22,7 @@ use tracing_subscriber::{
 
 use crate::config::CONFIG;
 
-async fn build_app() -> Router {
-    let state = ApiState::new().await;
-
+async fn build_app(state: Arc<ApiState>) -> Router {
     Router::new()
         .merge(controller::build())
         .merge(doc::build())
@@ -49,9 +47,11 @@ async fn main() -> anyhow::Result<()> {
         )
         .init();
 
-    let _scheduler = cron_job_scheduler::build().await?;
+    let state = ApiState::new().await;
 
-    let app = build_app().await;
+    let _scheduler = cron_job_scheduler::build(state.clone()).await?;
+
+    let app = build_app(state).await;
 
     let listener = TcpListener::bind(SocketAddr::new([0, 0, 0, 0].into(), CONFIG.port)).await?;
 
@@ -64,7 +64,8 @@ async fn main() -> anyhow::Result<()> {
 
 #[cfg(test)]
 async fn build_test_server() -> TestServer {
-    let app = build_app().await;
+    let state = ApiState::new().await;
+    let app = build_app(state).await;
 
     TestServer::builder()
         .save_cookies()

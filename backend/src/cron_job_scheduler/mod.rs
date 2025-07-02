@@ -1,15 +1,20 @@
 mod blood_storage;
 
+use std::sync::Arc;
+
 use tokio_cron_scheduler::{Job, JobScheduler, JobSchedulerError};
 
-pub async fn build() -> Result<JobScheduler, JobSchedulerError> {
+use crate::state::ApiState;
+
+pub async fn build(state: Arc<ApiState>) -> Result<JobScheduler, JobSchedulerError> {
     let sched = JobScheduler::new().await?;
 
     sched
-        .add(Job::new_async("*/1 * * * * *", |_uuid, _l| {
-            Box::pin(async {
-                match blood_storage::check_storage().await {
-                    Err(error) => tracing::error!(?error, "Failed to check blood storage"),
+        .add(Job::new_async("*/10 * * * * *", move |_uuid, _l| {
+            let job_state = state.clone();
+            Box::pin(async move {
+                match blood_storage::alert_low_stock(job_state).await {
+                    Err(error) => tracing::error!(?error, "Failed to alert low blood stock"),
                     _ => {}
                 }
             })
