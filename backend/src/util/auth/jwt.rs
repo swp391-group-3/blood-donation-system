@@ -18,6 +18,8 @@ use crate::{
     state::ApiState,
 };
 
+pub const TOKEN_KEY: &str = "token";
+
 #[derive(Serialize, Deserialize)]
 pub struct Claims {
     pub sub: Uuid,
@@ -56,7 +58,7 @@ impl JwtService {
             }
         };
 
-        let mut cookie = Cookie::new(CONFIG.jwt.token_key.clone(), token);
+        let mut cookie = Cookie::new(TOKEN_KEY, token);
         // cookie.set_secure(true);
         cookie.set_same_site(SameSite::Lax);
         // cookie.set_http_only(true);
@@ -71,7 +73,7 @@ impl FromRequestParts<Arc<ApiState>> for Claims {
 
     async fn from_request_parts(parts: &mut Parts, state: &Arc<ApiState>) -> Result<Self> {
         let jar = parts.extract::<CookieJar>().await.unwrap();
-        let token = match jar.get(&CONFIG.jwt.token_key) {
+        let token = match jar.get(TOKEN_KEY) {
             Some(token) => token.value(),
             None => {
                 tracing::warn!("No cookie founded");
