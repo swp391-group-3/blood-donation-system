@@ -3,12 +3,21 @@ use std::{collections::HashMap, error::Error, sync::Arc};
 use crate::{CONFIG, util::notification::send};
 
 use ctypes::{BloodComponent, BloodGroup, Role};
-use database::queries;
+use database::{deadpool_postgres, queries};
+use lettre::{AsyncSmtpTransport, Tokio1Executor};
 
-use crate::state::ApiState;
+pub async fn alert_low_stock(
+    database_pool: Arc<deadpool_postgres::Pool>,
+    mailer: Arc<AsyncSmtpTransport<Tokio1Executor>>,
+) -> Result<(), Box<dyn Error>> {
+    let database = match database_pool.get().await {
+        Ok(database) => database,
+        Err(error) => {
+            tracing::error!(?error, "Failed to get database connection");
 
-pub async fn alert_low_stock(state: Arc<ApiState>) -> Result<(), Box<dyn Error>> {
-    let database = state.database().await?;
+            return Err(Box::new(error));
+        }
+    };
 
     let blood_bags = match queries::blood_bag::get_all().bind(&database).all().await {
         Ok(blood_bags) => blood_bags,
@@ -95,7 +104,7 @@ pub async fn alert_low_stock(state: Arc<ApiState>) -> Result<(), Box<dyn Error>>
 
     for account in &accounts {
         let subject = "URGENT: Low Blood Stock Alert".to_string();
-        send(account, subject, body.clone(), &state.mailer).await?;
+        send(account, subject, body.clone(), &mailer).await?;
     }
 
     Ok(())
