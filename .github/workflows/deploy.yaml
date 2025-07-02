@@ -61,12 +61,22 @@ jobs:
       packages: write
     env:
       REGISTRY: ghcr.io/${{ github.repository }}
+
       PG_USER: ${{ secrets.PG_USER }}
       PG_PASS: ${{ secrets.PG_PASS }}
       PG_DB: ${{ secrets.PG_DB }}
-      API_URL: ${{ secrets.API_URL }}
-      FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+
+      BCRYPT_COST: ${{ secrets.BCRYPT_COST }}
+      BCRYPT_SALT: ${{ secrets.BCRYPT_SALT }}
+
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRED_IN: ${{ secrets.JWT_EXPIRED_IN }}
+
+      OIDC_LOGIN_REDIRECT: ${{ secrets.OIDC_LOGIN_REDIRECT }}
+      OIDC_REGISTER_REDIRECT: ${{ secrets.OIDC_REGISTER_REDIRECT }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       GOOGLE_REDIRECT_URL: ${{ secrets.GOOGLE_REDIRECT_URL }}
@@ -75,11 +85,12 @@ jobs:
       MICROSOFT_CLIENT_SECRET: ${{ secrets.MICROSOFT_CLIENT_SECRET }}
       MICROSOFT_REDIRECT_URL: ${{ secrets.MICROSOFT_REDIRECT_URL }}
       MICROSOFT_ISSUER_URL: ${{ secrets.MICROSOFT_ISSUER_URL }}
-      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
-      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
       QDRANT_URL: ${{ secrets.QDRANT_URL }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       RAG_CONTEXT_SAMPLE: ${{ secrets.RAG_CONTEXT_SAMPLE }}
+
+      API_URL: ${{ secrets.API_URL }}
     steps:
       - name: Checkout Develop
         uses: actions/checkout@v3
