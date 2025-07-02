@@ -4,7 +4,7 @@ use qdrant_client::{
     qdrant::{CreateCollectionBuilder, Distance, QueryPointsBuilder, VectorParamsBuilder},
 };
 use rig::{
-    Embed, OneOrMany, agent::Agent, completion::Chat, embeddings::EmbeddingModel, message::Message,
+    Embed, agent::Agent, completion::Chat, embeddings::EmbeddingsBuilder, message::Message,
     providers::gemini,
 };
 use rig_qdrant::QdrantVectorStore;
@@ -27,7 +27,7 @@ pub struct Document {
 }
 
 impl Document {
-    async fn read_all() -> Vec<Document> {
+    async fn all() -> Vec<Document> {
         ReadDirStream::new(fs::read_dir(DOCUMENT_PATH).await.unwrap())
             .map(|raw| raw.unwrap().path())
             .then(|path| async move {
@@ -49,24 +49,13 @@ impl RAGAgent {
     pub async fn new() -> Self {
         let client = gemini::Client::new(&CONFIG.rag.gemini_api_key);
         let embedding_model = client.embedding_model(gemini::embedding::EMBEDDING_001);
-
-        let docs = Document::read_all().await;
-
-        let mut embeddings = Vec::with_capacity(docs.len());
-
-        for doc in docs {
-            let embedding = embedding_model.embed_text(&doc.content).await.unwrap();
-
-            embeddings.push((doc, OneOrMany::one(embedding)));
-        }
-
         let qdrant = Qdrant::from_url(&CONFIG.rag.qdrant_url).build().unwrap();
-
-        if !qdrant
+        let is_collection_exists = qdrant
             .collection_exists(&CONFIG.rag.collection_name)
             .await
-            .unwrap()
-        {
+            .unwrap();
+
+        if !is_collection_exists {
             qdrant
                 .create_collection(
                     CreateCollectionBuilder::new(&CONFIG.rag.collection_name).vectors_config(
@@ -80,8 +69,16 @@ impl RAGAgent {
         let query_params = QueryPointsBuilder::new(&CONFIG.rag.collection_name).with_payload(true);
         let vector_store =
             QdrantVectorStore::new(qdrant, embedding_model.clone(), query_params.build());
+        if !is_collection_exists {
+            let embeddings = EmbeddingsBuilder::new(embedding_model.clone())
+                .documents(Document::all().await)
+                .unwrap()
+                .build()
+                .await
+                .unwrap();
 
-        vector_store.insert_documents(embeddings).await.unwrap();
+            vector_store.insert_documents(embeddings).await.unwrap();
+        }
 
         let agent = client
             .agent(gemini::completion::GEMINI_2_0_FLASH)
