@@ -28,7 +28,7 @@ The blood donation process from the time you arrive until the time you leave tak
 
 ## Registration and Medical Screening
 
-![Red Cross employees working on computers.](/content/dam/redcrossblood/rcb/misc/13433010_1.jpg.img.jpeg)
+![Red Cross employees working on computers.]
 
 *   Check in for your donation by scanning your ID or entering your information and be welcomed into the donation waiting area.
 *   We’ll identify you using your ID, such as your driver’s license. Other acceptable forms of ID include: military ID, passport or immigration and naturalization card (green card).
@@ -36,13 +36,13 @@ The blood donation process from the time you arrive until the time you leave tak
 *   We’ll check your temperature, pulse, blood pressure and hemoglobin level.
 *   During a private and confidential interview, you’ll answer questions about your health history, places you’ve traveled, medications that may be in your system and questions to assess infectious disease risk.
 
-![Light bulb icon](/content/dam/redcrossblood/rcb/icons-and-badges/tips-icon.png.transform/282/q70/feature/image.png)
+![Light bulb icon]
 
 **Tip:** Speed up your donation by completing a RapidPass® online or on the Blood Donor app on the day of your donation.
 
 ## Your Donation
 
-![Blood donor wearing green shirt and smiling while donating blood.](/content/dam/redcrossblood/rcb/donate-blood/components/Donor_with_green_shirt.jpg.img.jpeg)
+![Blood donor wearing green shirt and smiling while donating blood.]
 
 *   We’ll cleanse an area on your arm and insert a new sterile needle for the blood draw. (This feels like a quick pinch and is over in seconds.)
 *   A whole blood donation takes about 8-10 minutes, during which you’ll be seated comfortably or lying down while approximately a pint of whole blood is collected.
@@ -52,13 +52,13 @@ The blood donation process from the time you arrive until the time you leave tak
 *   When your donation is complete, a staff person will place a bandage on your arm and provide post donation instructions.
     
 
-![Light bulb icon](/content/dam/redcrossblood/rcb/icons-and-badges/tips-icon.png.transform/282/q70/feature/image.png)
+![Light bulb icon]
 
 **Tip:** Please drink water before you arrive for your donation. Tips for a Successful Blood Donation.
 
 ## Refreshment and Recovery
 
-![Blood donor getting a snack after donating blood.](/content/dam/redcrossblood/rcb/misc/13455044_1.jpg.img.jpeg)
+![Blood donor getting a snack after donating blood.]
 
 *   After donating, you’ll have a snack and something to drink in the refreshment area.
 *   You’ll leave after approximately 15 minutes and continue your normal routine.
@@ -66,11 +66,11 @@ The blood donation process from the time you arrive until the time you leave tak
 *   Take a selfie, or simply share your good deed with friends. It may inspire them to become blood donors.
     
 
-![Light bulb icon](/content/dam/redcrossblood/rcb/icons-and-badges/tips-icon.png.transform/282/q70/feature/image.png)
+![Light bulb icon]
 
 **Tip:** Don't forget to schedule your next appointment before you leave the blood drive and download the Blood Donor app.
 
-![Ambulance](/content/dam/redcrossblood/rcb/donate-blood/components/red.png)
+![Ambulance]
 
 #### What Happens After My Donation?
 

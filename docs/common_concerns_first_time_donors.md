@@ -39,8 +39,6 @@ Why Give Blood
 
 ## Why Give Blood
 
-![](/content/dam/redcrossblood/rcoassets/Adelaide-Weiss.jpg.transform/1288/q82/feature/image.jpeg)
-
 You don't need a special reason to give blood. You just need your own reason.
 
 *   Some of us give blood because we were asked by a friend.
@@ -56,25 +54,25 @@ What to Expect
 
 ## What to Expect at Your Donation
 
-![Registration](/content/dam/redcrossblood/rcb/icons-and-badges/tips-photo-id.png.transform/282/q70/feature/image.png)
+![Registration ]
 
 **Registration** — You will sign in, show an ID, and be asked to read some required information.
 
  
 
-![Health History and Mini-Physical](/content/dam/redcrossblood/rcb/icons-and-badges/Health-History.png.transform/282/q70/feature/image.png)
+![Health History and Mini-Physical]
 
 **Health History and Mini-Physical** — Answer some questions online or in a private interview, and receive a general health check.  The results of your mini-physical will be available in your online blood donor account or on the Blood Donor App.
 
-![The Donation](/content/dam/redcrossblood/rcb/icons-and-badges/donation-process.png.transform/282/q70/feature/image.png)
+![The Donation]
 
 **The Donation** — You'll be seated comfortably while a pint of blood is drawn. The actual donation only takes 8-10 minutes.
 
-![Refreshment and Recovery](/content/dam/redcrossblood/rcb/icons-and-badges/cookie-snack.png.transform/282/q70/feature/image.png)
+![Refreshment and Recovery]
 
 **Refreshment and Recovery** — After donating, you can enjoy a snack and a drink for 10-15 minutes before resuming your day. The entire donation process takes about an hour.
 
-![Testing](/content/dam/redcrossblood/rcb/icons-and-badges/Blood-Test.png.transform/282/q70/feature/image.png)
+![Testing]
 
 **Testing** — Your blood is tested and sent to a patient in need. Learn more about blood testing after your donation.
 
@@ -86,7 +84,7 @@ Can I Give Blood
 
 #### General Guidelines for Blood Donation
 
-![Teens giving blood](/content/dam/redcrossblood/rcb/donate-blood/components/Teens%20giving%20blood.jpg "Teens giving blood")
+![Teens giving blood]
 
 *   Be in good general health and feeling well.
 *   Be at least 17 years old in most states (16 years old with parental consent in some states).
@@ -119,103 +117,69 @@ Donors must have proof of age to ensure they meet the minimum age requirements a
 
 Pause CarouselPlay CarouselPrevious
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/glass-water.png.transform/282/q70/feature/image.png)
-
 Drink Extra Liquids
 
 Drink an extra 16 oz. of water before your appointment.  
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/Health-History.png.transform/282/q70/feature/image.png)
-
 Review Eligibility
 
 Travel, medications and other factors may affect your eligibility. Check in advance.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/come-prepared.png.transform/282/q70/feature/image.png)
 
 Come Prepared
 
 Bring your favorite music or a friend to relax and enjoy the donation experience.
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-appointment.png.transform/282/q70/feature/image.png)
-
 Make an Appointment
 
 Select a donation type and find a time that works for you.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-iron-food.png.transform/282/q70/feature/image.png)
 
 Eat Iron-Rich Foods
 
 Eat iron-rich foods, such as red meat, fish, poultry, spinach, etc.
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-rapidpass.png.transform/282/q70/feature/image.png)
-
 RapidPass
 
 Save time by starting your RapidPass® on the day of your donation.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-photo-id.png.transform/282/q70/feature/image.png)
 
 Photo ID
 
 Please bring your donor card, driver's license or two other forms of identification.
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/glass-water.png.transform/282/q70/feature/image.png)
-
 Drink Extra Liquids
 
 Drink an extra 16 oz. of water before your appointment.  
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/Health-History.png.transform/282/q70/feature/image.png)
-
 Review Eligibility
 
 Travel, medications and other factors may affect your eligibility. Check in advance.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/come-prepared.png.transform/282/q70/feature/image.png)
 
 Come Prepared
 
 Bring your favorite music or a friend to relax and enjoy the donation experience.
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-appointment.png.transform/282/q70/feature/image.png)
-
 Make an Appointment
 
 Select a donation type and find a time that works for you.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-iron-food.png.transform/282/q70/feature/image.png)
 
 Eat Iron-Rich Foods
 
 Eat iron-rich foods, such as red meat, fish, poultry, spinach, etc.
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-rapidpass.png.transform/282/q70/feature/image.png)
-
 RapidPass
 
 Save time by starting your RapidPass® on the day of your donation.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/tips-photo-id.png.transform/282/q70/feature/image.png)
 
 Photo ID
 
 Please bring your donor card, driver's license or two other forms of identification.
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/glass-water.png.transform/282/q70/feature/image.png)
-
 Drink Extra Liquids
 
 Drink an extra 16 oz. of water before your appointment.  
 
-![](/content/dam/redcrossblood/rcb/icons-and-badges/Health-History.png.transform/282/q70/feature/image.png)
-
 Review Eligibility
 
 Travel, medications and other factors may affect your eligibility. Check in advance.
-
-![](/content/dam/redcrossblood/rcb/icons-and-badges/come-prepared.png.transform/282/q70/feature/image.png)
 
 Come Prepared
 
@@ -223,7 +187,7 @@ Bring your favorite music or a friend to relax and enjoy the donation experience
 
 Next
 
-![Ready to Help Save a Life?](/content/dam/redcrossblood/rcb/donate-blood/components/help-save-a-life.jpg.transform/1288/q82/feature/image.jpeg)
+![Ready to Help Save a Life?]
 
 #### Ready to Help Save a Life?
 
@@ -233,28 +197,10 @@ Find a convenient blood drive near you and schedule an appointment to donate tod
 
  Find a Drive 
 
-![Be a hero guide](/content/dam/redcrossblood/rcb/home-page/components/donor-guide.png.transform/1288/q70/feature/image.png)
+![Be a hero guide]
 
 **New to Blood Donation?**
 
 We answer the most frequently asked questions in the new Be a Hero Donor Guide. Enter your information to learn the truth about some blood donation myths and how you can help patients.
 
 <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1259313941211836&ev=PageView&noscript=1"/>
-
-![](https://accretivemedia.go2cloud.org/aff_i?offer_id=57&aff_id=1&source=lp)
-
-## Hi, I'm Clara!
-
-Chat with me!
-
-Chat with me!
-
-## Hi, I'm Clara!
-
-Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
-
-How can I help?
-
-   
-
-### LOADING

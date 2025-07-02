@@ -118,7 +118,7 @@ Being a Sickle Cell Fighter means being a blood donor who is a match for sickle 
 
 ## Ready to help save a life?
 
-![3 black blood donors](/content/dam/redcrossblood/african-american-blood-donors/844e04e6f6494292aae8e2cf5f180a96_1.jpeg.jpg.transform/1288/q82/feature/image.jpeg)
+![3 black blood donors ]
 
 #### Our Blood Saves Lives.
 
@@ -128,4 +128,4 @@ One in 3 African American blood donors is a match for a patient with sickle cell
 
  MAKE AN APPOINTMENT 
 
-![](https://trkn.us/pixel/conv/ppt=24457;g=schedule_appointment;gid=60688;ord=9760979438905.7;v=120)![](https://arttrk.com/pixel/?ad_log=referer&action=content&pixid=419a4074-f5ea-4a41-bf78-52072e9cc044)
+![]

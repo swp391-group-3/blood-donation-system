@@ -93,10 +93,6 @@ Type O, especially from blood donors who are Black.
 
   Play Video
 
-Marquita Gaines. Sickle cell survivor. Greenbelt, Maryland.
-
-Marquita was diagnosed with Sickle Cell Disease at birth. Every six weeks she receives red blood cell transfusions that help her feel pain free. Here she tells what these life-changing donations mean to her.
-
 ###### Burn Patients
 
 **Ideal Donation Type:** AB Elite, because plasma helps maintain blood pressure and other vital functions.
@@ -137,4 +133,20 @@ Emily's Story: A Letter from Mom and Dad
 
 Like many blood recipients, Emily will need lifesaving transfusions for the foreseeable future. One blood donation may help save up to three lives. For more information about blood donation or to schedule an appointment, please visit http://www.redcrossblood.org/give
 
- Learn More About Our Nation's Blood Needs and Blood Supply
+ Learn More About Our Nation's Blood Needs and Blood Supply 
+
+## Hi, I'm Clara!
+
+Chat with me!
+
+Chat with me!
+
+## Hi, I'm Clara!
+
+Ask me your blood donation questions. You can type "Schedule an appointment", "Eligibility requirements", or "Learn about donations".
+
+How can I help?
+
+   
+
+### LOADING
