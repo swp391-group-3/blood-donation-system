@@ -1,7 +1,6 @@
 use std::{collections::HashMap, error::Error, sync::Arc};
 
-use crate::CONFIG;
-use crate::util::notification::send;
+use crate::{CONFIG, util::notification::send};
 
 use ctypes::{BloodComponent, BloodGroup, Role};
 use database::queries;
