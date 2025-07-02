@@ -1,4 +1,5 @@
 pub mod bcrypt;
+pub mod blood_threshold;
 pub mod email;
 pub mod jwt;
 pub mod oidc;
@@ -7,6 +8,7 @@ pub mod rag;
 
 use std::{collections::HashMap, sync::LazyLock};
 
+use blood_threshold::BloodThresholdConfig;
 use email::EmailConfig;
 use oidc::Provider;
 use serde::Deserialize;
@@ -42,6 +44,8 @@ pub struct Config {
     pub email: EmailConfig,
     #[cfg(feature = "rag")]
     pub rag: RAGConfig,
+    #[serde(default)]
+    pub blood: BloodThresholdConfig,
 }
 
 pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {
