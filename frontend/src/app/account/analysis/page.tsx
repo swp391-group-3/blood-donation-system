@@ -1,6 +1,8 @@
 "use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
+import { useGetAllAccounts } from "@/hooks/use-get-all-account";
+import { useGetAllRequest } from "@/hooks/use-get-all-request";
 import {
     Users,
     Activity,
@@ -31,14 +33,7 @@ interface LabelProps {
     name: string;
 }
 
-// Mock data 
-const mockStats = {
-    totalUsers: 1247,
-    activeRequests: 23,
-    todayDonations: 8,
-    bloodBagsAvailable: 156,
-    pendingAppointments: 45,
-}
+
 
 // Chart data - 
 const donationTrends = [
@@ -113,6 +108,17 @@ const renderCustomizedLabel = ({
 };
 
 function Page() {
+    const { data: accounts } = useGetAllAccounts();
+    const { data: bloodRequests } = useGetAllRequest();
+    console.log(bloodRequests);
+    
+    const stats = {
+        totalUsers: accounts?.length,
+        activeRequests: bloodRequests?.length,
+        todayDonations: 8,
+        bloodBagsAvailable: 156,
+        pendingAppointments: 45,
+    }
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -137,7 +143,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.totalUsers.toLocaleString()}
+                                {stats.totalUsers?.toLocaleString()}
                             </div>
                         </CardContent>
                     </Card>
@@ -151,7 +157,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.bloodBagsAvailable}
+                                {stats.bloodBagsAvailable}
                             </div>
                         </CardContent>
                     </Card>
@@ -165,7 +171,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.activeRequests}
+                                {stats.activeRequests}
                             </div>
                         </CardContent>
                     </Card>
@@ -179,7 +185,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.bloodBagsAvailable}
+                                {stats.bloodBagsAvailable}
                             </div>
                         </CardContent>
                     </Card>
