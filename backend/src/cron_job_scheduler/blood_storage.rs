@@ -41,20 +41,17 @@ pub async fn alert_low_stock(
     let mut low_stock_flag = false;
 
     let mut body =
-        "<html>
-        <body>
-            <p>Dear Staff,</p>
-            <p>Our system has detected <strong>critically low levels</strong> in the following blood components:</p>
-            <table border=\"1\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse; font-family: Arial, sans-serif;\">
-                <thead style=\"background-color: #f44336; color: white;\">
-                    <tr>
-                        <th>Blood Group</th>
-                        <th>Component</th>
-                        <th>Current Amount (ml)</th>
-                        <th>Threshold (ml)</th>
-                    </tr>
-                </thead>
-                <tbody>".to_string();
+        "<p>Our system has detected <strong>critically low levels</strong> in the following blood components:</p>
+        <table border=\"1\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse; font-family: Arial, sans-serif;\">
+            <thead style=\"background-color: #f44336; color: white;\">
+                <tr>
+                    <th>Blood Group</th>
+                    <th>Component</th>
+                    <th>Current Amount (ml)</th>
+                    <th>Threshold (ml)</th>
+                </tr>
+            </thead>
+            <tbody>".to_string();
 
     for (blood_group, component_map) in &CONFIG.blood.thresholds {
         for (component, threshold) in component_map {
@@ -104,7 +101,16 @@ pub async fn alert_low_stock(
 
     for account in &accounts {
         let subject = "URGENT: Low Blood Stock Alert".to_string();
-        send(account, subject, body.clone(), &mailer).await?;
+
+        let mut final_body = format!(
+            "<html>
+            <body>
+                <p>Dear <strong>{}</strong>,</p>",
+            account.name
+        );
+        final_body.push_str(&body);
+
+        send(account, subject, final_body, &mailer).await?;
     }
 
     Ok(())
