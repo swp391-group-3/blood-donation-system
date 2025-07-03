@@ -2,9 +2,7 @@ services:
   database:
     container_name: blood-donation-system-database
     image: postgres:latest
-    ports:
-      - 5433:5432
-    restart: unless-stopped
+    restart: always
     environment:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASS}
@@ -18,8 +16,6 @@ services:
     image: dbeaver/cloudbeaver:latest
     container_name: blood-donation-system-cloudbeaver
     restart: always
-    ports:
-      - 8978:8978
     volumes:
       - cloudbeaver:/opt/cloudbeaver/workspace
     networks:
@@ -29,13 +25,6 @@ services:
     image: qdrant/qdrant:latest
     container_name: blood-donation-system-qdrant
     restart: always
-    ports:
-      - 6333:6333
-      - 6334:6334
-    expose:
-      - 6333
-      - 6334
-      - 6335
     volumes:
       - qdrant:/qdrant/storage
     networks:
@@ -86,26 +75,24 @@ services:
       - type: bind
         source: ./docs
         target: /app/docs
-    ports:
-      - 3000:3000
     networks:
       - network
     profiles:
       - backend
       - deploy
+
   frontend:
     container_name: blood-donation-system-frontend
     image: ${REGISTRY}/frontend:latest
     environment:
       API_URL: ${API_URL}
     restart: always
-    ports:
-      - 3001:3000
     networks:
       - network
     profiles:
       - frontend
       - deploy
+
 networks:
   network:
     name: blood-donation-system-network
