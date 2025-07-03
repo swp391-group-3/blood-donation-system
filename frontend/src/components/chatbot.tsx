@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,16 +11,13 @@ import {
 } from '@/components/ui/card';
 import { Bot, Minimize2, X, Send, Maximize2 } from 'lucide-react';
 import { useGetChatHistory } from '@/hooks/use-get-chat-history';
-import { usePostChat } from '@/hooks/use-post-chat';
-import type { ChatMessage } from '@/lib/api/dto/chat';
+import { useChatHandler } from '@/hooks/use-handler-message';
 import Markdown from 'react-markdown';
 
 export function BloodDonationChatbot() {
     const [isOpen, setIsOpen] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [input, setInput] = useState('');
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [isTyping, setIsTyping] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     const toggleChat = () => setIsOpen(!isOpen);
@@ -29,14 +25,14 @@ export function BloodDonationChatbot() {
     const { data: chatHistory = [], isLoading: loadingChat } =
         useGetChatHistory();
 
-    const { mutation } = usePostChat();
-    const { mutate: sendMessage, isPending: sending } = mutation;
+    const { messages, setMessages, isTyping, handleSendMessage } =
+        useChatHandler();
 
     useEffect(() => {
         if (chatHistory.length > 0) {
             setMessages(chatHistory);
         }
-    }, [chatHistory]);
+    }, [chatHistory, setMessages]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -44,60 +40,8 @@ export function BloodDonationChatbot() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const trimmed = input.trim();
-        if (!trimmed) return;
-
-        const userMessage: ChatMessage = {
-            role: 'user',
-            content: [{ type: 'text', text: trimmed }],
-        };
-
-        setMessages((prev) => [...prev, userMessage]);
+        handleSendMessage(input);
         setInput('');
-        setIsTyping(true);
-
-        let currentText = '';
-
-        const assistantMessage: ChatMessage = {
-            role: 'assistant',
-            content: [{ type: 'text', text: '' }],
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
-
-        sendMessage(
-            {
-                message: trimmed,
-                onChunk: (partialText: string) => {
-                    currentText = partialText;
-                    setMessages((prev) => {
-                        const updated = [...prev];
-                        const last = updated[updated.length - 1];
-                        if (last.role === 'assistant') {
-                            last.content[0].text = currentText;
-                        }
-                        return updated;
-                    });
-                },
-            },
-            {
-                onSuccess: () => setIsTyping(false),
-                onError: () => {
-                    setIsTyping(false);
-                    setMessages((prev) => [
-                        ...prev.slice(0, -1),
-                        {
-                            role: 'assistant',
-                            content: [
-                                {
-                                    type: 'text',
-                                    text: 'Something went wrong. Please try again.',
-                                },
-                            ],
-                        },
-                    ]);
-                },
-            },
-        );
     };
 
     return (
@@ -106,10 +50,9 @@ export function BloodDonationChatbot() {
                 <div className="fixed bottom-6 right-6 z-50">
                     <Button
                         onClick={toggleChat}
-                        className="h-14 w-14 rounded-full bg-red-600 hover:bg-red-700 shadow-lg p-0"
-                        aria-label="Open chatbot"
+                        className="h-12 w-12 rounded-full bg-red-600 hover:bg-red-700 shadow-lg p-0"
                     >
-                        <Bot className="h-6 w-6 text-white" />
+                        <Bot className="h-10 w-10 text-white" />
                     </Button>
                 </div>
             )}
@@ -208,13 +151,13 @@ export function BloodDonationChatbot() {
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Ask about blood donation..."
                                 className="flex-1 text-sm bg-white"
-                                disabled={sending}
+                                disabled={isTyping}
                             />
                             <Button
                                 type="submit"
                                 size="sm"
                                 className="bg-red-600 hover:bg-red-700 px-3"
-                                disabled={sending || !input.trim()}
+                                disabled={isTyping || !input.trim()}
                             >
                                 <Send className="h-4 w-4" />
                             </Button>
