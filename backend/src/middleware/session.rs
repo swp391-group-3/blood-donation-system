@@ -4,11 +4,18 @@ use tower_sessions::{
 };
 use tower_sessions_redis_store::{
     RedisStore,
-    fred::prelude::{ClientLike, Config, Pool},
+    fred::prelude::{ClientLike, Config, Pool, ServerConfig},
 };
 
+use crate::config::CONFIG;
+
 pub async fn session() -> SessionManagerLayer<RedisStore<Pool>> {
-    let pool = Pool::new(Config::default(), None, None, None, 6).unwrap();
+    let config = Config {
+        password: Some(CONFIG.redis.password.clone()),
+        server: ServerConfig::new_centralized(CONFIG.redis.host.clone(), CONFIG.redis.port),
+        ..Default::default()
+    };
+    let pool = Pool::new(config, None, None, None, CONFIG.redis.pool_size).unwrap();
 
     pool.connect();
     pool.wait_for_connect().await.unwrap();
