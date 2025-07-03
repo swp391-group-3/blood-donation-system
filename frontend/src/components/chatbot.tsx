@@ -59,9 +59,10 @@ export function BloodDonationChatbot() {
 
             {isOpen && (
                 <Card
-                    className={`fixed bottom-6 right-6 shadow-2xl z-50 flex flex-col animate-in slide-in-from-bottom-4 duration-300
-                        ${isExpanded ? 'w-[90vw] h-[80vh]' : 'w-80 h-96'}
-                    `}
+                    className={`fixed bottom-6 right-6 z-50 flex flex-col animate-in slide-in-from-bottom-4 duration-300 overflow-hidden
+                    ${isExpanded ? 'w-[90vw] h-[80vh]' : 'w-80 h-96'}
+                    rounded-xl shadow-md bg-white py-0
+                  `}
                 >
                     <CardHeader className="bg-red-600 text-white rounded-t-lg p-4">
                         <div className="flex items-center justify-between">
