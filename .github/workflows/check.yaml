@@ -72,11 +72,14 @@ jobs:
         with:
           target: ${{ matrix.target }}
           toolchain: ${{ matrix.toolchain }}
-      - run: ${{ matrix.deps }}
+      - name: Install redis
+        run: sudo apt-get install -y redis-tools redis-server
       - uses: ikalnytskyi/action-setup-postgres@v7
         id: postgres
       - name: Init database
         run: psql ${{ steps.postgres.outputs.connection-uri }} -a -f schema.sql
+      - name: Verify that redis is up
+        run: redis-cli ping
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
@@ -95,7 +98,7 @@ jobs:
           JWT__EXPIRED_IN: ${{ secrets.JWT_EXPIRED_IN }}
 
           REDIS__PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-          REDIS__HOST: redis
+          REDIS__HOST: localhost
 
           OIDC__LOGIN_REDIRECT: ${{ secrets.OIDC_LOGIN_REDIRECT }}
           OIDC__REGISTER_REDIRECT: ${{ secrets.OIDC_REGISTER_REDIRECT }}
