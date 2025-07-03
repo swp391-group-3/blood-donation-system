@@ -6,6 +6,7 @@ pub mod jwt;
 pub mod oidc;
 #[cfg(feature = "rag")]
 pub mod rag;
+pub mod redis;
 pub mod schedule_time;
 
 use std::sync::LazyLock;
@@ -17,7 +18,7 @@ use oidc::OpenIdConnectConfig;
 use schedule_time::ScheduleTimeConfig;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig};
+use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, redis::RedisConfig};
 
 #[cfg(feature = "rag")]
 use crate::config::rag::RAGConfig;
@@ -51,6 +52,8 @@ pub struct Config {
 
     #[serde(default)]
     pub schedule_time: ScheduleTimeConfig,
+
+    pub redis: RedisConfig,
 }
 
 pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {
