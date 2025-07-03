@@ -94,6 +94,8 @@ jobs:
       RAG_CONTEXT_SAMPLE: ${{ secrets.RAG_CONTEXT_SAMPLE }}
 
       API_URL: ${{ secrets.API_URL }}
+
+      CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
     steps:
       - name: Checkout Develop
         uses: actions/checkout@v3
