@@ -46,7 +46,9 @@ pub enum DonationType {
     Plasma,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ToSql, FromSql, Serialize, Deserialize, ToSchema)]
+#[derive(
+    Hash, Debug, Clone, Copy, PartialEq, Eq, ToSql, FromSql, Serialize, Deserialize, ToSchema,
+)]
 #[serde(rename_all = "snake_case")]
 #[postgres(name = "blood_component", rename_all = "snake_case")]
 pub enum BloodComponent {

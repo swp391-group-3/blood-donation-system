@@ -149,19 +149,37 @@ pub async fn create(
                     .to_string();
 
                 let body = format!(
-                    "Dear {},\n\n\
-                We are reaching out to you with great urgency.\n\n\
-                A critical situation has arisen, and we are in immediate need of blood donations. \
-                Your registered blood group matches the current emergency requirement.\n\n\
-                Request Details:\n\
-                - Title: {}\n\
-                - Maximum People Needed: {}\n\
-                - Timeframe: From {} to {}\n\n\
-                If you are able and available to donate, your support could help save a life.\n\n\
-                Please contact the donation center or respond to this email as soon as possible.\n\n\
-                Thank you for your prompt attention and compassion.\n\n\
-                Sincerely,\n\
-                Blood Donation Team",
+                    "<html>
+                    <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
+                        <p>Dear <strong>{}</strong>,</p>
+
+                        <p style=\"color: #b71c1c;\"><strong>This is an urgent appeal for blood donation.</strong></p>
+
+                        <p>Your registered blood group matches a high-priority request. Your contribution could save lives.</p>
+
+                        <h3 style=\"margin-bottom: 0;\">📝 Request Details</h3>
+                        <table border=\"1\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse; margin-top: 5px;\">
+                            <tr style=\"background-color: #f2f2f2;\">
+                                <th align=\"left\">Title</th>
+                                <td>{}</td>
+                            </tr>
+                            <tr>
+                                <th align=\"left\">People Needed</th>
+                                <td>{}</td>
+                            </tr>
+                            <tr>
+                                <th align=\"left\">Timeframe</th>
+                                <td>{} → {}</td>
+                            </tr>
+                        </table>
+
+                        <p>If you are eligible and available to donate, please contact your nearest donation center or reply to this email immediately.</p>
+
+                        <p>Thank you for your kindness and swift response.</p>
+
+                        <p>Sincerely,<br><strong>Blood Donation Team</strong></p>
+                    </body>
+                    </html>",
                     account.name,
                     request.title,
                     request.max_people,
