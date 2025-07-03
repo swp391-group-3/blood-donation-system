@@ -41,6 +41,13 @@ services:
     networks:
       - network
 
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - network
+
   backend:
     container_name: blood-donation-system-backend
     environment:
@@ -54,6 +61,9 @@ services:
 
       JWT__SECRET: ${JWT_SECRET}
       JWT__EXPIRED_IN: ${JWT_EXPIRED_IN}
+
+      REDIS__PASSWORD: ${REDIS_PASSWORD}
+      REDIS__HOST: redis
 
       OIDC__LOGIN_REDIRECT: ${OIDC_LOGIN_REDIRECT}
       OIDC__REGISTER_REDIRECT: ${OIDC_REGISTER_REDIRECT}

@@ -94,6 +94,9 @@ jobs:
           JWT__SECRET: ${{ secrets.JWT_SECRET }}
           JWT__EXPIRED_IN: ${{ secrets.JWT_EXPIRED_IN }}
 
+          REDIS__PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          REDIS__HOST: redis
+
           OIDC__LOGIN_REDIRECT: ${{ secrets.OIDC_LOGIN_REDIRECT }}
           OIDC__REGISTER_REDIRECT: ${{ secrets.OIDC_REGISTER_REDIRECT }}
           OIDC__CLIENTS__GOOGLE__CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
