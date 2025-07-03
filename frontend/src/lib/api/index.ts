@@ -21,7 +21,9 @@ export const fetchWrapper = async (
 ) => {
     const base = await getApiUrl();
 
-    const apiUrl = `${base}${url}`;
+    const fullBase = base.startsWith('http') ? base : `https://${base}`;
+
+    const apiUrl = `${fullBase}${url}`;
 
     return await fetch(apiUrl, {
         ...init,
