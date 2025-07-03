@@ -85,7 +85,7 @@ services:
     container_name: blood-donation-system-frontend
     image: ${REGISTRY}/frontend:latest
     environment:
-      API_URL: backend:3000
+      API_URL: ${API_URL}
     restart: always
     networks:
       - network
