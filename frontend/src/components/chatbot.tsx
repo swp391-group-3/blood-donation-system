@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,6 +13,7 @@ import {
 import { Bot, Minimize2, X, Send, Maximize2 } from 'lucide-react';
 import { useGetChatHistory } from '@/hooks/use-get-chat-history';
 import { usePostChat } from '@/hooks/use-post-chat';
+import ReactMarkdown from 'react-markdown';
 
 type ChatMessage = {
     role: 'user' | 'assistant';
@@ -24,6 +25,8 @@ export function BloodDonationChatbot() {
     const [isExpanded, setIsExpanded] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [isTyping, setIsTyping] = useState(false);
+    const chatEndRef = useRef<HTMLDivElement>(null);
 
     const toggleChat = () => setIsOpen(!isOpen);
 
@@ -38,6 +41,10 @@ export function BloodDonationChatbot() {
         }
     }, [chatHistory]);
 
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, isTyping]);
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const trimmed = input.trim();
@@ -50,12 +57,14 @@ export function BloodDonationChatbot() {
 
         setMessages((prev) => [...prev, userMessage]);
         setInput('');
+        setIsTyping(true);
 
         sendMessage(trimmed, {
             onSuccess: (botReply) => {
+                const replyText = botReply.content?.[0]?.text || '';
                 const assistantMessage: ChatMessage = {
                     role: 'assistant',
-                    content: [{ text: botReply.content[0].text }],
+                    content: [{ text: replyText }],
                 };
                 setMessages((prev) => [...prev, assistantMessage]);
             },
@@ -69,6 +78,9 @@ export function BloodDonationChatbot() {
                         ],
                     },
                 ]);
+            },
+            onSettled: () => {
+                setIsTyping(false);
             },
         });
     };
@@ -147,20 +159,28 @@ export function BloodDonationChatbot() {
                                             : 'bg-gray-100 text-gray-800 rounded-bl-none'
                                     }`}
                                 >
-                                    {message.content.map((c, i) => (
-                                        <p key={i}>{c.text}</p>
-                                    ))}
+                                    {message.content.map((c, i) =>
+                                        message.role === 'assistant' ? (
+                                            <ReactMarkdown key={i}>
+                                                {c.text}
+                                            </ReactMarkdown>
+                                        ) : (
+                                            <p key={i}>{c.text}</p>
+                                        ),
+                                    )}
                                 </div>
                             </div>
                         ))}
 
-                        {sending && (
-                            <div className="flex justify-start text-sm text-gray-500">
-                                <div className="bg-gray-100 p-2 rounded-lg rounded-bl-none">
-                                    Thinking...
+                        {isTyping && (
+                            <div className="flex justify-start">
+                                <div className="max-w-[75%] p-2 rounded-lg text-sm bg-gray-100 text-gray-500 italic animate-pulse rounded-bl-none">
+                                    Blood Donation Assistant is typing...
                                 </div>
                             </div>
                         )}
+
+                        <div ref={chatEndRef} />
                     </CardContent>
 
                     <CardFooter className="p-3 border-t bg-gray-50">
