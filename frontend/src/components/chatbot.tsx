@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,12 +13,8 @@ import {
 import { Bot, Minimize2, X, Send, Maximize2 } from 'lucide-react';
 import { useGetChatHistory } from '@/hooks/use-get-chat-history';
 import { usePostChat } from '@/hooks/use-post-chat';
+import type { ChatMessage } from '@/lib/api/dto/chat';
 import Markdown from 'react-markdown';
-
-type ChatMessage = {
-    role: 'user' | 'assistant';
-    content: { text: string }[];
-};
 
 export function BloodDonationChatbot() {
     const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +28,7 @@ export function BloodDonationChatbot() {
 
     const { data: chatHistory = [], isLoading: loadingChat } =
         useGetChatHistory();
+
     const { mutation } = usePostChat();
     const { mutate: sendMessage, isPending: sending } = mutation;
 
@@ -51,7 +49,7 @@ export function BloodDonationChatbot() {
 
         const userMessage: ChatMessage = {
             role: 'user',
-            content: [{ text: trimmed }],
+            content: [{ type: 'text', text: trimmed }],
         };
 
         setMessages((prev) => [...prev, userMessage]);
@@ -62,7 +60,7 @@ export function BloodDonationChatbot() {
 
         const assistantMessage: ChatMessage = {
             role: 'assistant',
-            content: [{ text: '' }],
+            content: [{ type: 'text', text: '' }],
         };
         setMessages((prev) => [...prev, assistantMessage]);
 
@@ -77,14 +75,12 @@ export function BloodDonationChatbot() {
                         if (last.role === 'assistant') {
                             last.content[0].text = currentText;
                         }
-                        return [...updated];
+                        return updated;
                     });
                 },
             },
             {
-                onSuccess: () => {
-                    setIsTyping(false);
-                },
+                onSuccess: () => setIsTyping(false),
                 onError: () => {
                     setIsTyping(false);
                     setMessages((prev) => [
@@ -93,6 +89,7 @@ export function BloodDonationChatbot() {
                             role: 'assistant',
                             content: [
                                 {
+                                    type: 'text',
                                     text: 'Something went wrong. Please try again.',
                                 },
                             ],

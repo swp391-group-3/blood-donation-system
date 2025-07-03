@@ -1,5 +1,4 @@
 'use client';
-
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -42,12 +41,10 @@ export const usePostChat = () => {
                 onChunk?.(fullText);
             }
 
-            const chatMessage: ChatMessage = {
+            return {
                 role: 'assistant',
                 content: [{ type: 'text', text: fullText }],
             };
-
-            return chatMessage;
         },
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
