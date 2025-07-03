@@ -90,6 +90,8 @@ jobs:
 
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       RAG_CONTEXT_SAMPLE: ${{ secrets.RAG_CONTEXT_SAMPLE }}
+
+      API_URL: ${{ secrets.API_URL }}
     steps:
       - name: Checkout Develop
         uses: actions/checkout@v3
