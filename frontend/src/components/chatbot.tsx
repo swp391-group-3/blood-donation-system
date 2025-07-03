@@ -13,7 +13,7 @@ import {
 import { Bot, Minimize2, X, Send, Maximize2 } from 'lucide-react';
 import { useGetChatHistory } from '@/hooks/use-get-chat-history';
 import { usePostChat } from '@/hooks/use-post-chat';
-import ReactMarkdown from 'react-markdown';
+import Markdown from 'react-markdown';
 
 type ChatMessage = {
     role: 'user' | 'assistant';
@@ -161,9 +161,9 @@ export function BloodDonationChatbot() {
                                 >
                                     {message.content.map((c, i) =>
                                         message.role === 'assistant' ? (
-                                            <ReactMarkdown key={i}>
+                                            <Markdown key={i}>
                                                 {c.text}
-                                            </ReactMarkdown>
+                                            </Markdown>
                                         ) : (
                                             <p key={i}>{c.text}</p>
                                         ),
