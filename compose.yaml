@@ -43,6 +43,8 @@ services:
     environment:
       DATABASE_URL: postgres://${PG_USER}:${PG_PASS}@database/${PG_DB}
 
+      CORS__FRONTEND_ORIGIN: ${CORS_FRONTEND_ORIGIN}
+
       BCRYPT__COST: ${BCRYPT_COST}
       BCRYPT__SALT: ${BCRYPT_SALT}
 
