@@ -1,16 +1,19 @@
-use futures::StreamExt;
+use std::sync::Arc;
+
+use axum::body::Body;
+use futures::{StreamExt, TryStreamExt};
 use qdrant_client::{
     Qdrant,
     qdrant::{CreateCollectionBuilder, Distance, QueryPointsBuilder, VectorParamsBuilder},
 };
 use rig::{
-    Embed, agent::Agent, completion::Chat, embeddings::EmbeddingsBuilder, message::Message,
-    providers::gemini,
+    Embed, agent::Agent, embeddings::EmbeddingsBuilder, message::Message, providers::gemini,
+    streaming::StreamingChat,
 };
 use rig_qdrant::QdrantVectorStore;
 use serde::Serialize;
-use tokio::fs;
-use tokio_stream::wrappers::ReadDirStream;
+use tokio::{fs, sync::mpsc};
+use tokio_stream::wrappers::{ReadDirStream, ReceiverStream};
 use tower_sessions::Session;
 
 use crate::{config::CONFIG, error::Error};
@@ -104,7 +107,6 @@ impl RAGAgent {
     }
 
     async fn append_histories(
-        &self,
         messages: &[Message],
         histories: &[Message],
         session: &Session,
@@ -120,24 +122,44 @@ impl RAGAgent {
         }
     }
 
-    pub async fn chat(&self, prompt: String, session: &Session) -> Result<String, Error> {
-        let histories = self.get_histories(session).await?;
+    pub async fn chat(&self, prompt: String, session: Arc<Session>) -> Result<Body, Error> {
+        let histories = self.get_histories(&session).await?;
 
-        let response = match self.agent.chat(prompt.as_str(), histories.clone()).await {
+        let response = match self
+            .agent
+            .stream_chat(prompt.as_str(), histories.clone())
+            .await
+        {
             Ok(response) => response,
             Err(error) => {
                 tracing::error!(?error, "Failed to chat with agent");
                 return Err(Error::internal());
             }
         };
+        let response = response.map(|chunk| chunk.map(|x| x.to_string()));
 
-        self.append_histories(
-            &[Message::user(prompt), Message::assistant(response.clone())],
-            &histories,
-            session,
-        )
-        .await?;
+        let (tx, rx) = mpsc::channel(100);
+        let tapped = response.inspect_ok(move |chunk| {
+            let _ = tx.try_send(chunk.clone());
+        });
 
-        Ok(response)
+        tokio::spawn(async move {
+            let completed_response: String = ReceiverStream::new(rx).collect().await;
+
+            if let Err(error) = Self::append_histories(
+                &[
+                    Message::user(prompt),
+                    Message::assistant(completed_response),
+                ],
+                &histories,
+                &session,
+            )
+            .await
+            {
+                tracing::error!(?error, "Failed to save history");
+            }
+        });
+
+        Ok(Body::from_stream(tapped))
     }
 }
