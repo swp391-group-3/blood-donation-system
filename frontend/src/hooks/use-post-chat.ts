@@ -5,11 +5,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { ChatMessage } from '@/lib/api/dto/chat';
 
+type PostChatArgs = {
+    message: string;
+    onChunk?: (text: string) => void;
+};
+
 export const usePostChat = () => {
     const queryClient = useQueryClient();
 
-    const mutation = useMutation<ChatMessage, Error, string>({
-        mutationFn: async (message: string) => {
+    const mutation = useMutation<ChatMessage, Error, PostChatArgs>({
+        mutationFn: async ({ message, onChunk }) => {
             const response = await fetchWrapper('/chat', {
                 method: 'POST',
                 headers: {
@@ -21,11 +26,25 @@ export const usePostChat = () => {
 
             await throwIfError(response);
 
-            const text = await response.text();
+            if (!response.body) {
+                throw new Error('No response body');
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+
+            let fullText = '';
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+                fullText += chunk;
+                onChunk?.(fullText);
+            }
 
             const chatMessage: ChatMessage = {
                 role: 'assistant',
-                content: [{ type: 'text', text }],
+                content: [{ type: 'text', text: fullText }],
             };
 
             return chatMessage;
@@ -33,9 +52,7 @@ export const usePostChat = () => {
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
             toast.success('Sent message successfully');
-            queryClient.invalidateQueries({
-                queryKey: ['chat'],
-            });
+            queryClient.invalidateQueries({ queryKey: ['chat'] });
         },
     });
 
