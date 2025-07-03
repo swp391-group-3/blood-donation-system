@@ -88,6 +88,8 @@ jobs:
         env:
           DATABASE_URL: postgres://${{ secrets.PG_USER }}:${{ secrets.PG_PASS }}@database/${{ secrets.PG_DB }}
 
+          CORS__FRONTEND_ORIGIN: ${{ secrets.CORS_FRONTEND_ORIGIN }}
+
           BCRYPT__COST: ${{ secrets.BCRYPT_COST }}
           BCRYPT__SALT: ${{ secrets.BCRYPT_SALT }}
 

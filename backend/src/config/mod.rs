@@ -33,7 +33,6 @@ pub struct Config {
     #[serde(default = "default_port")]
     pub port: u16,
 
-    #[serde(default)]
     pub cors: CorsConfig,
 
     pub bcrypt: BcryptConfig,
