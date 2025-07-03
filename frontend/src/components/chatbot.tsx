@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,30 +58,49 @@ export function BloodDonationChatbot() {
         setInput('');
         setIsTyping(true);
 
-        sendMessage(trimmed, {
-            onSuccess: (botReply) => {
-                const replyText = botReply.content?.[0]?.text || '';
-                const assistantMessage: ChatMessage = {
-                    role: 'assistant',
-                    content: [{ text: replyText }],
-                };
-                setMessages((prev) => [...prev, assistantMessage]);
+        let currentText = '';
+
+        const assistantMessage: ChatMessage = {
+            role: 'assistant',
+            content: [{ text: '' }],
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+
+        sendMessage(
+            {
+                message: trimmed,
+                onChunk: (partialText: string) => {
+                    currentText = partialText;
+                    setMessages((prev) => {
+                        const updated = [...prev];
+                        const last = updated[updated.length - 1];
+                        if (last.role === 'assistant') {
+                            last.content[0].text = currentText;
+                        }
+                        return [...updated];
+                    });
+                },
             },
-            onError: () => {
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: 'assistant',
-                        content: [
-                            { text: 'Something went wrong. Please try again.' },
-                        ],
-                    },
-                ]);
+            {
+                onSuccess: () => {
+                    setIsTyping(false);
+                },
+                onError: () => {
+                    setIsTyping(false);
+                    setMessages((prev) => [
+                        ...prev.slice(0, -1),
+                        {
+                            role: 'assistant',
+                            content: [
+                                {
+                                    text: 'Something went wrong. Please try again.',
+                                },
+                            ],
+                        },
+                    ]);
+                },
             },
-            onSettled: () => {
-                setIsTyping(false);
-            },
-        });
+        );
     };
 
     return (
