@@ -94,6 +94,15 @@ services:
     profiles:
       - frontend
       - deploy
+  cloudflare-tunnel:
+    container_name: blood-donation-system-cloudflare
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - network
 
 networks:
   network:
