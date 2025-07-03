@@ -178,7 +178,7 @@ impl CreateStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM questions WHERE is_active = true",
+        "SELECT * FROM questions WHERE is_active = true ORDER BY id",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);

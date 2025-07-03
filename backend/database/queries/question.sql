@@ -8,7 +8,8 @@ RETURNING id;
 --! get_all : Question
 SELECT *
 FROM questions
-WHERE is_active = true;
+WHERE is_active = true
+ORDER BY id;
 
 --! update
 UPDATE questions
