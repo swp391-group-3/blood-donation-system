@@ -1,6 +1,11 @@
 "use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
+import { useBloodRequestList } from "@/hooks/use-blood-request-list";
+import { useAllAccounts } from "@/hooks/use-all-account";
+import { useAllBloodBag } from "@/hooks/use-all-blood-bag";
+import { useAllDonation } from "@/hooks/use-all-donation";
+import { getBloodGroupData, getTrendData, LabelProps } from "@/lib/dashboard-utils";
 import {
     Users,
     Activity,
@@ -20,55 +25,6 @@ import {
     Cell,
     Legend,
 } from "recharts"
-
-interface LabelProps {
-    cx: number;
-    cy: number;
-    midAngle: number;
-    innerRadius: number;
-    outerRadius: number;
-    percent: number;
-    name: string;
-}
-
-// Mock data 
-const mockStats = {
-    totalUsers: 1247,
-    activeRequests: 23,
-    todayDonations: 8,
-    bloodBagsAvailable: 156,
-    pendingAppointments: 45,
-}
-
-// Chart data - 
-const donationTrends = [
-    { month: "Jan", donations: 65, requests: 45 },
-    { month: "Feb", donations: 78, requests: 52 },
-    { month: "Mar", donations: 90, requests: 48 },
-    { month: "Apr", donations: 81, requests: 61 },
-    { month: "May", donations: 95, requests: 55 },
-    { month: "Jun", donations: 87, requests: 67 },
-    { month: "Jul", donations: 92, requests: 60 },
-    { month: "Aug", donations: 85, requests: 58 },
-    { month: "Sep", donations: 88, requests: 62 },
-    { month: "Oct", donations: 94, requests: 70 },
-    { month: "Nov", donations: 90, requests: 66 },
-    { month: "Dec", donations: 97, requests: 71 },
-];
-
-// Updated color palette 
-const bloodGroupData = [
-    { name: "O+", value: 35, color: "#dc2626" },
-    { name: "A+", value: 28, color: "#ea580c" },
-    { name: "B+", value: 20, color: "#ca8a04" },
-    { name: "AB+", value: 8, color: "#16a34a" },
-    { name: "O-", value: 5, color: "#2563eb" },
-    { name: "A-", value: 2, color: "#7c3aed" },
-    { name: "B-", value: 1.5, color: "#c2410c" },
-    { name: "AB-", value: 0.5, color: "#64748b" },
-]
-
-
 
 const renderCustomizedLabel = ({
     cx,
@@ -113,6 +69,20 @@ const renderCustomizedLabel = ({
 };
 
 function Page() {
+    const { data: accounts = [] } = useAllAccounts();
+    const { data: bloodRequests = [] } = useBloodRequestList();
+    const { data: donations = [] } = useAllDonation();
+    const { data: bloodBags } = useAllBloodBag();
+    const dataTrend = getTrendData(donations, bloodRequests);
+    const bloodGroupData = getBloodGroupData(accounts).sort((a, b) => b.value - a.value);
+
+
+    const stats = {
+        totalUsers: accounts?.length,
+        activeRequests: bloodRequests?.length,
+        donations: donations?.length,
+        bloodBagsAvailable: bloodBags?.length,
+    }
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -126,7 +96,7 @@ function Page() {
                         </p>
                     </div>
                 </div>
-
+                {/* STATS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <Card className="border-l-4 border-l-blue-500">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -137,7 +107,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.totalUsers.toLocaleString()}
+                                {stats.totalUsers?.toLocaleString()}
                             </div>
                         </CardContent>
                     </Card>
@@ -151,7 +121,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.bloodBagsAvailable}
+                                {stats.donations}
                             </div>
                         </CardContent>
                     </Card>
@@ -165,7 +135,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.activeRequests}
+                                {stats.activeRequests}
                             </div>
                         </CardContent>
                     </Card>
@@ -179,7 +149,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {mockStats.bloodBagsAvailable}
+                                {stats.bloodBagsAvailable}
                             </div>
                         </CardContent>
                     </Card>
@@ -199,7 +169,7 @@ function Page() {
                                 <CardContent>
                                     <ResponsiveContainer width="100%" height={300}>
                                         <LineChart
-                                            data={donationTrends}
+                                            data={dataTrend}
                                             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                                         >
                                             <CartesianGrid
@@ -311,25 +281,24 @@ function Page() {
                                             />
                                         </PieChart>
                                     </ResponsiveContainer>
-
                                     <div className="mt-6 grid grid-cols-2 gap-4">
                                         <div className="bg-red-50 border border-red-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-red-700 mb-1 flex items-center ">
                                                 Most Common Type
-                                                <span className="text-2xl font-bold text-red-600 ml-3">O+</span>
+                                                <span className="text-2xl font-bold text-red-600 ml-3">
+                                                    {bloodGroupData[0].name}
+                                                </span>
                                             </div>
-                                            <div className="text-sm text-red-600">
-                                                35% of donors
-                                            </div>
+                                            <div className="text-sm text-red-600">{(bloodGroupData[0].value / accounts.length * 100).toFixed(2)}%</div>
                                         </div>
                                         <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-blue-700 mb-1">
                                                 Rarest Type
-                                                <span className="text-2xl font-bold text-blue-600 ml-3"> AB-</span>
+                                                <span className="text-2xl font-bold text-blue-600 ml-3">
+                                                    {bloodGroupData[1].name}
+                                                </span>
                                             </div>
-                                            <div className="text-sm text-blue-600">
-                                                0.5% of donors
-                                            </div>
+                                            <div className="text-sm text-blue-600">{(bloodGroupData[1].value / accounts .length * 100).toFixed(2)}%</div>
                                         </div>
                                     </div>
                                 </CardContent>

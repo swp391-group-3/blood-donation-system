@@ -52,3 +52,49 @@ INSERT INTO comments (id, blog_id, account_id, content, created_at) VALUES
   ('c2222222-2222-2222-2222-222222222222','f3333333-3333-3333-3333-333333333333','33333333-3333-3333-3333-333333333333','Count me in!','2025-06-16T09:30:00Z'),
   ('c3333333-3333-3333-3333-333333333333','f5555555-5555-5555-5555-555555555555','22222222-2222-2222-2222-222222222222','Looking forward!','2025-06-17T09:00:00Z')
 ON CONFLICT DO NOTHING;
+
+-- 1. blood_requests
+INSERT INTO blood_requests (id, staff_id, priority, title, max_people, start_time, end_time, is_active, created_at) VALUES
+  ('11111111-aaaa-bbbb-cccc-111111111111', '22222222-2222-2222-2222-222222222222', 'high', 'Emergency O+ Blood Needed', 5, '2025-06-18T09:00:00Z', '2025-06-18T12:00:00Z', true, '2025-06-16T08:00:00Z'),
+  ('22222222-bbbb-cccc-dddd-222222222222', '22222222-2222-2222-2222-222222222222', 'medium', 'Weekend Blood Drive', 10, '2025-06-22T08:00:00Z', '2025-06-22T17:00:00Z', true, '2025-06-17T09:00:00Z')
+ON CONFLICT DO NOTHING;
+
+-- 2. request_blood_groups
+INSERT INTO request_blood_groups (request_id, blood_group) VALUES
+  ('11111111-aaaa-bbbb-cccc-111111111111', 'o_plus'),
+  ('22222222-bbbb-cccc-dddd-222222222222', 'a_minus'),
+  ('22222222-bbbb-cccc-dddd-222222222222', 'b_plus')
+ON CONFLICT DO NOTHING;
+
+-- 3. appointments
+INSERT INTO appointments (id, request_id, member_id, status) VALUES
+  ('33333333-aaaa-bbbb-cccc-333333333333', '11111111-aaaa-bbbb-cccc-111111111111', '33333333-3333-3333-3333-333333333333', 'approved'),
+  ('44444444-bbbb-cccc-dddd-444444444444', '22222222-bbbb-cccc-dddd-222222222222', '33333333-3333-3333-3333-333333333333', 'checked_in')
+ON CONFLICT DO NOTHING;
+
+-- 4. answers
+INSERT INTO answers (question_id, appointment_id, content) VALUES
+  (1, '33333333-aaaa-bbbb-cccc-333333333333', 'Yes'),
+  (2, '33333333-aaaa-bbbb-cccc-333333333333', 'Yes'),
+  (1, '44444444-bbbb-cccc-dddd-444444444444', 'No'),
+  (2, '44444444-bbbb-cccc-dddd-444444444444', 'Yes')
+ON CONFLICT DO NOTHING;
+
+-- 5. healths
+INSERT INTO healths (id, appointment_id, temperature, weight, upper_blood_pressure, lower_blood_pressure, heart_rate, is_good_health, note, created_at) VALUES
+  ('55555555-aaaa-bbbb-cccc-555555555555', '33333333-aaaa-bbbb-cccc-333333333333', 36.6, 65.0, 120, 80, 72, true, 'Healthy and ready to donate.', '2025-06-18T08:45:00Z'),
+  ('66666666-bbbb-cccc-dddd-666666666666', '44444444-bbbb-cccc-dddd-444444444444', 37.0, 70.5, 115, 75, 70, true, NULL, '2025-06-22T07:30:00Z')
+ON CONFLICT DO NOTHING;
+
+-- 6. donations
+INSERT INTO donations (id, appointment_id, type, amount, created_at) VALUES
+  ('77777777-aaaa-bbbb-cccc-777777777777', '33333333-aaaa-bbbb-cccc-333333333333', 'whole_blood', 450, '2025-06-18T10:30:00Z'),
+  ('88888888-bbbb-cccc-dddd-888888888888', '44444444-bbbb-cccc-dddd-444444444444', 'platelet', 300, '2025-06-22T12:00:00Z')
+ON CONFLICT DO NOTHING;
+
+-- 7. blood_bags
+INSERT INTO blood_bags (id, donation_id, component, is_used, amount, expired_time) VALUES
+  ('99999999-aaaa-bbbb-cccc-999999999999', '77777777-aaaa-bbbb-cccc-777777777777', 'red_cell', false, 250, '2025-07-18T10:30:00Z'),
+  ('aaaaaaaa-bbbb-cccc-dddd-aaaaaaaaaaaa', '77777777-aaaa-bbbb-cccc-777777777777', 'plasma', false, 200, '2025-07-18T10:30:00Z'),
+  ('bbbbbbbb-cccc-dddd-eeee-bbbbbbbbbbbb', '88888888-bbbb-cccc-dddd-888888888888', 'platelet', false, 300, '2025-07-22T12:00:00Z')
+ON CONFLICT DO NOTHING;
