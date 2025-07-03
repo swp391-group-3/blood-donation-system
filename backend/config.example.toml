@@ -23,7 +23,7 @@ issuer_url = ""
 redirect_utl = ""
 
 [redis]
-server = "localhost:6379"
+host = "localhost"
 password = "password"
 
 [rag]
