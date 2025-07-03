@@ -88,7 +88,6 @@ jobs:
       MICROSOFT_REDIRECT_URL: ${{ secrets.MICROSOFT_REDIRECT_URL }}
       MICROSOFT_ISSUER_URL: ${{ secrets.MICROSOFT_ISSUER_URL }}
 
-      QDRANT_URL: ${{ secrets.QDRANT_URL }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       RAG_CONTEXT_SAMPLE: ${{ secrets.RAG_CONTEXT_SAMPLE }}
 
