@@ -246,17 +246,21 @@ export default function AppointmentManagementPage() {
     const [selectedStatus, setSelectedStatus] = useState<Status | 'all'>('all');
     const filteredAppointments = useMemo(() => {
         if (!appointments) return [];
-        const searchTerm = search?.toLowerCase().trim();
 
-        return appointments.filter((apt) => {
-            const matchesStatus =
-                selectedStatus === 'all' || apt.status === selectedStatus;
-            const matchesSearch =
-                apt.member.name.toLowerCase().includes(searchTerm!) ||
-                apt.member.email.toLowerCase().includes(searchTerm!);
+        return appointments
+            .filter(
+                (apt) =>
+                    selectedStatus === 'all' || apt.status === selectedStatus,
+            )
+            .filter((apt) => {
+                if (!search) return true;
 
-            return matchesStatus && matchesSearch;
-        });
+                const searchTerm = search.toLowerCase().trim();
+                return (
+                    apt.member.name.toLowerCase().includes(searchTerm) ||
+                    apt.member.email.toLowerCase().includes(searchTerm)
+                );
+            });
     }, [appointments, selectedStatus, search]);
 
     if (isPending) {
