@@ -1,12 +1,9 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import {
-    ArrowRight,
-    Heart,
-} from 'lucide-react';
+import { ArrowRight, Heart } from 'lucide-react';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-
+import Link from 'next/link';
 const steps = [
     {
         title: 'Registration',
@@ -29,7 +26,6 @@ const steps = [
             "After donating, you'll rest and enjoy refreshments. Most people feel fine after a short rest.",
     },
 ];
-
 
 export default function LandingPage() {
     const ref = useRef<HTMLDivElement>(null);
@@ -56,13 +52,15 @@ export default function LandingPage() {
                             help us save lives, one donation at a time.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                            <Button
-                                size="lg"
-                                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-xl hover:shadow-2xl transition-all duration-300 text-lg px-8 py-4"
-                            >
-                                Become a Donor
-                                <ArrowRight className="ml-2 h-5 w-5" />
-                            </Button>
+                            <Link href="/request">
+                                <Button
+                                    size="lg"
+                                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-xl hover:shadow-2xl transition-all duration-300 text-lg px-8 py-4"
+                                >
+                                    Become a Donor
+                                    <ArrowRight className="ml-2 h-5 w-5" />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </section>
@@ -133,14 +131,10 @@ export default function LandingPage() {
                                                     },
                                                 }}
                                             >
-                                                <h3
-                                                    className="text-xl font-bold mb-2 text-gray-900 "
-                                                >
+                                                <h3 className="text-xl font-bold mb-2 text-gray-900 ">
                                                     {step.title}
                                                 </h3>
-                                                <p
-                                                    className="text-gray-600"
-                                                >
+                                                <p className="text-gray-600">
                                                     {step.description}
                                                 </p>
                                             </motion.div>
@@ -158,8 +152,7 @@ export default function LandingPage() {
                                                 repeatType: 'reverse',
                                                 delay: index * 0.5,
                                             }}
-                                        >
-                                        </motion.div>
+                                        ></motion.div>
 
                                         <div className="md:w-1/2"></div>
                                     </motion.div>
