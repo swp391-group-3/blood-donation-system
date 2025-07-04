@@ -35,14 +35,16 @@ export default function BlogPage() {
     const filteredBlogs = useMemo(() => {
         if (!blogs) return [];
 
-        // if (selectedTag === 'all') return blogs;
-        // return blogs.filter((blog) => blog.tags?.includes(selectedTag));
-
-        return blogs.filter((blog) => {
-            if (!search) return true;
-            const searchTerm = search.toLowerCase().trim();
-            return blog.title.toLowerCase().includes(searchTerm);
-        });
+        return blogs
+            .filter(
+                (blog) =>
+                    selectedTag === 'all' || blog.tags.includes(selectedTag),
+            )
+            .filter((blog) => {
+                if (!search) return true;
+                const searchTerm = search.toLowerCase().trim();
+                return blog.title.toLowerCase().includes(searchTerm);
+            });
     }, [blogs, selectedTag]);
 
     if (isLoading) {
