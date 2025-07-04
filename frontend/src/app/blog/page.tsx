@@ -28,15 +28,21 @@ import {
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
-
+    const [search, setSearch] = useState<string | undefined>();
     const { data: blogs, isLoading, error } = useBlogList();
-
     const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
 
     const filteredBlogs = useMemo(() => {
         if (!blogs) return [];
-        if (selectedTag === 'all') return blogs;
-        return blogs.filter((blog) => blog.tags?.includes(selectedTag));
+
+        // if (selectedTag === 'all') return blogs;
+        // return blogs.filter((blog) => blog.tags?.includes(selectedTag));
+
+        return blogs.filter((blog) => {
+            if (!search) return true;
+            const searchTerm = search.toLowerCase().trim();
+            return blog.title.toLowerCase().includes(searchTerm);
+        });
     }, [blogs, selectedTag]);
 
     if (isLoading) {
