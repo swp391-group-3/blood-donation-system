@@ -1,5 +1,6 @@
 mod config;
 mod controller;
+mod cron_job_scheduler;
 mod doc;
 mod error;
 mod middleware;
@@ -29,7 +30,7 @@ async fn build_app() -> Router {
         .merge(doc::build())
         .layer(TraceLayer::new_for_http())
         .layer(middleware::cors())
-        .layer(middleware::session())
+        .layer(middleware::session().await)
         .with_state(state)
 }
 
@@ -47,6 +48,8 @@ async fn main() -> anyhow::Result<()> {
                 .from_env_lossy(),
         )
         .init();
+
+    cron_job_scheduler::build().await?;
 
     let app = build_app().await;
 

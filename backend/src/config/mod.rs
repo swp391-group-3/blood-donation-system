@@ -1,22 +1,30 @@
 pub mod bcrypt;
+pub mod blood_threshold;
+pub mod cors;
 pub mod email;
 pub mod jwt;
 pub mod oidc;
+#[cfg(feature = "rag")]
+pub mod rag;
+pub mod redis;
+pub mod schedule_time;
 
-use std::{collections::HashMap, sync::LazyLock};
+use std::sync::LazyLock;
 
+use blood_threshold::BloodThresholdConfig;
+use cors::CorsConfig;
 use email::EmailConfig;
-use oidc::Provider;
+use oidc::OpenIdConnectConfig;
+use schedule_time::ScheduleTimeConfig;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, oidc::OpenIdConnectConfig};
+use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, redis::RedisConfig};
+
+#[cfg(feature = "rag")]
+use crate::config::rag::RAGConfig;
 
 const fn default_port() -> u16 {
     3000
-}
-
-fn default_frontend_url() -> String {
-    "http://localhost:3001".to_string()
 }
 
 #[derive(Debug, Deserialize)]
@@ -24,17 +32,27 @@ pub struct Config {
     pub database_url: String,
     #[serde(default = "default_port")]
     pub port: u16,
-    #[serde(default = "default_frontend_url")]
-    pub frontend_url: String,
+
+    pub cors: CorsConfig,
+
+    pub bcrypt: BcryptConfig,
+
+    pub jwt: JwtConfig,
+
+    pub oidc: OpenIdConnectConfig,
+
+    pub email: EmailConfig,
+
+    #[cfg(feature = "rag")]
+    pub rag: RAGConfig,
 
     #[serde(default)]
-    pub bcrypt: BcryptConfig,
+    pub blood: BloodThresholdConfig,
+
     #[serde(default)]
-    pub jwt: JwtConfig,
-    #[serde(default)]
-    pub oidc: HashMap<Provider, OpenIdConnectConfig>,
-    #[serde(default)]
-    pub email: EmailConfig,
+    pub schedule_time: ScheduleTimeConfig,
+
+    pub redis: RedisConfig,
 }
 
 pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {

@@ -2,9 +2,7 @@ services:
   database:
     container_name: blood-donation-system-database
     image: postgres:latest
-    ports:
-      - 5433:5432
-    restart: unless-stopped
+    restart: always
     environment:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASS}
@@ -18,10 +16,25 @@ services:
     image: dbeaver/cloudbeaver:latest
     container_name: blood-donation-system-cloudbeaver
     restart: always
-    ports:
-      - 8978:8978
     volumes:
       - cloudbeaver:/opt/cloudbeaver/workspace
+    networks:
+      - network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: blood-donation-system-qdrant
+    restart: always
+    volumes:
+      - qdrant:/qdrant/storage
+    networks:
+      - network
+
+  redis:
+    container_name: blood-donation-system-redis
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     networks:
       - network
 
@@ -29,38 +42,68 @@ services:
     container_name: blood-donation-system-backend
     environment:
       DATABASE_URL: postgres://${PG_USER}:${PG_PASS}@database/${PG_DB}
-      FRONTEND_URL: ${FRONTEND_URL}
-      JWT__SECRET: ${JWT_SECRET}
-      OIDC__GOOGLE__CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      OIDC__GOOGLE__CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      OIDC__GOOGLE__ISSUER_URL: ${GOOGLE_ISSUER_URL}
-      OIDC__GOOGLE__REDIRECT_URL: ${GOOGLE_REDIRECT_URL}
-      OIDC__MICROSOFT__CLIENT_ID: ${MICROSOFT_CLIENT_ID}
-      OIDC__MICROSOFT__CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
-      OIDC__MICROSOFT__ISSUER_URL: ${MICROSOFT_ISSUER_URL}
-      OIDC__MICROSOFT__REDIRECT_URL: ${MICROSOFT_REDIRECT_URL}
+
+      CORS__FRONTEND_ORIGIN: ${CORS_FRONTEND_ORIGIN}
+
+      BCRYPT__COST: ${BCRYPT_COST}
+      BCRYPT__SALT: ${BCRYPT_SALT}
+
       EMAIL__USERNAME: ${EMAIL_USERNAME}
       EMAIL__PASSWORD: ${EMAIL_PASSWORD}
+
+      JWT__SECRET: ${JWT_SECRET}
+      JWT__EXPIRED_IN: ${JWT_EXPIRED_IN}
+
+      REDIS__PASSWORD: ${REDIS_PASSWORD}
+      REDIS__HOST: redis
+
+      OIDC__LOGIN_REDIRECT: ${OIDC_LOGIN_REDIRECT}
+      OIDC__REGISTER_REDIRECT: ${OIDC_REGISTER_REDIRECT}
+      OIDC__CLIENTS__GOOGLE__CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      OIDC__CLIENTS__GOOGLE__CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      OIDC__CLIENTS__GOOGLE__ISSUER_URL: ${GOOGLE_ISSUER_URL}
+      OIDC__CLIENTS__GOOGLE__REDIRECT_URL: ${GOOGLE_REDIRECT_URL}
+      OIDC__CLIENTS__MICROSOFT__CLIENT_ID: ${MICROSOFT_CLIENT_ID}
+      OIDC__CLIENTS__MICROSOFT__CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
+      OIDC__CLIENTS__MICROSOFT__ISSUER_URL: ${MICROSOFT_ISSUER_URL}
+      OIDC__CLIENTS__MICROSOFT__REDIRECT_URL: ${MICROSOFT_REDIRECT_URL}
+
+      RAG__QDRANT_URL: "http://qdrant:6334"
+      RAG__GEMINI_API_KEY: ${GEMINI_API_KEY}
+      RAG__CONTEXT_SAMPLE: ${RAG_CONTEXT_SAMPLE}
     image: ${REGISTRY}/backend:latest
     restart: always
-    ports:
-      - 3000:3000
+    volumes:
+      - type: bind
+        source: ./docs
+        target: /app/docs
     networks:
       - network
     profiles:
       - backend
       - deploy
+
   frontend:
     container_name: blood-donation-system-frontend
     image: ${REGISTRY}/frontend:latest
+    environment:
+      API_URL: ${API_URL}
     restart: always
-    ports:
-      - 3001:3000
     networks:
       - network
     profiles:
       - frontend
       - deploy
+  cloudflare-tunnel:
+    container_name: blood-donation-system-cloudflare
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - network
+
 networks:
   network:
     name: blood-donation-system-network
@@ -69,6 +112,9 @@ networks:
 volumes:
   database:
     name: blood-donation-system-database
+    external: true
+  qdrant:
+    name: blood-donation-system-qdrant
     external: true
   cloudbeaver:
     name: blood-donation-system-cloudbeaver

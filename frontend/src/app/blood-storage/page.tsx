@@ -64,6 +64,7 @@ import {
 } from '@/components/ui/dialog';
 import { useDeleteBloodBag } from '@/hooks/use-delete-blood-bag';
 import RequestBloodDialog from '@/components/request-blood-form';
+import { Input } from '@/components/ui/input';
 
 const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     return [
@@ -197,6 +198,11 @@ export default function BloodStorage() {
                         Create Blood Request
                     </Button>
                     <div className="flex gap-3">
+                        <Input
+                            type="text"
+                            placeholder="Search by name..."
+                            className="w-64 border-slate-200"
+                        />
                         <Select
                             value={component}
                             onValueChange={(value: BloodComponent | 'all') =>

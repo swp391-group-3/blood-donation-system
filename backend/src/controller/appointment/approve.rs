@@ -63,7 +63,24 @@ pub async fn approve(
     };
 
     let subject = "Appointment Approved".to_string();
-    let body = format!("Your appointment with id {id} has been approved.");
+
+    let body = format!(
+        "<html>
+        <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
+            <p>Dear <strong>{}</strong>,</p>
+
+            <p>We're pleased to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: green;\"><strong>approved</strong></span>.</p>
+
+            <p>Please arrive at the donation center on your scheduled date and bring valid identification.</p>
+
+            <p>Thank you for your commitment to saving lives!</p>
+
+            <p>Sincerely,<br><strong>Blood Donation Team</strong></p>
+        </body>
+        </html>",
+        account.name,
+        id,
+    );
 
     send(&account, subject, body, &state.mailer).await?;
 

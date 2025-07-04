@@ -115,10 +115,12 @@ export default function BlogPage() {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Button>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Write Blog
-                    </Button>
+                    <Link href="/blog/new">
+                        <Button>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Write Blog
+                        </Button>
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

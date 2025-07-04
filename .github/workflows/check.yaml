@@ -44,7 +44,7 @@ jobs:
           workspaces: |
             backend
       - name: Check Clippy
-        run: cargo clippy --workspace -- -D warnings
+        run: cargo clippy --all-features --workspace -- -D warnings
       - name: Check rustfmt
         run: cargo fmt --all -- --check
 
@@ -72,17 +72,49 @@ jobs:
         with:
           target: ${{ matrix.target }}
           toolchain: ${{ matrix.toolchain }}
-      - run: ${{ matrix.deps }}
+      - name: Install redis
+        run: sudo apt-get install -y redis-tools redis-server
       - uses: ikalnytskyi/action-setup-postgres@v7
         id: postgres
       - name: Init database
         run: psql ${{ steps.postgres.outputs.connection-uri }} -a -f schema.sql
+      - name: Verify that redis is up
+        run: redis-cli ping
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
             backend
       - name: Test
         env:
-          DATABASE_URL: ${{ steps.postgres.outputs.connection-uri }}
+          DATABASE_URL: postgres://${{ secrets.PG_USER }}:${{ secrets.PG_PASS }}@database/${{ secrets.PG_DB }}
+
+          CORS__FRONTEND_ORIGIN: ${{ secrets.CORS_FRONTEND_ORIGIN }}
+
+          BCRYPT__COST: ${{ secrets.BCRYPT_COST }}
+          BCRYPT__SALT: ${{ secrets.BCRYPT_SALT }}
+
+          EMAIL__USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL__PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+          JWT__SECRET: ${{ secrets.JWT_SECRET }}
+          JWT__EXPIRED_IN: ${{ secrets.JWT_EXPIRED_IN }}
+
+          REDIS__PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          REDIS__HOST: localhost
+
+          OIDC__LOGIN_REDIRECT: ${{ secrets.OIDC_LOGIN_REDIRECT }}
+          OIDC__REGISTER_REDIRECT: ${{ secrets.OIDC_REGISTER_REDIRECT }}
+          OIDC__CLIENTS__GOOGLE__CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          OIDC__CLIENTS__GOOGLE__CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          OIDC__CLIENTS__GOOGLE__ISSUER_URL: ${{ secrets.GOOGLE_ISSUER_URL }}
+          OIDC__CLIENTS__GOOGLE__REDIRECT_URL: ${{ secrets.GOOGLE_REDIRECT_URL }}
+          OIDC__CLIENTS__MICROSOFT__CLIENT_ID: ${{ secrets.MICROSOFT_CLIENT_ID }}
+          OIDC__CLIENTS__MICROSOFT__CLIENT_SECRET: ${{ secrets.MICROSOFT_CLIENT_SECRET }}
+          OIDC__CLIENTS__MICROSOFT__ISSUER_URL: ${{ secrets.MICROSOFT_ISSUER_URL }}
+          OIDC__CLIENTS__MICROSOFT__REDIRECT_URL: ${{ secrets.MICROSOFT_REDIRECT_URL }}
+
+          RAG__QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          RAG__GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RAG__CONTEXT_SAMPLE: ${{ secrets.RAG_CONTEXT_SAMPLE }}
         run: |
           cargo test --target ${{ matrix.target }}

@@ -10,7 +10,7 @@ new_tags AS (
     INSERT INTO tags (name)
     SELECT DISTINCT tag
     FROM UNNEST(:tags::text[]) AS tag
-    ON CONFLICT (name) DO NOTHING
+    ON CONFLICT DO NOTHING
     RETURNING id
 ),
 existing_tags AS (

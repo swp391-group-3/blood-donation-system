@@ -14,7 +14,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 COPY Cargo.toml Cargo.lock ./
 COPY src/ ./src
-RUN cargo build --release 
+RUN cargo build --release --all-features
 
 FROM debian:bookworm AS application
 

@@ -18,7 +18,7 @@ pub async fn send(
         .from(CONFIG.email.username.parse().unwrap())
         .to(receiver.email.parse().unwrap())
         .subject(subject)
-        .header(ContentType::TEXT_PLAIN)
+        .header(ContentType::TEXT_HTML)
         .body(body)
     {
         Ok(email) => email,
