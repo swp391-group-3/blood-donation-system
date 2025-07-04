@@ -1,9 +1,11 @@
 import { displayDonationType, Donation } from '@/lib/api/dto/donation';
 import { formatDistanceToNow } from 'date-fns';
-import { Calendar, Clock, Droplets, Heart } from 'lucide-react';
+import { BookOpenCheck, Calendar, Clock, Droplets, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { formatDateTime } from '@/lib/utils';
+import { formatDateTime, generateCertificate } from '@/lib/utils';
+import { Button } from './ui/button';
+import { useCurrentAccount } from '@/hooks/use-current-account';
 
 const donationTypeConfig = {
     whole_blood: {
@@ -30,6 +32,7 @@ const donationTypeConfig = {
 
 export const DonationCard = (donation: Donation) => {
     const config = donationTypeConfig[donation.type];
+    const { data: account } = useCurrentAccount();
 
     return (
         <Card
@@ -60,6 +63,25 @@ export const DonationCard = (donation: Donation) => {
                         {displayDonationType(donation.type)}
                     </Badge>
                 </div>
+                <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-white/80 hover:bg-white"
+                    onClick={async () => {
+                        if (!account) return;
+                        const printWindow = window.open('', '_blank');
+                        if (printWindow) {
+                            printWindow.document.write(
+                                await generateCertificate(donation, account),
+                            );
+                            printWindow.document.close();
+                            printWindow.focus();
+                        }
+                    }}
+                >
+                    <BookOpenCheck className="h-4 w-4 mr-2" />
+                    View Certificate
+                </Button>
             </CardHeader>
 
             <CardContent className="px-6 pb-6">
