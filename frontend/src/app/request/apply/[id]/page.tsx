@@ -92,7 +92,7 @@ export default function RequestApplyPage() {
                         </div>
                     </div>
                     <QuestionCard
-                        value={answers[step]?.content}
+                        value={answers[step]?.content ?? ''}
                         onChange={(value) => {
                             setAnswers((prev) => ({
                                 ...prev,
