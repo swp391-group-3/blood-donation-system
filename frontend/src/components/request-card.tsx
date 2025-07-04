@@ -154,7 +154,12 @@ export const RequestCard = (request: BloodRequest) => {
                 </div>
 
                 <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
-                    <Link href={`/request/apply/${request.id}`}>Apply Now</Link>
+                    <Link
+                        className="w-full h-full"
+                        href={`/request/apply/${request.id}`}
+                    >
+                        Apply Now
+                    </Link>
                 </Button>
             </CardContent>
         </Card>
