@@ -24,7 +24,7 @@ pub async fn session() -> SessionManagerLayer<RedisStore<Pool>> {
 
     SessionManagerLayer::new(session_store)
         .with_secure(false)
-        .with_same_site(SameSite::Lax)
+        .with_same_site(SameSite::None)
         .with_http_only(false)
         .with_expiry(Expiry::OnInactivity(Duration::seconds(600)))
 }
