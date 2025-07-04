@@ -29,13 +29,16 @@ import {
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
     const [search, setSearch] = useState<string | undefined>();
+    const [sortOption, setSortOption] = useState<'recent' | 'oldest' | 'title'>(
+        'recent',
+    );
     const { data: blogs, isLoading, error } = useBlogList();
     const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
 
     const filteredBlogs = useMemo(() => {
         if (!blogs) return [];
 
-        return blogs
+        const filtered = blogs
             .filter(
                 (blog) =>
                     selectedTag === 'all' || blog.tags.includes(selectedTag),
@@ -45,7 +48,26 @@ export default function BlogPage() {
                 const searchTerm = search.toLowerCase().trim();
                 return blog.title.toLowerCase().includes(searchTerm);
             });
-    }, [blogs, selectedTag]);
+
+        switch (sortOption) {
+            case 'recent':
+                return filtered.sort(
+                    (a, b) =>
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime(),
+                );
+            case 'oldest':
+                return filtered.sort(
+                    (a, b) =>
+                        new Date(a.created_at).getTime() -
+                        new Date(b.created_at).getTime(),
+                );
+            case 'title':
+                return filtered.sort((a, b) => a.title.localeCompare(b.title));
+            default:
+                return filtered;
+        }
+    }, [blogs, selectedTag, search, sortOption]);
 
     if (isLoading) {
         return <div></div>;
@@ -108,7 +130,14 @@ export default function BlogPage() {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Select>
+                    <Select
+                        value={sortOption}
+                        onValueChange={(value) =>
+                            setSortOption(
+                                value as 'recent' | 'oldest' | 'title',
+                            )
+                        }
+                    >
                         <SelectTrigger className="w-full sm:w-40 h-11 border-zinc-200 rounded">
                             <Filter className="h-4 w-4 mr-2" />
                             <SelectValue placeholder="Sort By" />
