@@ -135,58 +135,60 @@ export default function BlogPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredBlogs?.map((blog) => (
-                        <Card
-                            key={blog.id}
-                            className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200"
-                        >
-                            <CardHeader className="flex-1 pt-1 pb-2 px-5">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className="h-8 w-8">
-                                        <AccountPicture name={blog.owner} />
-                                    </div>
-                                    <div>
-                                        <div className="font-medium text-zinc-900 text-[15px]">
-                                            {blog.owner}
+                        <Link href={`/blog/${blog.id}`}>
+                            <Card
+                                key={blog.id}
+                                className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200"
+                            >
+                                <CardHeader className="flex-1 pt-1 pb-2 px-5">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="h-8 w-8">
+                                            <AccountPicture name={blog.owner} />
                                         </div>
-                                        <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
-                                            <Clock className="h-3 w-3" />
-                                            {getTimeAgo(blog.created_at)}
+                                        <div>
+                                            <div className="font-medium text-zinc-900 text-[15px]">
+                                                {blog.owner}
+                                            </div>
+                                            <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
+                                                <Clock className="h-3 w-3" />
+                                                {getTimeAgo(blog.created_at)}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <CardTitle className="block text-base font-semibold text-zinc-900 leading-snug mb-2 line-clamp-2 hover:text-blue-600">
-                                    <Link href={`/blog/${blog.id}`}>
+                                    <CardTitle className="block text-base font-semibold text-zinc-900 leading-snug mb-2 line-clamp-2 hover:text-blue-600">
                                         {blog.title}
-                                    </Link>
-                                </CardTitle>
-                                <CardContent className="p-0">
-                                    <p className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]">
-                                        {getExcerpt(blog.content)}
-                                    </p>
-                                </CardContent>
-                            </CardHeader>
-                            <div className="flex-1 flex flex-col justify-end">
-                                <div className="flex flex-wrap gap-1.5 px-5 pb-4">
-                                    {allTags.slice(0, 3).map((tag, index) => (
-                                        <Badge
-                                            key={index}
-                                            variant="outline"
-                                            className="bg-zinc-50 text-zinc-700 border-zinc-200 text-xs px-2 py-0.5"
-                                        >
-                                            {tag}
-                                        </Badge>
-                                    ))}
-                                    {allTags.length > 3 && (
-                                        <Badge
-                                            variant="outline"
-                                            className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
-                                        >
-                                            +{allTags.length - 3}
-                                        </Badge>
-                                    )}
+                                    </CardTitle>
+                                    <CardContent className="p-0">
+                                        <p className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]">
+                                            {getExcerpt(blog.content)}
+                                        </p>
+                                    </CardContent>
+                                </CardHeader>
+                                <div className="flex-1 flex flex-col justify-end">
+                                    <div className="flex flex-wrap gap-1.5 px-5 pb-4">
+                                        {allTags
+                                            .slice(0, 3)
+                                            .map((tag, index) => (
+                                                <Badge
+                                                    key={index}
+                                                    variant="outline"
+                                                    className="bg-zinc-50 text-zinc-700 border-zinc-200 text-xs px-2 py-0.5"
+                                                >
+                                                    {tag}
+                                                </Badge>
+                                            ))}
+                                        {allTags.length > 3 && (
+                                            <Badge
+                                                variant="outline"
+                                                className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
+                                            >
+                                                +{allTags.length - 3}
+                                            </Badge>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </Card>
+                            </Card>
+                        </Link>
                     ))}
                 </div>
             </main>
