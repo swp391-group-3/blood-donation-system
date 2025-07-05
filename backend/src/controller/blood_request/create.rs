@@ -146,7 +146,7 @@ pub async fn create(
                     continue;
                 }
             }
-            
+
             match queries::account::is_applied()
                 .bind(&database, &claims.sub)
                 .one()
@@ -160,7 +160,7 @@ pub async fn create(
                         ?error,
                         "Failed to check if account is applied for an appointment"
                     );
-                    
+
                     continue;
                 }
                 _ => {}

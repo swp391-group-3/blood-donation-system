@@ -79,7 +79,7 @@ pub async fn create(
         }
         Err(error) => {
             tracing::error!(?error, "Failed to check next donatable date of account");
-            
+
             return Err(Error::internal());
         }
     }

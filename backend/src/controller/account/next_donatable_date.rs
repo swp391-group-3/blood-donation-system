@@ -18,7 +18,7 @@ use crate::{
     security(("jwt_token" = [])),
 )]
 pub async fn next_donatable_date(
-    State(state): State<Arc<ApiState>>,
+    state: State<Arc<ApiState>>,
     claims: Claims,
 ) -> Result<Json<DateTime<FixedOffset>>> {
     let database = state.database().await?;

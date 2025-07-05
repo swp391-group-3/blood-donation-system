@@ -2,6 +2,7 @@ mod create_staff;
 mod delete;
 mod get;
 mod get_all;
+mod is_applied;
 mod next_donatable_date;
 mod update;
 
@@ -15,6 +16,7 @@ pub use create_staff::*;
 pub use delete::*;
 pub use get::*;
 pub use get_all::*;
+pub use is_applied::*;
 pub use next_donatable_date::*;
 pub use update::*;
 
@@ -29,4 +31,5 @@ pub fn build() -> Router<Arc<ApiState>> {
             "/account/next-donatable-date",
             routing::get(next_donatable_date),
         )
+        .route("account/is-applied", routing::get(is_applied))
 }
