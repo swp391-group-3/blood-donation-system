@@ -10,7 +10,7 @@ rag = ["rig-core", "rig-qdrant", "qdrant-client"]
 anyhow = "1.0.98"
 axum = { version = "0.8.4", features = ["macros"] }
 axum-extra = { version = "0.10.1", features = ["typed-header", "cookie"] }
-axum-valid = "0.23.0"
+axum-valid = "0.24.0"
 bcrypt = "0.17.0"
 bon = "3.6.4"
 chrono = "0.4.41"
@@ -28,15 +28,15 @@ rig-qdrant = { version =  "=0.1.12", optional = true }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_with = "3.14.0"
 thiserror = "2.0.12"
-tokio = { version = "1.45.0", features = ["full"] }
+tokio = { version = "1.46.1", features = ["full"] }
 tokio-cron-scheduler = "0.14.0"
 tokio-stream = { version = "0.1.17", features = ["fs"] }
-tower-http = { version = "0.6.4", features = ["cors", "trace"] }
+tower-http = { version = "0.6.6", features = ["cors", "trace"] }
 tower-sessions = "0.14.0"
 tower-sessions-redis-store = "0.16.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt", "chrono", "env-filter"] }
-utoipa = { version = "5.3.1", features = ["chrono", "uuid"] }
+utoipa = { version = "5.4.0", features = ["chrono", "uuid"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"]  }
 uuid = { version = "1.17.0", features = ["v4", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
