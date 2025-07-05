@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/pagination";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search, Upload, UserPlus, Users } from 'lucide-react';
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
@@ -27,18 +27,20 @@ import { columns } from './column';
 import { Account, mockAccounts } from '@/lib/api/dto/account';
 import FileUpload, { DropZone, FileError, FileInfo, FileList, FileProgress } from '@/components/file-upload';
 import { useStaffAccount } from '@/hooks/use-staff-account';
-
-
-
-
+import { MessageLoading } from '@/components/ui/message-loading';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
-    const {mutate} = useStaffAccount();
+    const { mutate, status } = useStaffAccount();
+
+    useEffect(() => {
+        if (status === 'success') {
+            setIsImportDialogOpen(false);
+        }
+    }, [status]);
 
     const onFileSelectChange = (files: FileInfo[]) => {
         setUploadFiles(prev => {
@@ -59,12 +61,12 @@ function Page() {
     const handleUpload = () => {
         const files: File[] = uploadFiles.map(fil => fil.file);
         mutate(files)
+        setUploadFiles([])
     }
 
     const onRemove = (fileId: string) => {
         setUploadFiles(uploadFiles.filter(file => file.id !== fileId))
     }
-
 
     const filtersAccounts: Account[] = useMemo(() => {
         return mockAccounts.filter((account) => {
@@ -133,16 +135,17 @@ function Page() {
                                         <DropZone prompt="click or drop, 3 file to upload" />
                                         <FileError />
                                         <FileProgress />
-                                        <FileList onClear={() => {
-                                            setUploadFiles([])
-                                        }}
+                                        <FileList onClear={() => { setUploadFiles([]) }}
                                             onRemove={onRemove}
                                             canResume={true} />
-                                        {uploadFiles.length > 0 && (
-                                            <Button disabled={isUploading} onClick={handleUpload}>
-                                                {isUploading ? "Uploading..." : "Upload Accounts"}
-                                            </Button>
-                                        )}
+                                        <div className='flex justify-center'>
+                                            {uploadFiles.length > 0 && (
+                                                <Button disabled={status === 'pending'} onClick={handleUpload} className='px-10'>
+                                                    {status === 'pending' ? 'Uploading…' : 'Upload'}
+                                                </Button>
+                                            )}
+                                            {(status === "pending") && (<MessageLoading />)}
+                                        </div>
                                     </div>
                                 </FileUpload>
                             </DialogContent>
