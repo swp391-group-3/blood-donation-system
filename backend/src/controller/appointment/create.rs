@@ -82,6 +82,25 @@ pub async fn create(
         _ => {}
     }
 
+    match queries::account::is_applied()
+        .bind(&database, &claims.sub)
+        .one()
+        .await
+    {
+        Ok(true) => {
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("You have already applied for an appointment".into())
+                .build());
+        }
+        Err(error) => {
+            tracing::error!(?error, "Failed to check if account is applied for an appointment");
+
+            return Err(Error::internal());
+        }
+        _ => {}
+    }
+
     let question_ids: HashSet<_> = match queries::question::get_all()
         .bind(&database)
         .map(|raw| raw.id)
