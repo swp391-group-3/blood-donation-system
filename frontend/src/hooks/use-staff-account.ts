@@ -14,7 +14,7 @@ export const useStaffAccount = () => {
             const results: { staff: Staff; success: boolean; error?: string }[] = [];
             for (const staff of staffs) {
                 try {
-                    await fetchWrapper('/account/create-staff1', {
+                    await fetchWrapper('/account/create-staff', {
                         method: 'POST',
                         headers: {
                             Accept: "application/json",
