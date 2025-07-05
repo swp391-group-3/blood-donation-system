@@ -12,21 +12,24 @@ use crate::{
 #[utoipa::path(
     get,
     tag = "Account",
-    path = "/account/is-donatable",
-    operation_id = "account::is_donatable",
+    path = "/account/is-applied",
+    operation_id = "account::is_applied",
     security(("jwt_token" = [])),
 )]
-pub async fn is_donatable(state: State<Arc<ApiState>>, claims: Claims) -> Result<Json<bool>> {
+pub async fn is_applied(state: State<Arc<ApiState>>, claims: Claims) -> Result<Json<bool>> {
     let database = state.database().await?;
 
-    match queries::account::is_donatable()
+    match queries::account::is_applied()
         .bind(&database, &claims.sub)
         .one()
         .await
     {
-        Ok(is_donatable) => Ok(Json(is_donatable)),
+        Ok(is_applied) => Ok(Json(is_applied)),
         Err(error) => {
-            tracing::error!(?error, "Failed to check if account is donatable");
+            tracing::error!(
+                ?error,
+                "Failed to check if account is applied for an appointment"
+            );
 
             Err(Error::internal())
         }

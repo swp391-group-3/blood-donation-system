@@ -224,6 +224,72 @@ where
         Ok(it)
     }
 }
+pub struct ChronoDateTimechronoFixedOffsetQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(
+        &tokio_postgres::Row,
+    ) -> Result<chrono::DateTime<chrono::FixedOffset>, tokio_postgres::Error>,
+    mapper: fn(chrono::DateTime<chrono::FixedOffset>) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> ChronoDateTimechronoFixedOffsetQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(
+        self,
+        mapper: fn(chrono::DateTime<chrono::FixedOffset>) -> R,
+    ) -> ChronoDateTimechronoFixedOffsetQuery<'c, 'a, 's, C, R, N> {
+        ChronoDateTimechronoFixedOffsetQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
 pub struct BoolQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
@@ -664,13 +730,35 @@ impl DeleteStmt {
         client.execute(stmt, &[id]).await
     }
 }
-pub fn is_donatable() -> IsDonatableStmt {
-    IsDonatableStmt(crate::client::async_::Stmt::new(
-        "SELECT NOT EXISTS ( SELECT 1 FROM donations WHERE ( SELECT member_id FROM appointments WHERE id = donations.appointment_id ) = $1 AND now() < ( donations.created_at + CASE WHEN donations.type IN ('whole_blood', 'power_red') THEN INTERVAL '84 days' ELSE INTERVAL '14 days' END ) ORDER BY donations.created_at DESC LIMIT 1 ) AS is_donatable",
+pub fn next_donatable_date() -> NextDonatableDateStmt {
+    NextDonatableDateStmt(crate::client::async_::Stmt::new(
+        "SELECT COALESCE(( SELECT CASE WHEN ( donations.created_at + CASE WHEN donations.type = 'whole_blood' THEN INTERVAL '56 days' WHEN donations.type = 'power_red' THEN INTERVAL '112 days' WHEN donations.type = 'platelet' THEN INTERVAL '7 days' WHEN donations.type = 'plasma' THEN INTERVAL '28 days' END ) <= now() THEN now() ELSE ( donations.created_at + CASE WHEN donations.type = 'whole_blood' THEN INTERVAL '56 days' WHEN donations.type = 'power_red' THEN INTERVAL '112 days' WHEN donations.type = 'platelet' THEN INTERVAL '7 days' WHEN donations.type = 'plasma' THEN INTERVAL '28 days' END ) END FROM donations WHERE ( SELECT member_id FROM appointments WHERE id = donations.appointment_id ) = $1 ORDER BY donations.created_at DESC LIMIT 1 ), now()) AS next_donatable_date",
     ))
 }
-pub struct IsDonatableStmt(crate::client::async_::Stmt);
-impl IsDonatableStmt {
+pub struct NextDonatableDateStmt(crate::client::async_::Stmt);
+impl NextDonatableDateStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        id: &'a uuid::Uuid,
+    ) -> ChronoDateTimechronoFixedOffsetQuery<'c, 'a, 's, C, chrono::DateTime<chrono::FixedOffset>, 1>
+    {
+        ChronoDateTimechronoFixedOffsetQuery {
+            client,
+            params: [id],
+            stmt: &mut self.0,
+            extractor: |row| Ok(row.try_get(0)?),
+            mapper: |it| it,
+        }
+    }
+}
+pub fn is_applied() -> IsAppliedStmt {
+    IsAppliedStmt(crate::client::async_::Stmt::new(
+        "SELECT EXISTS ( SELECT 1 FROM appointments WHERE member_id = $1 AND status != 'rejected'::appointment_status AND status != 'done'::appointment_status ) AS is_applied",
+    ))
+}
+pub struct IsAppliedStmt(crate::client::async_::Stmt);
+impl IsAppliedStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,

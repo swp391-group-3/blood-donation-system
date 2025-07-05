@@ -75,22 +75,45 @@ WHERE id = :id;
 --! delete
 UPDATE accounts SET is_active = false WHERE id = :id;
 
---! is_donatable
-SELECT NOT EXISTS (
-    SELECT 1
+--! next_donatable_date
+SELECT COALESCE((
+    SELECT 
+        CASE 
+            WHEN (
+                donations.created_at + 
+                CASE 
+                    WHEN donations.type = 'whole_blood' THEN INTERVAL '56 days'
+                    WHEN donations.type = 'power_red' THEN INTERVAL '112 days'
+                    WHEN donations.type = 'platelet' THEN INTERVAL '7 days'
+                    WHEN donations.type = 'plasma' THEN INTERVAL '28 days'
+                END
+            ) <= now()
+            THEN now()
+            ELSE (
+                donations.created_at + 
+                CASE 
+                    WHEN donations.type = 'whole_blood' THEN INTERVAL '56 days'
+                    WHEN donations.type = 'power_red' THEN INTERVAL '112 days'
+                    WHEN donations.type = 'platelet' THEN INTERVAL '7 days'
+                    WHEN donations.type = 'plasma' THEN INTERVAL '28 days'
+                END
+            )
+        END
     FROM donations
     WHERE (
         SELECT member_id
         FROM appointments
         WHERE id = donations.appointment_id
     ) = :id
-        AND now() < (
-            donations.created_at + 
-            CASE 
-                WHEN donations.type IN ('whole_blood', 'power_red') THEN INTERVAL '84 days'
-                ELSE INTERVAL '14 days'
-            END
-        )
     ORDER BY donations.created_at DESC
     LIMIT 1
-) AS is_donatable;
+), now()) AS next_donatable_date;
+
+--! is_applied
+SELECT EXISTS (
+    SELECT 1
+    FROM appointments
+    WHERE member_id = :id
+        AND status != 'rejected'::appointment_status
+        AND status != 'done'::appointment_status
+) AS is_applied;
