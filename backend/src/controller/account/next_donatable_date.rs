@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State};
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, Utc};
 use database::queries;
 
 use crate::{
@@ -20,7 +20,7 @@ use crate::{
 pub async fn next_donatable_date(
     state: State<Arc<ApiState>>,
     claims: Claims,
-) -> Result<Json<DateTime<FixedOffset>>> {
+) -> Result<Json<DateTime<Utc>>> {
     let database = state.database().await?;
 
     match queries::account::next_donatable_date()
@@ -28,7 +28,11 @@ pub async fn next_donatable_date(
         .one()
         .await
     {
-        Ok(next_donatable_date) => Ok(Json(next_donatable_date)),
+        Ok(next_donatable_date) => {
+            let next_donatable_date_utc = next_donatable_date.with_timezone(&Utc);
+
+            Ok(Json(next_donatable_date_utc))
+        }
         Err(error) => {
             tracing::error!(?error, "Failed to check next donatable date of account");
 
