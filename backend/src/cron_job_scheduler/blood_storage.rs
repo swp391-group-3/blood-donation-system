@@ -88,7 +88,7 @@ pub async fn alert_low_stock(
         );
         final_body.push_str(&body);
 
-        send(account, subject, final_body, &mailer).await?;
+        send(account, subject, final_body, mailer).await?;
     }
 
     Ok(())
