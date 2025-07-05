@@ -1,4 +1,4 @@
-use std::{collections::HashMap, error::Error, sync::Arc};
+use std::collections::HashMap;
 
 use crate::{CONFIG, util::notification::send};
 
@@ -7,26 +7,12 @@ use database::{deadpool_postgres, queries};
 use lettre::{AsyncSmtpTransport, Tokio1Executor};
 
 pub async fn alert_low_stock(
-    database_pool: Arc<deadpool_postgres::Pool>,
-    mailer: Arc<AsyncSmtpTransport<Tokio1Executor>>,
-) -> Result<(), Box<dyn Error>> {
-    let database = match database_pool.get().await {
-        Ok(database) => database,
-        Err(error) => {
-            tracing::error!(?error, "Failed to get database connection");
+    database_pool: &deadpool_postgres::Pool,
+    mailer: &AsyncSmtpTransport<Tokio1Executor>,
+) -> anyhow::Result<()> {
+    let database = database_pool.get().await?;
 
-            return Err(Box::new(error));
-        }
-    };
-
-    let blood_bags = match queries::blood_bag::get_all().bind(&database).all().await {
-        Ok(blood_bags) => blood_bags,
-        Err(error) => {
-            tracing::error!(?error, "Failed to get blood bag list");
-
-            return Err(Box::new(error));
-        }
-    };
+    let blood_bags = queries::blood_bag::get_all().bind(&database).all().await?;
 
     let mut stock_map: HashMap<(BloodGroup, BloodComponent), i32> = HashMap::new();
 
@@ -86,18 +72,10 @@ pub async fn alert_low_stock(
         </html>"
     );
 
-    let accounts = match queries::account::get_by_role()
+    let accounts = queries::account::get_by_role()
         .bind(&database, &Role::Staff)
         .all()
-        .await
-    {
-        Ok(accounts) => accounts,
-        Err(error) => {
-            tracing::error!(?error, "Failed to get account list");
-
-            return Err(Box::new(error));
-        }
-    };
+        .await?;
 
     for account in &accounts {
         let subject = "URGENT: Low Blood Stock Alert".to_string();

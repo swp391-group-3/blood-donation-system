@@ -17,7 +17,7 @@ use state::ApiState;
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
 use tracing::Level;
-use tracing_subscriber::{fmt::time::ChronoLocal, layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::fmt::time::ChronoLocal;
 
 use crate::config::CONFIG;
 
@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     #[cfg(feature = "cron-job")]
-    cron_job_scheduler::build().await?;
+    cron_job_scheduler::build().await;
 
     let app = build_app().await;
 
