@@ -97,7 +97,7 @@ function isValidStaff(r: Partial<Staff>): r is Staff {
     return !!(r.email && r.password && r.phone && r.name);
 }
 
-export async function collectRecords(files: File[]): Promise<Staff[]> {
+export async function collectStaffs(files: File[]): Promise<Staff[]> {
     const parsedArrays = await Promise.all(files.map(file => parseFile(file)));
     const staffs = parsedArrays.flat();
     return staffs.filter(isValidStaff);

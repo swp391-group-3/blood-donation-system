@@ -1,6 +1,6 @@
 import { fetchWrapper } from "@/lib/api";
 import { Staff } from "@/lib/api/dto/account";
-import { collectRecords } from "@/lib/dashboard-utils";
+import { collectStaffs } from "@/lib/dashboard-utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -10,7 +10,7 @@ export const useStaffAccount = () => {
 
     return useMutation({
         mutationFn: async (files: File[]) => {
-            const staffs = await collectRecords(files);
+            const staffs = await collectStaffs(files);
             const results: { staff: Staff; success: boolean; error?: string }[] = [];
             for (const staff of staffs) {
                 console.log("staff", staff);
