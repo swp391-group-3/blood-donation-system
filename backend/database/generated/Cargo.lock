@@ -162,7 +162,6 @@ dependencies = [
 name = "ctypes"
 version = "0.1.0"
 dependencies = [
- "bytes",
  "postgres-types",
  "serde",
  "utoipa",

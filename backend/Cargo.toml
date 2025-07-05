@@ -38,7 +38,7 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt", "chrono", "env-filter"] }
 utoipa = { version = "5.3.1", features = ["chrono", "uuid"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"]  }
-uuid = { version = "1.17.0", features = ["v4", "fast-rng", "serde"] }
+uuid = { version = "1.17.0", features = ["v4", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]
