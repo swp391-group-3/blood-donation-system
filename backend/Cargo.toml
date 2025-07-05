@@ -9,7 +9,7 @@ rag = ["rig-core", "rig-qdrant", "qdrant-client"]
 [dependencies]
 anyhow = "1.0.98"
 axum = { version = "0.8.4", features = ["macros"] }
-axum-extra = { version = "0.10.1", features = ["typed-header", "cookie"] }
+axum-extra = { version = "0.10.1", features = ["cookie"] }
 axum-valid = "0.24.0"
 bcrypt = "0.17.0"
 bon = "3.6.4"
