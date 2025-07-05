@@ -21,7 +21,7 @@ ctypes = { path = "./database/ctypes" }
 database = { path = "./database/generated" }
 futures = "0.3.31"
 jsonwebtoken = "9.3.1"
-lettre = { version = "0.11.17",  default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls", "tokio1", "rustls-tls"] }
+lettre = { version = "0.11.17",  default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 model-mapper = "0.6.1"
 openidconnect = "4.0.0"
 qdrant-client = { version = "1.14.0", optional = true }
@@ -37,7 +37,7 @@ tower-http = { version = "0.6.6", features = ["cors", "trace"] }
 tower-sessions = "0.14.0"
 tower-sessions-redis-store = { version = "0.16.0", optional = true }
 tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["fmt", "chrono", "env-filter"] }
+tracing-subscriber = { version = "0.3.19", default-features = false, features = ["ansi", "fmt", "chrono", "smallvec", "std", "tracing-log"] }
 utoipa = { version = "5.4.0", features = ["chrono", "uuid"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"]  }
 uuid = { version = "1.17.0", features = ["v4", "serde"] }

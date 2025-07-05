@@ -16,10 +16,7 @@ use axum_test::TestServer;
 use state::ApiState;
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
-use tracing::level_filters::LevelFilter;
-use tracing_subscriber::{
-    EnvFilter, fmt::time::ChronoLocal, layer::SubscriberExt, util::SubscriberInitExt,
-};
+use tracing_subscriber::{fmt::time::ChronoLocal, layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::config::CONFIG;
 
@@ -42,11 +39,6 @@ async fn main() -> anyhow::Result<()> {
             tracing_subscriber::fmt::layer()
                 .pretty()
                 .with_timer(ChronoLocal::rfc_3339()),
-        )
-        .with(
-            EnvFilter::builder()
-                .with_default_directive(LevelFilter::DEBUG.into())
-                .from_env_lossy(),
         )
         .init();
 
