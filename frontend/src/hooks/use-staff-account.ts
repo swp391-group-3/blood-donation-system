@@ -1,4 +1,4 @@
-import { deserialize, fetchWrapper, throwIfError } from "@/lib/api";
+import { fetchWrapper } from "@/lib/api";
 import { Staff } from "@/lib/api/dto/account";
 import { collectRecords } from "@/lib/dashboard-utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
