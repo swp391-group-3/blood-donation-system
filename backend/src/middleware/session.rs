@@ -1,14 +1,18 @@
+#[cfg(feature = "redis")]
+use crate::config::CONFIG;
+#[cfg(not(feature = "redis"))]
+use tower_sessions::MemoryStore;
 use tower_sessions::{
     Expiry, SessionManagerLayer,
     cookie::{SameSite, time::Duration},
 };
+#[cfg(feature = "redis")]
 use tower_sessions_redis_store::{
     RedisStore,
     fred::prelude::{ClientLike, Config, Pool, ServerConfig},
 };
 
-use crate::config::CONFIG;
-
+#[cfg(feature = "redis")]
 pub async fn session() -> SessionManagerLayer<RedisStore<Pool>> {
     let config = Config {
         password: Some(CONFIG.redis.password.clone()),
@@ -25,6 +29,17 @@ pub async fn session() -> SessionManagerLayer<RedisStore<Pool>> {
     SessionManagerLayer::new(session_store)
         .with_secure(false)
         .with_same_site(SameSite::None)
+        .with_http_only(false)
+        .with_expiry(Expiry::OnInactivity(Duration::seconds(600)))
+}
+
+#[cfg(not(feature = "redis"))]
+pub async fn session() -> SessionManagerLayer<MemoryStore> {
+    let session_store = MemoryStore::default();
+
+    SessionManagerLayer::new(session_store)
+        .with_secure(false)
+        .with_same_site(SameSite::Lax)
         .with_http_only(false)
         .with_expiry(Expiry::OnInactivity(Duration::seconds(600)))
 }
