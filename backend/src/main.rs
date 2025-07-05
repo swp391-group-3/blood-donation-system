@@ -16,6 +16,7 @@ use axum_test::TestServer;
 use state::ApiState;
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
+use tracing::Level;
 use tracing_subscriber::{fmt::time::ChronoLocal, layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::config::CONFIG;
@@ -34,12 +35,10 @@ async fn build_app() -> Router {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::fmt::layer()
-                .pretty()
-                .with_timer(ChronoLocal::rfc_3339()),
-        )
+    tracing_subscriber::fmt()
+        .with_max_level(Level::DEBUG)
+        .pretty()
+        .with_timer(ChronoLocal::rfc_3339())
         .init();
 
     #[cfg(feature = "cron-job")]
