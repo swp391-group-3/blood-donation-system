@@ -5,6 +5,7 @@ edition = "2024"
 
 [features]
 rag = ["rig-core", "rig-qdrant", "qdrant-client"]
+redis = ["tower-sessions-redis-store"]
 
 [dependencies]
 anyhow = "1.0.98"
@@ -33,7 +34,7 @@ tokio-cron-scheduler = "0.14.0"
 tokio-stream = { version = "0.1.17", features = ["fs"] }
 tower-http = { version = "0.6.6", features = ["cors", "trace"] }
 tower-sessions = "0.14.0"
-tower-sessions-redis-store = "0.16.0"
+tower-sessions-redis-store = { version = "0.16.0", optional = true }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt", "chrono", "env-filter"] }
 utoipa = { version = "5.4.0", features = ["chrono", "uuid"] }
