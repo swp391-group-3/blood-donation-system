@@ -1,7 +1,8 @@
-import { Account } from "./api/dto/account";
+import { Account, Staff } from "./api/dto/account";
 import { bloodGroupLabels } from "./api/dto/blood-group";
 import { BloodRequest } from "./api/dto/blood-request";
 import { Donation } from "./api/dto/donation";
+import Papa from 'papaparse';
 
 const Months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
 
@@ -62,14 +63,42 @@ function initBloodGroupData() {
 
 export function getBloodGroupData(accounts: Account[]) {
     const bloodGroupData = initBloodGroupData();
-    
+
     accounts.forEach(account => {
         const bucket = bloodGroupData.find(b => b.name === bloodGroupLabels[account.blood_group]);
-        
+
         if (bucket) {
             bucket.value += 1;
-        } 
+        }
     });
 
     return bloodGroupData;
+}
+
+async function parseFile(file: File): Promise<Partial<Staff>[]> {
+    return new Promise((resolve, reject) => {
+        Papa.parse<Partial<Staff>>(file, {
+            header: true, // treat the first row as header
+            skipEmptyLines: true, // skip empty row
+            // TODO: temporary delimiters, add more
+            delimitersToGuess: [',', ';', '\t', '/'],
+            complete: (results) => {
+                if (results.errors.length) {
+                    return reject(results.errors);
+                }
+                resolve(results.data);
+            },
+            error: (err) => reject(err),
+        });
+    });
+}
+
+function isValidStaff(r: Partial<Staff>): r is Staff {
+    return !!(r.email && r.password && r.phone && r.name);
+}
+
+export async function collectStaffs(files: File[]): Promise<Staff[]> {
+    const parsedArrays = await Promise.all(files.map(file => parseFile(file)));
+    const staffs = parsedArrays.flat();
+    return staffs.filter(isValidStaff);
 }

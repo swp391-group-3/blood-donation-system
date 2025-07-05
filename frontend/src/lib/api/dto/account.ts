@@ -129,3 +129,10 @@ export const mockAccounts: Account[] = [
         created_at: new Date('2023-10-08T09:45:00Z'),
     },
 ];
+
+export interface Staff {
+    email: string;
+    password: string;
+    phone: string;
+    name: string;
+}
