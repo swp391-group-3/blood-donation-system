@@ -16,10 +16,8 @@ use axum_test::TestServer;
 use state::ApiState;
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
-use tracing::level_filters::LevelFilter;
-use tracing_subscriber::{
-    EnvFilter, fmt::time::ChronoLocal, layer::SubscriberExt, util::SubscriberInitExt,
-};
+use tracing::Level;
+use tracing_subscriber::fmt::time::ChronoLocal;
 
 use crate::config::CONFIG;
 
@@ -37,21 +35,14 @@ async fn build_app() -> Router {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::fmt::layer()
-                .pretty()
-                .with_timer(ChronoLocal::rfc_3339()),
-        )
-        .with(
-            EnvFilter::builder()
-                .with_default_directive(LevelFilter::DEBUG.into())
-                .from_env_lossy(),
-        )
+    tracing_subscriber::fmt()
+        .with_max_level(Level::DEBUG)
+        .pretty()
+        .with_timer(ChronoLocal::rfc_3339())
         .init();
 
     #[cfg(feature = "cron-job")]
-    cron_job_scheduler::build().await?;
+    cron_job_scheduler::build().await;
 
     let app = build_app().await;
 
