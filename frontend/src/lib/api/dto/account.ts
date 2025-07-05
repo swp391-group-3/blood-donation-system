@@ -131,8 +131,8 @@ export const mockAccounts: Account[] = [
 ];
 
 export interface Staff {
-    name: string;
     email: string;
-    role: string;
-    status: string;
+    password: string;
+    phone: string;
+    name: string;
 }
