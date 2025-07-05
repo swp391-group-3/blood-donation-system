@@ -685,3 +685,24 @@ impl IsDonatableStmt {
         }
     }
 }
+pub fn is_applied() -> IsAppliedStmt {
+    IsAppliedStmt(crate::client::async_::Stmt::new(
+        "SELECT EXISTS ( SELECT 1 FROM appointments WHERE member_id = $1 AND status != 'rejected'::appointment_status AND status != 'done'::appointment_status ) AS is_applied",
+    ))
+}
+pub struct IsAppliedStmt(crate::client::async_::Stmt);
+impl IsAppliedStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        id: &'a uuid::Uuid,
+    ) -> BoolQuery<'c, 'a, 's, C, bool, 1> {
+        BoolQuery {
+            client,
+            params: [id],
+            stmt: &mut self.0,
+            extractor: |row| Ok(row.try_get(0)?),
+            mapper: |it| it,
+        }
+    }
+}

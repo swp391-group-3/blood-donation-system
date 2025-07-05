@@ -94,3 +94,12 @@ SELECT NOT EXISTS (
     ORDER BY donations.created_at DESC
     LIMIT 1
 ) AS is_donatable;
+
+--! is_applied
+SELECT EXISTS (
+    SELECT 1
+    FROM appointments
+    WHERE member_id = :id
+        AND status != 'rejected'::appointment_status
+        AND status != 'done'::appointment_status
+) AS is_applied;
