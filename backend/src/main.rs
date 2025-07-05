@@ -1,5 +1,6 @@
 mod config;
 mod controller;
+#[cfg(feature = "cron-job")]
 mod cron_job_scheduler;
 mod doc;
 mod error;
@@ -49,6 +50,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .init();
 
+    #[cfg(feature = "cron-job")]
     cron_job_scheduler::build().await?;
 
     let app = build_app().await;
