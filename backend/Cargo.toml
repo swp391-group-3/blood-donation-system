@@ -14,7 +14,7 @@ axum-valid = "0.24.0"
 bcrypt = "0.17.0"
 bon = "3.6.4"
 chrono = "0.4.41"
-config = { version = "0.15.11" }
+config = { version = "0.15.11", default-features = false }
 ctypes = { path = "./database/ctypes" }
 database = { path = "./database/generated" }
 futures = "0.3.31"
