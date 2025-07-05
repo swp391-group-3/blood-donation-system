@@ -130,7 +130,7 @@ pub async fn create(
     for account in &accounts {
         if let Some(ref blood_group) = account.blood_group {
             match queries::account::next_donatable_date()
-                .bind(&database, &claims.sub)
+                .bind(&database, &account.id)
                 .one()
                 .await
             {
@@ -148,7 +148,7 @@ pub async fn create(
             }
 
             match queries::account::is_applied()
-                .bind(&database, &claims.sub)
+                .bind(&database, &account.id)
                 .one()
                 .await
             {
