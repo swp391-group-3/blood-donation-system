@@ -63,23 +63,25 @@ pub async fn create(
 
     authorize(&claims, [Role::Member], &database).await?;
 
-    match queries::account::is_donatable()
+    match queries::account::next_donatable_date()
         .bind(&database, &claims.sub)
         .one()
         .await
     {
-        Ok(false) => {
-            return Err(Error::builder()
-                .status(StatusCode::BAD_REQUEST)
-                .message("You are not eligible to donate blood at the moment".into())
-                .build());
+        Ok(next_donatable_date) => {
+            let now = chrono::Utc::now().with_timezone(next_donatable_date.offset());
+            if next_donatable_date > now {
+                return Err(Error::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .message("You are not eligible to donate blood at the moment".into())
+                    .build());
+            }
         }
         Err(error) => {
-            tracing::error!(?error, "Failed to check if account is donatable");
-
+            tracing::error!(?error, "Failed to check next donatable date of account");
+            
             return Err(Error::internal());
         }
-        _ => {}
     }
 
     match queries::account::is_applied()

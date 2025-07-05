@@ -129,20 +129,42 @@ pub async fn create(
 
     for account in &accounts {
         if let Some(ref blood_group) = account.blood_group {
-            match queries::account::is_donatable()
-                .bind(&database, &account.id)
+            match queries::account::next_donatable_date()
+                .bind(&database, &claims.sub)
                 .one()
                 .await
             {
-                Ok(false) => {
+                Ok(next_donatable_date) => {
+                    let now = chrono::Utc::now().with_timezone(next_donatable_date.offset());
+                    if next_donatable_date > now {
+                        continue;
+                    }
+                }
+                Err(error) => {
+                    tracing::error!(?error, "Failed to check next donatable date of account");
+
+                    continue;
+                }
+            }
+            
+            match queries::account::is_applied()
+                .bind(&database, &claims.sub)
+                .one()
+                .await
+            {
+                Ok(true) => {
                     continue;
                 }
                 Err(error) => {
-                    tracing::error!(?error, "Failed to check if account is donatable");
+                    tracing::error!(
+                        ?error,
+                        "Failed to check if account is applied for an appointment"
+                    );
+                    
                     continue;
                 }
                 _ => {}
-            };
+            }
 
             if !request_blood_groups.is_disjoint(&get_compatible(*blood_group)) {
                 let subject = "URGENT: Immediate Blood Donation Needed – Matches Your Blood Group"
