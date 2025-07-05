@@ -1,4 +1,5 @@
 pub mod bcrypt;
+#[cfg(feature = "cron-job")]
 pub mod blood_threshold;
 pub mod cors;
 pub mod email;
@@ -8,24 +9,29 @@ pub mod oidc;
 pub mod rag;
 #[cfg(feature = "redis")]
 pub mod redis;
+#[cfg(feature = "cron-job")]
 pub mod schedule_time;
 
 use std::sync::LazyLock;
 
+#[cfg(feature = "cron-job")]
 use blood_threshold::BloodThresholdConfig;
 use cors::CorsConfig;
 use email::EmailConfig;
 use oidc::OpenIdConnectConfig;
-use schedule_time::ScheduleTimeConfig;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig};
+use bcrypt::BcryptConfig;
+use jwt::JwtConfig;
 
 #[cfg(feature = "rag")]
-use crate::config::rag::RAGConfig;
+use rag::RAGConfig;
 
 #[cfg(feature = "redis")]
-use crate::config::redis::RedisConfig;
+use redis::RedisConfig;
+
+#[cfg(feature = "cron-job")]
+use schedule_time::ScheduleTimeConfig;
 
 const fn default_port() -> u16 {
     3000
@@ -50,9 +56,11 @@ pub struct Config {
     #[cfg(feature = "rag")]
     pub rag: RAGConfig,
 
+    #[cfg(feature = "cron-job")]
     #[serde(default)]
     pub blood: BloodThresholdConfig,
 
+    #[cfg(feature = "cron-job")]
     #[serde(default)]
     pub schedule_time: ScheduleTimeConfig,
 
