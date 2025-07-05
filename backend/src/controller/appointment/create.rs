@@ -94,7 +94,10 @@ pub async fn create(
                 .build());
         }
         Err(error) => {
-            tracing::error!(?error, "Failed to check if account is applied for an appointment");
+            tracing::error!(
+                ?error,
+                "Failed to check if account is applied for an appointment"
+            );
 
             return Err(Error::internal());
         }
