@@ -2,7 +2,7 @@ import { useState, useRef, createContext, useContext, useEffect } from 'react'
 import { cn, generateUniqueId } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Trash, X, CircleAlert, Play, Pause, Upload, FileText, Image } from 'lucide-react'
+import { Trash, X, CircleAlert, Play, Pause, Upload, FileText, Image as ImageIcon} from 'lucide-react'
 
 export interface FileInfo {
   id: string
@@ -115,7 +115,7 @@ export const formatFileSize = (bytes: number): string => {
 
 export const FileTypeIcon: React.FC<{ type: string }> = ({ type }) => {
   if (type.includes('image')) {
-    return <Image />
+    return <ImageIcon />
   } else {
     return <FileText />
   }
@@ -472,7 +472,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
     >
       <Upload />
       <p className="text-sm text-muted-foreground">{prompt}</p>
-      {maxSize && <p className="text-xs text-muted-foreground">file max can't exceed {maxSize}MB</p>}
+      {maxSize && <p className="text-xs text-muted-foreground">file max &apos exceed {maxSize}MB</p>}
       <input
         type="file"
         ref={fileInputRef}
