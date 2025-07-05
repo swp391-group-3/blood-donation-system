@@ -31,5 +31,5 @@ pub fn build() -> Router<Arc<ApiState>> {
             "/account/next-donatable-date",
             routing::get(next_donatable_date),
         )
-        .route("account/is-applied", routing::get(is_applied))
+        .route("/account/is-applied", routing::get(is_applied))
 }
