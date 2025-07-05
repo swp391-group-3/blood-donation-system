@@ -6,6 +6,7 @@ pub mod jwt;
 pub mod oidc;
 #[cfg(feature = "rag")]
 pub mod rag;
+#[cfg(feature = "redis")]
 pub mod redis;
 pub mod schedule_time;
 
@@ -18,10 +19,13 @@ use oidc::OpenIdConnectConfig;
 use schedule_time::ScheduleTimeConfig;
 use serde::Deserialize;
 
-use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig, redis::RedisConfig};
+use crate::config::{bcrypt::BcryptConfig, jwt::JwtConfig};
 
 #[cfg(feature = "rag")]
 use crate::config::rag::RAGConfig;
+
+#[cfg(feature = "redis")]
+use crate::config::redis::RedisConfig;
 
 const fn default_port() -> u16 {
     3000
@@ -52,6 +56,7 @@ pub struct Config {
     #[serde(default)]
     pub schedule_time: ScheduleTimeConfig,
 
+    #[cfg(feature = "redis")]
     pub redis: RedisConfig,
 }
 
