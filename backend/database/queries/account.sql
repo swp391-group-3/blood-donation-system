@@ -86,7 +86,6 @@ SELECT COALESCE((
                     WHEN donations.type = 'power_red' THEN INTERVAL '112 days'
                     WHEN donations.type = 'platelet' THEN INTERVAL '7 days'
                     WHEN donations.type = 'plasma' THEN INTERVAL '28 days'
-                    ELSE INTERVAL '0 days'
                 END
             ) <= now()
             THEN now()
@@ -97,7 +96,6 @@ SELECT COALESCE((
                     WHEN donations.type = 'power_red' THEN INTERVAL '112 days'
                     WHEN donations.type = 'platelet' THEN INTERVAL '7 days'
                     WHEN donations.type = 'plasma' THEN INTERVAL '28 days'
-                    ELSE INTERVAL '0 days'
                 END
             )
         END
