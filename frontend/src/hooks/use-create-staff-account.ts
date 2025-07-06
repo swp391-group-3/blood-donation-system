@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 
-export const useStaffAccount = () => {
+export const useCreateStaffAccount = () => {
     const qc = useQueryClient();
 
     return useMutation({
