@@ -7,11 +7,13 @@ edition = "2024"
 rag = ["rig-core", "rig-qdrant", "qdrant-client"]
 redis = ["tower-sessions-redis-store"]
 cron-job = []
+monitoring = ["axum-prometheus"]
 
 [dependencies]
 anyhow = "1.0.98"
 axum = "0.8.4"
 axum-extra = { version = "0.10.1", features = ["cookie"] }
+axum-prometheus = { version = "0.8.0", optional = true }
 axum-valid = "0.24.0"
 bcrypt = "0.17.0"
 bon = "3.6.4"
