@@ -25,7 +25,7 @@ pub struct Request {
     path = "/appointment/{id}/reject",
     operation_id = "appointment::reject",
     params(
-        ("id" = Uuid, Path, description = "Appointment id"),
+        ("id" = Uuid, Path, description = "Appointment id")
     ),
     request_body = Request,
     security(("jwt_token" = [])),
@@ -75,10 +75,20 @@ pub async fn reject(
 
     let subject = "Appointment Rejected".to_string();
 
-    let reason_html = request
-        .reason
-        .map(|r| format!("<p>Reason for rejection: {}</p>", r))
-        .unwrap_or_default();
+    let reason_html = if let Some(reason) = request.reason.as_deref() {
+        if let Err(error) = queries::appointment::update_reason()
+            .bind(&database, &reason, &id)
+            .await
+        {
+            tracing::error!(?error, id =? id, "Failed to set rejected reason");
+
+            return Err(Error::internal());
+        }
+
+        format!("<p>Reason for rejection: {}</p>", reason)
+    } else {
+        "".to_string()
+    };
 
     let body = format!(
         "<html>
