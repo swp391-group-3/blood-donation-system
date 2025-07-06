@@ -2,7 +2,7 @@ import { useState, useRef, createContext, useContext, useEffect } from 'react'
 import { cn, generateUniqueId } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Trash, X, CircleAlert, Play, Pause, Upload, FileText, Image as ImageIcon} from 'lucide-react'
+import { Trash, X, CircleAlert, Play, Pause, Upload, FileText, Image as ImageIcon } from 'lucide-react'
 
 export interface FileInfo {
   id: string
