@@ -9,7 +9,15 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use ctypes::{AppointmentStatus, Role};
 use database::queries::{self};
+use serde::Deserialize;
+use utoipa::ToSchema;
 use uuid::Uuid;
+
+#[derive(Deserialize, ToSchema)]
+#[schema(as = appointment::reject::Request)]
+pub struct Request {
+    pub reason: Option<String>,
+}
 
 #[utoipa::path(
     patch,
@@ -18,15 +26,15 @@ use uuid::Uuid;
     operation_id = "appointment::reject",
     params(
         ("id" = Uuid, Path, description = "Appointment id"),
-        ("reason" = Option<String>, description = "Reason for rejection")
     ),
+    request_body = Request,
     security(("jwt_token" = [])),
 )]
 pub async fn reject(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Json(reason): Json<Option<String>>,
+    Json(request): Json<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
@@ -67,7 +75,8 @@ pub async fn reject(
 
     let subject = "Appointment Rejected".to_string();
 
-    let reason_html = reason
+    let reason_html = request
+        .reason
         .map(|r| format!("<p><strong>Reason for rejection:</strong> {}</p>", r))
         .unwrap_or_default();
 
