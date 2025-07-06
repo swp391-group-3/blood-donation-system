@@ -2,7 +2,8 @@ mod create_staff;
 mod delete;
 mod get;
 mod get_all;
-mod is_donatable;
+mod is_applied;
+mod next_donatable_date;
 mod update;
 
 use std::sync::Arc;
@@ -15,7 +16,8 @@ pub use create_staff::*;
 pub use delete::*;
 pub use get::*;
 pub use get_all::*;
-pub use is_donatable::*;
+pub use is_applied::*;
+pub use next_donatable_date::*;
 pub use update::*;
 
 pub fn build() -> Router<Arc<ApiState>> {
@@ -25,5 +27,9 @@ pub fn build() -> Router<Arc<ApiState>> {
         .route("/account/{id}", routing::delete(delete))
         .route("/account", routing::put(update))
         .route("/account/{id}", routing::get(get))
-        .route("/account/is-donatable", routing::get(is_donatable))
+        .route(
+            "/account/next-donatable-date",
+            routing::get(next_donatable_date),
+        )
+        .route("/account/is-applied", routing::get(is_applied))
 }
