@@ -85,7 +85,7 @@ pub async fn reject(
             return Err(Error::internal());
         }
 
-        format!("<p>Reason for rejection: {}</p>", reason)
+        format!("<p>Reason for rejection: {reason}</p>")
     } else {
         "".to_string()
     };
