@@ -4,6 +4,7 @@ use crate::error::Error;
 use crate::util::auth::{Claims, authorize};
 use crate::util::notification::send;
 use crate::{error::Result, state::ApiState};
+use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use ctypes::{AppointmentStatus, Role};
@@ -16,7 +17,8 @@ use uuid::Uuid;
     path = "/appointment/{id}/reject",
     operation_id = "appointment::reject",
     params(
-        ("id" = Uuid, Path, description = "Appointment id")
+        ("id" = Uuid, Path, description = "Appointment id"),
+        ("reason" = Option<String>, description = "Reason for rejection")
     ),
     security(("jwt_token" = [])),
 )]
@@ -24,6 +26,7 @@ pub async fn reject(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
+    Json(reason): Json<Option<String>>,
 ) -> Result<()> {
     let database = state.database().await?;
 
@@ -63,15 +66,20 @@ pub async fn reject(
     };
 
     let subject = "Appointment Rejected".to_string();
+
+    let reason_html = reason
+        .map(|r| format!("<p><strong>Reason for rejection:</strong> {}</p>", r))
+        .unwrap_or_default();
+
     let body = format!(
         "<html>
         <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
             <p>Dear <strong>{}</strong>,</p>
 
             <p>We regret to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: red;\"><strong>rejected</strong></span>.</p>
-
-            <p>This may be due to scheduling conflicts, eligibility concerns, or other criteria.</p>
-
+            
+            {}
+            
             <p>If you believe this is a mistake or would like to schedule another appointment, please contact our staff or try again via the system.</p>
 
             <p>We appreciate your willingness to donate and hope to see you again soon.</p>
@@ -81,6 +89,7 @@ pub async fn reject(
         </html>",
         account.name,
         id,
+        reason_html,
     );
 
     send(&account, subject, body, &state.mailer).await?;
