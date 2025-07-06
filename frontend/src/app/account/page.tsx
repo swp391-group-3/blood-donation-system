@@ -26,7 +26,7 @@ import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } fro
 import { columns } from './column';
 import { Account, mockAccounts } from '@/lib/api/dto/account';
 import FileUpload, { DropZone, FileError, FileInfo, FileList, FileProgress } from '@/components/file-upload';
-import { useStaffAccount } from '@/hooks/use-staff-account';
+import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
 import { MessageLoading } from '@/components/ui/message-loading';
 
 function Page() {
@@ -34,7 +34,7 @@ function Page() {
     const [roleFilter, setRoleFilter] = useState("all");
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
-    const { mutate, status } = useStaffAccount();
+    const { mutate, status } = useCreateStaffAccount();
 
     useEffect(() => {
         if (status === 'success') {
