@@ -23,3 +23,8 @@ FROM appointments;
 UPDATE appointments
 SET status = :status
 WHERE id = :id;
+
+--! update_reason
+UPDATE appointments
+SET reason = :reason
+WHERE id = :id;

@@ -77,7 +77,7 @@ pub async fn reject(
 
     let reason_html = request
         .reason
-        .map(|r| format!("<p><strong>Reason for rejection:</strong> {}</p>", r))
+        .map(|r| format!("<p>Reason for rejection: {}</p>", r))
         .unwrap_or_default();
 
     let body = format!(
