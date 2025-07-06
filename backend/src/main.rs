@@ -45,6 +45,8 @@ async fn main() -> anyhow::Result<()> {
     cron_job_scheduler::build().await;
 
     let app = build_app().await;
+    #[cfg(feature = "monitoring")]
+    let app = app.layer(middleware::prometheus().await);
 
     let listener = TcpListener::bind(SocketAddr::new([0, 0, 0, 0].into(), CONFIG.port)).await?;
 
