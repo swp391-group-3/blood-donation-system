@@ -1,4 +1,4 @@
---: Appointment()
+--: Appointment(reason?)
 
 --! create
 INSERT INTO appointments(request_id, member_id)
