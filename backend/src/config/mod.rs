@@ -1,21 +1,22 @@
 pub mod bcrypt;
-#[cfg(feature = "cron-job")]
-pub mod blood_threshold;
 pub mod cors;
 pub mod email;
 pub mod jwt;
 pub mod oidc;
+
 #[cfg(feature = "rag")]
 pub mod rag;
+
 #[cfg(feature = "redis")]
 pub mod redis;
+
+#[cfg(feature = "cron-job")]
+pub mod blood_threshold;
 #[cfg(feature = "cron-job")]
 pub mod schedule_time;
 
 use std::sync::LazyLock;
 
-#[cfg(feature = "cron-job")]
-use blood_threshold::BloodThresholdConfig;
 use cors::CorsConfig;
 use email::EmailConfig;
 use oidc::OpenIdConnectConfig;
@@ -31,17 +32,29 @@ use rag::RAGConfig;
 use redis::RedisConfig;
 
 #[cfg(feature = "cron-job")]
+use blood_threshold::BloodThresholdConfig;
+#[cfg(feature = "cron-job")]
 use schedule_time::ScheduleTimeConfig;
 
 const fn default_port() -> u16 {
     3000
 }
 
+#[cfg(feature = "monitoring")]
+const fn default_prometheus_port() -> u16 {
+    3001
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub database_url: String,
+
     #[serde(default = "default_port")]
     pub port: u16,
+
+    #[cfg(feature = "monitoring")]
+    #[serde(default = "default_prometheus_port")]
+    pub prometheus_port: u16,
 
     pub cors: CorsConfig,
 
