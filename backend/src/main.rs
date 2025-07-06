@@ -16,37 +16,47 @@ use axum_test::TestServer;
 use state::ApiState;
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
-use tracing::Level;
-use tracing_subscriber::fmt::time::ChronoLocal;
 
 use crate::config::CONFIG;
 
 async fn build_app() -> Router {
     let state = ApiState::new().await;
 
-    Router::new()
+    let app = Router::new()
         .merge(controller::build())
         .merge(doc::build())
         .layer(TraceLayer::new_for_http())
         .layer(middleware::cors())
         .layer(middleware::session().await)
-        .with_state(state)
+        .with_state(state);
+
+    #[cfg(feature = "monitoring")]
+    let app = app
+        .layer(axum_tracing_opentelemetry::middleware::OtelAxumLayer::default())
+        .layer(axum_tracing_opentelemetry::middleware::OtelInResponseLayer)
+        .layer(middleware::prometheus().await);
+
+    app
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    #[cfg(not(feature = "monitoring"))]
     tracing_subscriber::fmt()
-        .with_max_level(Level::DEBUG)
+        .with_max_level(tracing::Level::DEBUG)
         .pretty()
-        .with_timer(ChronoLocal::rfc_3339())
+        .with_timer(tracing_subscriber::fmt::time::ChronoLocal::rfc_3339())
         .init();
+
+    #[cfg(feature = "monitoring")]
+    let _guard =
+        init_tracing_opentelemetry::tracing_subscriber_ext::init_subscribers_and_loglevel("DEBUG")
+            .unwrap();
 
     #[cfg(feature = "cron-job")]
     cron_job_scheduler::build().await;
 
     let app = build_app().await;
-    #[cfg(feature = "monitoring")]
-    let app = app.layer(middleware::prometheus().await);
 
     let listener = TcpListener::bind(SocketAddr::new([0, 0, 0, 0].into(), CONFIG.port)).await?;
 
