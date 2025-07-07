@@ -1,4 +1,4 @@
---: Appointment()
+--: Appointment(reason?)
 
 --! create
 INSERT INTO appointments(request_id, member_id)
@@ -22,4 +22,11 @@ FROM appointments;
 --! update_status
 UPDATE appointments
 SET status = :status
+WHERE id = :id;
+
+--! reject
+UPDATE appointments
+SET
+    status = 'rejected'::appointment_status,
+    reason = :reason
 WHERE id = :id;

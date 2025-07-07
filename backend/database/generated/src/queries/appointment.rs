@@ -10,12 +10,44 @@ pub struct UpdateStatusParams {
     pub status: ctypes::AppointmentStatus,
     pub id: uuid::Uuid,
 }
-#[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
+#[derive(Debug)]
+pub struct RejectParams<T1: crate::StringSql> {
+    pub reason: T1,
+    pub id: uuid::Uuid,
+}
+#[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct Appointment {
     pub id: uuid::Uuid,
     pub request_id: uuid::Uuid,
     pub member_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
+    pub reason: Option<String>,
+}
+pub struct AppointmentBorrowed<'a> {
+    pub id: uuid::Uuid,
+    pub request_id: uuid::Uuid,
+    pub member_id: uuid::Uuid,
+    pub status: ctypes::AppointmentStatus,
+    pub reason: Option<&'a str>,
+}
+impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
+    fn from(
+        AppointmentBorrowed {
+            id,
+            request_id,
+            member_id,
+            status,
+            reason,
+        }: AppointmentBorrowed<'a>,
+    ) -> Self {
+        Self {
+            id,
+            request_id,
+            member_id,
+            status,
+            reason: reason.map(|v| v.into()),
+        }
+    }
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
@@ -84,14 +116,17 @@ pub struct AppointmentQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<Appointment, tokio_postgres::Error>,
-    mapper: fn(Appointment) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<AppointmentBorrowed, tokio_postgres::Error>,
+    mapper: fn(AppointmentBorrowed) -> T,
 }
 impl<'c, 'a, 's, C, T: 'c, const N: usize> AppointmentQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(Appointment) -> R) -> AppointmentQuery<'c, 'a, 's, C, R, N> {
+    pub fn map<R>(
+        self,
+        mapper: fn(AppointmentBorrowed) -> R,
+    ) -> AppointmentQuery<'c, 'a, 's, C, R, N> {
         AppointmentQuery {
             client: self.client,
             params: self.params,
@@ -197,14 +232,16 @@ impl GetStmt {
             client,
             params: [id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<Appointment, tokio_postgres::Error> {
-                Ok(Appointment {
-                    id: row.try_get(0)?,
-                    request_id: row.try_get(1)?,
-                    member_id: row.try_get(2)?,
-                    status: row.try_get(3)?,
-                })
-            },
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AppointmentBorrowed, tokio_postgres::Error> {
+                    Ok(AppointmentBorrowed {
+                        id: row.try_get(0)?,
+                        request_id: row.try_get(1)?,
+                        member_id: row.try_get(2)?,
+                        status: row.try_get(3)?,
+                        reason: row.try_get(4)?,
+                    })
+                },
             mapper: |it| Appointment::from(it),
         }
     }
@@ -225,14 +262,16 @@ impl GetByMemberIdStmt {
             client,
             params: [member_id],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<Appointment, tokio_postgres::Error> {
-                Ok(Appointment {
-                    id: row.try_get(0)?,
-                    request_id: row.try_get(1)?,
-                    member_id: row.try_get(2)?,
-                    status: row.try_get(3)?,
-                })
-            },
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AppointmentBorrowed, tokio_postgres::Error> {
+                    Ok(AppointmentBorrowed {
+                        id: row.try_get(0)?,
+                        request_id: row.try_get(1)?,
+                        member_id: row.try_get(2)?,
+                        status: row.try_get(3)?,
+                        reason: row.try_get(4)?,
+                    })
+                },
             mapper: |it| Appointment::from(it),
         }
     }
@@ -252,14 +291,16 @@ impl GetAllStmt {
             client,
             params: [],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<Appointment, tokio_postgres::Error> {
-                Ok(Appointment {
-                    id: row.try_get(0)?,
-                    request_id: row.try_get(1)?,
-                    member_id: row.try_get(2)?,
-                    status: row.try_get(3)?,
-                })
-            },
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AppointmentBorrowed, tokio_postgres::Error> {
+                    Ok(AppointmentBorrowed {
+                        id: row.try_get(0)?,
+                        request_id: row.try_get(1)?,
+                        member_id: row.try_get(2)?,
+                        status: row.try_get(3)?,
+                        reason: row.try_get(4)?,
+                    })
+                },
             mapper: |it| Appointment::from(it),
         }
     }
@@ -301,5 +342,44 @@ impl<'a, C: GenericClient + Send + Sync>
         Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
     > {
         Box::pin(self.bind(client, &params.status, &params.id))
+    }
+}
+pub fn reject() -> RejectStmt {
+    RejectStmt(crate::client::async_::Stmt::new(
+        "UPDATE appointments SET status = 'rejected'::appointment_status, reason = $1 WHERE id = $2",
+    ))
+}
+pub struct RejectStmt(crate::client::async_::Stmt);
+impl RejectStmt {
+    pub async fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
+        &'s mut self,
+        client: &'c C,
+        reason: &'a T1,
+        id: &'a uuid::Uuid,
+    ) -> Result<u64, tokio_postgres::Error> {
+        let stmt = self.0.prepare(client).await?;
+        client.execute(stmt, &[reason, id]).await
+    }
+}
+impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
+    crate::client::async_::Params<
+        'a,
+        'a,
+        'a,
+        RejectParams<T1>,
+        std::pin::Pin<
+            Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+        >,
+        C,
+    > for RejectStmt
+{
+    fn params(
+        &'a mut self,
+        client: &'a C,
+        params: &'a RejectParams<T1>,
+    ) -> std::pin::Pin<
+        Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+    > {
+        Box::pin(self.bind(client, &params.reason, &params.id))
     }
 }
