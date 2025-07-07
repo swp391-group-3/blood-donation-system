@@ -26,21 +26,23 @@ import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } fro
 import { columns } from './column';
 import { Account } from '@/lib/api/dto/account';
 import FileUpload, { DropZone, FileError, FileInfo, FileList, FileProgress } from '@/components/file-upload';
-import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
+import { useCreateStaffAccounts } from '@/hooks/use-create-staff-accounts';
 import { MessageLoading } from '@/components/ui/message-loading';
 import { useAllAccounts } from '@/hooks/use-all-account';
+import { Form } from '@/components/ui/form';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
-    const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+    const [isImportFileModel, setIsImportFileModel] = useState(false);
+    const [isAddStaff, setIsAddStaff] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
-    const { mutate, status } = useCreateStaffAccount();
+    const { mutate, status } = useCreateStaffAccounts();
     const { data: accounts = [] } = useAllAccounts();
-    
+
     useEffect(() => {
         if (status === 'success') {
-            setIsImportDialogOpen(false);
+            setIsImportFileModel(false);
         }
     }, [status]);
 
@@ -104,9 +106,9 @@ function Page() {
                     </div>
                     <div className='flex gap-2'>
                         <Dialog
-                            open={isImportDialogOpen}
+                            open={isImportFileModel}
                             onOpenChange={(open) => {
-                                setIsImportDialogOpen(open)
+                                setIsImportFileModel(open)
                             }}
                         >
                             <DialogTrigger asChild>
@@ -122,7 +124,6 @@ function Page() {
                                         Upload a CSV file to bulk import users
                                     </DialogDescription>
                                 </DialogHeader>
-
                                 <FileUpload
                                     files={uploadFiles}
                                     onFileSelectChange={onFileSelectChange}
@@ -152,14 +153,29 @@ function Page() {
                                 </FileUpload>
                             </DialogContent>
                         </Dialog>
-                        <Dialog>
+                        {/* <Dialog
+                            open={isAddStaff}
+                            onOpenChange={setIsAddStaff}
+                        >
                             <DialogTrigger asChild>
                                 <Button>
                                     <UserPlus />
-                                    Add User
+                                    Add Staff
                                 </Button>
                             </DialogTrigger>
-                        </Dialog>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Add Staff Account</DialogTitle>
+                                </DialogHeader>
+                                <Form  >
+                                    <form>
+                                        <div className="flex flex-col gap-6">
+
+                                        </div>
+                                    </form>
+                                </Form>
+                            </DialogContent>
+                        </Dialog> */}
                     </div>
                 </div>
                 {/* Stats Cards */}
