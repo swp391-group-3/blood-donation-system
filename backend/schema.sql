@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS appointments(
     request_id uuid NOT NULL REFERENCES blood_requests(id),
     member_id uuid NOT NULL REFERENCES accounts(id),
     status appointment_status NOT NULL DEFAULT 'on_process'::appointment_status,
-    reason text,
+    reason text NOT NULL DEFAULT '',
 
     UNIQUE (request_id, member_id)
 );
