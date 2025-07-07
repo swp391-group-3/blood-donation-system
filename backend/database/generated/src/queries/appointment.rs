@@ -21,14 +21,14 @@ pub struct Appointment {
     pub request_id: uuid::Uuid,
     pub member_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
-    pub reason: String,
+    pub reason: Option<String>,
 }
 pub struct AppointmentBorrowed<'a> {
     pub id: uuid::Uuid,
     pub request_id: uuid::Uuid,
     pub member_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
-    pub reason: &'a str,
+    pub reason: Option<&'a str>,
 }
 impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
     fn from(
@@ -45,7 +45,7 @@ impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
             request_id,
             member_id,
             status,
-            reason: reason.into(),
+            reason: reason.map(|v| v.into()),
         }
     }
 }
