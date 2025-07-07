@@ -29,7 +29,8 @@ import FileUpload, { DropZone, FileError, FileInfo, FileList, FileProgress } fro
 import { useCreateStaffAccounts } from '@/hooks/use-create-staff-accounts';
 import { MessageLoading } from '@/components/ui/message-loading';
 import { useAllAccounts } from '@/hooks/use-all-account';
-import { Form } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -38,6 +39,7 @@ function Page() {
     const [isAddStaff, setIsAddStaff] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
     const { mutate, status } = useCreateStaffAccounts();
+    const { mutation: mutationAccount, form: formAccount } = useCreateStaffAccount();
     const { data: accounts = [] } = useAllAccounts();
 
     useEffect(() => {
@@ -153,7 +155,7 @@ function Page() {
                                 </FileUpload>
                             </DialogContent>
                         </Dialog>
-                        {/* <Dialog
+                        <Dialog
                             open={isAddStaff}
                             onOpenChange={setIsAddStaff}
                         >
@@ -167,15 +169,70 @@ function Page() {
                                 <DialogHeader>
                                     <DialogTitle>Add Staff Account</DialogTitle>
                                 </DialogHeader>
-                                <Form  >
+                                <Form  {...formAccount}>
                                     <form>
                                         <div className="flex flex-col gap-6">
-
+                                            <FormField
+                                                control={formAccount.control}
+                                                name='email'
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Email</FormLabel>
+                                                        <FormControl>
+                                                            <Input {...field} required />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formAccount.control}
+                                                name="password"
+                                                render={({ field }) => (
+                                                    <FormItem className="grid gap-2">
+                                                        <FormLabel>Password</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="password"
+                                                                {...field}
+                                                                required
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formAccount.control}
+                                                name="name"
+                                                render={({ field }) => (
+                                                    <FormItem className="grid gap-2">
+                                                        <FormLabel>Name</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="text" {...field} required />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formAccount.control}
+                                                name="phone"
+                                                render={({ field }) => (
+                                                    <FormItem className="grid gap-2">
+                                                        <FormLabel>Phone</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="tel" {...field} required />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
                                         </div>
                                     </form>
                                 </Form>
                             </DialogContent>
-                        </Dialog> */}
+                        </Dialog>
                     </div>
                 </div>
                 {/* Stats Cards */}
