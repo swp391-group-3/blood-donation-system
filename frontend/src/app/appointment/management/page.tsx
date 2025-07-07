@@ -19,6 +19,7 @@ import {
     Eye,
     AlertTriangle,
     PlusSquare,
+    Search,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { toast } from 'sonner';
@@ -42,6 +43,7 @@ import { ReviewDialog } from '@/components/review-dialog';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useAppointment } from '@/hooks/use-appointent';
+import { Input } from '@/components/ui/input';
 
 const getStats = (appointments: Appointment[]): StatsProps[] => {
     return [
@@ -240,15 +242,26 @@ export default function AppointmentManagementPage() {
         () => (appointments ? getStats(appointments) : undefined),
         [appointments],
     );
+    const [search, setSearch] = useState<string | undefined>();
     const [selectedStatus, setSelectedStatus] = useState<Status | 'all'>('all');
-    const filtered = useMemo(() => {
-        return (
-            appointments?.filter(
+    const filteredAppointments = useMemo(() => {
+        if (!appointments) return [];
+
+        return appointments
+            .filter(
                 (apt) =>
                     selectedStatus === 'all' || apt.status === selectedStatus,
-            ) ?? []
-        );
-    }, [appointments, selectedStatus]);
+            )
+            .filter((apt) => {
+                if (!search) return true;
+
+                const searchTerm = search.toLowerCase().trim();
+                return (
+                    apt.member.name.toLowerCase().includes(searchTerm) ||
+                    apt.member.email.toLowerCase().includes(searchTerm)
+                );
+            });
+    }, [appointments, selectedStatus, search]);
 
     if (isPending) {
         return <div></div>;
@@ -277,6 +290,15 @@ export default function AppointmentManagementPage() {
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
                     <div className="relative flex-1"></div>
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search by name or email..."
+                            className="p-4 pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200"
+                        />
+                    </div>
                     <Select
                         value={selectedStatus}
                         onValueChange={(value: Status | 'all') =>
@@ -321,7 +343,7 @@ export default function AppointmentManagementPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filtered.length === 0 ? (
+                            {filteredAppointments.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5}>
                                         <div className="text-center py-12">
@@ -337,7 +359,7 @@ export default function AppointmentManagementPage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                filtered.map((apt) => (
+                                filteredAppointments.map((apt) => (
                                     <AppointmentRow key={apt.id} id={apt.id} />
                                 ))
                             )}

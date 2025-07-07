@@ -48,7 +48,6 @@ export const usePostChat = () => {
         },
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
-            toast.success('Sent message successfully');
             queryClient.invalidateQueries({ queryKey: ['chat'] });
         },
     });
