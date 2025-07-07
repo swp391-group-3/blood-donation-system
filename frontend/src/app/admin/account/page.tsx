@@ -18,7 +18,7 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, Upload, UserPlus, Users } from 'lucide-react';
+import { Loader2, Search, Upload, UserPlus, Users } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -228,6 +228,16 @@ function Page() {
                                                     </FormItem>
                                                 )}
                                             />
+                                            {mutationAccount.status === 'pending' ? (
+                                                <Button disabled className="w-full py-5">
+                                                    <Loader2 className="animate-spin" />
+                                                    Loading
+                                                </Button>
+                                            ) : (
+                                                <Button type="submit" className="w-full py-5">
+                                                    Add Account
+                                                </Button>
+                                            )}
                                         </div>
                                     </form>
                                 </Form>
