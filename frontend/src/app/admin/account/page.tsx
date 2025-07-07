@@ -80,7 +80,7 @@ function Page() {
 
             return matchesSearch && matchRole;
         })
-    }, [searchTerm, roleFilter]);
+    }, [searchTerm, roleFilter, accounts]);
     const table = useReactTable({
         data: filtersAccounts,
         columns: columns,
