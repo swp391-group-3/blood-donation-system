@@ -24,10 +24,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { columns } from './column';
-import { Account, mockAccounts } from '@/lib/api/dto/account';
+import { Account } from '@/lib/api/dto/account';
 import FileUpload, { DropZone, FileError, FileInfo, FileList, FileProgress } from '@/components/file-upload';
 import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
 import { MessageLoading } from '@/components/ui/message-loading';
+import { useAllAccounts } from '@/hooks/use-all-account';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -35,6 +36,7 @@ function Page() {
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
     const { mutate, status } = useCreateStaffAccount();
+    const { data: accounts = [] } = useAllAccounts();
 
     useEffect(() => {
         if (status === 'success') {
@@ -69,7 +71,7 @@ function Page() {
     }
 
     const filtersAccounts: Account[] = useMemo(() => {
-        return mockAccounts.filter((account) => {
+        return accounts.filter((account) => {
             const matchesSearch =
                 account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 account.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -168,7 +170,7 @@ function Page() {
                             <Users className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{mockAccounts.length}</div>
+                            <div className="text-2xl font-bold">{accounts.length}</div>
                         </CardContent>
                     </Card>
 
