@@ -541,7 +541,7 @@ impl GetStmt {
 }
 pub fn get_by_email() -> GetByEmailStmt {
     GetByEmailStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM accounts WHERE email = $1",
+        "SELECT * FROM accounts WHERE email = $1 AND is_active = true",
     ))
 }
 pub struct GetByEmailStmt(crate::client::async_::Stmt);
@@ -578,7 +578,7 @@ impl GetByEmailStmt {
 }
 pub fn get_by_role() -> GetByRoleStmt {
     GetByRoleStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM accounts WHERE role = $1",
+        "SELECT * FROM accounts WHERE role = $1 AND is_active = true",
     ))
 }
 pub struct GetByRoleStmt(crate::client::async_::Stmt);
