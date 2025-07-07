@@ -58,7 +58,7 @@ interface formEditProps {
     mutation: UseMutationResult<void, Error, AccountUpdate>;
 }
 
-function FormEdit({ form, mutation }: formEditProps) {
+export function FormEdit({ form, mutation }: formEditProps) {
     const handleFormSubmit = (values: AccountUpdate) => {
         mutation.mutate(values);
     };
