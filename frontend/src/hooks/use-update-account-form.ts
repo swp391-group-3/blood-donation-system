@@ -43,7 +43,7 @@ export const useUpdateAccountForm = (
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues,
+        defaultValues: defaultValues ?? {},
     });
 
     return {
