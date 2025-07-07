@@ -67,7 +67,7 @@ INSERT INTO request_blood_groups (request_id, blood_group) VALUES
 ON CONFLICT DO NOTHING;
 
 -- 3. appointments
-INSERT INTO appointments (id, request_id, member_id, status, reason) VALUES
+INSERT INTO appointments (id, request_id, member_id, status) VALUES
   ('33333333-aaaa-bbbb-cccc-333333333333', '11111111-aaaa-bbbb-cccc-111111111111', '33333333-3333-3333-3333-333333333333', 'approved'),
   ('44444444-bbbb-cccc-dddd-444444444444', '22222222-bbbb-cccc-dddd-222222222222', '33333333-3333-3333-3333-333333333333', 'checked_in')
 ON CONFLICT DO NOTHING;
