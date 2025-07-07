@@ -39,7 +39,11 @@ function Page() {
     const [isAddStaff, setIsAddStaff] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
     const { mutate, status } = useCreateStaffAccounts();
-    const { mutation: mutationAccount, form: formAccount } = useCreateStaffAccount();
+    const { mutation: mutationAccount, form: formAccount } = useCreateStaffAccount({
+        onSuccess() {
+            setIsAddStaff(false)
+        }
+    });
     const { data: accounts = [] } = useAllAccounts();
 
     useEffect(() => {

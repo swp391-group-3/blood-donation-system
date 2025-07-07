@@ -1,6 +1,6 @@
 import { fetchWrapper, throwIfError } from "@/lib/api"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -19,11 +19,14 @@ const schema = z.object({
         .regex(/0[\d]{9,9}/, { message: 'Phone must consist of 10 number' }),
 })
 
-export const useCreateStaffAccount = () => {
+export const useCreateStaffAccount = (
+    opts?: { onSuccess?: () => void }
+) => {
+    const qc = useQueryClient();
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
             console.log(values);
-            
+
             const response = await fetchWrapper("/account/create-staff", {
                 method: "POST",
                 headers: {
@@ -35,7 +38,9 @@ export const useCreateStaffAccount = () => {
             await throwIfError(response);
         },
         onSuccess: () => {
-
+            qc.invalidateQueries({ queryKey: ["account"] })
+            opts?.onSuccess?.();
+            toast.success("Add Staff Account Successfully")
         },
         onError: (error) => {
             toast.error(error.message)
