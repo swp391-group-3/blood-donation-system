@@ -11,6 +11,8 @@ use validator::{Validate, ValidationError, ValidationErrors, ValidationErrorsKin
 
 use crate::error::Error;
 
+// TODO: use this
+#[allow(unused)]
 pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(), ValidationError> {
     if value.to_utc() <= Utc::now() {
         Ok(())
@@ -19,11 +21,15 @@ pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(),
     }
 }
 
+// TODO: use this
+#[allow(unused)]
 pub struct DateTimeRange<Tz: TimeZone> {
     pub start: DateTime<Tz>,
     pub end: DateTime<Tz>,
 }
 
+// TODO: use this
+#[allow(unused)]
 pub fn validate_date_time_range<Tz: TimeZone>(
     range: &DateTimeRange<Tz>,
 ) -> Result<(), ValidationError> {
