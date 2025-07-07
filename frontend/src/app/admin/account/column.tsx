@@ -7,6 +7,7 @@ import { EditProfileModel, FormEdit } from "@/components/edit-profile";
 import { useState } from "react";
 import { useUpdateAccountForm } from "@/hooks/use-update-account-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useDeleteAccount } from "@/hooks/use-delete-account";
 
 
 const columnHelper = createColumnHelper<Account>();
@@ -98,6 +99,10 @@ function AccountActionsCell({ account }: { account: Account }) {
             setIsEditModalOpen(false)
         },
     });
+
+    const handleDeleteAccount = (id: string) => {
+        useDeleteAccount(id);
+    }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -133,6 +138,7 @@ function AccountActionsCell({ account }: { account: Account }) {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-600"
+                    onClick={() => handleDeleteAccount(account.id)}
                 >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete User
