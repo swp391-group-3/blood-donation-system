@@ -11,7 +11,8 @@ pub struct UpdateStatusParams {
     pub id: uuid::Uuid,
 }
 #[derive(Debug)]
-pub struct UpdateReasonParams<T1: crate::StringSql> {
+pub struct RejectParams<T1: crate::StringSql> {
+    pub status: ctypes::AppointmentStatus,
     pub reason: T1,
     pub id: uuid::Uuid,
 }
@@ -21,14 +22,14 @@ pub struct Appointment {
     pub request_id: uuid::Uuid,
     pub member_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
-    pub reason: Option<String>,
+    pub reason: String,
 }
 pub struct AppointmentBorrowed<'a> {
     pub id: uuid::Uuid,
     pub request_id: uuid::Uuid,
     pub member_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
-    pub reason: Option<&'a str>,
+    pub reason: &'a str,
 }
 impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
     fn from(
@@ -45,7 +46,7 @@ impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
             request_id,
             member_id,
             status,
-            reason: reason.map(|v| v.into()),
+            reason: reason.into(),
         }
     }
 }
@@ -344,21 +345,22 @@ impl<'a, C: GenericClient + Send + Sync>
         Box::pin(self.bind(client, &params.status, &params.id))
     }
 }
-pub fn update_reason() -> UpdateReasonStmt {
-    UpdateReasonStmt(crate::client::async_::Stmt::new(
-        "UPDATE appointments SET reason = $1 WHERE id = $2",
+pub fn reject() -> RejectStmt {
+    RejectStmt(crate::client::async_::Stmt::new(
+        "UPDATE appointments SET status = $1, reason = $2 WHERE id = $3",
     ))
 }
-pub struct UpdateReasonStmt(crate::client::async_::Stmt);
-impl UpdateReasonStmt {
+pub struct RejectStmt(crate::client::async_::Stmt);
+impl RejectStmt {
     pub async fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
+        status: &'a ctypes::AppointmentStatus,
         reason: &'a T1,
         id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;
-        client.execute(stmt, &[reason, id]).await
+        client.execute(stmt, &[status, reason, id]).await
     }
 }
 impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
@@ -366,20 +368,20 @@ impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
         'a,
         'a,
         'a,
-        UpdateReasonParams<T1>,
+        RejectParams<T1>,
         std::pin::Pin<
             Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
         >,
         C,
-    > for UpdateReasonStmt
+    > for RejectStmt
 {
     fn params(
         &'a mut self,
         client: &'a C,
-        params: &'a UpdateReasonParams<T1>,
+        params: &'a RejectParams<T1>,
     ) -> std::pin::Pin<
         Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
     > {
-        Box::pin(self.bind(client, &params.reason, &params.id))
+        Box::pin(self.bind(client, &params.status, &params.reason, &params.id))
     }
 }
