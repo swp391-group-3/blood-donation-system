@@ -33,17 +33,22 @@ import { useAllAccounts } from '@/hooks/use-all-account';
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
-    const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+
+    // File import state
+    const [isImportFileModel, setIsImportFileModel] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
+
+    // hooks for account
     const { mutate, status } = useCreateStaffAccount();
     const { data: accounts = [] } = useAllAccounts();
-    
+
+    // Close import dialog on success
     useEffect(() => {
         if (status === 'success') {
-            setIsImportDialogOpen(false);
+            setIsImportFileModel(false);
         }
     }, [status]);
-
+    // file logic
     const onFileSelectChange = (files: FileInfo[]) => {
         setUploadFiles(prev => {
             if (files.length > 1) {
@@ -65,11 +70,10 @@ function Page() {
         mutate(files)
         setUploadFiles([])
     }
-
     const onRemove = (fileId: string) => {
         setUploadFiles(uploadFiles.filter(file => file.id !== fileId))
     }
-
+    
     const filtersAccounts: Account[] = useMemo(() => {
         return accounts.filter((account) => {
             const matchesSearch =
@@ -104,9 +108,9 @@ function Page() {
                     </div>
                     <div className='flex gap-2'>
                         <Dialog
-                            open={isImportDialogOpen}
+                            open={isImportFileModel}
                             onOpenChange={(open) => {
-                                setIsImportDialogOpen(open)
+                                setIsImportFileModel(open)
                             }}
                         >
                             <DialogTrigger asChild>
