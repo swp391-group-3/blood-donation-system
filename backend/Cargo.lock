@@ -340,16 +340,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "axum-valid"
-version = "0.24.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3881b4b05ede123ff3c82f41c63e47425443556365b47b2ba4d05098a5bd2645"
-dependencies = [
- "axum 0.8.4",
- "validator",
-]
-
-[[package]]
 name = "backend"
 version = "0.1.0"
 dependencies = [
@@ -359,7 +349,6 @@ dependencies = [
  "axum-prometheus",
  "axum-test",
  "axum-tracing-opentelemetry",
- "axum-valid",
  "bcrypt",
  "bon",
  "chrono",
@@ -368,6 +357,7 @@ dependencies = [
  "database",
  "futures",
  "init-tracing-opentelemetry",
+ "itertools 0.14.0",
  "jsonwebtoken",
  "lettre",
  "model-mapper",
@@ -1831,6 +1821,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2277,7 +2276,7 @@ dependencies = [
  "ed25519-dalek",
  "hmac",
  "http",
- "itertools",
+ "itertools 0.10.5",
  "log",
  "oauth2",
  "p256",
@@ -2783,7 +2782,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a56d757972c98b346a9b766e3f02746cde6dd1cd1d1d563472929fdd74bec4d"
 dependencies = [
  "anyhow",
- "itertools",
+ "itertools 0.10.5",
  "proc-macro2",
  "quote",
  "syn",
