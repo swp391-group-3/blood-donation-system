@@ -170,7 +170,9 @@ function Page() {
                                     <DialogTitle>Add Staff Account</DialogTitle>
                                 </DialogHeader>
                                 <Form  {...formAccount}>
-                                    <form>
+                                    <form
+                                        onSubmit={formAccount.handleSubmit((values) => mutationAccount.mutate(values))}
+                                    >
                                         <div className="flex flex-col gap-6">
                                             <FormField
                                                 control={formAccount.control}

@@ -22,6 +22,8 @@ const schema = z.object({
 export const useCreateStaffAccount = () => {
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
+            console.log(values);
+            
             const response = await fetchWrapper("/account/create-staff", {
                 method: "POST",
                 headers: {
