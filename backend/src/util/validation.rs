@@ -4,11 +4,9 @@ use axum::{
     http::StatusCode,
 };
 use chrono::{DateTime, TimeZone, Utc};
+use itertools::Itertools;
 use serde::de::DeserializeOwned;
-use std::{
-    collections::HashMap,
-    fmt::{self, Write},
-};
+use std::collections::HashMap;
 use validator::{Validate, ValidationError, ValidationErrors, ValidationErrorsKind};
 
 use crate::error::Error;
@@ -39,42 +37,35 @@ pub fn validate_date_time_range<Tz: TimeZone>(
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidJson<T>(pub T);
 
-fn display_struct(fmt: &mut String, errs: &ValidationErrors, path: &str) -> fmt::Result {
-    let mut full_path = String::new();
-    write!(&mut full_path, "{}.", path)?;
+fn display_struct(res: &mut String, errs: &ValidationErrors, path: &str) {
+    let mut full_path = format!("{path}.");
     let base_len = full_path.len();
+
     for (path, err) in errs.errors() {
-        write!(&mut full_path, "{}", path)?;
-        display_errors(fmt, err, &full_path)?;
+        full_path.push_str(path);
+        display_errors(res, err, &full_path);
         full_path.truncate(base_len);
     }
-    Ok(())
 }
 
-fn display_errors(fmt: &mut String, errs: &ValidationErrorsKind, path: &str) -> fmt::Result {
+#[allow(unstable_name_collisions)]
+fn display_errors(res: &mut String, errs: &ValidationErrorsKind, path: &str) {
     match errs {
         ValidationErrorsKind::Field(errs) => {
-            let len = errs.len();
-            for (idx, err) in errs.iter().enumerate() {
-                if idx + 1 == len {
-                    write!(fmt, "{}", err)?;
-                } else {
-                    write!(fmt, "{}, ", err)?;
-                }
-            }
-            Ok(())
+            errs.iter()
+                .map(|err| err.to_string())
+                .intersperse(", ".to_string())
+                .for_each(|s| res.push_str(&s));
         }
-        ValidationErrorsKind::Struct(errs) => display_struct(fmt, errs, path),
+        ValidationErrorsKind::Struct(errs) => display_struct(res, errs, path),
         ValidationErrorsKind::List(errs) => {
-            let mut full_path = String::new();
-            write!(&mut full_path, "{}", path)?;
+            let mut full_path = path.to_string();
             let base_len = full_path.len();
             for (idx, err) in errs.iter() {
-                write!(&mut full_path, "[{}]", idx)?;
-                display_struct(fmt, err, &full_path)?;
+                full_path.push_str(&format!("[{idx}]"));
+                display_struct(res, err, &full_path);
                 full_path.truncate(base_len);
             }
-            Ok(())
         }
     }
 }

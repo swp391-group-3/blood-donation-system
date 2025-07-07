@@ -23,6 +23,7 @@ ctypes = { path = "./database/ctypes" }
 database = { path = "./database/generated" }
 futures = "0.3.31"
 init-tracing-opentelemetry = { version = "0.29.0", features = ["tracing_subscriber_ext"], optional = true }
+itertools = "0.14.0"
 jsonwebtoken = "9.3.1"
 lettre = { version = "0.11.17",  default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 model-mapper = "0.6.1"
