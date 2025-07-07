@@ -99,9 +99,9 @@ function AccountActionsCell({ account }: { account: Account }) {
             setIsEditModalOpen(false)
         },
     });
-
+    const deleteMutation = useDeleteAccount();
     const handleDeleteAccount = (id: string) => {
-        useDeleteAccount(id);
+        deleteMutation.mutate(id)
     }
     return (
         <DropdownMenu>

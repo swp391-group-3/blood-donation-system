@@ -3,10 +3,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 
-export const useDeleteAccount = (id: string) => {
+export const useDeleteAccount = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async () => {
+        mutationFn: async (id: string) => {
             await fetchWrapper(`/account/${id}`,
                 {
                     method: "DELETE"
