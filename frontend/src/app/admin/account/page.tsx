@@ -37,7 +37,6 @@ function Page() {
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
     const { mutate, status } = useCreateStaffAccount();
     const { data: accounts = [] } = useAllAccounts();
-    console.log(accounts);
     
     useEffect(() => {
         if (status === 'success') {
@@ -244,7 +243,6 @@ function Page() {
                             </TableHeader>
                             <TableBody>
                                 {table.getRowModel().rows.map(row => {
-                                    console.log(row );
                                     return (
                                         <TableRow key={row.id} style={{ backgroundColor: row.getIsSelected() ? '#e3f2fd' : 'white' }}>
                                             {row.getVisibleCells().map(cell => {
