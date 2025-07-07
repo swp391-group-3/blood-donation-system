@@ -1,21 +1,9 @@
 "use client";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
+    Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Search, Upload, UserPlus, Users } from 'lucide-react';
@@ -40,18 +28,14 @@ function Page() {
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
     const { mutate, status } = useCreateStaffAccounts();
     const { mutation: mutationAccount, form: formAccount } = useCreateStaffAccount({
-        onSuccess() {
-            setIsAddStaff(false)
-        }
+        onSuccess() { setIsAddStaff(false) }
     });
     const { data: accounts = [] } = useAllAccounts();
-
     useEffect(() => {
         if (status === 'success') {
             setIsImportFileModel(false);
         }
     }, [status]);
-
     const onFileSelectChange = (files: FileInfo[]) => {
         setUploadFiles(prev => {
             if (files.length > 1) {
@@ -73,19 +57,15 @@ function Page() {
         mutate(files)
         setUploadFiles([])
     }
-
     const onRemove = (fileId: string) => {
         setUploadFiles(uploadFiles.filter(file => file.id !== fileId))
     }
-
     const filtersAccounts: Account[] = useMemo(() => {
         return accounts.filter((account) => {
             const matchesSearch =
                 account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 account.email.toLowerCase().includes(searchTerm.toLowerCase());
-
             const matchRole = roleFilter === "all" || account.role === roleFilter;
-
             return matchesSearch && matchRole;
         })
     }, [searchTerm, roleFilter, accounts]);
@@ -113,14 +93,11 @@ function Page() {
                     <div className='flex gap-2'>
                         <Dialog
                             open={isImportFileModel}
-                            onOpenChange={(open) => {
-                                setIsImportFileModel(open)
-                            }}
+                            onOpenChange={(open) => { setIsImportFileModel(open) }}
                         >
                             <DialogTrigger asChild>
                                 <Button variant="outline" className='gap-2'>
-                                    <Upload />
-                                    Import CSV
+                                    <Upload />   Import CSV
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className='sm:max-w-[600px]'>
@@ -159,15 +136,9 @@ function Page() {
                                 </FileUpload>
                             </DialogContent>
                         </Dialog>
-                        <Dialog
-                            open={isAddStaff}
-                            onOpenChange={setIsAddStaff}
-                        >
+                        <Dialog open={isAddStaff} onOpenChange={setIsAddStaff} >
                             <DialogTrigger asChild>
-                                <Button>
-                                    <UserPlus />
-                                    Add Staff
-                                </Button>
+                                <Button> <UserPlus /> Add Staff  </Button>
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
@@ -279,22 +250,15 @@ function Page() {
                             </div>
                             <Select value={roleFilter} onValueChange={setRoleFilter}>
                                 <SelectTrigger className='w-full sm:w-[180px]'>
-                                    <SelectValue
-                                        placeholder="Filter by role"
-                                    />
+                                    <SelectValue placeholder="Filter by role" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value='all'>All Roles</SelectItem>
                                     <SelectItem value='admin'>Admin</SelectItem>
-                                    <SelectItem value='member'>
-                                        Member
-                                    </SelectItem>
-                                    <SelectItem value='staff'>
-                                        Staff
-                                    </SelectItem>
+                                    <SelectItem value='member'> Member  </SelectItem>
+                                    <SelectItem value='staff'>Staff</SelectItem>
                                 </SelectContent>
                             </Select>
-
                         </div>
                     </CardContent>
                 </Card>
@@ -302,25 +266,18 @@ function Page() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Users ({filtersAccounts.length})</CardTitle>
-                        <CardDescription>
-                            Manage user accounts and their permissions
-                        </CardDescription>
+                        <CardDescription>  Manage user accounts and their permissions </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 {table.getHeaderGroups().map(headerGroup => (
-                                    <TableRow
-                                        key={headerGroup.id}
-                                    >
+                                    <TableRow key={headerGroup.id} >
                                         {headerGroup.headers.map(header => {
                                             return (
-                                                <TableHead
-                                                    key={header.id}
-                                                >
+                                                <TableHead key={header.id} >
                                                     {header.isPlaceholder
-                                                        ? null
-                                                        : flexRender(
+                                                        ? null : flexRender(
                                                             header.column.columnDef.header,
                                                             header.getContext()
                                                         )}
@@ -362,7 +319,6 @@ function Page() {
                                         className={!table.getCanPreviousPage() ? "pointer-events-none opacity-50" : undefined}
                                     />
                                 </PaginationItem>
-
                                 {/* PAGE NUMBERS */}
                                 {table.getPageOptions().map((pageIndex) => {
                                     const isCurrent = pageIndex === table.getState().pagination.pageIndex;
@@ -374,14 +330,12 @@ function Page() {
                                                     e.preventDefault();
                                                     table.setPageIndex(pageIndex);
                                                 }}
-                                                aria-current={isCurrent ? "page" : undefined}
-                                            >
+                                                aria-current={isCurrent ? "page" : undefined} >
                                                 {pageIndex + 1}
                                             </PaginationLink>
                                         </PaginationItem>
                                     );
                                 })}
-
                                 {/* NEXT */}
                                 <PaginationItem>
                                     <PaginationNext
@@ -403,5 +357,4 @@ function Page() {
         </div>
     )
 }
-
 export default Page
