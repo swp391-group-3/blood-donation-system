@@ -7,7 +7,7 @@ use crate::{error::Result, state::ApiState};
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use ctypes::{AppointmentStatus, Role};
+use ctypes::Role;
 use database::queries::{self};
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -16,7 +16,7 @@ use uuid::Uuid;
 #[derive(Deserialize, ToSchema)]
 #[schema(as = appointment::reject::Request)]
 pub struct Request {
-    pub reason: Option<String>,
+    pub reason: String,
 }
 
 #[utoipa::path(
@@ -40,8 +40,8 @@ pub async fn reject(
 
     authorize(&claims, [Role::Staff], &database).await?;
 
-    if let Err(error) = queries::appointment::update_status()
-        .bind(&database, &AppointmentStatus::Rejected, &id)
+    if let Err(error) = queries::appointment::reject()
+        .bind(&database, &request.reason, &id)
         .await
     {
         tracing::error!(?error, id =? id, "Failed to reject appointment");
@@ -74,21 +74,7 @@ pub async fn reject(
     };
 
     let subject = "Appointment Rejected".to_string();
-
-    let reason_html = if let Some(reason) = request.reason.as_deref() {
-        if let Err(error) = queries::appointment::update_reason()
-            .bind(&database, &reason, &id)
-            .await
-        {
-            tracing::error!(?error, id =? id, "Failed to set rejected reason");
-
-            return Err(Error::internal());
-        }
-
-        format!("<p>Reason for rejection: {reason}</p>")
-    } else {
-        "".to_string()
-    };
+    let reason_html = format!("<p>Reason for rejection: {}</p>", request.reason);
 
     let body = format!(
         "<html>

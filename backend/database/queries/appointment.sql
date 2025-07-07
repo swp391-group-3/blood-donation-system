@@ -27,6 +27,6 @@ WHERE id = :id;
 --! reject
 UPDATE appointments
 SET
-    status = :status,
+    status = 'rejected'::appointment_status,
     reason = :reason
 WHERE id = :id;

@@ -12,7 +12,6 @@ pub struct UpdateStatusParams {
 }
 #[derive(Debug)]
 pub struct RejectParams<T1: crate::StringSql> {
-    pub status: ctypes::AppointmentStatus,
     pub reason: T1,
     pub id: uuid::Uuid,
 }
@@ -347,7 +346,7 @@ impl<'a, C: GenericClient + Send + Sync>
 }
 pub fn reject() -> RejectStmt {
     RejectStmt(crate::client::async_::Stmt::new(
-        "UPDATE appointments SET status = $1, reason = $2 WHERE id = $3",
+        "UPDATE appointments SET status = 'rejected'::appointment_status, reason = $1 WHERE id = $2",
     ))
 }
 pub struct RejectStmt(crate::client::async_::Stmt);
@@ -355,12 +354,11 @@ impl RejectStmt {
     pub async fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-        status: &'a ctypes::AppointmentStatus,
         reason: &'a T1,
         id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;
-        client.execute(stmt, &[status, reason, id]).await
+        client.execute(stmt, &[reason, id]).await
     }
 }
 impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
@@ -382,6 +380,6 @@ impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
     ) -> std::pin::Pin<
         Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
     > {
-        Box::pin(self.bind(client, &params.status, &params.reason, &params.id))
+        Box::pin(self.bind(client, &params.reason, &params.id))
     }
 }
