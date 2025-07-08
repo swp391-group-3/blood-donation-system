@@ -70,7 +70,7 @@ export const columns = [
         id: "Create At",
         header: "Created At",
         cell: account => {
-            const date: Date = account.getValue() as Date;
+            const date: Date = new Date(account.getValue());
             return <span>
                 {date.toLocaleDateString()}
             </span>

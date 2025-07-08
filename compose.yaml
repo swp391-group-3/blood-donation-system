@@ -71,6 +71,9 @@ services:
       RAG__QDRANT_URL: "http://qdrant:6334"
       RAG__GEMINI_API_KEY: ${GEMINI_API_KEY}
       RAG__CONTEXT_SAMPLE: ${RAG_CONTEXT_SAMPLE}
+
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://tempo:4317"
+      OTEL_SERVICE_NAME: backend
     image: ${REGISTRY}/backend:latest
     restart: always
     volumes:

@@ -4,11 +4,20 @@ use crate::error::Error;
 use crate::util::auth::{Claims, authorize};
 use crate::util::notification::send;
 use crate::{error::Result, state::ApiState};
+use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use ctypes::{AppointmentStatus, Role};
+use ctypes::Role;
 use database::queries::{self};
+use serde::Deserialize;
+use utoipa::ToSchema;
 use uuid::Uuid;
+
+#[derive(Deserialize, ToSchema)]
+#[schema(as = appointment::reject::Request)]
+pub struct Request {
+    pub reason: String,
+}
 
 #[utoipa::path(
     patch,
@@ -18,19 +27,21 @@ use uuid::Uuid;
     params(
         ("id" = Uuid, Path, description = "Appointment id")
     ),
+    request_body = Request,
     security(("jwt_token" = [])),
 )]
 pub async fn reject(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
+    Json(request): Json<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
     authorize(&claims, [Role::Staff], &database).await?;
 
-    if let Err(error) = queries::appointment::update_status()
-        .bind(&database, &AppointmentStatus::Rejected, &id)
+    if let Err(error) = queries::appointment::reject()
+        .bind(&database, &request.reason, &id)
         .await
     {
         tracing::error!(?error, id =? id, "Failed to reject appointment");
@@ -69,9 +80,9 @@ pub async fn reject(
             <p>Dear <strong>{}</strong>,</p>
 
             <p>We regret to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: red;\"><strong>rejected</strong></span>.</p>
-
-            <p>This may be due to scheduling conflicts, eligibility concerns, or other criteria.</p>
-
+            
+            <p>Reason for rejection: {}</p>
+            
             <p>If you believe this is a mistake or would like to schedule another appointment, please contact our staff or try again via the system.</p>
 
             <p>We appreciate your willingness to donate and hope to see you again soon.</p>
@@ -81,6 +92,7 @@ pub async fn reject(
         </html>",
         account.name,
         id,
+        request.reason,
     );
 
     send(&account, subject, body, &state.mailer).await?;

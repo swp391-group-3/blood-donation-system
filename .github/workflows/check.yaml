@@ -72,14 +72,10 @@ jobs:
         with:
           target: ${{ matrix.target }}
           toolchain: ${{ matrix.toolchain }}
-      - name: Install redis
-        run: sudo apt-get install -y redis-tools redis-server
       - uses: ikalnytskyi/action-setup-postgres@v7
         id: postgres
       - name: Init database
         run: psql ${{ steps.postgres.outputs.connection-uri }} -a -f schema.sql
-      - name: Verify that redis is up
-        run: redis-cli ping
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
