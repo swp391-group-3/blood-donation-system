@@ -138,14 +138,15 @@ function Page() {
                         </Dialog>
                         <Dialog open={isAddStaff} onOpenChange={setIsAddStaff} >
                             <DialogTrigger asChild>
-                                <Button> <UserPlus /> Add Staff  </Button>
+                                <Button> <UserPlus /> Add Staff</Button>
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>Add Staff Account</DialogTitle>
                                 </DialogHeader>
-                                <Form  {...formAccount}>
+                                <Form  {...formAccount} >
                                     <form
+                                        autoComplete="off"
                                         onSubmit={formAccount.handleSubmit((values) => mutationAccount.mutate(values))}
                                     >
                                         <div className="flex flex-col gap-6">
