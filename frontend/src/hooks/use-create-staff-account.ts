@@ -49,7 +49,12 @@ export const useCreateStaffAccount = (
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues: {}
+        defaultValues: {
+            email: "",
+            password: "",
+            name: "",
+            phone: "",
+        }
     })
 
     return {
