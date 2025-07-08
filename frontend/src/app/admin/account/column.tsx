@@ -2,8 +2,8 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Account } from "@/lib/api/dto/account";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Crown, Edit, Edit3, MoreHorizontal, Shield, Trash2, Users } from "lucide-react";
-import { EditProfileModel, FormEdit } from "@/components/edit-profile";
+import { Crown, Edit3, MoreHorizontal, Shield, Trash2, Users } from "lucide-react";
+import { FormEdit } from "@/components/edit-profile";
 import { useState } from "react";
 import { useUpdateAccountForm } from "@/hooks/use-update-account-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -110,40 +110,43 @@ function AccountActionsCell({ account }: { account: Account }) {
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="start" side="bottom" sideOffset={8} alignOffset={4}>
+                {/* EDIT */}
                 <DropdownMenuItem
-                    onSelect={(e) => {
-                        e.preventDefault();
+                    onSelect={() => {
+                        setIsEditModalOpen(true);
                     }}
                 >
-                    <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                        <DialogTrigger asChild>
-                            <div className="flex items-center">
-                                <Edit3 className="h-4 w-4 mr-2" />
-                                Edit Account
-                            </div>
-                        </DialogTrigger>
-                        <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col">
-                            <DialogHeader>
-                                <DialogTitle>Edit Profile</DialogTitle>
-                            </DialogHeader>
-                            <div className="overflow-y-auto flex-1 pr-2">
-                                <FormEdit
-                                    form={form}
-                                    mutation={mutation}
-                                />
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    <Edit3 className="mr-2 h-4 w-4" />
+                    Edit Account
                 </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600"
-                    onClick={() => handleDeleteAccount(account.id)}
+
+                {/* DELETE */}
+                <DropdownMenuItem
+                    onSelect={() => {
+                        handleDeleteAccount(account.id);
+                    }}
+                    className="text-red-600"
                 >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete User
                 </DropdownMenuItem>
             </DropdownMenuContent>
+
+            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>Edit Profile</DialogTitle>
+                    </DialogHeader>
+                    <div className="overflow-y-auto flex-1 pr-2">
+                        <FormEdit form={form} mutation={mutation} />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </DropdownMenu>
+
     )
 }
