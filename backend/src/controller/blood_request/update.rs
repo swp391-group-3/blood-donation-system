@@ -1,11 +1,9 @@
 use std::sync::Arc;
 
 use axum::{
-    Json,
     extract::{Path, State},
     http::StatusCode,
 };
-use axum_valid::Valid;
 use ctypes::{RequestPriority, Role};
 use database::{
     client::Params,
@@ -20,7 +18,10 @@ use validator::Validate;
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
+    util::{
+        auth::{Claims, authorize},
+        validation::ValidJson,
+    },
 };
 
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
@@ -53,7 +54,7 @@ pub async fn update(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Valid(Json(request)): Valid<Json<Request>>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
