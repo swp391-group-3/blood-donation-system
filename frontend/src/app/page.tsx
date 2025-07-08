@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart } from 'lucide-react';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useCurrentAccount } from '@/hooks/use-current-account';
 const steps = [
     {
         title: 'Registration',
@@ -30,6 +31,8 @@ const steps = [
 export default function LandingPage() {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: false, amount: 0.2 });
+    const router = useRouter();
+    const { data: account } = useCurrentAccount();
     return (
         <div className="min-h-screen bg-white">
             <main className="container mx-auto px-4">
@@ -52,15 +55,20 @@ export default function LandingPage() {
                             help us save lives, one donation at a time.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                            <Link href="/request">
-                                <Button
-                                    size="lg"
-                                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-xl hover:shadow-2xl transition-all duration-300 text-lg px-8 py-4"
-                                >
-                                    Become a Donor
-                                    <ArrowRight className="ml-2 h-5 w-5" />
-                                </Button>
-                            </Link>
+                            <Button
+                                size="lg"
+                                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-xl hover:shadow-2xl transition-all duration-300 text-lg px-8 py-4"
+                                onClick={() => {
+                                    if (account) {
+                                        router.push('/request');
+                                    } else {
+                                        router.push('/login');
+                                    }
+                                }}
+                            >
+                                Become a Donor
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
                         </div>
                     </div>
                 </section>
