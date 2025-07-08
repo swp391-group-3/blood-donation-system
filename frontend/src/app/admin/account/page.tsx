@@ -42,7 +42,6 @@ function Page() {
     const { mutate, status } = useCreateStaffAccount();
     const { data: accounts = [] } = useAllAccounts();
 
-
     // Close import dialog on success
     useEffect(() => {
         if (status === 'success') {
@@ -74,7 +73,6 @@ function Page() {
     const onRemove = (fileId: string) => {
         setUploadFiles(uploadFiles.filter(file => file.id !== fileId))
     }
-
     const filtersAccounts: Account[] = useMemo(() => {
         return accounts.filter((account) => {
             const matchesSearch =
@@ -248,7 +246,6 @@ function Page() {
                             </TableHeader>
                             <TableBody>
                                 {table.getRowModel().rows.map(row => {
-                                    const account = row.original;
                                     return (
                                         <TableRow key={row.id} style={{ backgroundColor: row.getIsSelected() ? '#e3f2fd' : 'white' }}>
                                             {row.getVisibleCells().map(cell => {
@@ -279,7 +276,6 @@ function Page() {
                                         className={!table.getCanPreviousPage() ? "pointer-events-none opacity-50" : undefined}
                                     />
                                 </PaginationItem>
-
                                 {/* PAGE NUMBERS */}
                                 {table.getPageOptions().map((pageIndex) => {
                                     const isCurrent = pageIndex === table.getState().pagination.pageIndex;
@@ -298,7 +294,6 @@ function Page() {
                                         </PaginationItem>
                                     );
                                 })}
-
                                 {/* NEXT */}
                                 <PaginationItem>
                                     <PaginationNext

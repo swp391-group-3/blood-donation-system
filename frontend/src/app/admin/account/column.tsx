@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useUpdateAccountForm } from "@/hooks/use-update-account-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useDeleteAccount } from "@/hooks/use-delete-account";
+import { useUpdateDataTable } from "@/hooks/use-update-data-table";
 
 
 const columnHelper = createColumnHelper<Account>();
@@ -94,7 +95,7 @@ export const columns = [
 
 function AccountActionsCell({ account }: { account: Account }) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const { mutation, form } = useUpdateAccountForm(account, {
+    const { mutation, form } = useUpdateDataTable(account, {
         onSuccess() {
             setIsEditModalOpen(false)
         },
