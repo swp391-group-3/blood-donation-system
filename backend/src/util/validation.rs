@@ -3,7 +3,7 @@ use axum::{
     extract::{FromRequest, Request},
     http::StatusCode,
 };
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{DateTime, NaiveDate, TimeZone, Utc};
 use itertools::Itertools;
 use serde::de::DeserializeOwned;
 use std::collections::HashMap;
@@ -18,6 +18,16 @@ pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(),
         Ok(())
     } else {
         Err(ValidationError::new("date time"))
+    }
+}
+
+// TODO: use this
+#[allow(unused)]
+pub fn validate_past_naive_date(value: &NaiveDate) -> Result<(), ValidationError> {
+    if *value <= Utc::now().date_naive() {
+        Ok(())
+    } else {
+        Err(ValidationError::new("date"))
     }
 }
 
