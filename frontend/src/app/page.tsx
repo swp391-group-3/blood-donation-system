@@ -62,7 +62,7 @@ export default function LandingPage() {
                                     if (account) {
                                         router.push('/request');
                                     } else {
-                                        router.push('/login');
+                                        router.push('/auth/login');
                                     }
                                 }}
                             >

@@ -1,5 +1,4 @@
 'use client';
-
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -28,23 +27,13 @@ import {
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
-    const [search, setSearch] = useState<string | undefined>();
     const { data: blogs, isLoading, error } = useBlogList();
     const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
 
     const filteredBlogs = useMemo(() => {
         if (!blogs) return [];
-
-        return blogs
-            .filter(
-                (blog) =>
-                    selectedTag === 'all' || blog.tags.includes(selectedTag),
-            )
-            .filter((blog) => {
-                if (!search) return true;
-                const searchTerm = search.toLowerCase().trim();
-                return blog.title.toLowerCase().includes(searchTerm);
-            });
+        if (selectedTag === 'all') return blogs;
+        return blogs.filter((blog) => blog.tags?.includes(selectedTag));
     }, [blogs, selectedTag]);
 
     if (isLoading) {
@@ -84,8 +73,6 @@ export default function BlogPage() {
                     <div className="relative flex-1">
                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-zinc-400 h-4 w-4" />
                         <Input
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search blogs..."
                             type="search"
                             className="pl-11 border-zinc-200"

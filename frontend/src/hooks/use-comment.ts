@@ -8,7 +8,7 @@ export const useComment = (blogId?: string) => {
             const response = await fetchWrapper(`/blog/${blogId}/comment`);
             return await deserialize<Comment[]>(response);
         },
-        queryKey: ['blog', blogId, 'comment'],
+        queryKey: ['comments', blogId],
         enabled: !!blogId,
     });
 };
