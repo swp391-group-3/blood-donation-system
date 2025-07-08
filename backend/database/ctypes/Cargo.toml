@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bytes = "1.10.1"
 postgres-types = { version = "0.2.9", features = ["derive"] }
 serde = { version = "1.0.219", features = ["derive"] }
 utoipa = "5.3.1"

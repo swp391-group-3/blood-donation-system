@@ -22,7 +22,6 @@ use super::KEY;
         ("provider" = Provider, description = "OAuth2 Provider"),
     ),
 )]
-#[axum::debug_handler]
 pub async fn oauth2(
     state: State<Arc<ApiState>>,
     session: Session,

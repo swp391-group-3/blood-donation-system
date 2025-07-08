@@ -9,7 +9,7 @@ import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
 interface Props {
     className?: string;
-    value?: AnswerType;
+    value: AnswerType | '';
     onChange: (value: AnswerType) => void;
 }
 
