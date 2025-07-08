@@ -21,7 +21,6 @@ pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(),
     }
 }
 
-// TODO: use this
 #[allow(unused)]
 pub fn validate_past_naive_date(value: &NaiveDate) -> Result<(), ValidationError> {
     if *value <= Utc::now().date_naive() {
@@ -47,6 +46,18 @@ pub fn validate_date_time_range<Tz: TimeZone>(
         Ok(())
     } else {
         Err(ValidationError::new("date time range"))
+    }
+}
+
+#[allow(unused)]
+pub fn validate_phone(value: &str) -> Result<(), ValidationError> {
+    let is_valid =
+        value.len() == 10 && value.starts_with('0') && value.chars().all(|c| c.is_ascii_digit());
+
+    if is_valid {
+        Ok(())
+    } else {
+        Err(ValidationError::new("phone number"))
     }
 }
 

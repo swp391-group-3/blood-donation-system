@@ -17,7 +17,7 @@ use crate::{
     state::ApiState,
     util::{
         auth::{Claims, authorize},
-        validation::ValidJson,
+        validation::{ValidJson, validate_phone},
     },
 };
 
@@ -32,7 +32,7 @@ pub struct Request {
     pub email: String,
     #[validate(length(min = 8))]
     pub password: String,
-    #[validate(length(equal = 10))]
+    #[validate(custom(function = validate_phone))]
     pub phone: String,
     #[validate(length(min = 1))]
     pub name: String,

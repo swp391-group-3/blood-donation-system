@@ -14,7 +14,7 @@ use crate::{
     state::ApiState,
     util::{
         auth::Claims,
-        validation::{ValidJson, validate_past_naive_date},
+        validation::{ValidJson, validate_past_naive_date, validate_phone},
     },
 };
 use database::{
@@ -30,7 +30,7 @@ use database::{
     add(field = id, ty = Uuid),
 )]
 pub struct Request {
-    #[validate(length(equal = 10))]
+    #[validate(custom(function = validate_phone))]
     pub phone: Option<String>,
     #[validate(length(min = 1))]
     pub name: Option<String>,
