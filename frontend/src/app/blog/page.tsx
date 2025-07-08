@@ -33,16 +33,28 @@ export default function BlogPage() {
         'recent',
     );
     const { data: blogs, isLoading, error } = useBlogList();
-    const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
+    console.log(blogs);
+    const allTags = Array.from(
+        new Set(
+            blogs?.flatMap((blog) =>
+                Array.isArray(blog.tags)
+                    ? blog.tags.flat().map((t) => t.trim())
+                    : [],
+            ),
+        ),
+    );
 
     const filteredBlogs = useMemo(() => {
         if (!blogs) return [];
 
         const filtered = blogs
-            .filter(
-                (blog) =>
-                    selectedTag === 'all' || blog.tags.includes(selectedTag),
-            )
+            .filter((blog) => {
+                const flatTags = Array.isArray(blog.tags)
+                    ? blog.tags.flat().map((t) => t.trim())
+                    : [];
+
+                return selectedTag === 'all' || flatTags.includes(selectedTag);
+            })
             .filter((blog) => {
                 if (!search) return true;
                 const searchTerm = search.toLowerCase().trim();
@@ -195,7 +207,10 @@ export default function BlogPage() {
                                 </CardHeader>
                                 <div className="flex-1 flex flex-col justify-end">
                                     <div className="flex flex-wrap gap-1.5 px-5 pb-4">
-                                        {allTags
+                                        {(Array.isArray(blog.tags)
+                                            ? blog.tags.flat()
+                                            : []
+                                        )
                                             .slice(0, 3)
                                             .map((tag, index) => (
                                                 <Badge
@@ -206,14 +221,17 @@ export default function BlogPage() {
                                                     {tag}
                                                 </Badge>
                                             ))}
-                                        {allTags.length > 3 && (
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
-                                            >
-                                                +{allTags.length - 3}
-                                            </Badge>
-                                        )}
+                                        {Array.isArray(blog.tags) &&
+                                            blog.tags.flat().length > 3 && (
+                                                <Badge
+                                                    variant="outline"
+                                                    className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
+                                                >
+                                                    +
+                                                    {blog.tags.flat().length -
+                                                        3}
+                                                </Badge>
+                                            )}
                                     </div>
                                 </div>
                             </Card>
