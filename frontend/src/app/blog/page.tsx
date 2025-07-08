@@ -33,7 +33,6 @@ export default function BlogPage() {
         'recent',
     );
     const { data: blogs, isLoading, error } = useBlogList();
-    console.log(blogs);
     const allTags = Array.from(
         new Set(
             blogs?.flatMap((blog) =>
@@ -176,11 +175,8 @@ export default function BlogPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredBlogs?.map((blog) => (
-                        <Link href={`/blog/${blog.id}`}>
-                            <Card
-                                key={blog.id}
-                                className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200"
-                            >
+                        <Link key={blog.id} href={`/blog/${blog.id}`}>
+                            <Card className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200">
                                 <CardHeader className="flex-1 pt-1 pb-2 px-5">
                                     <div className="flex items-center gap-3 mb-3">
                                         <div className="h-8 w-8">
