@@ -12,7 +12,10 @@ use validator::Validate;
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::{auth::Claims, validation::{validate_past_naive_date, ValidJson}},
+    util::{
+        auth::Claims,
+        validation::{ValidJson, validate_past_naive_date},
+    },
 };
 use database::{
     client::Params,
