@@ -21,6 +21,9 @@ export const generateCertificate = async (
     donation: Donation,
     member: Account,
 ): Promise<string> => {
+    const donationDate = new Date(donation.created_at).toLocaleDateString(
+        'en-GB',
+    );
     return `
     <html lang="en">
     <head>
@@ -301,7 +304,7 @@ export const generateCertificate = async (
                 <div class="recipient-name">${member.name}</div>
 
                 <!-- Added donation date -->
-                <p class="presented-to" style="margin-top: -10px;">Date of Donation: <span class="highlight">${donation.created_at}</span></p>
+                <p class="presented-to" style="margin-top: -10px;">Date of Donation: <span class="highlight">${donationDate}</span></p>
 
                 <p class="recognition-text">
                     In recognition of your <span class="highlight">generous and life-saving contribution</span> 
