@@ -27,7 +27,7 @@ import {
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
-    const [search] = useState<string | undefined>();
+    const [search, setSearch] = useState<string | undefined>();
     const [sortOption, setSortOption] = useState<'recent' | 'oldest' | 'title'>(
         'recent',
     );
@@ -119,6 +119,8 @@ export default function BlogPage() {
                             placeholder="Search blogs..."
                             type="search"
                             className="pl-11 border-zinc-200"
+                            value={search ?? ''}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
                     <Select onValueChange={(value) => setSelectedTag(value)}>
