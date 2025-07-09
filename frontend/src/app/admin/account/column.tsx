@@ -95,7 +95,7 @@ export const columns = [
 
 function AccountActionsCell({ account }: { account: Account }) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const { mutation, form } = useUpdateDataTable(account, {
+    const { mutation, form } = useUpdateDataTable(account.id, account, {
         onSuccess() {
             setIsEditModalOpen(false)
         },

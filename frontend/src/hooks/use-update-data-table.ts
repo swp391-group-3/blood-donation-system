@@ -13,6 +13,7 @@ export const schema = registerSchema.omit({
 });
 
 export const useUpdateDataTable = (
+    id: string,
     defaultValues?: z.infer<typeof schema>,
     opts?: { onSuccess?: () => void }
 ) => {
@@ -22,7 +23,7 @@ export const useUpdateDataTable = (
         mutationFn: async (values: z.infer<typeof schema>) => {
             console.log("values", values);
 
-            const response = await fetchWrapper('/account', {
+            const response = await fetchWrapper(`/account/${id}`, {
                 method: 'PUT',
                 headers: {
                     Accept: 'application/json',
