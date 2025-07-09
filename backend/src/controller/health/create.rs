@@ -14,14 +14,18 @@ use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
+    util::{
+        auth::{Claims, authorize},
+        validation::ValidJson,
+    },
 };
 
-#[derive(Deserialize, ToSchema, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = health::create::Request)]
 #[mapper(
     into(custom = "with_appointment_id"),
@@ -29,12 +33,18 @@ use crate::{
     add(field = appointment_id, ty = Uuid)
 )]
 pub struct Request {
+    #[validate(range(min = 35.0, max = 42.0))]
     pub temperature: f32,
+    #[validate(range(min = 30.0, max = 200.0))]
     pub weight: f32,
+    #[validate(range(min = 90, max = 200))]
     pub upper_blood_pressure: i32,
+    #[validate(range(min = 50, max = 130))]
     pub lower_blood_pressure: i32,
+    #[validate(range(min = 40, max = 180))]
     pub heart_rate: i32,
     pub is_good_health: bool,
+    #[validate(length(min = 1))]
     pub note: Option<String>,
 }
 
@@ -56,7 +66,7 @@ pub async fn create(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(appointment_id): Path<Uuid>,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<Json<Uuid>> {
     let mut database = state.database().await?;
 
