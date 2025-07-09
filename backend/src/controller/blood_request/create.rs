@@ -21,7 +21,9 @@ use crate::{
         auth::{Claims, authorize},
         blood::get_compatible,
         notification::send,
-        validation::{DateTimeRange, ValidJson, validate_date_time_range},
+        validation::{
+            DateTimeRange, ValidJson, validate_date_time_range, validate_future_date_time,
+        },
     },
 };
 
@@ -43,6 +45,7 @@ pub struct Request {
     #[validate(range(min = 1))]
     pub max_people: i32,
     pub start_time: DateTime<Utc>,
+    #[validate(custom(function = validate_future_date_time))]
     pub end_time: DateTime<Utc>,
 }
 
