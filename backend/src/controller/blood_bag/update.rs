@@ -21,7 +21,7 @@ use crate::{
     state::ApiState,
     util::{
         auth::{Claims, authorize},
-        validation::{ValidJson, validate_future_date_time},
+        validation::ValidJson,
     },
 };
 
@@ -31,7 +31,6 @@ use crate::{
 pub struct Request {
     pub component: Option<BloodComponent>,
     pub amount: Option<i32>,
-    #[validate(custom(function = validate_future_date_time))]
     #[mapper(with = expired_time.map(|dt| dt.with_timezone(&FixedOffset::east_opt(0).unwrap())))]
     pub expired_time: Option<DateTime<Utc>>,
 }
