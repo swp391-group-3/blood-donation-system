@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{extract::State, http::StatusCode};
 use axum_extra::extract::CookieJar;
 use chrono::NaiveDate;
 use ctypes::{BloodGroup, Gender};
@@ -11,23 +11,31 @@ use database::{
 use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
+use validator::Validate;
 
 use crate::{
     config::CONFIG,
     error::{Error, Result},
     state::ApiState,
+    util::validation::{ValidJson, validate_past_naive_date, validate_phone},
 };
 
-#[derive(Deserialize, ToSchema, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = auth::register::request)]
 #[mapper(into, ty = RegisterParams::<String, String, String, String, String>)]
 pub struct Request {
+    #[validate(email)]
     pub email: String,
+    #[validate(length(min = 8))]
     pub password: String,
+    #[validate(custom(function = validate_phone))]
     pub phone: String,
+    #[validate(length(min = 1))]
     pub name: String,
     pub gender: Gender,
+    #[validate(length(min = 1))]
     pub address: String,
+    #[validate(custom(function = validate_past_naive_date))]
     pub birthday: NaiveDate,
     pub blood_group: BloodGroup,
 }
@@ -41,7 +49,7 @@ pub struct Request {
 pub async fn register(
     state: State<Arc<ApiState>>,
     jar: CookieJar,
-    Json(mut request): Json<Request>,
+    ValidJson(mut request): ValidJson<Request>,
 ) -> Result<CookieJar> {
     let database = state.database().await?;
 
