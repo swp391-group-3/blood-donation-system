@@ -41,7 +41,7 @@ pub struct Answer {
 #[schema(as = blood_request::create_appointment::Request)]
 pub struct Request {
     #[schema(inline)]
-    #[validate(length(min = 1))]
+    #[validate(length(min = 1), nested)]
     pub answers: Vec<Answer>,
 }
 

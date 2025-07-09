@@ -118,7 +118,8 @@ CREATE TABLE IF NOT EXISTS questions(
 CREATE TABLE IF NOT EXISTS answers(
     question_id int NOT NULL REFERENCES questions(id),
     appointment_id uuid NOT NULL REFERENCES appointments(id),
-    content text NOT NULL
+    content text NOT NULL,
+    PRIMARY KEY (question_id, appointment_id)
 );
 
 CREATE TABLE IF NOT EXISTS healths(
