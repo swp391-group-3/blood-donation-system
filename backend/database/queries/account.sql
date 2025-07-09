@@ -52,12 +52,14 @@ WHERE id = :id;
 --! get_by_email : Account
 SELECT * 
 FROM accounts
-WHERE email = :email;
+WHERE email = :email
+    AND is_active = true;
 
 --! get_by_role : Account
 SELECT * 
 FROM accounts
-WHERE role = :role;
+WHERE role = :role
+    AND is_active = true;
 
 --! get_all : Account
 SELECT *
