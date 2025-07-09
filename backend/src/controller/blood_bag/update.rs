@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use axum::{
-    Json,
     extract::{Path, State},
     http::StatusCode,
 };
@@ -15,19 +14,24 @@ use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
+    util::{
+        auth::{Claims, authorize},
+        validation::{ValidJson, validate_future_date_time},
+    },
 };
 
-#[derive(Deserialize, ToSchema, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = blood_bag::update::Request)]
 #[mapper(into(custom = "with_donation_id"), ty = UpdateParams, add(field = id, ty = Uuid))]
 pub struct Request {
     pub component: Option<BloodComponent>,
     pub amount: Option<i32>,
+    #[validate(custom(function = validate_future_date_time))]
     #[mapper(with = expired_time.map(|dt| dt.with_timezone(&FixedOffset::east_opt(0).unwrap())))]
     pub expired_time: Option<DateTime<Utc>>,
 }
@@ -47,7 +51,7 @@ pub async fn update(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
