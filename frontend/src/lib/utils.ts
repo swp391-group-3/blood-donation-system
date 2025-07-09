@@ -302,10 +302,8 @@ export const generateCertificate = async (
             <div class="content">
                 <p class="presented-to">This certificate is proudly presented to</p>
                 <div class="recipient-name">${member.name}</div>
-
                 <!-- Added donation date -->
                 <p class="presented-to" style="margin-top: -10px;">Date of Donation: <span class="highlight">${donationDate}</span></p>
-
                 <p class="recognition-text">
                     In recognition of your <span class="highlight">generous and life-saving contribution</span> 
                     through blood donation. Your selfless act of kindness has the power to save lives and 

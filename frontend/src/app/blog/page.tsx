@@ -27,14 +27,57 @@ import {
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
+    const [search, setSearch] = useState<string | undefined>();
+    const [sortOption, setSortOption] = useState<'recent' | 'oldest' | 'title'>(
+        'recent',
+    );
     const { data: blogs, isLoading, error } = useBlogList();
-    const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
+    const allTags = Array.from(
+        new Set(
+            blogs?.flatMap((blog) =>
+                Array.isArray(blog.tags)
+                    ? blog.tags.flat().map((t) => t.trim())
+                    : [],
+            ),
+        ),
+    );
 
     const filteredBlogs = useMemo(() => {
         if (!blogs) return [];
-        if (selectedTag === 'all') return blogs;
-        return blogs.filter((blog) => blog.tags?.includes(selectedTag));
-    }, [blogs, selectedTag]);
+
+        const filtered = blogs
+            .filter((blog) => {
+                const flatTags = Array.isArray(blog.tags)
+                    ? blog.tags.flat().map((t) => t.trim())
+                    : [];
+
+                return selectedTag === 'all' || flatTags.includes(selectedTag);
+            })
+            .filter((blog) => {
+                if (!search) return true;
+                const searchTerm = search.toLowerCase().trim();
+                return blog.title.toLowerCase().includes(searchTerm);
+            });
+
+        switch (sortOption) {
+            case 'recent':
+                return filtered.sort(
+                    (a, b) =>
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime(),
+                );
+            case 'oldest':
+                return filtered.sort(
+                    (a, b) =>
+                        new Date(a.created_at).getTime() -
+                        new Date(b.created_at).getTime(),
+                );
+            case 'title':
+                return filtered.sort((a, b) => a.title.localeCompare(b.title));
+            default:
+                return filtered;
+        }
+    }, [blogs, selectedTag, search, sortOption]);
 
     if (isLoading) {
         return <div></div>;
@@ -76,6 +119,8 @@ export default function BlogPage() {
                             placeholder="Search blogs..."
                             type="search"
                             className="pl-11 border-zinc-200"
+                            value={search ?? ''}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
                     <Select onValueChange={(value) => setSelectedTag(value)}>
@@ -95,7 +140,14 @@ export default function BlogPage() {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Select>
+                    <Select
+                        value={sortOption}
+                        onValueChange={(value) =>
+                            setSortOption(
+                                value as 'recent' | 'oldest' | 'title',
+                            )
+                        }
+                    >
                         <SelectTrigger className="w-full sm:w-40 h-11 border-zinc-200 rounded">
                             <Filter className="h-4 w-4 mr-2" />
                             <SelectValue placeholder="Sort By" />
@@ -122,58 +174,63 @@ export default function BlogPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredBlogs?.map((blog) => (
-                        <Card
-                            key={blog.id}
-                            className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200"
-                        >
-                            <CardHeader className="flex-1 pt-1 pb-2 px-5">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className="h-8 w-8">
-                                        <AccountPicture name={blog.owner} />
-                                    </div>
-                                    <div>
-                                        <div className="font-medium text-zinc-900 text-[15px]">
-                                            {blog.owner}
+                        <Link key={blog.id} href={`/blog/${blog.id}`}>
+                            <Card className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200">
+                                <CardHeader className="flex-1 pt-1 pb-2 px-5">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="h-8 w-8">
+                                            <AccountPicture name={blog.owner} />
                                         </div>
-                                        <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
-                                            <Clock className="h-3 w-3" />
-                                            {getTimeAgo(blog.created_at)}
+                                        <div>
+                                            <div className="font-medium text-zinc-900 text-[15px]">
+                                                {blog.owner}
+                                            </div>
+                                            <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
+                                                <Clock className="h-3 w-3" />
+                                                {getTimeAgo(blog.created_at)}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <CardTitle className="block text-base font-semibold text-zinc-900 leading-snug mb-2 line-clamp-2 hover:text-blue-600">
-                                    <Link href={`/blog/${blog.id}`}>
+                                    <CardTitle className="block text-base font-semibold text-zinc-900 leading-snug mb-2 line-clamp-2 hover:text-blue-600">
                                         {blog.title}
-                                    </Link>
-                                </CardTitle>
-                                <CardContent className="p-0">
-                                    <p className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]">
-                                        {getExcerpt(blog.content)}
-                                    </p>
-                                </CardContent>
-                            </CardHeader>
-                            <div className="flex-1 flex flex-col justify-end">
-                                <div className="flex flex-wrap gap-1.5 px-5 pb-4">
-                                    {allTags.slice(0, 3).map((tag, index) => (
-                                        <Badge
-                                            key={index}
-                                            variant="outline"
-                                            className="bg-zinc-50 text-zinc-700 border-zinc-200 text-xs px-2 py-0.5"
-                                        >
-                                            {tag}
-                                        </Badge>
-                                    ))}
-                                    {allTags.length > 3 && (
-                                        <Badge
-                                            variant="outline"
-                                            className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
-                                        >
-                                            +{allTags.length - 3}
-                                        </Badge>
-                                    )}
+                                    </CardTitle>
+                                    <CardContent className="p-0">
+                                        <p className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]">
+                                            {getExcerpt(blog.content)}
+                                        </p>
+                                    </CardContent>
+                                </CardHeader>
+                                <div className="flex-1 flex flex-col justify-end">
+                                    <div className="flex flex-wrap gap-1.5 px-5 pb-4">
+                                        {(Array.isArray(blog.tags)
+                                            ? blog.tags.flat()
+                                            : []
+                                        )
+                                            .slice(0, 3)
+                                            .map((tag, index) => (
+                                                <Badge
+                                                    key={index}
+                                                    variant="outline"
+                                                    className="bg-zinc-50 text-zinc-700 border-zinc-200 text-xs px-2 py-0.5"
+                                                >
+                                                    {tag}
+                                                </Badge>
+                                            ))}
+                                        {Array.isArray(blog.tags) &&
+                                            blog.tags.flat().length > 3 && (
+                                                <Badge
+                                                    variant="outline"
+                                                    className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
+                                                >
+                                                    +
+                                                    {blog.tags.flat().length -
+                                                        3}
+                                                </Badge>
+                                            )}
+                                    </div>
                                 </div>
-                            </div>
-                        </Card>
+                            </Card>
+                        </Link>
                     ))}
                 </div>
             </main>
