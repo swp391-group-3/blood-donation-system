@@ -21,7 +21,6 @@ export const useUpdateDataTable = (
 
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
-            console.log("values", values);
 
             const response = await fetchWrapper(`/account/${id}`, {
                 method: 'PUT',
