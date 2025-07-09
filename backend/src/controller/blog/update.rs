@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use axum::{
-    Json,
     extract::{Path, State},
     http::StatusCode,
 };
@@ -18,7 +17,7 @@ use validator::Validate;
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::Claims,
+    util::{auth::Claims, validation::ValidJson},
 };
 
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
@@ -30,8 +29,11 @@ use crate::{
     add(field = account_id, ty = Uuid)
 )]
 pub struct Request {
+    #[validate(length(min = 1))]
     pub title: Option<String>,
+    #[validate(length(min = 1))]
     pub description: Option<String>,
+    #[validate(length(min = 1))]
     pub content: Option<String>,
 }
 
@@ -49,7 +51,7 @@ pub async fn update(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
