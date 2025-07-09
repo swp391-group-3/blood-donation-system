@@ -22,6 +22,17 @@ pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(),
 }
 
 #[allow(unused)]
+pub fn validate_future_date_time<Tz: TimeZone>(
+    value: &DateTime<Tz>,
+) -> Result<(), ValidationError> {
+    if value.to_utc() >= Utc::now() {
+        Ok(())
+    } else {
+        Err(ValidationError::new("date time"))
+    }
+}
+
+#[allow(unused)]
 pub fn validate_birthday(value: &NaiveDate) -> Result<(), ValidationError> {
     let cons = Utc::now().date_naive() - Duration::days(365 * 16);
     if *value <= cons {
