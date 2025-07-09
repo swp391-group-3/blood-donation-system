@@ -14,7 +14,7 @@ use validator::Validate;
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::Claims,
+    util::{auth::Claims, validation::ValidJson},
 };
 
 #[derive(Deserialize, Serialize, ToSchema, Mapper, Validate)]
@@ -47,7 +47,7 @@ pub struct Request {
 pub async fn create(
     state: State<Arc<ApiState>>,
     claims: Claims,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<Json<Uuid>> {
     let database = state.database().await?;
 
