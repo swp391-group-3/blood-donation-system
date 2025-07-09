@@ -58,7 +58,7 @@ pub async fn update(
 ) -> Result<()> {
     let database = state.database().await?;
 
-    authorize(&claims, [Role::Staff, Role::Admin], &database).await?;
+    authorize(&claims, [Role::Admin], &database).await?;
 
     if let Err(error) = queries::account::update()
         .params(&database, &request.with_account_id(id))
