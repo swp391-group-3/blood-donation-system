@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use axum::{
-    Json,
     extract::{Path, State},
     http::StatusCode,
 };
@@ -14,14 +13,18 @@ use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
+    util::{
+        auth::{Claims, authorize},
+        validation::ValidJson,
+    },
 };
 
-#[derive(Deserialize, ToSchema, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = health::update::Request)]
 #[mapper(
     into(custom = "with_id"),
@@ -29,12 +32,18 @@ use crate::{
     add(field = id, ty = Uuid)
 )]
 pub struct Request {
+    #[validate(range(min = 35.0, max = 42.0))]
     pub temperature: Option<f32>,
+    #[validate(range(min = 30.0, max = 200.0))]
     pub weight: Option<f32>,
+    #[validate(range(min = 90, max = 200))]
     pub upper_blood_pressure: Option<i32>,
+    #[validate(range(min = 50, max = 130))]
     pub lower_blood_pressure: Option<i32>,
+    #[validate(range(min = 40, max = 180))]
     pub heart_rate: Option<i32>,
     pub is_good_health: Option<bool>,
+    #[validate(length(min = 1))]
     pub note: Option<String>,
 }
 
@@ -53,7 +62,7 @@ pub async fn update(
     State(state): State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
