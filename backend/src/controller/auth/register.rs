@@ -17,7 +17,7 @@ use crate::{
     config::CONFIG,
     error::{Error, Result},
     state::ApiState,
-    util::validation::{ValidJson, validate_past_naive_date, validate_phone},
+    util::validation::{ValidJson, validate_birthday, validate_phone},
 };
 
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
@@ -35,7 +35,7 @@ pub struct Request {
     pub gender: Gender,
     #[validate(length(min = 1))]
     pub address: String,
-    #[validate(custom(function = validate_past_naive_date))]
+    #[validate(custom(function = validate_birthday))]
     pub birthday: NaiveDate,
     pub blood_group: BloodGroup,
 }

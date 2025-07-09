@@ -3,7 +3,7 @@ use axum::{
     extract::{FromRequest, Request},
     http::StatusCode,
 };
-use chrono::{DateTime, NaiveDate, TimeZone, Utc};
+use chrono::{DateTime, Duration, NaiveDate, TimeZone, Utc};
 use itertools::Itertools;
 use serde::de::DeserializeOwned;
 use std::collections::HashMap;
@@ -22,8 +22,9 @@ pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(),
 }
 
 #[allow(unused)]
-pub fn validate_past_naive_date(value: &NaiveDate) -> Result<(), ValidationError> {
-    if *value <= Utc::now().date_naive() {
+pub fn validate_birthday(value: &NaiveDate) -> Result<(), ValidationError> {
+    let cons = Utc::now().date_naive() - Duration::days(365 * 16);
+    if *value <= cons {
         Ok(())
     } else {
         Err(ValidationError::new("date"))

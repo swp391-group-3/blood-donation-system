@@ -9,6 +9,7 @@ use model_mapper::Mapper;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::{
     error::{Error, Result},
@@ -16,7 +17,7 @@ use crate::{
     util::auth::Claims,
 };
 
-#[derive(Deserialize, Serialize, ToSchema, Mapper)]
+#[derive(Deserialize, Serialize, ToSchema, Mapper, Validate)]
 #[schema(as = blog::create::Request)]
 #[mapper(
     into(custom = "with_account_id"),
@@ -24,9 +25,13 @@ use crate::{
     add(field = account_id, ty = Uuid),
 )]
 pub struct Request {
+    #[validate(length(min = 1))]
     pub title: String,
+    #[validate(length(min = 1))]
     pub description: String,
+    #[validate(length(min = 1))]
     pub content: String,
+    #[validate(length(min = 1))]
     pub tags: Vec<String>,
 }
 
