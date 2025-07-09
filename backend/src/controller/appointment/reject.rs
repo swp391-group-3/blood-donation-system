@@ -3,8 +3,8 @@ use std::sync::Arc;
 use crate::error::Error;
 use crate::util::auth::{Claims, authorize};
 use crate::util::notification::send;
+use crate::util::validation::ValidJson;
 use crate::{error::Result, state::ApiState};
-use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use ctypes::Role;
@@ -12,10 +12,12 @@ use database::queries::{self};
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
-#[derive(Deserialize, ToSchema)]
+#[derive(Deserialize, ToSchema, Validate)]
 #[schema(as = appointment::reject::Request)]
 pub struct Request {
+    #[validate(length(min = 1))]
     pub reason: String,
 }
 
@@ -34,7 +36,7 @@ pub async fn reject(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
