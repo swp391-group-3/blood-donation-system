@@ -11,17 +11,21 @@ use database::{
     queries::{self, appointment::CreateParams},
 };
 use model_mapper::Mapper;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
+    util::{
+        auth::{Claims, authorize},
+        validation::ValidJson,
+    },
 };
 
-#[derive(Deserialize, ToSchema, Mapper, Clone)]
+#[derive(Deserialize, Serialize, ToSchema, Mapper, Clone, Validate)]
 #[mapper(
     into(custom = "with_appointment_id"),
     ty = queries::answer::CreateParams::<String>,
@@ -29,13 +33,15 @@ use crate::{
 )]
 pub struct Answer {
     pub question_id: i32,
+    #[validate(length(min = 1))]
     pub content: String,
 }
 
-#[derive(Deserialize, ToSchema)]
+#[derive(Deserialize, ToSchema, Validate)]
 #[schema(as = blood_request::create_appointment::Request)]
 pub struct Request {
     #[schema(inline)]
+    #[validate(length(min = 1))]
     pub answers: Vec<Answer>,
 }
 
@@ -57,7 +63,7 @@ pub async fn create(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<Json<Uuid>> {
     let mut database = state.database().await?;
 
