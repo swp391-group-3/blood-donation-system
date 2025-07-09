@@ -27,7 +27,7 @@ import {
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
-    const [search, setSearch] = useState<string | undefined>();
+    const [search] = useState<string | undefined>();
     const [sortOption, setSortOption] = useState<'recent' | 'oldest' | 'title'>(
         'recent',
     );
