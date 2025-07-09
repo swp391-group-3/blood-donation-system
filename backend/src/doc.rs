@@ -51,7 +51,9 @@ struct ChatDoc;
         controller::account::get,
         controller::account::delete,
         controller::account::update,
-        controller::account::is_donatable,
+        controller::account::next_donatable_date,
+        controller::account::is_applied,
+        controller::account::me,
 
         controller::blood_request::create,
         controller::blood_request::get,

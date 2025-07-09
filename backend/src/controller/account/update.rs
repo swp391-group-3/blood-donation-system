@@ -1,8 +1,12 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Path, State},
+    http::StatusCode,
+};
 use chrono::NaiveDate;
-use ctypes::Gender;
+use ctypes::{Gender, Role};
 use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
@@ -11,7 +15,7 @@ use uuid::Uuid;
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::Claims,
+    util::auth::{Claims, authorize},
 };
 use database::{
     client::Params,
@@ -36,7 +40,10 @@ pub struct Request {
 #[utoipa::path(
     put,
     tag = "Account",
-    path = "/account",
+    path = "/account/{id}",
+    params(
+        ("id" = Uuid, Path, description = "The UUID of the account")
+    ),
     request_body = Request,
     responses(
         (status = Status::OK)
@@ -46,12 +53,15 @@ pub struct Request {
 pub async fn update(
     state: State<Arc<ApiState>>,
     claims: Claims,
+    Path(id): Path<Uuid>,
     Json(request): Json<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
+    authorize(&claims, [Role::Admin], &database).await?;
+
     if let Err(error) = queries::account::update()
-        .params(&database, &request.with_account_id(claims.sub))
+        .params(&database, &request.with_account_id(id))
         .await
     {
         tracing::info!(?error, "Failed to update account");

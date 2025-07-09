@@ -5,7 +5,6 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use axum_valid::Valid;
 use ctypes::{AppointmentStatus, Role};
 use database::{
     client::Params,
@@ -20,7 +19,10 @@ use validator::Validate;
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
+    util::{
+        auth::{Claims, authorize},
+        validation::ValidJson,
+    },
 };
 
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
@@ -54,7 +56,7 @@ pub async fn create(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(appointment_id): Path<Uuid>,
-    Valid(Json(request)): Valid<Json<Request>>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<Json<Uuid>> {
     let mut database = state.database().await?;
 

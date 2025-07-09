@@ -1,7 +1,6 @@
 "use client";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Dialog,
     DialogContent,
@@ -20,25 +19,59 @@ import {
 } from "@/components/ui/pagination";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search, Upload, UserPlus, Users } from 'lucide-react';
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { columns } from './column';
-import { Account, mockAccounts } from '@/lib/api/dto/account';
-
-
-
-
+import { Account } from '@/lib/api/dto/account';
+import FileUpload, { DropZone, FileError, FileInfo, FileList, FileProgress } from '@/components/file-upload';
+import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
+import { MessageLoading } from '@/components/ui/message-loading';
+import { useAllAccounts } from '@/hooks/use-all-account';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+    const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
+    const { mutate, status } = useCreateStaffAccount();
+    const { data: accounts = [] } = useAllAccounts();
+    
+    useEffect(() => {
+        if (status === 'success') {
+            setIsImportDialogOpen(false);
+        }
+    }, [status]);
 
+    const onFileSelectChange = (files: FileInfo[]) => {
+        setUploadFiles(prev => {
+            if (files.length > 1) {
+                return files.slice(0, 3);
+            } else if (files.length === 1) {
+                const newFile = files[0];
+                if (prev.some(f => f.id === newFile.id)) {
+                    return prev;
+                }
+                const combined = [...prev, newFile];
+                return combined.slice(0, 3);
+            } else {
+                return prev;
+            }
+        });
+    };
+    const handleUpload = () => {
+        const files: File[] = uploadFiles.map(fil => fil.file);
+        mutate(files)
+        setUploadFiles([])
+    }
+
+    const onRemove = (fileId: string) => {
+        setUploadFiles(uploadFiles.filter(file => file.id !== fileId))
+    }
 
     const filtersAccounts: Account[] = useMemo(() => {
-        return mockAccounts.filter((account) => {
+        return accounts.filter((account) => {
             const matchesSearch =
                 account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 account.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -47,9 +80,7 @@ function Page() {
 
             return matchesSearch && matchRole;
         })
-    }, [searchTerm, roleFilter]);
-
-
+    }, [searchTerm, roleFilter, accounts]);
     const table = useReactTable({
         data: filtersAccounts,
         columns: columns,
@@ -62,19 +93,6 @@ function Page() {
             }
         }
     });
-
-
-    const stats = {
-        total: filtersAccounts.length
-    }
-    // const { pageIndex, pageSize } = table.getState().pagination;
-    // const pageCount = table.getPageCount();
-
-    // build an array [1, 2, 3, …, pageCount]
-    // const pages = React.useMemo(
-    //     () => Array.from({ length: pageCount }, (_, i) => i + 1),
-    //     [pageCount]
-    // );
     return (
         <div className='flex-1 overflow-auto'>
             <div className="p-8">
@@ -101,33 +119,37 @@ function Page() {
                                 <DialogHeader>
                                     <DialogTitle>Import Users from CSV</DialogTitle>
                                     <DialogDescription>
-                                        Upload a CSV file to bulk import users. Download the sample template to see the required format.
+                                        Upload a CSV file to bulk import users
                                     </DialogDescription>
                                 </DialogHeader>
-                                <div className=' space-y-4'>
-                                    <div className='border-2 border-dashed p-6 border-gray-300 text-center rounded-lg'>
-                                        <div className='space-y-2'>
-                                            <Label
-                                                htmlFor='csv-upload'
-                                                className='cursor-pointer flex justify-center'
-                                            >
-                                                <span>
-                                                    <Upload className='mx-auto h-12 w-12 text-gray-400 mb-4' />
-                                                </span>
-                                                <Input
-                                                    id="csv-upload"
-                                                    accept='.csv'
-                                                    type='file'
-                                                    className='hidden'
-                                                />
-                                            </Label>
-                                            <p className='text-sx text-gray-800'>
-                                                CSV file with columns: name, email, role, status
-                                            </p>
+
+                                <FileUpload
+                                    files={uploadFiles}
+                                    onFileSelectChange={onFileSelectChange}
+                                    multiple={true}
+                                    accept=".csv"
+                                    maxSize={10}
+                                    maxCount={3}
+                                    className="mt-2"
+                                    disabled={false}
+                                >
+                                    <div className="space-y-4">
+                                        <DropZone prompt="click or drop, 3 file to upload" />
+                                        <FileError />
+                                        <FileProgress />
+                                        <FileList onClear={() => { setUploadFiles([]) }}
+                                            onRemove={onRemove}
+                                            canResume={true} />
+                                        <div className='flex justify-center'>
+                                            {uploadFiles.length > 0 && (
+                                                <Button disabled={status === 'pending'} onClick={handleUpload} className='px-10'>
+                                                    {status === 'pending' ? 'Uploading…' : 'Upload'}
+                                                </Button>
+                                            )}
+                                            {(status === "pending") && (<MessageLoading />)}
                                         </div>
                                     </div>
-                                </div>
-
+                                </FileUpload>
                             </DialogContent>
                         </Dialog>
                         <Dialog>
@@ -144,11 +166,11 @@ function Page() {
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                            <CardTitle className="text-sm font-medium ">Total Users</CardTitle>
                             <Users className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.total}</div>
+                            <div className="text-2xl font-bold">{accounts.length}</div>
                         </CardContent>
                     </Card>
 
@@ -234,7 +256,6 @@ function Page() {
                             </TableBody>
                         </Table>
                     </CardContent>
-
                     {/* Pagination */}
                     <CardFooter>
                         <Pagination>
@@ -289,8 +310,6 @@ function Page() {
                         </Pagination>
                     </CardFooter>
                 </Card>
-
-
             </div>
         </div>
     )
