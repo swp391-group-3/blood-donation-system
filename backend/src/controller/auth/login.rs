@@ -38,7 +38,10 @@ pub async fn login(
     {
         Ok(Some(account)) => account,
         Ok(None) => {
-            tracing::warn!(email = request.email, "No account with given email");
+            tracing::warn!(
+                email = request.email,
+                "No account with given email or account is inactive"
+            );
 
             return Err(Error::builder()
                 .status(StatusCode::BAD_REQUEST)

@@ -25,13 +25,19 @@ export default function BlogReadPage() {
 
     const [isSubmitting] = useState(false);
     const [value, setValue] = useState<Content>('');
+    const [editorKey, setEditorKey] = useState(0);
 
     const getTimeAgo = (date: Date | string): string => {
         return formatDistanceToNow(new Date(date), { addSuffix: true });
     };
 
-    const handleSubmitComment = async () => {
-        mutation.mutate(value as string);
+    const handleSubmitComment = () => {
+        mutation.mutate(value as string, {
+            onSuccess: () => {
+                setValue('');
+                setEditorKey((k) => k + 1);
+            },
+        });
     };
 
     if (isLoading) return <div>Loading...</div>;
@@ -128,6 +134,7 @@ export default function BlogReadPage() {
                                 </div>
                                 <div className="flex-1 space-y-3">
                                     <MinimalTiptapEditor
+                                        key={editorKey}
                                         value={value}
                                         onChange={setValue}
                                         className="w-full h-full min-h-40"

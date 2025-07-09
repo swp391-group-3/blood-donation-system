@@ -1,5 +1,4 @@
 'use client';
-
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -28,9 +27,7 @@ import {
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
-
     const { data: blogs, isLoading, error } = useBlogList();
-
     const allTags = Array.from(new Set(blogs?.flatMap((blog) => blog.tags)));
 
     const filteredBlogs = useMemo(() => {

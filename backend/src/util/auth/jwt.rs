@@ -60,7 +60,7 @@ impl JwtService {
 
         let mut cookie = Cookie::new(TOKEN_KEY, token);
         // cookie.set_secure(true);
-        cookie.set_same_site(SameSite::Lax);
+        cookie.set_same_site(SameSite::None);
         // cookie.set_http_only(true);
         cookie.set_path("/");
 
