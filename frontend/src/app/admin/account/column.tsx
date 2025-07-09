@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, Edit3, MoreHorizontal, Shield, Trash2, Users } from "lucide-react";
 import { FormEdit } from "@/components/edit-profile";
 import { useState } from "react";
-import { useUpdateAccountForm } from "@/hooks/use-update-account-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import { useDeleteAccount } from "@/hooks/use-delete-account";
 import { useUpdateDataTable } from "@/hooks/use-update-data-table";
 

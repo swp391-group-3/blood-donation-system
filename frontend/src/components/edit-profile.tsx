@@ -27,9 +27,6 @@ export function EditProfileModel({
     form,
     mutation
 }: EditProfileProps) {
-    const handleFormSubmit = (values: AccountUpdate) => {
-        mutation.mutate(values);
-    };
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
