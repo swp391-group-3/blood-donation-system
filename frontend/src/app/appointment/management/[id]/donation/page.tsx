@@ -105,22 +105,22 @@ export default function AppointmentDonationPage() {
                             </div>
                             <div>
                                 <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                                    {apt.member.name}
+                                    {apt.donor.name}
                                 </h2>
                                 <div className="flex items-center space-x-4 mb-3">
                                     <Badge className="bg-red-100 text-red-700 border-red-200 px-3 py-1">
                                         <Heart className="h-3 w-3 mr-1" />
                                         {
                                             bloodGroupLabels[
-                                                apt.member.blood_group
+                                                apt.donor.blood_group
                                             ]
                                         }
                                     </Badge>
                                     <span className="text-slate-600 font-medium">
-                                        {capitalCase(apt.member.gender)}, Age{' '}
+                                        {capitalCase(apt.donor.gender)}, Age{' '}
                                         {new Date().getFullYear() -
                                             Number(
-                                                apt.member.birthday.substring(
+                                                apt.donor.birthday.substring(
                                                     0,
                                                     4,
                                                 ),
@@ -128,7 +128,7 @@ export default function AppointmentDonationPage() {
                                     </span>
                                 </div>
                                 <div className="text-sm text-slate-600">
-                                    {apt.member.phone} • {apt.member.email}
+                                    {apt.donor.phone} • {apt.donor.email}
                                 </div>
                             </div>
                         </div>
@@ -219,7 +219,7 @@ export default function AppointmentDonationPage() {
                                                 printWindow.document.write(
                                                     await generateDonationLabel(
                                                         apt.donation,
-                                                        apt.member,
+                                                        apt.donor,
                                                     ),
                                                 );
                                                 printWindow.document.close();

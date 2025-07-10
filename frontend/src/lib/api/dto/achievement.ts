@@ -1,17 +1,14 @@
-
-
 interface Achievement {
-    id: number,
-    title: string,
-    description: string,
-    category: string,
-    points: number,
-    earned: boolean,
-    earnedDate?: Date,
+    id: number;
+    title: string;
+    description: string;
+    category: string;
+    points: number;
+    earned: boolean;
+    earnedDate?: Date;
 }
 interface AchievementCardProps {
-    achievement: Achievement
+    achievement: Achievement;
 }
 
-
-export type { Achievement, AchievementCardProps }
+export type { Achievement, AchievementCardProps };
