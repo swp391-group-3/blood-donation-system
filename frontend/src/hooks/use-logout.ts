@@ -5,9 +5,11 @@ import { toast } from 'sonner';
 export const useLogout = () => {
     const queryClient = useQueryClient();
 
-    const mutation = useMutation({
+    return useMutation({
         mutationFn: async () => {
-            const response = await fetchWrapper('/auth/logout');
+            const response = await fetchWrapper('/auth/logout', {
+                method: 'POST',
+            });
             await throwIfError(response);
         },
         onError: (error) => toast.error(error.message),
@@ -16,5 +18,4 @@ export const useLogout = () => {
             await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
         },
     });
-    return { mutation };
 };
