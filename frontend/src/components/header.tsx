@@ -203,64 +203,71 @@ export const Header = () => {
                                                 </Link>
                                             </DropdownMenuItem>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/donation"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-rose-50 rounded-lg">
-                                                        <Droplets className="h-4 w-4 text-rose-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Donations
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            View donation
-                                                            history
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
+                                            {account.role === 'donor' && (
+                                                <>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/donation"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-rose-50 rounded-lg">
+                                                                <Droplets className="h-4 w-4 text-rose-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Donations
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    View
+                                                                    donation
+                                                                    history
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/health"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-emerald-50 rounded-lg">
-                                                        <Shield className="h-4 w-4 text-emerald-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Health
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            Health records &
-                                                            status
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/health"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                                                <Shield className="h-4 w-4 text-emerald-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Health
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Health
+                                                                    records &
+                                                                    status
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/appointment"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-purple-50 rounded-lg">
-                                                        <Calendar className="h-4 w-4 text-purple-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Appointments
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            Manage appointments
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/appointment"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                <Calendar className="h-4 w-4 text-purple-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Appointments
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Manage
+                                                                    appointments
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
 
                                             <DropdownMenuSeparator className="my-2 bg-slate-100" />
 
@@ -345,57 +352,61 @@ export const Header = () => {
                                 </div>
                             </div>
                         </Link>
-                        <Link
-                            href="/donation"
-                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <div className="p-1.5 bg-rose-50 rounded-lg">
-                                <Droplets className="h-4 w-4 text-rose-600" />
-                            </div>
-                            <div>
-                                <span className="font-medium text-slate-900">
-                                    Donations
-                                </span>
-                                <div className="text-xs text-slate-500">
-                                    View donation history
-                                </div>
-                            </div>
-                        </Link>
-                        <Link
-                            href="/health"
-                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <div className="p-1.5 bg-emerald-50 rounded-lg">
-                                <Shield className="h-4 w-4 text-emerald-600" />
-                            </div>
-                            <div>
-                                <span className="font-medium text-slate-900">
-                                    Health
-                                </span>
-                                <div className="text-xs text-slate-500">
-                                    Health records & status
-                                </div>
-                            </div>
-                        </Link>
-                        <Link
-                            href="/appointment"
-                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <div className="p-1.5 bg-purple-50 rounded-lg">
-                                <Calendar className="h-4 w-4 text-purple-600" />
-                            </div>
-                            <div>
-                                <span className="font-medium text-slate-900">
-                                    Appointments
-                                </span>
-                                <div className="text-xs text-slate-500">
-                                    Manage appointments
-                                </div>
-                            </div>
-                        </Link>
+                        {account?.role === 'donor' && (
+                            <>
+                                <Link
+                                    href="/donation"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <div className="p-1.5 bg-rose-50 rounded-lg">
+                                        <Droplets className="h-4 w-4 text-rose-600" />
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-slate-900">
+                                            Donations
+                                        </span>
+                                        <div className="text-xs text-slate-500">
+                                            View donation history
+                                        </div>
+                                    </div>
+                                </Link>
+                                <Link
+                                    href="/health"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                        <Shield className="h-4 w-4 text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-slate-900">
+                                            Health
+                                        </span>
+                                        <div className="text-xs text-slate-500">
+                                            Health records & status
+                                        </div>
+                                    </div>
+                                </Link>
+                                <Link
+                                    href="/appointment"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <div className="p-1.5 bg-purple-50 rounded-lg">
+                                        <Calendar className="h-4 w-4 text-purple-600" />
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-slate-900">
+                                            Appointments
+                                        </span>
+                                        <div className="text-xs text-slate-500">
+                                            Manage appointments
+                                        </div>
+                                    </div>
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
 
