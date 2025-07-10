@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 export const useLogout = () => {
     const queryClient = useQueryClient();
-    console.log('logout');
+
     const mutation = useMutation({
         mutationFn: async () => {
             const response = await fetchWrapper('/auth/logout');
