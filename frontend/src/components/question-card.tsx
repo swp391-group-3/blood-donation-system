@@ -51,7 +51,7 @@ export const QuestionCard = ({
                         return (
                             <div
                                 key={answerType}
-                                className={`flex items-center space-x-4 p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                                className={`flex items-center rounded-xl border-2 transition-all cursor-pointer ${
                                     value === answerType
                                         ? config.bgColor
                                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -60,11 +60,11 @@ export const QuestionCard = ({
                                 <RadioGroupItem
                                     value={answerType}
                                     id={answerType}
-                                    className={config.textColor}
+                                    className={`ml-4 ${config.textColor}`}
                                 />
                                 <Label
                                     htmlFor={answerType}
-                                    className="flex-1 cursor-pointer flex items-center gap-3"
+                                    className="p-4 flex-1 cursor-pointer flex items-center gap-3"
                                 >
                                     <config.icon
                                         className={`size-4 ${configs[answerType].textColor}`}
