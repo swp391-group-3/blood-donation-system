@@ -22,7 +22,7 @@ use crate::{
     state::ApiState,
     util::{
         auth::{Claims, authorize},
-        validation::ValidJson,
+        validation::{ValidJson, validate_future_date_time},
     },
 };
 
@@ -35,7 +35,9 @@ use crate::{
 )]
 pub struct Request {
     pub component: BloodComponent,
+    #[validate(range(min = 1))]
     pub amount: i32,
+    #[validate(custom(function = validate_future_date_time))]
     pub expired_time: DateTime<Utc>,
 }
 

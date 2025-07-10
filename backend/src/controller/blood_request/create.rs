@@ -12,6 +12,7 @@ use serde::Deserialize;
 use std::collections::HashSet;
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::{
     error::{Error, Result},
@@ -20,24 +21,44 @@ use crate::{
         auth::{Claims, authorize},
         blood::get_compatible,
         notification::send,
+        validation::{
+            DateTimeRange, ValidJson, validate_date_time_range, validate_future_date_time,
+        },
     },
 };
 
-#[derive(Deserialize, ToSchema, Mapper, Clone)]
+#[derive(Deserialize, ToSchema, Mapper, Clone, Validate)]
 #[schema(as = blood_request::create::Request)]
 #[mapper(
     into(custom = "with_staff_id"),
     ty = CreateParams::<String>,
     add(field = staff_id, ty = Uuid),
 )]
+#[validate(schema(function = validate_request_date_time_range))]
 pub struct Request {
     #[mapper(skip)]
+    #[validate(length(min = 1))]
     pub blood_groups: Vec<BloodGroup>,
     pub priority: RequestPriority,
+    #[validate(length(min = 1))]
     pub title: String,
+    #[validate(range(min = 1))]
     pub max_people: i32,
+    #[validate(custom(function = validate_future_date_time))]
     pub start_time: DateTime<Utc>,
+    #[validate(custom(function = validate_future_date_time))]
     pub end_time: DateTime<Utc>,
+}
+
+fn validate_request_date_time_range(
+    request: &Request,
+) -> std::result::Result<(), validator::ValidationError> {
+    let range = DateTimeRange {
+        start: request.start_time,
+        end: request.end_time,
+    };
+
+    validate_date_time_range(&range)
 }
 
 #[utoipa::path(
@@ -54,7 +75,7 @@ pub struct Request {
 pub async fn create(
     state: State<Arc<ApiState>>,
     claims: Claims,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<Json<Uuid>> {
     let mut database = state.database().await?;
 

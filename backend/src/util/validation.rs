@@ -3,7 +3,7 @@ use axum::{
     extract::{FromRequest, Request},
     http::StatusCode,
 };
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{DateTime, Duration, NaiveDate, TimeZone, Utc};
 use itertools::Itertools;
 use serde::de::DeserializeOwned;
 use std::collections::HashMap;
@@ -11,7 +11,6 @@ use validator::{Validate, ValidationError, ValidationErrors, ValidationErrorsKin
 
 use crate::error::Error;
 
-// TODO: use this
 #[allow(unused)]
 pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(), ValidationError> {
     if value.to_utc() <= Utc::now() {
@@ -21,15 +20,30 @@ pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(),
     }
 }
 
-// TODO: use this
-#[allow(unused)]
+pub fn validate_future_date_time<Tz: TimeZone>(
+    value: &DateTime<Tz>,
+) -> Result<(), ValidationError> {
+    if value.to_utc() >= Utc::now() {
+        Ok(())
+    } else {
+        Err(ValidationError::new("date time"))
+    }
+}
+
+pub fn validate_birthday(value: &NaiveDate) -> Result<(), ValidationError> {
+    let cons = Utc::now().date_naive() - Duration::days(365 * 16);
+    if *value <= cons {
+        Ok(())
+    } else {
+        Err(ValidationError::new("date"))
+    }
+}
+
 pub struct DateTimeRange<Tz: TimeZone> {
     pub start: DateTime<Tz>,
     pub end: DateTime<Tz>,
 }
 
-// TODO: use this
-#[allow(unused)]
 pub fn validate_date_time_range<Tz: TimeZone>(
     range: &DateTimeRange<Tz>,
 ) -> Result<(), ValidationError> {
@@ -37,6 +51,17 @@ pub fn validate_date_time_range<Tz: TimeZone>(
         Ok(())
     } else {
         Err(ValidationError::new("date time range"))
+    }
+}
+
+pub fn validate_phone(value: &str) -> Result<(), ValidationError> {
+    let is_valid =
+        value.len() == 10 && value.starts_with('0') && value.chars().all(|c| c.is_ascii_digit());
+
+    if is_valid {
+        Ok(())
+    } else {
+        Err(ValidationError::new("phone number"))
     }
 }
 

@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use axum::{
-    Json,
     extract::{Path, State},
     http::StatusCode,
 };
@@ -11,11 +10,15 @@ use model_mapper::Mapper;
 use serde::Deserialize;
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::{Claims, authorize},
+    util::{
+        auth::{Claims, authorize},
+        validation::{ValidJson, validate_birthday, validate_phone},
+    },
 };
 use database::{
     client::Params,
@@ -23,17 +26,21 @@ use database::{
     queries::{self},
 };
 
-#[derive(Deserialize, ToSchema, Mapper)]
+#[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[mapper(
     into(custom = "with_account_id"),
     ty = UpdateParams::<String, String, String>,
     add(field = id, ty = Uuid),
 )]
 pub struct Request {
+    #[validate(custom(function = validate_phone))]
     pub phone: Option<String>,
+    #[validate(length(min = 1))]
     pub name: Option<String>,
     pub gender: Option<Gender>,
+    #[validate(length(min = 1))]
     pub address: Option<String>,
+    #[validate(custom(function = validate_birthday))]
     pub birthday: Option<NaiveDate>,
 }
 
@@ -54,7 +61,7 @@ pub async fn update(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Path(id): Path<Uuid>,
-    Json(request): Json<Request>,
+    ValidJson(request): ValidJson<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
 
