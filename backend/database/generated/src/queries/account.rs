@@ -614,7 +614,9 @@ impl GetByRoleStmt {
     }
 }
 pub fn get_all() -> GetAllStmt {
-    GetAllStmt(crate::client::async_::Stmt::new("SELECT * FROM accounts"))
+    GetAllStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM accounts WHERE is_active = true",
+    ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
