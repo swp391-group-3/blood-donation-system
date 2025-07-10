@@ -43,7 +43,11 @@ export const useCreateStaffAccount = (
             toast.success("Add Staff Account Successfully")
         },
         onError: (error) => {
-            toast.error(error.message)
+            if (error.message.includes("phone number")) {
+                toast.error("Phone must consist of 10 number")
+            }else {
+                toast.error(error.message)
+            }
         }
     })
 

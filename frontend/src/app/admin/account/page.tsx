@@ -23,20 +23,19 @@ import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
-    const [isImportFileModel, setIsImportFileModel] = useState(false);
     const [isAddStaff, setIsAddStaff] = useState(false);
 
     // File import state
     const [isImportFileModel, setIsImportFileModel] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
     const { mutate, status } = useCreateStaffAccounts();
+
+
+    // hooks for account
+    const { data: accounts = [] } = useAllAccounts();
     const { mutation: mutationAccount, form: formAccount } = useCreateStaffAccount({
         onSuccess() { setIsAddStaff(false) }
     });
-
-    // hooks for account
-    const { mutate, status } = useCreateStaffAccount();
-    const { data: accounts = [] } = useAllAccounts();
 
     // Close import dialog on success
     useEffect(() => {
@@ -167,7 +166,7 @@ function Page() {
                                                     <FormItem>
                                                         <FormLabel>Email</FormLabel>
                                                         <FormControl>
-                                                            <Input {...field} required />
+                                                            <Input {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -183,7 +182,7 @@ function Page() {
                                                             <Input
                                                                 type="password"
                                                                 {...field}
-                                                                required
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -197,7 +196,7 @@ function Page() {
                                                     <FormItem className="grid gap-2">
                                                         <FormLabel>Name</FormLabel>
                                                         <FormControl>
-                                                            <Input type="text" {...field} required />
+                                                            <Input type="text" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -210,7 +209,7 @@ function Page() {
                                                     <FormItem className="grid gap-2">
                                                         <FormLabel>Phone</FormLabel>
                                                         <FormControl>
-                                                            <Input type="tel" {...field} required />
+                                                            <Input type="tel" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
