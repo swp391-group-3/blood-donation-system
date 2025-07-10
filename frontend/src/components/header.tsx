@@ -28,6 +28,7 @@ import { useCurrentAccount } from '@/hooks/use-current-account';
 import Link from 'next/link';
 import { AccountOverview } from '@/components/account-overview';
 import { Role } from '@/lib/api/dto/account';
+import { useLogout } from '@/hooks/use-logout';
 
 interface NavigationItem {
     label: string;
@@ -68,6 +69,7 @@ export const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { data: account } = useCurrentAccount();
     const items = getNavigationItems(account?.role);
+    const { mutation: logout } = useLogout();
 
     return (
         <>
@@ -351,7 +353,10 @@ export const Header = () => {
                 </div>
 
                 <div className="px-6 py-4 mt-auto border-t border-slate-200">
-                    <button className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full">
+                    <button
+                        onClick={() => logout.mutate()}
+                        className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         <div className="p-1.5 bg-red-50 rounded-lg">
                             <LogOut className="h-4 w-4 text-red-600" />
                         </div>
