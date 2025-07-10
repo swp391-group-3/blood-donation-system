@@ -1,24 +1,12 @@
 "use client";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
+    Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, Upload, UserPlus, Users } from 'lucide-react';
+import { Loader2, Search, Upload, UserPlus, Users } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -26,17 +14,25 @@ import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } fro
 import { columns } from './column';
 import { Account } from '@/lib/api/dto/account';
 import FileUpload, { DropZone, FileError, FileInfo, FileList, FileProgress } from '@/components/file-upload';
-import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
+import { useCreateStaffAccounts } from '@/hooks/use-create-staff-accounts';
 import { MessageLoading } from '@/components/ui/message-loading';
 import { useAllAccounts } from '@/hooks/use-all-account';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
+    const [isImportFileModel, setIsImportFileModel] = useState(false);
+    const [isAddStaff, setIsAddStaff] = useState(false);
 
     // File import state
     const [isImportFileModel, setIsImportFileModel] = useState(false);
     const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([]);
+    const { mutate, status } = useCreateStaffAccounts();
+    const { mutation: mutationAccount, form: formAccount } = useCreateStaffAccount({
+        onSuccess() { setIsAddStaff(false) }
+    });
 
     // hooks for account
     const { mutate, status } = useCreateStaffAccount();
@@ -45,6 +41,7 @@ function Page() {
     // Close import dialog on success
     useEffect(() => {
         if (status === 'success') {
+            setIsImportFileModel(false);
             setIsImportFileModel(false);
         }
     }, [status]);
@@ -78,9 +75,7 @@ function Page() {
             const matchesSearch =
                 account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 account.email.toLowerCase().includes(searchTerm.toLowerCase());
-
             const matchRole = roleFilter === "all" || account.role === roleFilter;
-
             return matchesSearch && matchRole;
         })
     }, [searchTerm, roleFilter, accounts]);
@@ -108,14 +103,11 @@ function Page() {
                     <div className='flex gap-2'>
                         <Dialog
                             open={isImportFileModel}
-                            onOpenChange={(open) => {
-                                setIsImportFileModel(open)
-                            }}
+                            onOpenChange={(open) => { setIsImportFileModel(open) }}
                         >
                             <DialogTrigger asChild>
                                 <Button variant="outline" className='gap-2'>
-                                    <Upload />
-                                    Import CSV
+                                    <Upload />   Import CSV
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className='sm:max-w-[600px]'>
@@ -125,7 +117,6 @@ function Page() {
                                         Upload a CSV file to bulk import users
                                     </DialogDescription>
                                 </DialogHeader>
-
                                 <FileUpload
                                     files={uploadFiles}
                                     onFileSelectChange={onFileSelectChange}
@@ -155,13 +146,90 @@ function Page() {
                                 </FileUpload>
                             </DialogContent>
                         </Dialog>
-                        <Dialog>
+                        <Dialog open={isAddStaff} onOpenChange={setIsAddStaff} >
                             <DialogTrigger asChild>
-                                <Button>
-                                    <UserPlus />
-                                    Add User
-                                </Button>
+                                <Button> <UserPlus /> Add Staff</Button>
                             </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Add Staff Account</DialogTitle>
+                                </DialogHeader>
+                                <Form  {...formAccount} >
+                                    <form
+                                        autoComplete="off"
+                                        onSubmit={formAccount.handleSubmit((values) => mutationAccount.mutate(values))}
+                                    >
+                                        <div className="flex flex-col gap-6">
+                                            <FormField
+                                                control={formAccount.control}
+                                                name='email'
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Email</FormLabel>
+                                                        <FormControl>
+                                                            <Input {...field} required />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formAccount.control}
+                                                name="password"
+                                                render={({ field }) => (
+                                                    <FormItem className="grid gap-2">
+                                                        <FormLabel>Password</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="password"
+                                                                {...field}
+                                                                required
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formAccount.control}
+                                                name="name"
+                                                render={({ field }) => (
+                                                    <FormItem className="grid gap-2">
+                                                        <FormLabel>Name</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="text" {...field} required />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formAccount.control}
+                                                name="phone"
+                                                render={({ field }) => (
+                                                    <FormItem className="grid gap-2">
+                                                        <FormLabel>Phone</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="tel" {...field} required />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            {mutationAccount.status === 'pending' ? (
+                                                <Button disabled className="w-full py-5">
+                                                    <Loader2 className="animate-spin" />
+                                                    Loading
+                                                </Button>
+                                            ) : (
+                                                <Button type="submit" className="w-full py-5">
+                                                    Add Account
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </form>
+                                </Form>
+                            </DialogContent>
                         </Dialog>
                     </div>
                 </div>
@@ -193,22 +261,15 @@ function Page() {
                             </div>
                             <Select value={roleFilter} onValueChange={setRoleFilter}>
                                 <SelectTrigger className='w-full sm:w-[180px]'>
-                                    <SelectValue
-                                        placeholder="Filter by role"
-                                    />
+                                    <SelectValue placeholder="Filter by role" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value='all'>All Roles</SelectItem>
                                     <SelectItem value='admin'>Admin</SelectItem>
-                                    <SelectItem value='member'>
-                                        Member
-                                    </SelectItem>
-                                    <SelectItem value='staff'>
-                                        Staff
-                                    </SelectItem>
+                                    <SelectItem value='member'> Member  </SelectItem>
+                                    <SelectItem value='staff'>Staff</SelectItem>
                                 </SelectContent>
                             </Select>
-
                         </div>
                     </CardContent>
                 </Card>
@@ -216,25 +277,18 @@ function Page() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Users ({filtersAccounts.length})</CardTitle>
-                        <CardDescription>
-                            Manage user accounts and their permissions
-                        </CardDescription>
+                        <CardDescription>  Manage user accounts and their permissions </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 {table.getHeaderGroups().map(headerGroup => (
-                                    <TableRow
-                                        key={headerGroup.id}
-                                    >
+                                    <TableRow key={headerGroup.id} >
                                         {headerGroup.headers.map(header => {
                                             return (
-                                                <TableHead
-                                                    key={header.id}
-                                                >
+                                                <TableHead key={header.id} >
                                                     {header.isPlaceholder
-                                                        ? null
-                                                        : flexRender(
+                                                        ? null : flexRender(
                                                             header.column.columnDef.header,
                                                             header.getContext()
                                                         )}
@@ -287,8 +341,7 @@ function Page() {
                                                     e.preventDefault();
                                                     table.setPageIndex(pageIndex);
                                                 }}
-                                                aria-current={isCurrent ? "page" : undefined}
-                                            >
+                                                aria-current={isCurrent ? "page" : undefined} >
                                                 {pageIndex + 1}
                                             </PaginationLink>
                                         </PaginationItem>
@@ -315,5 +368,4 @@ function Page() {
         </div>
     )
 }
-
 export default Page
