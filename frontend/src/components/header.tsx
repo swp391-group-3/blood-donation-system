@@ -69,7 +69,7 @@ export const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { data: account } = useCurrentAccount();
     const items = getNavigationItems(account?.role);
-    const { mutation: logout } = useLogout();
+    const logout = useLogout();
 
     return (
         <>
@@ -220,7 +220,10 @@ export const Header = () => {
 
                                             <DropdownMenuSeparator className="my-2 bg-slate-100" />
 
-                                            <DropdownMenuItem className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 focus:text-red-600 transition-colors duration-200">
+                                            <DropdownMenuItem
+                                                onClick={() => logout.mutate()}
+                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 focus:text-red-600 transition-colors duration-200"
+                                            >
                                                 <div className="p-1.5 bg-red-50 rounded-lg">
                                                     <LogOut className="h-4 w-4 text-red-600" />
                                                 </div>
