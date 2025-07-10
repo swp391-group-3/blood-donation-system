@@ -11,7 +11,6 @@ use validator::{Validate, ValidationError, ValidationErrors, ValidationErrorsKin
 
 use crate::error::Error;
 
-// TODO: use this
 #[allow(unused)]
 pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(), ValidationError> {
     if value.to_utc() <= Utc::now() {
@@ -21,7 +20,6 @@ pub fn validate_past_date_time<Tz: TimeZone>(value: &DateTime<Tz>) -> Result<(),
     }
 }
 
-#[allow(unused)]
 pub fn validate_future_date_time<Tz: TimeZone>(
     value: &DateTime<Tz>,
 ) -> Result<(), ValidationError> {
@@ -32,7 +30,6 @@ pub fn validate_future_date_time<Tz: TimeZone>(
     }
 }
 
-#[allow(unused)]
 pub fn validate_birthday(value: &NaiveDate) -> Result<(), ValidationError> {
     let cons = Utc::now().date_naive() - Duration::days(365 * 16);
     if *value <= cons {
@@ -42,15 +39,11 @@ pub fn validate_birthday(value: &NaiveDate) -> Result<(), ValidationError> {
     }
 }
 
-// TODO: use this
-#[allow(unused)]
 pub struct DateTimeRange<Tz: TimeZone> {
     pub start: DateTime<Tz>,
     pub end: DateTime<Tz>,
 }
 
-// TODO: use this
-#[allow(unused)]
 pub fn validate_date_time_range<Tz: TimeZone>(
     range: &DateTimeRange<Tz>,
 ) -> Result<(), ValidationError> {
@@ -61,7 +54,6 @@ pub fn validate_date_time_range<Tz: TimeZone>(
     }
 }
 
-#[allow(unused)]
 pub fn validate_phone(value: &str) -> Result<(), ValidationError> {
     let is_valid =
         value.len() == 10 && value.starts_with('0') && value.chars().all(|c| c.is_ascii_digit());
