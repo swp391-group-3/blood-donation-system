@@ -41,25 +41,6 @@ const getRoleIcon = (role: string) => {
 };
 
 export const columns = [
-    columnHelper.display({
-        id: 'Select',
-        header: ({ table }) => (
-            <input
-                type="checkbox"
-                checked={table.getIsAllRowsSelected()}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-            />
-        ),
-        cell: ({ row }) => {
-            return (
-                <input
-                    type="checkbox"
-                    checked={row.getIsSelected()}
-                    onChange={row.getToggleSelectedHandler()}
-                />
-            );
-        },
-    }),
     columnHelper.accessor((row) => `${row.name} | ${row.email}`, {
         id: 'Name',
         header: 'Name & Email',
