@@ -13,6 +13,8 @@ import {
     Menu,
     X,
     LucideIcon,
+    Package,
+    LayoutDashboard,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,10 +41,52 @@ interface NavigationItem {
 const getNavigationItems = (role?: Role): NavigationItem[] => {
     switch (role) {
         case 'staff':
-            return [];
+            return [
+                {
+                    label: 'Home',
+                    icon: Home,
+                    href: '/',
+                },
+                {
+                    label: 'Blood Storage',
+                    icon: Package,
+                    href: '/blood-storage',
+                },
+                {
+                    label: 'Blood Request',
+                    icon: Droplets,
+                    href: '/request',
+                },
+                {
+                    label: 'Blog',
+                    icon: FileText,
+                    href: '/blog',
+                },
+            ];
 
         case 'admin':
-            return [];
+            return [
+                {
+                    label: 'Home',
+                    icon: Home,
+                    href: '/',
+                },
+                {
+                    label: 'Dashboard',
+                    icon: LayoutDashboard,
+                    href: '/admin',
+                },
+                {
+                    label: 'Account Management',
+                    icon: User,
+                    href: '/admin/account',
+                },
+                {
+                    label: 'Blog Management',
+                    icon: FileText,
+                    href: '/admin/blog',
+                },
+            ];
 
         default:
             return [
