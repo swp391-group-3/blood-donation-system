@@ -14,6 +14,7 @@ import {
     X,
     LucideIcon,
     Package,
+    LayoutDashboard,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -64,7 +65,28 @@ const getNavigationItems = (role?: Role): NavigationItem[] => {
             ];
 
         case 'admin':
-            return [];
+            return [
+                {
+                    label: 'Home',
+                    icon: Home,
+                    href: '/',
+                },
+                {
+                    label: 'Dashboard',
+                    icon: LayoutDashboard,
+                    href: '/admin',
+                },
+                {
+                    label: 'Account Management',
+                    icon: User,
+                    href: '/admin/account',
+                },
+                {
+                    label: 'Blog Management',
+                    icon: FileText,
+                    href: '/admin/blog',
+                },
+            ];
 
         default:
             return [
