@@ -134,7 +134,7 @@ pub async fn create(
     }
 
     let accounts = match queries::account::get_by_role()
-        .bind(&database, &Role::Member)
+        .bind(&database, &Role::Donor)
         .all()
         .await
     {

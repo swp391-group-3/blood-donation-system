@@ -15,7 +15,7 @@ INSERT INTO accounts(
 VALUES(
     :email,
     COALESCE(:password, substr(md5(random()::text), 1, 25)),
-    'member'::role,
+    'donor'::role,
     :phone,
     :name,
     :gender,
@@ -104,7 +104,7 @@ SELECT COALESCE((
         END
     FROM donations
     WHERE (
-        SELECT member_id
+        SELECT donor_id
         FROM appointments
         WHERE id = donations.appointment_id
     ) = :id
@@ -116,7 +116,7 @@ SELECT COALESCE((
 SELECT EXISTS (
     SELECT 1
     FROM appointments
-    WHERE member_id = :id
+    WHERE donor_id = :id
         AND status != 'rejected'::appointment_status
         AND status != 'done'::appointment_status
 ) AS is_applied;

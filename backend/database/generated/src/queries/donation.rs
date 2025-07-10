@@ -276,21 +276,21 @@ impl GetAllStmt {
         }
     }
 }
-pub fn get_by_member_id() -> GetByMemberIdStmt {
-    GetByMemberIdStmt(crate::client::async_::Stmt::new(
-        "SELECT id, appointment_id, type, amount, created_at FROM donations WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = $1)",
+pub fn get_by_donor_id() -> GetByDonorIdStmt {
+    GetByDonorIdStmt(crate::client::async_::Stmt::new(
+        "SELECT id, appointment_id, type, amount, created_at FROM donations WHERE appointment_id IN (SELECT id FROM appointments WHERE donor_id = $1)",
     ))
 }
-pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
-impl GetByMemberIdStmt {
+pub struct GetByDonorIdStmt(crate::client::async_::Stmt);
+impl GetByDonorIdStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-        member_id: &'a uuid::Uuid,
+        donor_id: &'a uuid::Uuid,
     ) -> DonationQuery<'c, 'a, 's, C, Donation, 1> {
         DonationQuery {
             client,
-            params: [member_id],
+            params: [donor_id],
             stmt: &mut self.0,
             extractor: |row: &tokio_postgres::Row| -> Result<Donation, tokio_postgres::Error> {
                 Ok(Donation {

@@ -23,7 +23,7 @@ use database::queries::{self};
 pub async fn delete(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<()> {
     let database = state.database().await?;
 
-    // TODO: member can only delete their comment
+    // TODO: donor can only delete their comment
 
     if let Err(error) = queries::comment::delete().bind(&database, &id).await {
         tracing::error!(?error, "Failed to delete question");

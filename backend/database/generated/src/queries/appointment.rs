@@ -3,7 +3,7 @@
 #[derive(Clone, Copy, Debug)]
 pub struct CreateParams {
     pub request_id: uuid::Uuid,
-    pub member_id: uuid::Uuid,
+    pub donor_id: uuid::Uuid,
 }
 #[derive(Clone, Copy, Debug)]
 pub struct UpdateStatusParams {
@@ -19,14 +19,14 @@ pub struct RejectParams<T1: crate::StringSql> {
 pub struct Appointment {
     pub id: uuid::Uuid,
     pub request_id: uuid::Uuid,
-    pub member_id: uuid::Uuid,
+    pub donor_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
     pub reason: Option<String>,
 }
 pub struct AppointmentBorrowed<'a> {
     pub id: uuid::Uuid,
     pub request_id: uuid::Uuid,
-    pub member_id: uuid::Uuid,
+    pub donor_id: uuid::Uuid,
     pub status: ctypes::AppointmentStatus,
     pub reason: Option<&'a str>,
 }
@@ -35,7 +35,7 @@ impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
         AppointmentBorrowed {
             id,
             request_id,
-            member_id,
+            donor_id,
             status,
             reason,
         }: AppointmentBorrowed<'a>,
@@ -43,7 +43,7 @@ impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
         Self {
             id,
             request_id,
-            member_id,
+            donor_id,
             status,
             reason: reason.map(|v| v.into()),
         }
@@ -178,7 +178,7 @@ where
 }
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
-        "INSERT INTO appointments(request_id, member_id) VALUES ($1, $2) RETURNING id",
+        "INSERT INTO appointments(request_id, donor_id) VALUES ($1, $2) RETURNING id",
     ))
 }
 pub struct CreateStmt(crate::client::async_::Stmt);
@@ -187,11 +187,11 @@ impl CreateStmt {
         &'s mut self,
         client: &'c C,
         request_id: &'a uuid::Uuid,
-        member_id: &'a uuid::Uuid,
+        donor_id: &'a uuid::Uuid,
     ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 2> {
         UuidUuidQuery {
             client,
-            params: [request_id, member_id],
+            params: [request_id, donor_id],
             stmt: &mut self.0,
             extractor: |row| Ok(row.try_get(0)?),
             mapper: |it| it,
@@ -213,7 +213,7 @@ impl<'c, 'a, 's, C: GenericClient>
         client: &'c C,
         params: &'a CreateParams,
     ) -> UuidUuidQuery<'c, 'a, 's, C, uuid::Uuid, 2> {
-        self.bind(client, &params.request_id, &params.member_id)
+        self.bind(client, &params.request_id, &params.donor_id)
     }
 }
 pub fn get() -> GetStmt {
@@ -237,7 +237,7 @@ impl GetStmt {
                     Ok(AppointmentBorrowed {
                         id: row.try_get(0)?,
                         request_id: row.try_get(1)?,
-                        member_id: row.try_get(2)?,
+                        donor_id: row.try_get(2)?,
                         status: row.try_get(3)?,
                         reason: row.try_get(4)?,
                     })
@@ -246,28 +246,28 @@ impl GetStmt {
         }
     }
 }
-pub fn get_by_member_id() -> GetByMemberIdStmt {
-    GetByMemberIdStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM appointments WHERE member_id = $1",
+pub fn get_by_donor_id() -> GetByDonorIdStmt {
+    GetByDonorIdStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM appointments WHERE donor_id = $1",
     ))
 }
-pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
-impl GetByMemberIdStmt {
+pub struct GetByDonorIdStmt(crate::client::async_::Stmt);
+impl GetByDonorIdStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-        member_id: &'a uuid::Uuid,
+        donor_id: &'a uuid::Uuid,
     ) -> AppointmentQuery<'c, 'a, 's, C, Appointment, 1> {
         AppointmentQuery {
             client,
-            params: [member_id],
+            params: [donor_id],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<AppointmentBorrowed, tokio_postgres::Error> {
                     Ok(AppointmentBorrowed {
                         id: row.try_get(0)?,
                         request_id: row.try_get(1)?,
-                        member_id: row.try_get(2)?,
+                        donor_id: row.try_get(2)?,
                         status: row.try_get(3)?,
                         reason: row.try_get(4)?,
                     })
@@ -296,7 +296,7 @@ impl GetAllStmt {
                     Ok(AppointmentBorrowed {
                         id: row.try_get(0)?,
                         request_id: row.try_get(1)?,
-                        member_id: row.try_get(2)?,
+                        donor_id: row.try_get(2)?,
                         status: row.try_get(3)?,
                         reason: row.try_get(4)?,
                     })
