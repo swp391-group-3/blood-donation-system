@@ -13,7 +13,7 @@ use crate::{
 #[utoipa::path(
     get,
     tag = "Appointment",
-    path = "/appointment",
+    path = "/appointment/me",
     operation_id = "appointment::get_by_member_id",
     responses(
         (status = Status::OK, body = Appointment)
