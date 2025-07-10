@@ -92,7 +92,7 @@ function Page() {
     });
     return (
         <div className='flex-1 overflow-auto '>
-            <div className="p-8 max-w-7xl mx-auto">
+            <div className="p-8 max-w-6xl mx-auto">
                 {/* HEADER */}
                 <div className='flex items-center justify-between mb-8 '>
                     <div>
@@ -246,8 +246,8 @@ function Page() {
 
                 </div>
                 {/* Filters and Search */}
-                {/* <Card className='mb-6 border-none'>
-                    <CardContent className='pt-6'>
+                <Card className='mb-6 border-none'>
+                    <CardContent className='pt-6 px-0'>
                         <div className='flex flex-col sm:flex-row gap-4'>
                             <div className='relative flex-1'>
                                 <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4' />
@@ -271,34 +271,12 @@ function Page() {
                             </Select>
                         </div>
                     </CardContent>
-                </Card> */}
+                </Card>
                 {/* USER TABLES */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Users ({filtersAccounts.length})</CardTitle>
                         <CardDescription>  Manage user accounts and their permissions </CardDescription>
-                        <div className='flex flex-col sm:flex-row gap-4 mt-2'>
-                            <div className='relative flex-1'>
-                                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4' />
-                                <Input
-                                    placeholder='Search users by name or email'
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className='pl-10'
-                                />
-                            </div>
-                            <Select value={roleFilter} onValueChange={setRoleFilter}>
-                                <SelectTrigger className='w-full sm:w-[180px]'>
-                                    <SelectValue placeholder="Filter by role" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value='all'>All Roles</SelectItem>
-                                    <SelectItem value='admin'>Admin</SelectItem>
-                                    <SelectItem value='member'> Member  </SelectItem>
-                                    <SelectItem value='staff'>Staff</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
                     </CardHeader>
                     <CardContent>
                         <Table>
