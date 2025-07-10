@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Card,
     CardContent,
@@ -13,6 +12,7 @@ import { Bot, Minimize2, X, Send, Maximize2 } from 'lucide-react';
 import { useGetChatHistory } from '@/hooks/use-get-chat-history';
 import { useChatHandler } from '@/hooks/use-handler-message';
 import Markdown from 'react-markdown';
+import { Textarea } from '@/components/ui/textarea';
 
 export function BloodDonationChatbot() {
     const [isOpen, setIsOpen] = useState(false);
@@ -147,7 +147,7 @@ export function BloodDonationChatbot() {
                             onSubmit={handleSubmit}
                             className="flex w-full gap-2"
                         >
-                            <Input
+                            <Textarea
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Ask about blood donation..."
