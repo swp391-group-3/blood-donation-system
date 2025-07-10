@@ -1,9 +1,7 @@
-'use client';
-
-import { fetchWrapper, throwIfError } from '@/lib/api';
-import { schema as registerSchema } from './use-register-form';
 import { z } from 'zod';
+import { schema as registerSchema } from './use-register-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchWrapper, throwIfError } from '@/lib/api';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +12,8 @@ export const schema = registerSchema.omit({
     blood_group: true,
 });
 
-export const useUpdateAccountForm = (
+export const useUpdateDataTable = (
+    id: string,
     defaultValues?: z.infer<typeof schema>,
     opts?: { onSuccess?: () => void }
 ) => {
@@ -22,7 +21,8 @@ export const useUpdateAccountForm = (
 
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
-            const response = await fetchWrapper('/account', {
+
+            const response = await fetchWrapper(`/account/${id}`, {
                 method: 'PUT',
                 headers: {
                     Accept: 'application/json',
@@ -36,7 +36,7 @@ export const useUpdateAccountForm = (
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
             toast.success('Profile updated successfully!');
-            qc.invalidateQueries({ queryKey: ['auth', 'me'] });
+            qc.invalidateQueries({ queryKey: ["account"] })
             opts?.onSuccess?.();
         },
     });

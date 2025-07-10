@@ -24,7 +24,7 @@ export function getTrendData(donations: Donation[], requests: BloodRequest[]) {
     });
 
     requests.forEach(r => {
-        const idx = r.start_time.getMonth();
+        const idx = new Date(r.start_time).getMonth();
         trends[idx].requests += 1;
 
     });
