@@ -60,7 +60,7 @@ export function BloodDonationChatbot() {
             {isOpen && (
                 <Card
                     className={`fixed bottom-6 right-6 z-50 flex flex-col animate-in slide-in-from-bottom-4 duration-300 overflow-hidden
-                    ${isExpanded ? 'w-[90vw] h-[80vh]' : 'w-80 h-96'}
+                    ${isExpanded ? 'w-[90vw] h-[80vh]' : 'w-96 h-128'}
                     rounded-xl shadow-md bg-white py-0
                   `}
                 >
