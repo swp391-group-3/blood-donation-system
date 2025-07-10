@@ -1,4 +1,4 @@
-import { BloodGroup } from "./blood-group";
+import { BloodGroup } from './blood-group';
 
 export const priorities = ['low', 'medium', 'high'] as const;
 

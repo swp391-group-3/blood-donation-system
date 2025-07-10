@@ -11,7 +11,7 @@ export type Status = (typeof statuses)[number];
 
 export interface Appointment {
     id: string;
-    member_id: string;
+    donor_id: string;
     request_id: string;
     status: Status;
 }

@@ -16,7 +16,7 @@ export const schema = registerSchema.omit({
 
 export const useUpdateAccountForm = (
     defaultValues?: z.infer<typeof schema>,
-    opts?: { onSuccess?: () => void }
+    opts?: { onSuccess?: () => void },
 ) => {
     const qc = useQueryClient();
 

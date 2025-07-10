@@ -1,17 +1,22 @@
-"use client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent } from "@/components/ui/tabs"
-import { useBloodRequestList } from "@/hooks/use-blood-request-list";
-import { useAllAccounts } from "@/hooks/use-all-account";
-import { useAllBloodBag } from "@/hooks/use-all-blood-bag";
-import { useAllDonation } from "@/hooks/use-all-donation";
-import { getBloodGroupData, getTrendData, LabelProps } from "@/lib/dashboard-utils";
+'use client';
 import {
-    Users,
-    Activity,
-    AlertTriangle,
-    Droplets,
-} from "lucide-react"
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { useBloodRequestList } from '@/hooks/use-blood-request-list';
+import { useAllAccounts } from '@/hooks/use-all-account';
+import { useAllBloodBag } from '@/hooks/use-all-blood-bag';
+import { useAllDonation } from '@/hooks/use-all-donation';
+import {
+    getBloodGroupData,
+    getTrendData,
+    LabelProps,
+} from '@/lib/dashboard-utils';
+import { Users, Activity, AlertTriangle, Droplets } from 'lucide-react';
 import {
     LineChart,
     Line,
@@ -24,7 +29,7 @@ import {
     Pie,
     Cell,
     Legend,
-} from "recharts"
+} from 'recharts';
 
 const renderCustomizedLabel = ({
     cx,
@@ -33,9 +38,8 @@ const renderCustomizedLabel = ({
     innerRadius,
     outerRadius,
     percent,
-    name
+    name,
 }: Partial<LabelProps>) => {
-
     if (
         percent === undefined ||
         midAngle === undefined ||
@@ -74,15 +78,16 @@ function Page() {
     const { data: donations = [] } = useAllDonation();
     const { data: bloodBags } = useAllBloodBag();
     const dataTrend = getTrendData(donations, bloodRequests);
-    const bloodGroupData = getBloodGroupData(accounts).sort((a, b) => b.value - a.value);
-
+    const bloodGroupData = getBloodGroupData(accounts).sort(
+        (a, b) => b.value - a.value,
+    );
 
     const stats = {
         totalUsers: accounts?.length,
         activeRequests: bloodRequests?.length,
         donations: donations?.length,
         bloodBagsAvailable: bloodBags?.length,
-    }
+    };
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -92,7 +97,8 @@ function Page() {
                             Blood Donation Dashboard
                         </h1>
                         <p className="text-gray-600 mt-2">
-                            Monitor donations, requests, and blood bank inventory
+                            Monitor donations, requests, and blood bank
+                            inventory
                         </p>
                     </div>
                 </div>
@@ -153,7 +159,6 @@ function Page() {
                             </div>
                         </CardContent>
                     </Card>
-
                 </div>
 
                 <Tabs defaultValue="overview" className="space-y-6">
@@ -161,16 +166,27 @@ function Page() {
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                             <Card className="shadow-sm">
                                 <CardHeader className="pb-4">
-                                    <CardTitle className="text-xl font-semibold">Donation Trends</CardTitle>
+                                    <CardTitle className="text-xl font-semibold">
+                                        Donation Trends
+                                    </CardTitle>
                                     <CardDescription className="text-gray-600">
-                                        Monthly comparison of donations received vs requests made
+                                        Monthly comparison of donations received
+                                        vs requests made
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <ResponsiveContainer width="100%" height={300}>
+                                    <ResponsiveContainer
+                                        width="100%"
+                                        height={300}
+                                    >
                                         <LineChart
                                             data={dataTrend}
-                                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                            margin={{
+                                                top: 5,
+                                                right: 30,
+                                                left: 20,
+                                                bottom: 5,
+                                            }}
                                         >
                                             <CartesianGrid
                                                 strokeDasharray="3 3"
@@ -181,12 +197,18 @@ function Page() {
                                                 dataKey="month"
                                                 axisLine={false}
                                                 tickLine={false}
-                                                tick={{ fill: '#64748b', fontSize: 12 }}
+                                                tick={{
+                                                    fill: '#64748b',
+                                                    fontSize: 12,
+                                                }}
                                             />
                                             <YAxis
                                                 axisLine={false}
                                                 tickLine={false}
-                                                tick={{ fill: '#64748b', fontSize: 12 }}
+                                                tick={{
+                                                    fill: '#64748b',
+                                                    fontSize: 12,
+                                                }}
                                             />
                                             <Tooltip />
                                             <Line
@@ -194,8 +216,15 @@ function Page() {
                                                 dataKey="donations"
                                                 stroke="#dc2626"
                                                 strokeWidth={3}
-                                                dot={{ fill: '#dc2626', strokeWidth: 2, r: 4 }}
-                                                activeDot={{ r: 6, fill: '#dc2626' }}
+                                                dot={{
+                                                    fill: '#dc2626',
+                                                    strokeWidth: 2,
+                                                    r: 4,
+                                                }}
+                                                activeDot={{
+                                                    r: 6,
+                                                    fill: '#dc2626',
+                                                }}
                                                 name="Donations"
                                             />
                                             <Line
@@ -203,8 +232,15 @@ function Page() {
                                                 dataKey="requests"
                                                 stroke="#2563eb"
                                                 strokeWidth={3}
-                                                dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
-                                                activeDot={{ r: 6, fill: '#2563eb' }}
+                                                dot={{
+                                                    fill: '#2563eb',
+                                                    strokeWidth: 2,
+                                                    r: 4,
+                                                }}
+                                                activeDot={{
+                                                    r: 6,
+                                                    fill: '#2563eb',
+                                                }}
                                                 name="Requests"
                                             />
                                         </LineChart>
@@ -214,13 +250,19 @@ function Page() {
 
                             <Card className="shadow-sm">
                                 <CardHeader className="pb-4">
-                                    <CardTitle className="text-xl font-semibold">Blood Group Distribution</CardTitle>
+                                    <CardTitle className="text-xl font-semibold">
+                                        Blood Group Distribution
+                                    </CardTitle>
                                     <CardDescription className="text-gray-600">
-                                        Current breakdown of registered donors by blood type
+                                        Current breakdown of registered donors
+                                        by blood type
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <ResponsiveContainer width="100%" height={300}>
+                                    <ResponsiveContainer
+                                        width="100%"
+                                        height={300}
+                                    >
                                         <PieChart>
                                             <Pie
                                                 data={bloodGroupData}
@@ -234,9 +276,14 @@ function Page() {
                                                 stroke="#ffffff"
                                                 strokeWidth={2}
                                             >
-                                                {bloodGroupData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                                ))}
+                                                {bloodGroupData.map(
+                                                    (entry, index) => (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill={entry.color}
+                                                        />
+                                                    ),
+                                                )}
                                             </Pie>
                                             <Tooltip />
                                             <Legend
@@ -247,35 +294,45 @@ function Page() {
                                                 content={({ payload }) => (
                                                     <div
                                                         style={{
-                                                            display: "flex",
-                                                            justifyContent: "center",
-                                                            flexWrap: "wrap",
-                                                            gap: "12px",
-                                                            paddingTop: "16px"
+                                                            display: 'flex',
+                                                            justifyContent:
+                                                                'center',
+                                                            flexWrap: 'wrap',
+                                                            gap: '12px',
+                                                            paddingTop: '16px',
                                                         }}
                                                     >
-                                                        {payload?.map((entry, index) => (
-                                                            <div
-                                                                key={`legend-item-${index}`}
-                                                                style={{
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    fontSize: "16px",
-                                                                    color: "#333"
-                                                                }}
-                                                            >
+                                                        {payload?.map(
+                                                            (entry, index) => (
                                                                 <div
+                                                                    key={`legend-item-${index}`}
                                                                     style={{
-                                                                        width: 14,
-                                                                        height: 14,
-                                                                        borderRadius: "50%",
-                                                                        backgroundColor: entry.color,
-                                                                        marginRight: 6
+                                                                        display:
+                                                                            'flex',
+                                                                        alignItems:
+                                                                            'center',
+                                                                        fontSize:
+                                                                            '16px',
+                                                                        color: '#333',
                                                                     }}
-                                                                ></div>
-                                                                {entry.value}
-                                                            </div>
-                                                        ))}
+                                                                >
+                                                                    <div
+                                                                        style={{
+                                                                            width: 14,
+                                                                            height: 14,
+                                                                            borderRadius:
+                                                                                '50%',
+                                                                            backgroundColor:
+                                                                                entry.color,
+                                                                            marginRight: 6,
+                                                                        }}
+                                                                    ></div>
+                                                                    {
+                                                                        entry.value
+                                                                    }
+                                                                </div>
+                                                            ),
+                                                        )}
                                                     </div>
                                                 )}
                                             />
@@ -289,7 +346,14 @@ function Page() {
                                                     {bloodGroupData[0].name}
                                                 </span>
                                             </div>
-                                            <div className="text-sm text-red-600">{(bloodGroupData[0].value / accounts.length * 100).toFixed(2)}%</div>
+                                            <div className="text-sm text-red-600">
+                                                {(
+                                                    (bloodGroupData[0].value /
+                                                        accounts.length) *
+                                                    100
+                                                ).toFixed(2)}
+                                                %
+                                            </div>
                                         </div>
                                         <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-blue-700 mb-1">
@@ -298,7 +362,14 @@ function Page() {
                                                     {bloodGroupData[1].name}
                                                 </span>
                                             </div>
-                                            <div className="text-sm text-blue-600">{(bloodGroupData[1].value / accounts .length * 100).toFixed(2)}%</div>
+                                            <div className="text-sm text-blue-600">
+                                                {(
+                                                    (bloodGroupData[1].value /
+                                                        accounts.length) *
+                                                    100
+                                                ).toFixed(2)}
+                                                %
+                                            </div>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -308,7 +379,7 @@ function Page() {
                 </Tabs>
             </div>
         </div>
-    )
+    );
 }
 
-export default Page
+export default Page;

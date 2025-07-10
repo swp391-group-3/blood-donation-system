@@ -143,14 +143,14 @@ const AppointmentRow = ({ id }: { id: string }) => {
             <TableCell className="p-6">
                 <div className="flex items-center gap-4">
                     <div className="size-10">
-                        <AccountPicture name={apt.member.name} />
+                        <AccountPicture name={apt.donor.name} />
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="font-semibold text-slate-900 truncate">
-                            {apt.member.name}
+                            {apt.donor.name}
                         </div>
                         <div className="text-sm text-slate-600 truncate">
-                            {apt.member.email}
+                            {apt.donor.email}
                         </div>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ const AppointmentRow = ({ id }: { id: string }) => {
                 <div className="flex items-center gap-2">
                     <Droplets className="h-4 w-4 text-red-500" />
                     <span className="font-semibold text-red-600">
-                        {bloodGroupLabels[apt.member.blood_group]}
+                        {bloodGroupLabels[apt.donor.blood_group]}
                     </span>
                 </div>
             </TableCell>
@@ -257,8 +257,8 @@ export default function AppointmentManagementPage() {
 
                 const searchTerm = search.toLowerCase().trim();
                 return (
-                    apt.member.name.toLowerCase().includes(searchTerm) ||
-                    apt.member.email.toLowerCase().includes(searchTerm)
+                    apt.donor.name.toLowerCase().includes(searchTerm) ||
+                    apt.donor.email.toLowerCase().includes(searchTerm)
                 );
             });
     }, [appointments, selectedStatus, search]);
@@ -326,7 +326,7 @@ export default function AppointmentManagementPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="p-6 font-semibold text-slate-900">
-                                    Member
+                                    Donor
                                 </TableHead>
                                 <TableHead className="p-6 font-semibold text-slate-900">
                                     Blood Type
