@@ -44,6 +44,7 @@ pub struct Request {
     pub title: String,
     #[validate(range(min = 1))]
     pub max_people: i32,
+    #[validate(custom(function = validate_future_date_time))]
     pub start_time: DateTime<Utc>,
     #[validate(custom(function = validate_future_date_time))]
     pub end_time: DateTime<Utc>,
