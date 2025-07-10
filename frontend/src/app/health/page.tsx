@@ -42,9 +42,12 @@ export default function HealthPage() {
                     Monitor your health status and donation eligibility
                 </HeroDescription>
             </Hero>
-            <div className="mb-8">
-                <HealthOverviewCard healths={healths} />
-            </div>
+
+            {healths.length > 0 && (
+                <div className="mb-8">
+                    <HealthOverviewCard healths={healths} />
+                </div>
+            )}
 
             <div>
                 <div className="items-center justify-between mb-6">
