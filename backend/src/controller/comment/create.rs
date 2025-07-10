@@ -38,7 +38,7 @@ pub async fn create(
 ) -> Result<Json<Uuid>> {
     let database = state.database().await?;
 
-    authorize(&claims, [Role::Member], &database).await?;
+    authorize(&claims, [Role::Donor], &database).await?;
 
     let params = queries::comment::CreateParams {
         account_id: claims.sub,
