@@ -63,7 +63,8 @@ WHERE role = :role
 
 --! get_all : Account
 SELECT *
-FROM accounts;
+FROM accounts
+WHERE is_active = true;
 
 --! update (phone?, name?, gender?, address?, birthday?)
 UPDATE accounts
