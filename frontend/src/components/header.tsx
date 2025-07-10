@@ -28,6 +28,7 @@ import { useCurrentAccount } from '@/hooks/use-current-account';
 import Link from 'next/link';
 import { AccountOverview } from '@/components/account-overview';
 import { Role } from '@/lib/api/dto/account';
+import { useLogout } from '@/hooks/use-log-out';
 
 interface NavigationItem {
     label: string;
@@ -68,7 +69,9 @@ export const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { data: account } = useCurrentAccount();
     const items = getNavigationItems(account?.role);
-
+    const logoutMutation = useLogout();
+    console.log(account);
+    
     return (
         <>
             <header className="bg-white/80 backdrop-blur-xl border-b border-slate-300/60 sticky top-0 z-50">
@@ -218,7 +221,9 @@ export const Header = () => {
 
                                             <DropdownMenuSeparator className="my-2 bg-slate-100" />
 
-                                            <DropdownMenuItem className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 focus:text-red-600 transition-colors duration-200">
+                                            <DropdownMenuItem className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 focus:text-red-600 transition-colors duration-200"
+                                                onClick={() => logoutMutation.mutate()}
+                                            >
                                                 <div className="p-1.5 bg-red-50 rounded-lg">
                                                     <LogOut className="h-4 w-4 text-red-600" />
                                                 </div>
@@ -241,9 +246,8 @@ export const Header = () => {
             </header>
 
             <div
-                className={`fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${
-                    isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                className={`fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
             >
                 {account && (
                     <div className="flex items-center gap-4 p-6 bg-gradient-to-r from-slate-50 to-slate-100/50">
@@ -351,7 +355,9 @@ export const Header = () => {
                 </div>
 
                 <div className="px-6 py-4 mt-auto border-t border-slate-200">
-                    <button className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full">
+                    <button className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full"
+                        onClick={() => logoutMutation.mutate()}
+                    >
                         <div className="p-1.5 bg-red-50 rounded-lg">
                             <LogOut className="h-4 w-4 text-red-600" />
                         </div>
