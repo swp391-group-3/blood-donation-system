@@ -6,27 +6,15 @@ import { columns } from './column';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { BookPlus, Loader2, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Blog } from '@/lib/api/dto/blog';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useCreateBlogFrom } from '@/hooks/use-create-blog';
-import { Textarea } from '@/components/ui/textarea';
-import { Tag, TagInput } from 'emblor';
 
 
 
 function BlogPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const { data: blogs = [] } = useBlogList();
-
-    // for adding blog
-    const [isAddBlog, setIsAddBlog] = useState(false);
-    const { mutation: mutationBlog, form: formBlog } = useCreateBlogFrom();
-    const [tags, setTags] = useState<Tag[]>([]);
-    const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
     const filterBlogs: Blog[] = useMemo(() => {
         return blogs.filter((blog) => {
