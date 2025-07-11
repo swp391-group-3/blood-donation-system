@@ -75,15 +75,7 @@ export const columns = [
 
 function BlogActionsCell({ blog }: { blog: Blog }) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    // const { mutation, form } = useUpdateDataTable(blog.id, blog, {
-    //     onSuccess() {
-    //         setIsEditModalOpen(false);
-    //     },
-    // });
     // const deleteMutation = useDeleteAccount();
-    // const handleDeleteAccount = (id: string) => {
-    //     deleteMutation.mutate(id);
-    // };
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -98,43 +90,16 @@ function BlogActionsCell({ blog }: { blog: Blog }) {
                 sideOffset={8}
                 alignOffset={4}
             >
-                {/* EDIT */}
-                <DropdownMenuItem
-                    onSelect={() => {
-                        setIsEditModalOpen(true);
-                    }}
-                >
-                    <Edit3 className="mr-2 h-4 w-4" />
-                    Edit Blog
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
                 {/* DELETE */}
                 <DropdownMenuItem
                     // onSelect={() => {
                     //     handleDeleteAccount(account.id);
                     // }}
-                    className="text-red-600"
                 >
-                    <Trash2 className="mr-2 h-4 w-4" />
+                    <Trash2 className="mr-2 h-4 w-4 text-red-600" />
                     Delete Blog
                 </DropdownMenuItem>
             </DropdownMenuContent>
-
-            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col">
-                    <DialogHeader>
-                        <DialogTitle>Edit Blog</DialogTitle>
-                    </DialogHeader>
-                    <div className="overflow-y-auto flex-1 pr-2">
-                        {/* <FormEdit 
-                        form={form} 
-                        mutation={mutation}
-                         /> */}
-                    </div>
-                </DialogContent>
-            </Dialog>
         </DropdownMenu>
     )
 }
