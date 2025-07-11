@@ -3,8 +3,8 @@ use std::time::Duration;
 use serde::Deserialize;
 
 const fn default_alert_low_stock_delay() -> Duration {
-    // 1 hour
-    Duration::from_secs(60 * 60)
+    // 1 day
+    Duration::from_secs(24 * 60 * 60)
 }
 
 #[derive(Debug, Deserialize)]
