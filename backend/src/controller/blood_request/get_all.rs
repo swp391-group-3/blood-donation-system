@@ -1,6 +1,7 @@
 use std::{collections::HashSet, sync::Arc};
 
 use axum::{Json, extract::State, http::StatusCode};
+use ctypes::Role;
 use database::queries::{self, blood_request::BloodRequest};
 
 use crate::{
@@ -52,6 +53,10 @@ pub async fn get_all(
             return Err(Error::builder().status(StatusCode::UNAUTHORIZED).build());
         }
     };
+
+    if account.role != Role::Donor {
+        return Ok(Json(requests));
+    }
 
     let compatible_blood_groups = match account.blood_group {
         Some(blood_group) => get_compatible(blood_group),

@@ -8,6 +8,8 @@ import { Progress } from '@radix-ui/react-progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { UpdateBloodRequestDialog } from '@/components/update-blood-request-dialog';
+import { useCurrentAccount } from '@/hooks/use-current-account';
 
 const priorityConfig = {
     high: {
@@ -31,6 +33,8 @@ const priorityConfig = {
 };
 
 export const RequestCard = (request: BloodRequest) => {
+    const { data: account } = useCurrentAccount();
+
     const config = priorityConfig[request.priority];
     const progress = Math.round(
         (request.current_people / request.max_people) * 100,
@@ -153,14 +157,22 @@ export const RequestCard = (request: BloodRequest) => {
                     </div>
                 </div>
 
-                <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
-                    <Link
-                        className="w-full h-full"
-                        href={`/request/apply/${request.id}`}
-                    >
-                        Apply Now
-                    </Link>
-                </Button>
+                {account?.role === 'donor' ? (
+                    <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                        <Link
+                            className="w-full h-full"
+                            href={`/request/apply/${request.id}`}
+                        >
+                            Apply Now
+                        </Link>
+                    </Button>
+                ) : (
+                    <UpdateBloodRequestDialog id={request.id}>
+                        <Button className="w-full h-10 font-semibold rounded-xl shadow-lg transition-all duration-200">
+                            Edit
+                        </Button>
+                    </UpdateBloodRequestDialog>
+                )}
             </CardContent>
         </Card>
     );
