@@ -77,4 +77,8 @@ WHERE id = :id AND account_id = :account_id;
 
 --! delete
 DELETE FROM blogs
-WHERE id = :id AND account_id = :account_id;
+WHERE id = :id
+AND (
+    (SELECT role FROM accounts WHERE id = :account_id) = 'admin'::role
+    OR account_id = :account_id
+);
