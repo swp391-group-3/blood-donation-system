@@ -8,6 +8,10 @@ export const useDeleteBlog = () => {
         mutationFn: async (id: string) => {
             await fetchWrapper(`/blog/${id}`, {
                 method: 'DELETE',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-type': 'application/json',
+                },
             });
         },
         onSuccess: () => {

@@ -1,12 +1,10 @@
 "use client"
-import { FormEdit } from "@/components/edit-profile";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useDeleteBlog } from "@/hooks/use-delete-blog";
 import { Blog } from "@/lib/api/dto/blog";
 import { createColumnHelper } from "@tanstack/react-table"
-import { Edit3, MoreHorizontal, Trash2 } from "lucide-react";
-import { useState } from "react";
+import {  MoreHorizontal, Trash2 } from "lucide-react";
 
 
 const columnHelper = createColumnHelper<Blog>();
@@ -74,7 +72,11 @@ export const columns = [
 ]
 
 function BlogActionsCell({ blog }: { blog: Blog }) {
-    // const deleteMutation = useDeleteAccount();
+    const deleteMutation = useDeleteBlog();
+
+    const handleDeleteBlog = (id: string) => {
+        deleteMutation.mutate(id)
+    }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -91,9 +93,9 @@ function BlogActionsCell({ blog }: { blog: Blog }) {
             >
                 {/* DELETE */}
                 <DropdownMenuItem
-                    // onSelect={() => {
-                    //     handleDeleteAccount(account.id);
-                    // }}
+                    onSelect={() => {
+                        handleDeleteBlog(blog.id);
+                    }}
                 >
                     <Trash2 className="mr-2 h-4 w-4 text-red-600" />
                     Delete Blog
