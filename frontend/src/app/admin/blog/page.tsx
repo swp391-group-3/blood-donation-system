@@ -58,123 +58,11 @@ function BlogPage() {
                 <div className="flex items-center justify-between mb-8 ">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
-                            User Management
+                            Blog Management
                         </h1>
                         <p className="text-gray-600 mt-1">
-                            Manage user accounts, roles, and permissions
+                            Manage Blogs
                         </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Dialog open={isAddBlog} onOpenChange={setIsAddBlog}>
-                            <DialogTrigger asChild>
-                                <Button>
-                                    <BookPlus /> Add Blog
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Add Staff Account</DialogTitle>
-                                </DialogHeader>
-                                <Form {...formBlog}>
-                                    <form
-                                        autoComplete="off"
-                                        onSubmit={formBlog.handleSubmit(
-                                            (values) =>
-                                                mutationBlog.mutate(values),
-                                        )}
-                                    >
-                                        <div className="space-y-6">
-                                            <FormField
-                                                control={formBlog.control}
-                                                name="title"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            Title
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Enter the title of blog post"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={formBlog.control}
-                                                name="description"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            Description
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Textarea
-                                                                placeholder="Write a brief description of your blog post"
-                                                                className="min-h-[100px]"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={formBlog.control}
-                                                name="tags"
-                                                render={() => (
-                                                    <FormItem className="flex flex-col items-start">
-                                                        <FormLabel className="text-left">
-                                                            Tags
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <TagInput
-                                                                tags={tags}
-                                                                setTags={(newTags) => {
-                                                                    console.log(newTags);
-                                                                    const tagsArray = typeof newTags === 'function'
-                                                                        ? newTags(tags)
-                                                                        : newTags;
-                                                                    setTags(tagsArray);
-                                                                    formBlog.setValue('tags',
-                                                                        tagsArray.map((tag) => tag.text),
-                                                                        { shouldValidate: true },
-                                                                    );
-                                                                }}
-                                                                activeTagIndex={activeTagIndex}
-                                                                setActiveTagIndex={setActiveTagIndex}
-                                                                placeholder="Enter blog tags..."
-                                                                className="sm:min-w-[450px]"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            {mutationBlog.status ===
-                                                'pending' ? (
-                                                <Button
-                                                    disabled
-                                                    className="w-full py-5"
-                                                >
-                                                    <Loader2 className="animate-spin" />
-                                                    Loading
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    type="submit"
-                                                    className="w-full py-5"
-                                                >
-                                                    Add Blog
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </form>
-                                </Form>
-                            </DialogContent>
-                        </Dialog>
                     </div>
                 </div>
                 {/* search */}
@@ -184,7 +72,7 @@ function BlogPage() {
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                                 <Input
-                                    placeholder="Search blog name"
+                                    placeholder="Search by blog name"
                                     value={searchTerm}
                                     onChange={(e) =>
                                         setSearchTerm(e.target.value)

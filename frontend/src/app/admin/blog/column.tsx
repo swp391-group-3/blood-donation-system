@@ -74,7 +74,6 @@ export const columns = [
 ]
 
 function BlogActionsCell({ blog }: { blog: Blog }) {
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     // const deleteMutation = useDeleteAccount();
     return (
         <DropdownMenu>
