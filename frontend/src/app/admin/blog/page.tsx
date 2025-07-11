@@ -6,12 +6,12 @@ import { columns } from './column';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Loader2, Search, UserPlus } from 'lucide-react';
+import { BookPlus, Loader2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Blog } from '@/lib/api/dto/blog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useCreateBlogFrom } from '@/hooks/use-create-blog';
 import { Textarea } from '@/components/ui/textarea';
 import { Tag, TagInput } from 'emblor';
@@ -68,8 +68,7 @@ function BlogPage() {
                         <Dialog open={isAddBlog} onOpenChange={setIsAddBlog}>
                             <DialogTrigger asChild>
                                 <Button>
-                                    {' '}
-                                    <UserPlus /> Add Blog
+                                    <BookPlus /> Add Blog
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
@@ -133,48 +132,23 @@ function BlogPage() {
                                                         <FormControl>
                                                             <TagInput
                                                                 tags={tags}
-                                                                setTags={(
-                                                                    newTags,
-                                                                ) => {
-                                                                    const tagsArray =
-                                                                        typeof newTags ===
-                                                                            'function'
-                                                                            ? newTags(
-                                                                                tags,
-                                                                            )
-                                                                            : newTags;
-
-                                                                    setTags(
-                                                                        tagsArray,
-                                                                    );
-                                                                    formBlog.setValue(
-                                                                        'tags',
-                                                                        tagsArray.map(
-                                                                            (
-                                                                                tag,
-                                                                            ) =>
-                                                                                tag.text,
-                                                                        ),
-                                                                        {
-                                                                            shouldValidate:
-                                                                                true,
-                                                                        },
+                                                                setTags={(newTags) => {
+                                                                    console.log(newTags);
+                                                                    const tagsArray = typeof newTags === 'function'
+                                                                        ? newTags(tags)
+                                                                        : newTags;
+                                                                    setTags(tagsArray);
+                                                                    formBlog.setValue('tags',
+                                                                        tagsArray.map((tag) => tag.text),
+                                                                        { shouldValidate: true },
                                                                     );
                                                                 }}
-                                                                activeTagIndex={
-                                                                    activeTagIndex
-                                                                }
-                                                                setActiveTagIndex={
-                                                                    setActiveTagIndex
-                                                                }
+                                                                activeTagIndex={activeTagIndex}
+                                                                setActiveTagIndex={setActiveTagIndex}
                                                                 placeholder="Enter blog tags..."
                                                                 className="sm:min-w-[450px]"
                                                             />
                                                         </FormControl>
-                                                        <FormDescription>
-                                                            These are the topics
-                                                            of your blogs
-                                                        </FormDescription>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
@@ -193,7 +167,7 @@ function BlogPage() {
                                                     type="submit"
                                                     className="w-full py-5"
                                                 >
-                                                    Add Account
+                                                    Add Blog
                                                 </Button>
                                             )}
                                         </div>
