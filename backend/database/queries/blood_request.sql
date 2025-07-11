@@ -71,7 +71,9 @@ SET
     priority = COALESCE(:priority, priority),
     title = COALESCE(:title, title),
     max_people = COALESCE(:max_people, max_people)
-WHERE id = :id;
+WHERE id = :id AND staff_id = :staff_id;
 
 --! delete
-UPDATE blood_requests SET is_active = false WHERE id = :id;
+UPDATE blood_requests
+SET is_active = false
+WHERE id = :id AND staff_id = :staff_id;
