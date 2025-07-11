@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS blogs(
 
 CREATE TABLE IF NOT EXISTS comments(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    blog_id uuid NOT NULL REFERENCES blogs(id),
+    blog_id uuid NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
     account_id uuid NOT NULL REFERENCES accounts(id),
     content text NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS tags(
 );
 
 CREATE TABLE IF NOT EXISTS blog_tags(
-    blog_id uuid NOT NULL REFERENCES blogs(id),
+    blog_id uuid NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
     tag_id uuid NOT NULL REFERENCES tags(id),
 
     PRIMARY KEY (blog_id, tag_id)
