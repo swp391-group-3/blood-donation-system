@@ -6,9 +6,15 @@ import { columns } from './column';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Search } from 'lucide-react';
+import { Loader2, Search, UserPlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Blog } from '@/lib/api/dto/blog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useCreateBlogFrom } from '@/hooks/use-create-blog';
+import { Textarea } from '@/components/ui/textarea';
+import { Tag, TagInput } from 'emblor';
 
 
 
@@ -16,6 +22,11 @@ function BlogPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const { data: blogs = [] } = useBlogList();
 
+    // for adding blog
+    const [isAddBlog, setIsAddBlog] = useState(false);
+    const { mutation: mutationBlog, form: formBlog } = useCreateBlogFrom();
+    const [tags, setTags] = useState<Tag[]>([]);
+    const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
     const filterBlogs: Blog[] = useMemo(() => {
         return blogs.filter((blog) => {
@@ -43,6 +54,155 @@ function BlogPage() {
     return (
         <div>
             <div className='max-w-6xl mx-auto'>
+                {/* HEADER */}
+                <div className="flex items-center justify-between mb-8 ">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">
+                            User Management
+                        </h1>
+                        <p className="text-gray-600 mt-1">
+                            Manage user accounts, roles, and permissions
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Dialog open={isAddBlog} onOpenChange={setIsAddBlog}>
+                            <DialogTrigger asChild>
+                                <Button>
+                                    {' '}
+                                    <UserPlus /> Add Blog
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Add Staff Account</DialogTitle>
+                                </DialogHeader>
+                                <Form {...formBlog}>
+                                    <form
+                                        autoComplete="off"
+                                        onSubmit={formBlog.handleSubmit(
+                                            (values) =>
+                                                mutationBlog.mutate(values),
+                                        )}
+                                    >
+                                        <div className="space-y-6">
+                                            <FormField
+                                                control={formBlog.control}
+                                                name="title"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>
+                                                            Title
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                placeholder="Enter the title of blog post"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formBlog.control}
+                                                name="description"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>
+                                                            Description
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Write a brief description of your blog post"
+                                                                className="min-h-[100px]"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={formBlog.control}
+                                                name="tags"
+                                                render={() => (
+                                                    <FormItem className="flex flex-col items-start">
+                                                        <FormLabel className="text-left">
+                                                            Tags
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <TagInput
+                                                                tags={tags}
+                                                                setTags={(
+                                                                    newTags,
+                                                                ) => {
+                                                                    const tagsArray =
+                                                                        typeof newTags ===
+                                                                            'function'
+                                                                            ? newTags(
+                                                                                tags,
+                                                                            )
+                                                                            : newTags;
+
+                                                                    setTags(
+                                                                        tagsArray,
+                                                                    );
+                                                                    formBlog.setValue(
+                                                                        'tags',
+                                                                        tagsArray.map(
+                                                                            (
+                                                                                tag,
+                                                                            ) =>
+                                                                                tag.text,
+                                                                        ),
+                                                                        {
+                                                                            shouldValidate:
+                                                                                true,
+                                                                        },
+                                                                    );
+                                                                }}
+                                                                activeTagIndex={
+                                                                    activeTagIndex
+                                                                }
+                                                                setActiveTagIndex={
+                                                                    setActiveTagIndex
+                                                                }
+                                                                placeholder="Enter blog tags..."
+                                                                className="sm:min-w-[450px]"
+                                                            />
+                                                        </FormControl>
+                                                        <FormDescription>
+                                                            These are the topics
+                                                            of your blogs
+                                                        </FormDescription>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            {mutationBlog.status ===
+                                                'pending' ? (
+                                                <Button
+                                                    disabled
+                                                    className="w-full py-5"
+                                                >
+                                                    <Loader2 className="animate-spin" />
+                                                    Loading
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    type="submit"
+                                                    className="w-full py-5"
+                                                >
+                                                    Add Account
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </form>
+                                </Form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                </div>
                 {/* search */}
                 <Card className="mb-6 border-none">
                     <CardContent className="pt-6 px-0">
