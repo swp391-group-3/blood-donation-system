@@ -8,7 +8,7 @@ import { Progress } from '@radix-ui/react-progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { UpdateBloodRequestDialog } from './update-blood-request-dialog';
+import { UpdateBloodRequestDialog } from '@/components/update-blood-request-dialog';
 import { useCurrentAccount } from '@/hooks/use-current-account';
 
 const priorityConfig = {

@@ -9,11 +9,13 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 export const schema = z.object({
-    title: z.string().min(1, 'The title cannot be empty'),
-    priority: z.enum(priorities, {
-        errorMap: () => ({ message: 'Invalid Priority' }),
-    }),
-    max_people: z.number().min(1, 'At least one people'),
+    title: z.string().min(1, 'The title cannot be empty').optional(),
+    priority: z
+        .enum(priorities, {
+            errorMap: () => ({ message: 'Invalid Priority' }),
+        })
+        .optional(),
+    max_people: z.number().min(1, 'At least one people').optional(),
 });
 
 export const useUpdateBloodRequestForm = (id: string) => {
@@ -35,7 +37,7 @@ export const useUpdateBloodRequestForm = (id: string) => {
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
             toast.success('Update blood request successfully');
-            queryClient.invalidateQueries({ queryKey: ['blood-requests'] });
+            queryClient.invalidateQueries({ queryKey: ['blood-request'] });
         },
     });
 
