@@ -392,7 +392,7 @@ impl<
 }
 pub fn delete() -> DeleteStmt {
     DeleteStmt(crate::client::async_::Stmt::new(
-        "DELETE FROM blogs WHERE id = $1 AND account_id = $2",
+        "DELETE FROM blogs WHERE id = $1 AND ( (SELECT role FROM accounts WHERE id = $2) = 'admin'::role OR account_id = $2 )",
     ))
 }
 pub struct DeleteStmt(crate::client::async_::Stmt);
