@@ -9,16 +9,6 @@ import {  MoreHorizontal, Trash2 } from "lucide-react";
 
 const columnHelper = createColumnHelper<Blog>();
 
-// export interface Blog {
-//     id: string;
-//     owner: string;
-//     tags: string[];
-//     title: string;
-//     description: string;
-//     content: string;
-//     created_at: Date;
-// }
-
 
 export const columns = [
     columnHelper.accessor("title", {
