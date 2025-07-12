@@ -21,7 +21,7 @@ export const useLogout = () => {
             qc.clear();
             router.push('/');
         },
-        onError: (error: any) => {
+        onError: (error) => {
             toast.error(error.message);
         },
     });
