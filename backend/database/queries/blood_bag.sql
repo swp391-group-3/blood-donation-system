@@ -7,7 +7,7 @@ SELECT
         SELECT blood_group
         FROM accounts
         WHERE id = (
-            SELECT member_id
+            SELECT donor_id
             FROM appointments
             WHERE id = (
                 SELECT appointment_id
@@ -26,7 +26,7 @@ SELECT
         SELECT blood_group
         FROM accounts
         WHERE id = (
-            SELECT member_id
+            SELECT donor_id
             FROM appointments
             WHERE id = (
                 SELECT appointment_id

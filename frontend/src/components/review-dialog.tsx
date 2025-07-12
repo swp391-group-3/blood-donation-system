@@ -52,7 +52,7 @@ export const ReviewDialog = ({
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-slate-900">
-                        Application Review - {apt.member.name}
+                        Application Review - {apt.donor.name}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -67,7 +67,7 @@ export const ReviewDialog = ({
                                     Name:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.member.name}
+                                    {apt.donor.name}
                                 </div>
                             </div>
                             <div>
@@ -75,7 +75,7 @@ export const ReviewDialog = ({
                                     Blood Group:
                                 </span>
                                 <div className="font-semibold text-red-600">
-                                    {bloodGroupLabels[apt.member.blood_group]}
+                                    {bloodGroupLabels[apt.donor.blood_group]}
                                 </div>
                             </div>
                             <div>
@@ -83,7 +83,7 @@ export const ReviewDialog = ({
                                     Email:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.member.email}
+                                    {apt.donor.email}
                                 </div>
                             </div>
                             <div>
@@ -91,7 +91,7 @@ export const ReviewDialog = ({
                                     Phone:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.member.phone}
+                                    {apt.donor.phone}
                                 </div>
                             </div>
                         </div>

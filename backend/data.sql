@@ -7,7 +7,7 @@
 INSERT INTO accounts (id, role, email, password, phone, name, gender, address, birthday, blood_group, is_active, created_at) VALUES
   ('11111111-1111-1111-1111-111111111111','admin','admin@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+841234567890','Nguyen Van A','male','123 Le Loi St, HCMC','1980-05-10','o_plus',true,'2025-06-01T08:00:00Z'),
   ('22222222-2222-2222-2222-222222222222','staff','staff@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+849876543210','Tran Thi B','female','456 Nguyen Hue Blvd, HCMC','1990-12-20','a_minus',true,'2025-06-05T09:30:00Z'),
-  ('33333333-3333-3333-3333-333333333333','member','member@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+848765432109','Le Van C','male','789 Pasteur Ave, HCMC','1995-07-15','b_plus',true,'2025-06-10T14:45:00Z')
+  ('33333333-3333-3333-3333-333333333333','donor','donor@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+848765432109','Le Van C','male','789 Pasteur Ave, HCMC','1995-07-15','b_plus',true,'2025-06-10T14:45:00Z')
 ON CONFLICT DO NOTHING;
 
 -- 2. Questions
@@ -67,7 +67,7 @@ INSERT INTO request_blood_groups (request_id, blood_group) VALUES
 ON CONFLICT DO NOTHING;
 
 -- 3. appointments
-INSERT INTO appointments (id, request_id, member_id, status) VALUES
+INSERT INTO appointments (id, request_id, donor_id, status) VALUES
   ('33333333-aaaa-bbbb-cccc-333333333333', '11111111-aaaa-bbbb-cccc-111111111111', '33333333-3333-3333-3333-333333333333', 'approved'),
   ('44444444-bbbb-cccc-dddd-444444444444', '22222222-bbbb-cccc-dddd-222222222222', '33333333-3333-3333-3333-333333333333', 'checked_in')
 ON CONFLICT DO NOTHING;

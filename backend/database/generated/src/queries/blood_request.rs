@@ -20,6 +20,12 @@ pub struct UpdateParams<T1: crate::StringSql> {
     pub title: Option<T1>,
     pub max_people: Option<i32>,
     pub id: uuid::Uuid,
+    pub staff_id: uuid::Uuid,
+}
+#[derive(Clone, Copy, Debug)]
+pub struct DeleteParams {
+    pub id: uuid::Uuid,
+    pub staff_id: uuid::Uuid,
 }
 #[derive(serde::Serialize, Debug, Clone, PartialEq, utoipa::ToSchema)]
 pub struct BloodRequest {
@@ -370,7 +376,7 @@ impl GetAllStmt {
 }
 pub fn update() -> UpdateStmt {
     UpdateStmt(crate::client::async_::Stmt::new(
-        "UPDATE blood_requests SET priority = COALESCE($1, priority), title = COALESCE($2, title), max_people = COALESCE($3, max_people) WHERE id = $4",
+        "UPDATE blood_requests SET priority = COALESCE($1, priority), title = COALESCE($2, title), max_people = COALESCE($3, max_people) WHERE id = $4 AND staff_id = $5",
     ))
 }
 pub struct UpdateStmt(crate::client::async_::Stmt);
@@ -382,10 +388,11 @@ impl UpdateStmt {
         title: &'a Option<T1>,
         max_people: &'a Option<i32>,
         id: &'a uuid::Uuid,
+        staff_id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;
         client
-            .execute(stmt, &[priority, title, max_people, id])
+            .execute(stmt, &[priority, title, max_people, id, staff_id])
             .await
     }
 }
@@ -414,12 +421,13 @@ impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
             &params.title,
             &params.max_people,
             &params.id,
+            &params.staff_id,
         ))
     }
 }
 pub fn delete() -> DeleteStmt {
     DeleteStmt(crate::client::async_::Stmt::new(
-        "UPDATE blood_requests SET is_active = false WHERE id = $1",
+        "UPDATE blood_requests SET is_active = false WHERE id = $1 AND staff_id = $2",
     ))
 }
 pub struct DeleteStmt(crate::client::async_::Stmt);
@@ -428,8 +436,31 @@ impl DeleteStmt {
         &'s mut self,
         client: &'c C,
         id: &'a uuid::Uuid,
+        staff_id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         let stmt = self.0.prepare(client).await?;
-        client.execute(stmt, &[id]).await
+        client.execute(stmt, &[id, staff_id]).await
+    }
+}
+impl<'a, C: GenericClient + Send + Sync>
+    crate::client::async_::Params<
+        'a,
+        'a,
+        'a,
+        DeleteParams,
+        std::pin::Pin<
+            Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+        >,
+        C,
+    > for DeleteStmt
+{
+    fn params(
+        &'a mut self,
+        client: &'a C,
+        params: &'a DeleteParams,
+    ) -> std::pin::Pin<
+        Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+    > {
+        Box::pin(self.bind(client, &params.id, &params.staff_id))
     }
 }

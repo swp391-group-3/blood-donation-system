@@ -13,10 +13,10 @@ export const useAppointment = (id: string) => {
             let response = await fetchWrapper(`/appointment/${id}`);
             const appointment = await deserialize<Appointment>(response);
 
-            const [member, request, answers, donation] = await Promise.all([
+            const [donor, request, answers, donation] = await Promise.all([
                 (async () => {
                     response = await fetchWrapper(
-                        `/account/${appointment.member_id}`,
+                        `/account/${appointment.donor_id}`,
                     );
                     return await deserialize<Account>(response);
                 })(),
@@ -42,7 +42,7 @@ export const useAppointment = (id: string) => {
 
             return {
                 ...appointment,
-                member,
+                donor,
                 request,
                 answers,
                 donation,

@@ -13,22 +13,22 @@ use crate::{
 #[utoipa::path(
     get,
     tag = "Appointment",
-    path = "/appointment",
-    operation_id = "appointment::get_by_member_id",
+    path = "/appointment/me",
+    operation_id = "appointment::get_by_donor_id",
     responses(
         (status = Status::OK, body = Appointment)
     ),
     security(("jwt_token" = []))
 )]
-pub async fn get_by_member_id(
+pub async fn get_by_donor_id(
     state: State<Arc<ApiState>>,
     claims: Claims,
 ) -> Result<Json<Vec<Appointment>>> {
     let database = state.database().await?;
 
-    authorize(&claims, [Role::Member], &database).await?;
+    authorize(&claims, [Role::Donor], &database).await?;
 
-    let appointments = match queries::appointment::get_by_member_id()
+    let appointments = match queries::appointment::get_by_donor_id()
         .bind(&database, &claims.sub)
         .all()
         .await

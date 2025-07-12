@@ -27,9 +27,10 @@ use crate::{
 #[derive(Deserialize, ToSchema, Mapper, Validate)]
 #[schema(as = blood_request::update::Request)]
 #[mapper(
-    into(custom = "with_id"),
+    into(custom = "with_context"),
     ty = UpdateParams::<String>,
-    add(field = id, ty = Uuid)
+    add(field = id, ty = Uuid),
+    add(field = staff_id, ty = Uuid)
 )]
 pub struct Request {
     pub priority: Option<RequestPriority>,
@@ -61,7 +62,7 @@ pub async fn update(
     authorize(&claims, [Role::Staff], &database).await?;
 
     if let Err(error) = queries::blood_request::update()
-        .params(&database, &request.with_id(id))
+        .params(&database, &request.with_context(id, claims.sub))
         .await
     {
         tracing::error!(?error, "Failed to update blood request");

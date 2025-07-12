@@ -3,10 +3,10 @@ import { BloodGroup } from './blood-group';
 export const genders = ['male', 'female'] as const;
 export type Gender = (typeof genders)[number];
 
-export type Role = 'member' | 'staff' | 'admin';
+export type Role = 'donor' | 'staff' | 'admin';
 
 export interface Account {
-    id: string,
+    id: string;
     role: Role;
     email: string;
     name: string;
@@ -17,7 +17,6 @@ export interface Account {
     gender: Gender;
     created_at: Date;
 }
-
 
 export interface Staff {
     email: string;

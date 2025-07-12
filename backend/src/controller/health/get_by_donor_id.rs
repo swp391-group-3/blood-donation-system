@@ -14,21 +14,21 @@ use crate::{
     get,
     tag = "Health",
     path = "/health",
-    operation_id = "health::get_by_member_id",
+    operation_id = "health::get_by_donor_id",
     responses(
         (status = Status::OK, body = Vec<Health>)
     ),
     security(("jwt_token" = []))
 )]
-pub async fn get_by_member_id(
+pub async fn get_by_donor_id(
     state: State<Arc<ApiState>>,
     claims: Claims,
 ) -> Result<Json<Vec<Health>>> {
     let database = state.database().await?;
 
-    authorize(&claims, [Role::Member], &database).await?;
+    authorize(&claims, [Role::Donor], &database).await?;
 
-    match queries::health::get_by_member_id()
+    match queries::health::get_by_donor_id()
         .bind(&database, &claims.sub)
         .all()
         .await

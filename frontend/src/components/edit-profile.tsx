@@ -1,31 +1,49 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Edit3, LoaderCircle } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { genders } from "@/lib/api/dto/account";
-import { capitalCase } from "change-case";
-import { Textarea } from "./ui/textarea";
-import { schema as updateAccountSchema } from "@/hooks/use-update-account-form";
-import { z } from "zod";
-import { UseFormReturn } from "react-hook-form";
-import { UseMutationResult } from "@tanstack/react-query";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { Edit3, LoaderCircle } from 'lucide-react';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from './ui/form';
+import { Input } from './ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from './ui/select';
+import { genders } from '@/lib/api/dto/account';
+import { capitalCase } from 'change-case';
+import { Textarea } from './ui/textarea';
+import { schema as updateAccountSchema } from '@/hooks/use-update-account-form';
+import { z } from 'zod';
+import { UseFormReturn } from 'react-hook-form';
+import { UseMutationResult } from '@tanstack/react-query';
 
 export type AccountUpdate = z.infer<typeof updateAccountSchema>;
 interface EditProfileProps {
-    isOpen: boolean,
-    onOpenChange: (open: boolean) => void,
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
     form: UseFormReturn<AccountUpdate>;
     mutation: UseMutationResult<void, Error, AccountUpdate>;
 }
-
 
 export function EditProfileModel({
     isOpen,
     onOpenChange,
     form,
-    mutation
+    mutation,
 }: EditProfileProps) {
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -40,18 +58,15 @@ export function EditProfileModel({
                     <DialogTitle>Edit Profile</DialogTitle>
                 </DialogHeader>
                 <div className="overflow-y-auto flex-1 pr-2">
-                    <FormEdit
-                        form={form}
-                        mutation={mutation}
-                    />
+                    <FormEdit form={form} mutation={mutation} />
                 </div>
             </DialogContent>
         </Dialog>
-    )
+    );
 }
 
 interface formEditProps {
-    form: UseFormReturn<AccountUpdate>,
+    form: UseFormReturn<AccountUpdate>;
     mutation: UseMutationResult<void, Error, AccountUpdate>;
 }
 
@@ -73,10 +88,7 @@ export function FormEdit({ form, mutation }: formEditProps) {
                             <FormItem className="grid gap-2">
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        {...field}
-                                        required
-                                    />
+                                    <Input {...field} required />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -89,9 +101,7 @@ export function FormEdit({ form, mutation }: formEditProps) {
                             <FormItem className="grid gap-2">
                                 <FormLabel>Gender</FormLabel>
                                 <Select
-                                    onValueChange={
-                                        field.onChange
-                                    }
+                                    onValueChange={field.onChange}
                                     {...field}
                                 >
                                     <FormControl>
@@ -100,20 +110,14 @@ export function FormEdit({ form, mutation }: formEditProps) {
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {genders.map(
-                                            (gender, index) => (
-                                                <SelectItem
-                                                    key={index}
-                                                    value={
-                                                        gender
-                                                    }
-                                                >
-                                                    {capitalCase(
-                                                        gender,
-                                                    )}
-                                                </SelectItem>
-                                            ),
-                                        )}
+                                        {genders.map((gender, index) => (
+                                            <SelectItem
+                                                key={index}
+                                                value={gender}
+                                            >
+                                                {capitalCase(gender)}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -127,11 +131,7 @@ export function FormEdit({ form, mutation }: formEditProps) {
                             <FormItem className="grid gap-2">
                                 <FormLabel>Birthday</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="date"
-                                        {...field}
-                                        required
-                                    />
+                                    <Input type="date" {...field} required />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -144,11 +144,7 @@ export function FormEdit({ form, mutation }: formEditProps) {
                             <FormItem className="grid gap-2">
                                 <FormLabel>Phone</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="tel"
-                                        {...field}
-                                        required
-                                    />
+                                    <Input type="tel" {...field} required />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -164,7 +160,7 @@ export function FormEdit({ form, mutation }: formEditProps) {
                                     <Textarea
                                         {...field}
                                         required
-                                        className='resize-none overflow-auto h-20'
+                                        className="resize-none overflow-auto h-20"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -196,5 +192,5 @@ export function FormEdit({ form, mutation }: formEditProps) {
                 </div>
             </form>
         </Form>
-    )
+    );
 }

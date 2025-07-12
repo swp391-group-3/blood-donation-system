@@ -17,7 +17,8 @@ SELECT
     content,
     created_at
 FROM comments
-WHERE blog_id = :blog_id;
+WHERE blog_id = :blog_id
+ORDER BY created_at DESC;
 
 --! delete
 DELETE FROM comments

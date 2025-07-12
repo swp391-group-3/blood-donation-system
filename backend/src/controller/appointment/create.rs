@@ -67,7 +67,7 @@ pub async fn create(
 ) -> Result<Json<Uuid>> {
     let mut database = state.database().await?;
 
-    authorize(&claims, [Role::Member], &database).await?;
+    authorize(&claims, [Role::Donor], &database).await?;
 
     match queries::account::next_donatable_date()
         .bind(&database, &claims.sub)
@@ -153,7 +153,7 @@ pub async fn create(
             &transaction,
             &CreateParams {
                 request_id: id,
-                member_id: claims.sub,
+                donor_id: claims.sub,
             },
         )
         .one()

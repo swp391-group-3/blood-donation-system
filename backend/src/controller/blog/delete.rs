@@ -29,7 +29,7 @@ pub async fn delete(
 ) -> Result<()> {
     let database = state.database().await?;
 
-    // TODO: member can only delete their blog
+    // TODO: donor can only delete their blog
 
     if let Err(error) = queries::blog::delete()
         .bind(&database, &id, &claims.sub)

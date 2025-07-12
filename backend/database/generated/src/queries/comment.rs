@@ -212,7 +212,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
 }
 pub fn get_by_blog_id() -> GetByBlogIdStmt {
     GetByBlogIdStmt(crate::client::async_::Stmt::new(
-        "SELECT id, blog_id, ( SELECT name FROM accounts WHERE id = comments.account_id ) AS owner, content, created_at FROM comments WHERE blog_id = $1",
+        "SELECT id, blog_id, ( SELECT name FROM accounts WHERE id = comments.account_id ) AS owner, content, created_at FROM comments WHERE blog_id = $1 ORDER BY created_at DESC",
     ))
 }
 pub struct GetByBlogIdStmt(crate::client::async_::Stmt);

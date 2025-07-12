@@ -65,7 +65,7 @@ struct ChatDoc;
         controller::appointment::get,
         controller::appointment::get_answer,
         controller::appointment::get_all,
-        controller::appointment::get_by_member_id,
+        controller::appointment::get_by_donor_id,
         controller::appointment::approve,
         controller::appointment::reject,
         controller::appointment::done,
@@ -79,12 +79,12 @@ struct ChatDoc;
         controller::health::create,
         controller::health::update,
         controller::health::get_by_appointment_id,
-        controller::health::get_by_member_id,
+        controller::health::get_by_donor_id,
 
         controller::donation::create,
         controller::donation::get,
         controller::donation::get_all,
-        controller::donation::get_by_member_id,
+        controller::donation::get_by_donor_id,
         controller::donation::get_by_appointment_id,
         controller::donation::update,
 
