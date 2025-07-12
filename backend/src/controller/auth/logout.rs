@@ -19,6 +19,7 @@ pub async fn logout(jar: CookieJar) -> Result<CookieJar> {
                 .build());
         }
     };
+    cookie.set_path("/");
     cookie.make_removal();
 
     Ok(jar.remove(cookie))
