@@ -12,7 +12,7 @@ CREATE TYPE blood_group AS ENUM (
 );
 
 CREATE TYPE role AS ENUM (
-    'member',
+    'donor',
     'staff',
     'admin'
 );
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS blogs(
 
 CREATE TABLE IF NOT EXISTS comments(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    blog_id uuid NOT NULL REFERENCES blogs(id),
+    blog_id uuid NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
     account_id uuid NOT NULL REFERENCES accounts(id),
     content text NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS tags(
 );
 
 CREATE TABLE IF NOT EXISTS blog_tags(
-    blog_id uuid NOT NULL REFERENCES blogs(id),
+    blog_id uuid NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
     tag_id uuid NOT NULL REFERENCES tags(id),
 
     PRIMARY KEY (blog_id, tag_id)
@@ -102,11 +102,11 @@ CREATE TYPE appointment_status AS ENUM(
 CREATE TABLE IF NOT EXISTS appointments(
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     request_id uuid NOT NULL REFERENCES blood_requests(id),
-    member_id uuid NOT NULL REFERENCES accounts(id),
+    donor_id uuid NOT NULL REFERENCES accounts(id),
     status appointment_status NOT NULL DEFAULT 'on_process'::appointment_status,
     reason text,
 
-    UNIQUE (request_id, member_id)
+    UNIQUE (request_id, donor_id)
 );
 
 CREATE TABLE IF NOT EXISTS questions(

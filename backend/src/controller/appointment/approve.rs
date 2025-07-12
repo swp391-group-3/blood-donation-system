@@ -51,7 +51,7 @@ pub async fn approve(
     };
 
     let account = match queries::account::get()
-        .bind(&database, &appointment.member_id)
+        .bind(&database, &appointment.donor_id)
         .one()
         .await
     {

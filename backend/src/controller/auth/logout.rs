@@ -1,12 +1,24 @@
-use axum_extra::extract::{CookieJar, cookie::Cookie};
-use tower_sessions::cookie::SameSite;
+use axum::http::StatusCode;
+use axum_extra::extract::CookieJar;
 
-use crate::{error::Result, util::auth::TOKEN_KEY};
+use crate::{
+    error::{Error, Result},
+    util::auth::TOKEN_KEY,
+};
 
 #[utoipa::path(post, tag = "Auth", path = "/auth/logout")]
 pub async fn logout(jar: CookieJar) -> Result<CookieJar> {
-    let mut cookie = Cookie::new(TOKEN_KEY, "");
-    cookie.set_same_site(SameSite::Lax);
+    let mut cookie = match jar.get(TOKEN_KEY) {
+        Some(v) => v.clone(),
+        None => {
+            tracing::warn!("Trying to logout before login");
+
+            return Err(Error::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .message("Login first before logout".into())
+                .build());
+        }
+    };
     cookie.set_path("/");
     cookie.make_removal();
 

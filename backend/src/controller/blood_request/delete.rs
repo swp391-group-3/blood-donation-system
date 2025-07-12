@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use ctypes::Role;
-use database::queries;
+use database::{
+    client::Params,
+    queries::{self, blood_request::DeleteParams},
+};
 use uuid::Uuid;
 
 use crate::{
@@ -30,7 +33,16 @@ pub async fn delete(
 
     authorize(&claims, [Role::Staff], &database).await?;
 
-    if let Err(error) = queries::blood_request::delete().bind(&database, &id).await {
+    if let Err(error) = queries::blood_request::delete()
+        .params(
+            &database,
+            &DeleteParams {
+                id,
+                staff_id: claims.sub,
+            },
+        )
+        .await
+    {
         tracing::error!(?error, "Failed to delete blood request");
 
         return Err(Error::internal());

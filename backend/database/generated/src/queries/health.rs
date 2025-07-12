@@ -300,21 +300,21 @@ impl GetByAppointmentIdStmt {
         }
     }
 }
-pub fn get_by_member_id() -> GetByMemberIdStmt {
-    GetByMemberIdStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM healths WHERE appointment_id IN (SELECT id FROM appointments WHERE member_id = $1) ORDER BY created_at DESC",
+pub fn get_by_donor_id() -> GetByDonorIdStmt {
+    GetByDonorIdStmt(crate::client::async_::Stmt::new(
+        "SELECT * FROM healths WHERE appointment_id IN (SELECT id FROM appointments WHERE donor_id = $1) ORDER BY created_at DESC",
     ))
 }
-pub struct GetByMemberIdStmt(crate::client::async_::Stmt);
-impl GetByMemberIdStmt {
+pub struct GetByDonorIdStmt(crate::client::async_::Stmt);
+impl GetByDonorIdStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-        member_id: &'a uuid::Uuid,
+        donor_id: &'a uuid::Uuid,
     ) -> HealthQuery<'c, 'a, 's, C, Health, 1> {
         HealthQuery {
             client,
-            params: [member_id],
+            params: [donor_id],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<HealthBorrowed, tokio_postgres::Error> {

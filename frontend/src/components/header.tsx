@@ -13,6 +13,8 @@ import {
     Menu,
     X,
     LucideIcon,
+    Package,
+    LayoutDashboard,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,6 +30,7 @@ import { useCurrentAccount } from '@/hooks/use-current-account';
 import Link from 'next/link';
 import { AccountOverview } from '@/components/account-overview';
 import { Role } from '@/lib/api/dto/account';
+
 import { useLogout } from '@/hooks/use-log-out';
 
 interface NavigationItem {
@@ -39,10 +42,52 @@ interface NavigationItem {
 const getNavigationItems = (role?: Role): NavigationItem[] => {
     switch (role) {
         case 'staff':
-            return [];
+            return [
+                {
+                    label: 'Home',
+                    icon: Home,
+                    href: '/',
+                },
+                {
+                    label: 'Blood Storage',
+                    icon: Package,
+                    href: '/blood-storage',
+                },
+                {
+                    label: 'Blood Request',
+                    icon: Droplets,
+                    href: '/request',
+                },
+                {
+                    label: 'Blog',
+                    icon: FileText,
+                    href: '/blog',
+                },
+            ];
 
         case 'admin':
-            return [];
+            return [
+                {
+                    label: 'Home',
+                    icon: Home,
+                    href: '/',
+                },
+                {
+                    label: 'Dashboard',
+                    icon: LayoutDashboard,
+                    href: '/admin',
+                },
+                {
+                    label: 'Account Management',
+                    icon: User,
+                    href: '/admin/account',
+                },
+                {
+                    label: 'Blog Management',
+                    icon: FileText,
+                    href: '/admin/blog',
+                },
+            ];
 
         default:
             return [
@@ -69,9 +114,9 @@ export const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { data: account } = useCurrentAccount();
     const items = getNavigationItems(account?.role);
+
     const logoutMutation = useLogout();
-   
-    
+
     return (
         <>
             <header className="bg-white/80 backdrop-blur-xl border-b border-slate-300/60 sticky top-0 z-50">
@@ -160,64 +205,71 @@ export const Header = () => {
                                                 </Link>
                                             </DropdownMenuItem>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/donation"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-rose-50 rounded-lg">
-                                                        <Droplets className="h-4 w-4 text-rose-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Donations
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            View donation
-                                                            history
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
+                                            {account.role === 'donor' && (
+                                                <>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/donation"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-rose-50 rounded-lg">
+                                                                <Droplets className="h-4 w-4 text-rose-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Donations
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    View
+                                                                    donation
+                                                                    history
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/health"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-emerald-50 rounded-lg">
-                                                        <Shield className="h-4 w-4 text-emerald-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Health
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            Health records &
-                                                            status
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/health"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                                                <Shield className="h-4 w-4 text-emerald-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Health
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Health
+                                                                    records &
+                                                                    status
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/appointment"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-purple-50 rounded-lg">
-                                                        <Calendar className="h-4 w-4 text-purple-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Appointments
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            Manage appointments
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/appointment"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                <Calendar className="h-4 w-4 text-purple-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Appointments
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Manage
+                                                                    appointments
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
 
                                             <DropdownMenuSeparator className="my-2 bg-slate-100" />
 
@@ -300,61 +352,66 @@ export const Header = () => {
                                 </div>
                             </div>
                         </Link>
-                        <Link
-                            href="/donation"
-                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <div className="p-1.5 bg-rose-50 rounded-lg">
-                                <Droplets className="h-4 w-4 text-rose-600" />
-                            </div>
-                            <div>
-                                <span className="font-medium text-slate-900">
-                                    Donations
-                                </span>
-                                <div className="text-xs text-slate-500">
-                                    View donation history
-                                </div>
-                            </div>
-                        </Link>
-                        <Link
-                            href="/health"
-                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <div className="p-1.5 bg-emerald-50 rounded-lg">
-                                <Shield className="h-4 w-4 text-emerald-600" />
-                            </div>
-                            <div>
-                                <span className="font-medium text-slate-900">
-                                    Health
-                                </span>
-                                <div className="text-xs text-slate-500">
-                                    Health records & status
-                                </div>
-                            </div>
-                        </Link>
-                        <Link
-                            href="/appointment"
-                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <div className="p-1.5 bg-purple-50 rounded-lg">
-                                <Calendar className="h-4 w-4 text-purple-600" />
-                            </div>
-                            <div>
-                                <span className="font-medium text-slate-900">
-                                    Appointments
-                                </span>
-                                <div className="text-xs text-slate-500">
-                                    Manage appointments
-                                </div>
-                            </div>
-                        </Link>
+                        {account?.role === 'donor' && (
+                            <>
+                                <Link
+                                    href="/donation"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <div className="p-1.5 bg-rose-50 rounded-lg">
+                                        <Droplets className="h-4 w-4 text-rose-600" />
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-slate-900">
+                                            Donations
+                                        </span>
+                                        <div className="text-xs text-slate-500">
+                                            View donation history
+                                        </div>
+                                    </div>
+                                </Link>
+                                <Link
+                                    href="/health"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                        <Shield className="h-4 w-4 text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-slate-900">
+                                            Health
+                                        </span>
+                                        <div className="text-xs text-slate-500">
+                                            Health records & status
+                                        </div>
+                                    </div>
+                                </Link>
+                                <Link
+                                    href="/appointment"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <div className="p-1.5 bg-purple-50 rounded-lg">
+                                        <Calendar className="h-4 w-4 text-purple-600" />
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-slate-900">
+                                            Appointments
+                                        </span>
+                                        <div className="text-xs text-slate-500">
+                                            Manage appointments
+                                        </div>
+                                    </div>
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
 
                 <div className="px-6 py-4 mt-auto border-t border-slate-200">
+
                     <button className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full"
                         onClick={() => logoutMutation.mutate()}
                     >

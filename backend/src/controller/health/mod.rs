@@ -1,6 +1,6 @@
 mod create;
 mod get_by_appointment_id;
-mod get_by_member_id;
+mod get_by_donor_id;
 mod update;
 
 use std::sync::Arc;
@@ -11,7 +11,7 @@ use crate::state::ApiState;
 
 pub use create::*;
 pub use get_by_appointment_id::*;
-pub use get_by_member_id::*;
+pub use get_by_donor_id::*;
 pub use update::*;
 
 pub fn build() -> Router<Arc<ApiState>> {
@@ -22,5 +22,5 @@ pub fn build() -> Router<Arc<ApiState>> {
             routing::get(get_by_appointment_id),
         )
         .route("/health", routing::patch(update))
-        .route("/health", routing::get(get_by_member_id))
+        .route("/health", routing::get(get_by_donor_id))
 }

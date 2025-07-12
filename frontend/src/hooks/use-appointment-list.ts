@@ -16,11 +16,11 @@ export const useAppointmentList = () => {
                 raw.map((apt) =>
                     (async () => {
                         response = await fetchWrapper(
-                            `/account/${apt.member_id}`,
+                            `/account/${apt.donor_id}`,
                         );
                         return {
                             ...apt,
-                            member: await deserialize<Account>(response),
+                            donor: await deserialize<Account>(response),
                         };
                     })(),
                 ),

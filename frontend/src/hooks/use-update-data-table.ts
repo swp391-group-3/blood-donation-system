@@ -15,13 +15,12 @@ export const schema = registerSchema.omit({
 export const useUpdateDataTable = (
     id: string,
     defaultValues?: z.infer<typeof schema>,
-    opts?: { onSuccess?: () => void }
+    opts?: { onSuccess?: () => void },
 ) => {
     const qc = useQueryClient();
 
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
-
             const response = await fetchWrapper(`/account/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -36,7 +35,7 @@ export const useUpdateDataTable = (
         onError: (error) => toast.error(error.message),
         onSuccess: () => {
             toast.success('Profile updated successfully!');
-            qc.invalidateQueries({ queryKey: ["account"] })
+            qc.invalidateQueries({ queryKey: ['account'] });
             opts?.onSuccess?.();
         },
     });

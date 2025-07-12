@@ -22,7 +22,7 @@ pub enum BloodGroup {
 #[serde(rename_all = "snake_case")]
 #[postgres(name = "role", rename_all = "snake_case")]
 pub enum Role {
-    Member,
+    Donor,
     Staff,
     Admin,
 }
