@@ -18,7 +18,6 @@ function BlogPage() {
 
     const filterBlogs: Blog[] = useMemo(() => {
         return blogs.filter((blog) => {
-            console.log(searchTerm);
 
             const searchTermLowerCase = searchTerm.toLowerCase()
             const match = blog.content.toLowerCase().includes(searchTermLowerCase)
