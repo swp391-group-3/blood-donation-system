@@ -70,7 +70,7 @@ export const Header = () => {
     const { data: account } = useCurrentAccount();
     const items = getNavigationItems(account?.role);
     const logoutMutation = useLogout();
-    console.log(account);
+   
     
     return (
         <>
