@@ -39,8 +39,8 @@ function BlogPage() {
     })
 
     return (
-        <div>
-            <div className='max-w-6xl mx-auto'>
+        <div className="flex-1 overflow-auto">
+            <div className='max-w-6xl mx-auto p-8'>
                 {/* HEADER */}
                 <div className="flex items-center justify-between mb-8 ">
                     <div>
@@ -53,7 +53,7 @@ function BlogPage() {
                     </div>
                 </div>
                 {/* search */}
-                <Card className="mb-6 border-none">
+                <Card className="border-none">
                     <CardContent className="pt-6 px-0">
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="relative flex-1">
