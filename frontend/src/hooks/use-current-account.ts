@@ -11,6 +11,7 @@ export const useCurrentAccount = () => {
 
             return await deserialize<Account>(response);
         },
+        retry: false,
         queryKey: ['auth', 'me'],
     });
 };
