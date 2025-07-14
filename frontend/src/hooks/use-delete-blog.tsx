@@ -1,6 +1,6 @@
-import { fetchWrapper } from "@/lib/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { fetchWrapper } from '@/lib/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export const useDeleteBlog = () => {
     const queryClient = useQueryClient();

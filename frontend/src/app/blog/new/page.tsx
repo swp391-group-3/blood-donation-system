@@ -134,10 +134,10 @@ export default function BlogCreatePage() {
                                                                 ) => {
                                                                     const tagsArray =
                                                                         typeof newTags ===
-                                                                            'function'
+                                                                        'function'
                                                                             ? newTags(
-                                                                                tags,
-                                                                            )
+                                                                                  tags,
+                                                                              )
                                                                             : newTags;
 
                                                                     setTags(
@@ -219,9 +219,9 @@ export default function BlogCreatePage() {
 
                                                                     if (
                                                                         typeof newValue ===
-                                                                        'string' &&
+                                                                            'string' &&
                                                                         newValue.trim() !==
-                                                                        ''
+                                                                            ''
                                                                     ) {
                                                                         setValue(
                                                                             'content',

@@ -1,16 +1,41 @@
-"use client"
-import { useBlogList } from '@/hooks/use-blog-list'
-import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
-import React, { useMemo, useState } from 'react'
+'use client';
+
+import { useBlogList } from '@/hooks/use-blog-list';
+import {
+    flexRender,
+    getCoreRowModel,
+    getPaginationRowModel,
+    useReactTable,
+} from '@tanstack/react-table';
+import React, { useMemo, useState } from 'react';
 import { columns } from './column';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Blog } from '@/lib/api/dto/blog';
-
-
 
 function BlogPage() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -18,13 +43,13 @@ function BlogPage() {
 
     const filterBlogs: Blog[] = useMemo(() => {
         return blogs.filter((blog) => {
-
-            const searchTermLowerCase = searchTerm.toLowerCase()
-            const match = blog.content.toLowerCase().includes(searchTermLowerCase)
-                || blog.title.toLowerCase().includes(searchTermLowerCase)
+            const searchTermLowerCase = searchTerm.toLowerCase();
+            const match =
+                blog.content.toLowerCase().includes(searchTermLowerCase) ||
+                blog.title.toLowerCase().includes(searchTermLowerCase);
             return match;
-        })
-    }, [blogs, searchTerm])
+        });
+    }, [blogs, searchTerm]);
     const table = useReactTable({
         data: filterBlogs,
         columns: columns,
@@ -34,22 +59,20 @@ function BlogPage() {
             pagination: {
                 pageIndex: 0,
                 pageSize: 5,
-            }
-        }
-    })
+            },
+        },
+    });
 
     return (
         <div className="flex-1 overflow-auto">
-            <div className='max-w-6xl mx-auto p-8'>
+            <div className="max-w-6xl mx-auto p-8">
                 {/* HEADER */}
                 <div className="flex items-center justify-between mb-8 ">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">
                             Blog Management
                         </h1>
-                        <p className="text-gray-600 mt-1">
-                            Manage Blogs
-                        </p>
+                        <p className="text-gray-600 mt-1">Manage Blogs</p>
                     </div>
                 </div>
                 {/* search */}
@@ -67,16 +90,13 @@ function BlogPage() {
                                     className="pl-10"
                                 />
                             </div>
-
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
                         <CardTitle>Blog</CardTitle>
-                        <CardDescription>
-                            Manage Blogs
-                        </CardDescription>
+                        <CardDescription>Manage Blogs</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
@@ -89,11 +109,11 @@ function BlogPage() {
                                                     {header.isPlaceholder
                                                         ? null
                                                         : flexRender(
-                                                            header.column
-                                                                .columnDef
-                                                                .header,
-                                                            header.getContext(),
-                                                        )}
+                                                              header.column
+                                                                  .columnDef
+                                                                  .header,
+                                                              header.getContext(),
+                                                          )}
                                                 </TableHead>
                                             );
                                         })}
@@ -211,7 +231,7 @@ function BlogPage() {
                 </Card>
             </div>
         </div>
-    )
+    );
 }
 
-export default BlogPage
+export default BlogPage;
