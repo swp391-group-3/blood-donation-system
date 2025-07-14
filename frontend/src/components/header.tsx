@@ -331,100 +331,120 @@ export const Header = () => {
                 </div>
 
                 <div className="px-6 py-4 border-t border-slate-200">
-                    <div className="space-y-1">
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                            Account
+                    {!account ? (
+                        <div className="grid gap-4">
+                            <Link className="w-full" href="/auth/register">
+                                <Button className="w-full" variant="outline">
+                                    Register
+                                </Button>
+                            </Link>
+                            <Link className="w-full" href="/auth/login">
+                                <Button className="w-full">Login</Button>
+                            </Link>
                         </div>
-                        <Link
-                            href="/profile"
-                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <div className="p-1.5 bg-blue-50 rounded-lg">
-                                <User className="h-4 w-4 text-blue-600" />
-                            </div>
-                            <div>
-                                <span className="font-medium text-slate-900">
-                                    Profile
-                                </span>
-                                <div className="text-xs text-slate-500">
-                                    Manage your account
+                    ) : (
+                        <>
+                            <div className="space-y-1">
+                                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                                    Account
                                 </div>
+                                <Link
+                                    href="/profile"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <div className="p-1.5 bg-blue-50 rounded-lg">
+                                        <User className="h-4 w-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <span className="font-medium text-slate-900">
+                                            Profile
+                                        </span>
+                                        <div className="text-xs text-slate-500">
+                                            Manage your account
+                                        </div>
+                                    </div>
+                                </Link>
+                                {account?.role === 'donor' && (
+                                    <>
+                                        <Link
+                                            href="/donation"
+                                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                            onClick={() =>
+                                                setIsMobileMenuOpen(false)
+                                            }
+                                        >
+                                            <div className="p-1.5 bg-rose-50 rounded-lg">
+                                                <Droplets className="h-4 w-4 text-rose-600" />
+                                            </div>
+                                            <div>
+                                                <span className="font-medium text-slate-900">
+                                                    Donations
+                                                </span>
+                                                <div className="text-xs text-slate-500">
+                                                    View donation history
+                                                </div>
+                                            </div>
+                                        </Link>
+                                        <Link
+                                            href="/health"
+                                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                            onClick={() =>
+                                                setIsMobileMenuOpen(false)
+                                            }
+                                        >
+                                            <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                                <Shield className="h-4 w-4 text-emerald-600" />
+                                            </div>
+                                            <div>
+                                                <span className="font-medium text-slate-900">
+                                                    Health
+                                                </span>
+                                                <div className="text-xs text-slate-500">
+                                                    Health records & status
+                                                </div>
+                                            </div>
+                                        </Link>
+                                        <Link
+                                            href="/appointment"
+                                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
+                                            onClick={() =>
+                                                setIsMobileMenuOpen(false)
+                                            }
+                                        >
+                                            <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                <Calendar className="h-4 w-4 text-purple-600" />
+                                            </div>
+                                            <div>
+                                                <span className="font-medium text-slate-900">
+                                                    Appointments
+                                                </span>
+                                                <div className="text-xs text-slate-500">
+                                                    Manage appointments
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    </>
+                                )}
+                                <button
+                                    onClick={() => logout.mutate()}
+                                    className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <div className="p-1.5 bg-red-50 rounded-lg">
+                                        <LogOut className="h-4 w-4 text-red-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-left font-medium">
+                                            Logout
+                                        </p>
+                                        <div className="text-xs text-red-500">
+                                            Sign out of your account
+                                        </div>
+                                    </div>
+                                </button>
                             </div>
-                        </Link>
-                        {account?.role === 'donor' && (
-                            <>
-                                <Link
-                                    href="/donation"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    <div className="p-1.5 bg-rose-50 rounded-lg">
-                                        <Droplets className="h-4 w-4 text-rose-600" />
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-slate-900">
-                                            Donations
-                                        </span>
-                                        <div className="text-xs text-slate-500">
-                                            View donation history
-                                        </div>
-                                    </div>
-                                </Link>
-                                <Link
-                                    href="/health"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    <div className="p-1.5 bg-emerald-50 rounded-lg">
-                                        <Shield className="h-4 w-4 text-emerald-600" />
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-slate-900">
-                                            Health
-                                        </span>
-                                        <div className="text-xs text-slate-500">
-                                            Health records & status
-                                        </div>
-                                    </div>
-                                </Link>
-                                <Link
-                                    href="/appointment"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    <div className="p-1.5 bg-purple-50 rounded-lg">
-                                        <Calendar className="h-4 w-4 text-purple-600" />
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-slate-900">
-                                            Appointments
-                                        </span>
-                                        <div className="text-xs text-slate-500">
-                                            Manage appointments
-                                        </div>
-                                    </div>
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                <div className="px-6 py-4 mt-auto border-t border-slate-200">
-                    <button
-                        onClick={() => logout.mutate()}
-                        className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <div className="p-1.5 bg-red-50 rounded-lg">
-                            <LogOut className="h-4 w-4 text-red-600" />
-                        </div>
-                        <div>
-                            <p className="text-left font-medium">Logout</p>
-                            <div className="text-xs text-red-500">
-                                Sign out of your account
-                            </div>
-                        </div>
-                    </button>
+                        </>
+                    )}
                 </div>
             </div>
 
