@@ -19,7 +19,10 @@ use crate::{
     error::{Error, Result},
     state::ApiState,
     util::{
-        auth::{authorize, Claims}, blood::get_compatible, notification::send, validation::ValidJson
+        auth::{Claims, authorize},
+        blood::get_compatible,
+        notification::send,
+        validation::ValidJson,
     },
 };
 
@@ -77,7 +80,7 @@ pub async fn update(
         return Ok(());
     }
 
-    let blood_request =  match queries::blood_request::get()
+    let blood_request = match queries::blood_request::get()
         .bind(&database, &id)
         .one()
         .await
@@ -86,7 +89,7 @@ pub async fn update(
         Err(error) => {
             tracing::error!(?error, "Failed to get blood request");
 
-            return Err(Error::internal())
+            return Err(Error::internal());
         }
     };
 
