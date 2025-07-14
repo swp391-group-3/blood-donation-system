@@ -1,4 +1,5 @@
 'use client';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -310,7 +311,7 @@ function Page() {
                                                 )}
                                             />
                                             {mutationAccount.status ===
-                                                'pending' ? (
+                                            'pending' ? (
                                                 <Button
                                                     disabled
                                                     className="w-full py-5"
@@ -403,11 +404,11 @@ function Page() {
                                                     {header.isPlaceholder
                                                         ? null
                                                         : flexRender(
-                                                            header.column
-                                                                .columnDef
-                                                                .header,
-                                                            header.getContext(),
-                                                        )}
+                                                              header.column
+                                                                  .columnDef
+                                                                  .header,
+                                                              header.getContext(),
+                                                          )}
                                                 </TableHead>
                                             );
                                         })}
