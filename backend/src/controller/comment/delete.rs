@@ -5,6 +5,7 @@ use uuid::Uuid;
 use crate::{
     error::{Error, Result},
     state::ApiState,
+    util::auth::Claims,
 };
 use database::queries::{self};
 
@@ -20,13 +21,18 @@ use database::queries::{self};
     ),
     security(("jwt_token" = []))
 )]
-pub async fn delete(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<()> {
+pub async fn delete(
+    state: State<Arc<ApiState>>,
+    claims: Claims,
+    Path(id): Path<Uuid>,
+) -> Result<()> {
     let database = state.database().await?;
 
-    // TODO: donor can only delete their comment
-
-    if let Err(error) = queries::comment::delete().bind(&database, &id).await {
-        tracing::error!(?error, "Failed to delete question");
+    if let Err(error) = queries::comment::delete()
+        .bind(&database, &id, &claims.sub)
+        .await
+    {
+        tracing::error!(?error, "Failed to delete comment");
 
         return Err(Error::internal());
     }

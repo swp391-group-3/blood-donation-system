@@ -22,7 +22,8 @@ ORDER BY created_at DESC;
 
 --! delete
 DELETE FROM comments
-WHERE id = :id;
+WHERE id = :id
+AND account_id = :account_id;
 
 --! update(content?)
 UPDATE comments
