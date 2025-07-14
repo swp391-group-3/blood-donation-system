@@ -60,7 +60,7 @@ pub async fn update(
     ValidJson(request): ValidJson<Request>,
 ) -> Result<()> {
     let database = state.database().await?;
-    let priority = request.priority.clone();
+    let priority = request.priority;
 
     authorize(&claims, [Role::Staff], &database).await?;
 
