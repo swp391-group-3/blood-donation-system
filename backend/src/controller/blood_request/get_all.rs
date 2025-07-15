@@ -23,9 +23,13 @@ pub async fn get_all(
     claims: Option<Claims>,
 ) -> Result<Json<Vec<BloodRequest>>> {
     let database = state.database().await?;
+    let account_id = claims
+        .as_ref()
+        .map(|c| c.sub)
+        .unwrap_or_else(uuid::Uuid::nil);
 
     let requests = match queries::blood_request::get_all()
-        .bind(&database)
+        .bind(&database, &account_id)
         .all()
         .await
     {

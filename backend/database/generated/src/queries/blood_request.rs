@@ -14,6 +14,11 @@ pub struct AddBloodGroupParams {
     pub request_id: uuid::Uuid,
     pub blood_group: ctypes::BloodGroup,
 }
+#[derive(Clone, Copy, Debug)]
+pub struct GetParams {
+    pub account_id: uuid::Uuid,
+    pub id: uuid::Uuid,
+}
 #[derive(Debug)]
 pub struct UpdateParams<T1: crate::StringSql> {
     pub priority: Option<ctypes::RequestPriority>,
@@ -40,6 +45,7 @@ pub struct BloodRequest {
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
     pub blood_groups: Vec<ctypes::BloodGroup>,
     pub current_people: i64,
+    pub is_editable: bool,
 }
 pub struct BloodRequestBorrowed<'a> {
     pub id: uuid::Uuid,
@@ -53,6 +59,7 @@ pub struct BloodRequestBorrowed<'a> {
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
     pub blood_groups: crate::ArrayIterator<'a, ctypes::BloodGroup>,
     pub current_people: i64,
+    pub is_editable: bool,
 }
 impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
     fn from(
@@ -68,6 +75,7 @@ impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
             created_at,
             blood_groups,
             current_people,
+            is_editable,
         }: BloodRequestBorrowed<'a>,
     ) -> Self {
         Self {
@@ -82,6 +90,7 @@ impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
             created_at,
             blood_groups: blood_groups.map(|v| v).collect(),
             current_people,
+            is_editable,
         }
     }
 }
@@ -305,7 +314,7 @@ impl<'a, C: GenericClient + Send + Sync>
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people FROM blood_requests WHERE id = $1 AND is_active = true",
+        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, (staff_id = $1) as is_editable FROM blood_requests WHERE id = $2 AND is_active = true",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);
@@ -313,11 +322,12 @@ impl GetStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
+        account_id: &'a uuid::Uuid,
         id: &'a uuid::Uuid,
-    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 1> {
+    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 2> {
         BloodRequestQuery {
             client,
-            params: [id],
+            params: [account_id, id],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<BloodRequestBorrowed, tokio_postgres::Error> {
@@ -333,15 +343,34 @@ impl GetStmt {
                         created_at: row.try_get(8)?,
                         blood_groups: row.try_get(9)?,
                         current_people: row.try_get(10)?,
+                        is_editable: row.try_get(11)?,
                     })
                 },
             mapper: |it| BloodRequest::from(it),
         }
     }
 }
+impl<'c, 'a, 's, C: GenericClient>
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        GetParams,
+        BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 2>,
+        C,
+    > for GetStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a GetParams,
+    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 2> {
+        self.bind(client, &params.account_id, &params.id)
+    }
+}
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people FROM blood_requests WHERE now() < end_time AND is_active = true",
+        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, (staff_id = $1) as is_editable FROM blood_requests WHERE now() < end_time AND is_active = true",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -349,10 +378,11 @@ impl GetAllStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 0> {
+        account_id: &'a uuid::Uuid,
+    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 1> {
         BloodRequestQuery {
             client,
-            params: [],
+            params: [account_id],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<BloodRequestBorrowed, tokio_postgres::Error> {
@@ -368,6 +398,7 @@ impl GetAllStmt {
                         created_at: row.try_get(8)?,
                         blood_groups: row.try_get(9)?,
                         current_people: row.try_get(10)?,
+                        is_editable: row.try_get(11)?,
                     })
                 },
             mapper: |it| BloodRequest::from(it),

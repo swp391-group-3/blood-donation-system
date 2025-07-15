@@ -81,7 +81,7 @@ pub async fn update(
     }
 
     let blood_request = match queries::blood_request::get()
-        .bind(&database, &id)
+        .bind(&database, &claims.sub, &id)
         .one()
         .await
     {
