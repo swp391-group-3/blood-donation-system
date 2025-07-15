@@ -30,6 +30,7 @@ import { EditProfileModel } from '@/components/edit-profile';
 import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import { displayDonationType } from '@/lib/api/dto/donation';
 import { AchievementCard } from '@/components/achievement-card';
+import { useNextDonatableDate } from '@/hooks/use-next-donatable-date';
 
 // Enhanced stats
 const mockStats = {
@@ -109,6 +110,7 @@ export default function ProfilePage() {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const { data: account, isPending, error } = useCurrentAccount();
     const { data: donations } = useCurrentAccountDonation();
+    const { data: nextDonatableDate } = useNextDonatableDate();
     const { mutation, form } = useUpdateAccountForm(account, {
         onSuccess() {
             setIsEditModalOpen(false);
@@ -151,10 +153,13 @@ export default function ProfilePage() {
         return age;
     };
 
-    const daysUntilNextDonation = Math.ceil(
-        (mockStats.nextDonationDate.getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24),
-    );
+    const daysUntilNextDonation = nextDonatableDate
+        ? Math.ceil(
+              (nextDonatableDate.getTime() - Date.now()) /
+                  (1000 * 60 * 60 * 24),
+          )
+        : undefined;
+
     const filteredAchievements =
         selectedCategory === 'all'
             ? mockAchievements
