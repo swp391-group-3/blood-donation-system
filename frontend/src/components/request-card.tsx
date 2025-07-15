@@ -4,12 +4,12 @@ import { AlertTriangle, Calendar, Clock, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { capitalCase } from 'change-case';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
-import { Progress } from '@radix-ui/react-progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { UpdateBloodRequestDialog } from '@/components/update-blood-request-dialog';
 import { useCurrentAccount } from '@/hooks/use-current-account';
+import { Progress } from '@/components/ui/progress';
 
 const priorityConfig = {
     high: {
