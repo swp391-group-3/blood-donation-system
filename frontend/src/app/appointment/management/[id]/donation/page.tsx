@@ -77,7 +77,7 @@ export default function AppointmentDonationPage() {
     const [newBloodBag, setNewBloodBag] = useState<CreateBloodBag>({
         amount: 150,
         component: 'red_cell',
-        expired_time: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000),
+        expired_time: new Date(),
     });
     const [bloodBags, setBloodBags] = useState<CreateBloodBag[]>([]);
     const totalBagAmount = useMemo(
@@ -373,6 +373,28 @@ export default function AppointmentDonationPage() {
                                                 max="500"
                                                 placeholder="150"
                                                 className="text-center text-lg font-semibold border-2 transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                                                Expired Time
+                                            </Label>
+                                            <Input
+                                                type="date"
+                                                value={
+                                                    newBloodBag.expired_time
+                                                        .toISOString()
+                                                        .split('T')[0]
+                                                }
+                                                onChange={(e) => {
+                                                    setNewBloodBag((prev) => ({
+                                                        ...prev,
+                                                        expired_time: new Date(
+                                                            e.target.value,
+                                                        ),
+                                                    }));
+                                                }}
+                                                className="text-center text-base border-2 transition-all"
                                             />
                                         </div>
                                         <div className="flex items-end">
