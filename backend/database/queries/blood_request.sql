@@ -43,7 +43,8 @@ SELECT
         SELECT COUNT(id)
         FROM appointments
         WHERE request_id = blood_requests.id
-    ) as current_people
+    ) as current_people,
+    (staff_id = :account_id) as is_editable
 FROM blood_requests
 WHERE id = :id AND is_active = true;
 
@@ -61,7 +62,8 @@ SELECT
         SELECT COUNT(id)
         FROM appointments
         WHERE request_id = blood_requests.id
-    ) as current_people
+    ) as current_people,
+    (staff_id = :account_id) as is_editable
 FROM blood_requests
 WHERE now() < end_time AND is_active = true;
 

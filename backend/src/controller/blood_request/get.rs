@@ -11,19 +11,28 @@ use uuid::Uuid;
 use crate::{
     error::{Error, Result},
     state::ApiState,
+    util::auth::Claims,
 };
 
 #[utoipa::path(
     get,
     tag = "Blood Request",
     path = "/blood-request/{id}",
+    params(
+        ("id" = Uuid, Path, description = "Blood request id")
+    ),
     operation_id = "blood_request::get"
 )]
-pub async fn get(state: State<Arc<ApiState>>, Path(id): Path<Uuid>) -> Result<Json<BloodRequest>> {
+pub async fn get(
+    state: State<Arc<ApiState>>,
+    claims: Option<Claims>,
+    Path(id): Path<Uuid>,
+) -> Result<Json<BloodRequest>> {
     let database = state.database().await?;
+    let account_id = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
 
     match queries::blood_request::get()
-        .bind(&database, &id)
+        .bind(&database, &account_id, &id)
         .opt()
         .await
     {
