@@ -1,3 +1,5 @@
+'use client';
+
 import { createColumnHelper } from '@tanstack/react-table';
 import { Account } from '@/lib/api/dto/account';
 import {

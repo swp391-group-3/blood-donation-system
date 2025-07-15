@@ -49,8 +49,8 @@ const statusConfig = {
     },
     done: {
         color: 'bg-green-500',
-        ringColor: 'ring-donated-500/20',
-        badgeColor: 'bg-donated-100 text-donated-800 border-donated-200',
+        ringColor: 'ring-green-500/20',
+        badgeColor: 'bg-green-100 text-green-800 border-green-200',
         icon: CheckCircle,
         description: 'Successfully done',
     },

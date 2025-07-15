@@ -1,72 +1,78 @@
-"use client"
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useDeleteBlog } from "@/hooks/use-delete-blog";
-import { Blog } from "@/lib/api/dto/blog";
-import { createColumnHelper } from "@tanstack/react-table"
-import {  MoreHorizontal, Trash2 } from "lucide-react";
+'use client';
 
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useDeleteBlog } from '@/hooks/use-delete-blog';
+import { Blog } from '@/lib/api/dto/blog';
+import { createColumnHelper } from '@tanstack/react-table';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 
 const columnHelper = createColumnHelper<Blog>();
 
-
 export const columns = [
-    columnHelper.accessor("title", {
-        id: "Title",
-        header: "Title",
+    columnHelper.accessor('title', {
+        id: 'Title',
+        header: 'Title',
         cell: ({ row }) => {
             const blog = row.original;
             return (
                 <div>
                     <div className="text-sm text-gray-500">{blog.title}</div>
                 </div>
-            )
-        }
+            );
+        },
     }),
-    columnHelper.accessor("description", {
-        id: "Description",
-        header: "Description",
+    columnHelper.accessor('description', {
+        id: 'Description',
+        header: 'Description',
         cell: ({ row }) => {
             const blog = row.original;
             return (
                 <div>
-                    <div className="text-sm text-gray-500">{blog.description}</div>
+                    <div className="text-sm text-gray-500">
+                        {blog.description}
+                    </div>
                 </div>
-            )
-        }
+            );
+        },
     }),
-    columnHelper.accessor("owner", {
-        id: "Owner",
-        header: "Owner",
+    columnHelper.accessor('owner', {
+        id: 'Owner',
+        header: 'Owner',
         cell: ({ row }) => {
             const blog = row.original;
             return (
                 <div>
                     <div className="text-sm text-gray-500">{blog.owner}</div>
                 </div>
-            )
-        }
+            );
+        },
     }),
     columnHelper.display({
-        id: "Actions",
-        header: "Actions",
+        id: 'Actions',
+        header: 'Actions',
         cell: ({ row }) => {
             const blog = row.original;
             return (
                 <div>
                     <BlogActionsCell blog={blog} />
                 </div>
-            )
-        }
-    })
-]
+            );
+        },
+    }),
+];
 
 function BlogActionsCell({ blog }: { blog: Blog }) {
     const deleteMutation = useDeleteBlog();
 
     const handleDeleteBlog = (id: string) => {
-        deleteMutation.mutate(id)
-    }
+        deleteMutation.mutate(id);
+    };
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -92,5 +98,5 @@ function BlogActionsCell({ blog }: { blog: Blog }) {
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
-    )
+    );
 }

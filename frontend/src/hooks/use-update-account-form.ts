@@ -23,7 +23,7 @@ export const useUpdateAccountForm = (
 
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
-            const response = await fetchWrapper('/account', {
+            const response = await fetchWrapper('/account/me', {
                 method: 'PUT',
                 headers: {
                     Accept: 'application/json',
