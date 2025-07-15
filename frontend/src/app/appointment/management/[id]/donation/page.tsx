@@ -94,6 +94,19 @@ export default function AppointmentDonationPage() {
         return <div></div>;
     }
 
+    function calculateExpectedExpiryDate(shelfLife: string): Date {
+        const now = new Date();
+        const [valueStr, unit] = shelfLife.split(' ');
+        const value = parseInt(valueStr);
+
+        if (unit.includes('day')) now.setDate(now.getDate() + value);
+        else if (unit.includes('month')) now.setMonth(now.getMonth() + value);
+        else if (unit.includes('year'))
+            now.setFullYear(now.getFullYear() + value);
+
+        return now;
+    }
+
     return (
         <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
             <Card>
@@ -311,9 +324,20 @@ export default function AppointmentDonationPage() {
                                                 onValueChange={(
                                                     component: BloodComponent,
                                                 ) => {
+                                                    const shelfLife =
+                                                        componentConfigs[
+                                                            component
+                                                        ].shelfLife;
+                                                    const estimatedDate =
+                                                        calculateExpectedExpiryDate(
+                                                            shelfLife,
+                                                        );
+
                                                     setNewBloodBag((prev) => ({
                                                         ...prev,
                                                         component,
+                                                        expired_time:
+                                                            estimatedDate,
                                                     }));
                                                 }}
                                             >
@@ -419,25 +443,18 @@ export default function AppointmentDonationPage() {
 
                                     <Alert className="mt-6 border-blue-200 bg-blue-50 rounded-xl">
                                         <Info className="h-5 w-5 text-blue-600" />
-                                        <AlertDescription className="flex text-blue-800">
-                                            {capitalCase(
-                                                bloodComponents.find(
-                                                    (c) =>
-                                                        c ===
-                                                        newBloodBag.component,
-                                                )!,
-                                            )}{' '}
-                                            has a shelf life of{' '}
+                                        <AlertDescription className="text-blue-800">
+                                            {capitalCase(newBloodBag.component)}{' '}
+                                            is expected to expire on{' '}
                                             <strong>
-                                                {
-                                                    componentConfigs[
-                                                        bloodComponents.find(
-                                                            (c) =>
-                                                                c ===
-                                                                newBloodBag.component,
-                                                        )!
-                                                    ].shelfLife
-                                                }
+                                                {newBloodBag.expired_time.toLocaleDateString(
+                                                    'en-GB',
+                                                    {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                    },
+                                                )}
                                             </strong>
                                         </AlertDescription>
                                     </Alert>
