@@ -1,10 +1,18 @@
 import { getApiUrl } from './api-url';
 
+export class ApiError extends Error {
+    details: Record<string, string>;
+
+    constructor(message: string, details: Record<string, string>) {
+        super(message);
+        this.details = details;
+    }
+}
+
 export const throwIfError = async (response: Response) => {
     if (!response.ok) {
-        const error = await response.text();
-
-        throw new Error(error);
+        const error: ApiError = await response.json();
+        throw error;
     }
 };
 

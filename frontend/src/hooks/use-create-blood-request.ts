@@ -40,7 +40,9 @@ export const useBloodRequestForm = () => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            toast.error(error.message);
+        },
         onSuccess: () => {
             toast.success('Create blood request successfully');
             queryClient.invalidateQueries({ queryKey: ['blood-requests'] });

@@ -49,7 +49,9 @@ export const useCreateBloodBags = () => {
                 })(),
             ]);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            toast.error(error.message);
+        },
         onSuccess: () => {
             toast.info('Successfully add blood bags');
             router.push('/appointment/management');

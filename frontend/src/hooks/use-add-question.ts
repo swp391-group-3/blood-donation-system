@@ -17,7 +17,9 @@ export const useAddQuestion = () => {
             });
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            toast.error(error.message);
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['question'],

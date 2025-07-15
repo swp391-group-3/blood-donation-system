@@ -25,7 +25,9 @@ export const useCreateBlogFrom = () => {
             });
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            toast.error(error.message);
+        },
         onSuccess: () => {
             toast.info('Create Blog Successfully');
         },

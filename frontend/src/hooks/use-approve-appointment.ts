@@ -13,7 +13,9 @@ export const useApproveAppointment = (id: string) => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            toast.error(error.message);
+        },
         onSuccess: () => toast.info('Success'),
     });
 };

@@ -19,7 +19,7 @@ export const useDeleteBlog = () => {
             toast.success('Delete Blog Successfully');
         },
         onError: () => {
-            toast.success('Failed To Delete Blog');
+            toast.error('Failed to delete blog');
         },
     });
 };

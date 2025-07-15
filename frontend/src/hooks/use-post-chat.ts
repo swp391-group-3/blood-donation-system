@@ -1,8 +1,8 @@
 'use client';
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import type { ChatMessage } from '@/lib/api/dto/chat';
+import { toast } from 'sonner';
 
 type PostChatArgs = {
     message: string;

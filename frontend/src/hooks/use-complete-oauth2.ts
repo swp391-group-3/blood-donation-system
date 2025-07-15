@@ -30,7 +30,9 @@ export const useCompleteOAuth2 = () => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            toast.error(error.message);
+        },
         onSuccess: () => router.push('/'),
     });
 

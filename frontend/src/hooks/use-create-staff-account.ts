@@ -41,7 +41,7 @@ export const useCreateStaffAccount = (opts?: { onSuccess?: () => void }) => {
         },
         onError: (error) => {
             if (error.message.includes('phone number')) {
-                toast.error('Phone must consist of 10 number');
+                toast.error('Phone number must have 10 digits');
             } else {
                 toast.error(error.message);
             }
