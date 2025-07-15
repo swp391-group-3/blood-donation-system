@@ -443,18 +443,22 @@ export default function AppointmentDonationPage() {
                                     <Alert className="mt-6 border-blue-200 bg-blue-50 rounded-xl">
                                         <Info className="h-5 w-5 text-blue-600" />
                                         <AlertDescription className="text-blue-800">
-                                            {capitalCase(newBloodBag.component)}{' '}
-                                            is expected to expire on{' '}
-                                            <strong>
-                                                {newBloodBag.expired_time.toLocaleDateString(
-                                                    'en-GB',
-                                                    {
-                                                        year: 'numeric',
-                                                        month: 'long',
-                                                        day: 'numeric',
-                                                    },
-                                                )}
-                                            </strong>
+                                            <span>
+                                                {capitalCase(
+                                                    newBloodBag.component,
+                                                )}{' '}
+                                                is expected to expire on{' '}
+                                                <strong>
+                                                    {newBloodBag.expired_time.toLocaleDateString(
+                                                        'en-GB',
+                                                        {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                        },
+                                                    )}
+                                                </strong>
+                                            </span>
                                         </AlertDescription>
                                     </Alert>
                                 </div>
