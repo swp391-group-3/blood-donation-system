@@ -1,7 +1,6 @@
 'use client';
 
 import { fetchWrapper, throwIfError } from '@/lib/api';
-import { showErrorToast } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -40,7 +39,7 @@ export const useHealthForm = (appointmentId: string) => {
 
             await throwIfError(response);
         },
-        onError: (error) => showErrorToast(error.message),
+        onError: (error) => toast.error(error.message),
         onSuccess: () => toast.info('Add health successfully'),
     });
 

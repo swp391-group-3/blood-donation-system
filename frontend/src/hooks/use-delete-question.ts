@@ -1,5 +1,4 @@
 import { fetchWrapper } from '@/lib/api';
-import { showErrorToast } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -19,7 +18,7 @@ export const useDeleteQuestion = () => {
             toast.success('Delete Questions successfully');
         },
         onError: () => {
-            showErrorToast('Failed To Delete Question');
+            toast.error('Fail to delete question');
         },
     });
 };

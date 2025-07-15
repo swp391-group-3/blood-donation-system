@@ -1,5 +1,4 @@
 import { fetchWrapper } from '@/lib/api';
-import { showErrorToast } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -20,7 +19,7 @@ export const useDeleteBlog = () => {
             toast.success('Delete Blog Successfully');
         },
         onError: () => {
-            showErrorToast('Failed To Delete Blog');
+            toast.error('Failed to delete blog');
         },
     });
 };

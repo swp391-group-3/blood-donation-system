@@ -5,7 +5,6 @@ import { fetchWrapper, throwIfError } from '@/lib/api';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { showErrorToast } from '@/lib/utils';
 
 export const schema = registerSchema.omit({
     email: true,
@@ -33,7 +32,7 @@ export const useUpdateDataTable = (
 
             await throwIfError(response);
         },
-        onError: (error) => showErrorToast(error.message),
+        onError: (error) => toast.error(error.message),
         onSuccess: () => {
             toast.success('Profile updated successfully!');
             qc.invalidateQueries({ queryKey: ['account'] });

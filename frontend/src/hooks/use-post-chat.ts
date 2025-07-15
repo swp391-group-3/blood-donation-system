@@ -1,9 +1,8 @@
 'use client';
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import type { ChatMessage } from '@/lib/api/dto/chat';
-import { showErrorToast } from '@/lib/utils';
+import { toast } from 'sonner';
 
 type PostChatArgs = {
     message: string;
@@ -47,7 +46,7 @@ export const usePostChat = () => {
                 content: [{ type: 'text', text: fullText }],
             };
         },
-        onError: (error) => showErrorToast(error.message),
+        onError: (error) => toast.error(error.message),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['chat'] });
         },

@@ -1,7 +1,6 @@
 'use client';
 
 import { fetchWrapper, throwIfError } from '@/lib/api';
-import { showErrorToast } from '@/lib/utils';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -15,7 +14,7 @@ export const useApproveAppointment = (id: string) => {
             await throwIfError(response);
         },
         onError: (error) => {
-            showErrorToast(error);
+            toast.error(error.message);
         },
         onSuccess: () => toast.info('Success'),
     });

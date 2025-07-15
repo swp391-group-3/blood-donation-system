@@ -1,7 +1,6 @@
 import { fetchWrapper } from '@/lib/api';
 import { Staff } from '@/lib/api/dto/account';
 import { collectStaffs } from '@/lib/dashboard-utils';
-import { showErrorToast } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -59,7 +58,7 @@ export const useCreateStaffAccounts = () => {
             }
         },
         onError: (error) => {
-            showErrorToast('Uploaded file: ' + (error as Error).message);
+            toast.error('Uploaded file: ' + (error as Error).message);
         },
     });
 };
