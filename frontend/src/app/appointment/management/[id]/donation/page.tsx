@@ -68,6 +68,18 @@ const componentConfigs = {
     },
 };
 
+function calculateExpectedExpiryDate(shelfLife: string): Date {
+    const now = new Date();
+    const [valueStr, unit] = shelfLife.split(' ');
+    const value = parseInt(valueStr);
+
+    if (unit.includes('day')) now.setDate(now.getDate() + value);
+    else if (unit.includes('month')) now.setMonth(now.getMonth() + value);
+    else if (unit.includes('year')) now.setFullYear(now.getFullYear() + value);
+
+    return now;
+}
+
 export default function AppointmentDonationPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
@@ -92,19 +104,6 @@ export default function AppointmentDonationPage() {
     if (error) {
         toast.error(error.message);
         return <div></div>;
-    }
-
-    function calculateExpectedExpiryDate(shelfLife: string): Date {
-        const now = new Date();
-        const [valueStr, unit] = shelfLife.split(' ');
-        const value = parseInt(valueStr);
-
-        if (unit.includes('day')) now.setDate(now.getDate() + value);
-        else if (unit.includes('month')) now.setMonth(now.getMonth() + value);
-        else if (unit.includes('year'))
-            now.setFullYear(now.getFullYear() + value);
-
-        return now;
     }
 
     return (
