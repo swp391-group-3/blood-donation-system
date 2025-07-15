@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { CreateBloodBag } from '@/lib/api/dto/blood-bag';
 import { useRouter } from 'next/navigation';
+import { showErrorToast } from '@/lib/utils';
 
 export const useCreateBloodBags = () => {
     const router = useRouter();
@@ -49,7 +50,9 @@ export const useCreateBloodBags = () => {
                 })(),
             ]);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            showErrorToast(error);
+        },
         onSuccess: () => {
             toast.info('Successfully add blood bags');
             router.push('/appointment/management');

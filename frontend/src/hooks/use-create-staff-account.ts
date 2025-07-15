@@ -1,4 +1,5 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
+import { showErrorToast } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -41,9 +42,9 @@ export const useCreateStaffAccount = (opts?: { onSuccess?: () => void }) => {
         },
         onError: (error) => {
             if (error.message.includes('phone number')) {
-                toast.error('Phone must consist of 10 number');
+                showErrorToast('Phone number must have 10 digits');
             } else {
-                toast.error(error.message);
+                showErrorToast(error);
             }
         },
     });

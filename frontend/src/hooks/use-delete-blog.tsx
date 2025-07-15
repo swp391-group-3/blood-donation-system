@@ -1,6 +1,7 @@
-import { fetchWrapper } from "@/lib/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { fetchWrapper } from '@/lib/api';
+import { showErrorToast } from '@/lib/utils';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export const useDeleteBlog = () => {
     const queryClient = useQueryClient();
@@ -19,7 +20,7 @@ export const useDeleteBlog = () => {
             toast.success('Delete Blog Successfully');
         },
         onError: () => {
-            toast.success('Failed To Delete Blog');
+            showErrorToast('Failed To Delete Blog');
         },
     });
 };

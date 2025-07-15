@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { showErrorToast } from '@/lib/utils';
 
 export const schema = z.object({
     title: z.string().min(1, 'The title cannot be empty').optional(),
@@ -34,7 +35,7 @@ export const useUpdateBloodRequestForm = (id: string) => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => showErrorToast(error.message),
         onSuccess: () => {
             toast.success('Update blood request successfully');
             queryClient.invalidateQueries({ queryKey: ['blood-request'] });

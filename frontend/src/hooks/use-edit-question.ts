@@ -1,4 +1,5 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
+import { showErrorToast } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -17,7 +18,7 @@ export const useEditQuestion = (id: number) => {
             });
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => showErrorToast(error.message),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['question'],

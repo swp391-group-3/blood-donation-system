@@ -1,4 +1,5 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
+import { showErrorToast } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -25,7 +26,9 @@ export const useCreateBlogFrom = () => {
             });
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            showErrorToast(error);
+        },
         onSuccess: () => {
             toast.info('Create Blog Successfully');
         },

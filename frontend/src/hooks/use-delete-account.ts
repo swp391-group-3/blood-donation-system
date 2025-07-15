@@ -1,4 +1,5 @@
 import { fetchWrapper } from '@/lib/api';
+import { showErrorToast } from '@/lib/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -15,7 +16,7 @@ export const useDeleteAccount = () => {
             toast.success('Delete Account Successfully');
         },
         onError: () => {
-            toast.success('Failed To Delete Account');
+            showErrorToast('Failed To Delete Account');
         },
     });
 };

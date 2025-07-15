@@ -3,6 +3,7 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { genders } from '@/lib/api/dto/account';
 import { bloodGroups } from '@/lib/api/dto/blood-group';
+import { showErrorToast } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -41,7 +42,7 @@ export const useRegisterForm = () => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => showErrorToast(error.message),
         onSuccess: () => router.push('/'),
     });
 

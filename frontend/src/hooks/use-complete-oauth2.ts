@@ -8,6 +8,7 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { showErrorToast } from '@/lib/utils';
 
 export const schema = registerSchema.omit({
     email: true,
@@ -30,7 +31,9 @@ export const useCompleteOAuth2 = () => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            showErrorToast(error);
+        },
         onSuccess: () => router.push('/'),
     });
 

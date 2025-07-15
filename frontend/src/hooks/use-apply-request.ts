@@ -2,6 +2,7 @@
 
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { Answer } from '@/lib/api/dto/answer';
+import { showErrorToast } from '@/lib/utils';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -25,7 +26,9 @@ export const useApplyRequest = (id: string) => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            showErrorToast(error);
+        },
         onSuccess: () => {
             toast.info('Submit successfully');
             router.push('/appointment');

@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { showErrorToast } from '@/lib/utils';
 
 export const schema = registerSchema.omit({
     email: true,
@@ -33,7 +34,7 @@ export const useUpdateAccountForm = (
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => showErrorToast(error.message),
         onSuccess: () => {
             toast.success('Profile updated successfully!');
             qc.invalidateQueries({ queryKey: ['auth', 'me'] });
