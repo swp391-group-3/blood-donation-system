@@ -68,6 +68,18 @@ const componentConfigs = {
     },
 };
 
+function calculateExpectedExpiryDate(shelfLife: string): Date {
+    const now = new Date();
+    const [valueStr, unit] = shelfLife.split(' ');
+    const value = parseInt(valueStr);
+
+    if (unit.includes('day')) now.setDate(now.getDate() + value);
+    else if (unit.includes('month')) now.setMonth(now.getMonth() + value);
+    else if (unit.includes('year')) now.setFullYear(now.getFullYear() + value);
+
+    return now;
+}
+
 export default function AppointmentDonationPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
@@ -77,7 +89,7 @@ export default function AppointmentDonationPage() {
     const [newBloodBag, setNewBloodBag] = useState<CreateBloodBag>({
         amount: 150,
         component: 'red_cell',
-        expired_time: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000),
+        expired_time: new Date(),
     });
     const [bloodBags, setBloodBags] = useState<CreateBloodBag[]>([]);
     const totalBagAmount = useMemo(
@@ -311,9 +323,20 @@ export default function AppointmentDonationPage() {
                                                 onValueChange={(
                                                     component: BloodComponent,
                                                 ) => {
+                                                    const shelfLife =
+                                                        componentConfigs[
+                                                            component
+                                                        ].shelfLife;
+                                                    const estimatedDate =
+                                                        calculateExpectedExpiryDate(
+                                                            shelfLife,
+                                                        );
+
                                                     setNewBloodBag((prev) => ({
                                                         ...prev,
                                                         component,
+                                                        expired_time:
+                                                            estimatedDate,
                                                     }));
                                                 }}
                                             >
@@ -375,6 +398,28 @@ export default function AppointmentDonationPage() {
                                                 className="text-center text-lg font-semibold border-2 transition-all"
                                             />
                                         </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                                                Expired Time
+                                            </Label>
+                                            <Input
+                                                type="date"
+                                                value={
+                                                    newBloodBag.expired_time
+                                                        .toISOString()
+                                                        .split('T')[0]
+                                                }
+                                                onChange={(e) => {
+                                                    setNewBloodBag((prev) => ({
+                                                        ...prev,
+                                                        expired_time: new Date(
+                                                            e.target.value,
+                                                        ),
+                                                    }));
+                                                }}
+                                                className="text-center text-base border-2 transition-all"
+                                            />
+                                        </div>
                                         <div className="flex items-end">
                                             <Button
                                                 type="button"
@@ -397,26 +442,23 @@ export default function AppointmentDonationPage() {
 
                                     <Alert className="mt-6 border-blue-200 bg-blue-50 rounded-xl">
                                         <Info className="h-5 w-5 text-blue-600" />
-                                        <AlertDescription className="flex text-blue-800">
-                                            {capitalCase(
-                                                bloodComponents.find(
-                                                    (c) =>
-                                                        c ===
-                                                        newBloodBag.component,
-                                                )!,
-                                            )}{' '}
-                                            has a shelf life of{' '}
-                                            <strong>
-                                                {
-                                                    componentConfigs[
-                                                        bloodComponents.find(
-                                                            (c) =>
-                                                                c ===
-                                                                newBloodBag.component,
-                                                        )!
-                                                    ].shelfLife
-                                                }
-                                            </strong>
+                                        <AlertDescription className="text-blue-800">
+                                            <span>
+                                                {capitalCase(
+                                                    newBloodBag.component,
+                                                )}{' '}
+                                                is expected to expire on{' '}
+                                                <strong>
+                                                    {newBloodBag.expired_time.toLocaleDateString(
+                                                        'en-GB',
+                                                        {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                        },
+                                                    )}
+                                                </strong>
+                                            </span>
                                         </AlertDescription>
                                     </Alert>
                                 </div>
