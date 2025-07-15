@@ -5,8 +5,6 @@ import { Account } from './api/dto/account';
 import { capitalCase } from 'change-case';
 import { bloodGroupLabels } from './api/dto/blood-group';
 import QRCode from 'qrcode';
-import { toast } from 'sonner';
-import { AlertCircle } from 'lucide-react';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -18,28 +16,6 @@ export const formatDateTime = (value: Date) => {
         minute: '2-digit',
     })}`;
 };
-
-export function showErrorToast(error: any) {
-    let parsedError = error;
-
-    try {
-        if (
-            typeof error?.message === 'string' &&
-            error.message.startsWith('{')
-        ) {
-            parsedError = JSON.parse(error.message);
-        }
-    } catch {
-        parsedError = error;
-    }
-
-    const title = parsedError.message || 'Something went wrong';
-    toast(title, {
-        icon: <AlertCircle className="text-red-500 size-4" />,
-        className: 'bg-red-100 border border-red-300 text-red-900',
-        duration: 5000,
-    });
-}
 
 export const generateCertificate = async (
     donation: Donation,
