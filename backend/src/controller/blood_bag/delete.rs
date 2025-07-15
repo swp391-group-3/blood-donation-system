@@ -31,7 +31,7 @@ pub async fn delete(
     authorize(&claims, [Role::Staff], &database).await?;
 
     if let Err(error) = queries::blood_bag::delete().bind(&database, &id).await {
-        tracing::error!(?error, "Failed to delete question");
+        tracing::error!(?error, "Failed to delete blood bag");
 
         return Err(Error::internal());
     }
