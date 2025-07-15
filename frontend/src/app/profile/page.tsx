@@ -30,17 +30,7 @@ import { EditProfileModel } from '@/components/edit-profile';
 import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import { displayDonationType } from '@/lib/api/dto/donation';
 import { AchievementCard } from '@/components/achievement-card';
-
-// Enhanced stats
-const mockStats = {
-    totalDonations: 12,
-    memberSince: '2023',
-    currentLevel: 3,
-    nextLevelProgress: 75,
-    totalPoints: 2400,
-    nextDonationDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-    lastDonationDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
-};
+import { useNextDonatableDate } from '@/hooks/use-next-donatable-date';
 
 // Achievement system
 const mockAchievements = [
@@ -109,6 +99,7 @@ export default function ProfilePage() {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const { data: account, isPending, error } = useCurrentAccount();
     const { data: donations } = useCurrentAccountDonation();
+    const { data: nextDonatableDate } = useNextDonatableDate();
     const { mutation, form } = useUpdateAccountForm(account, {
         onSuccess() {
             setIsEditModalOpen(false);
@@ -151,10 +142,13 @@ export default function ProfilePage() {
         return age;
     };
 
-    const daysUntilNextDonation = Math.ceil(
-        (mockStats.nextDonationDate.getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24),
-    );
+    const daysUntilNextDonation = nextDonatableDate
+        ? Math.ceil(
+              (nextDonatableDate.getTime() - Date.now()) /
+                  (1000 * 60 * 60 * 24),
+          )
+        : undefined;
+
     const filteredAchievements =
         selectedCategory === 'all'
             ? mockAchievements
