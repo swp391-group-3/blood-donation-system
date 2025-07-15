@@ -15,6 +15,8 @@ import {
     LucideIcon,
     Package,
     LayoutDashboard,
+    FileEdit,
+    Activity,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -48,14 +50,24 @@ const getNavigationItems = (role?: Role): NavigationItem[] => {
                     href: '/',
                 },
                 {
-                    label: 'Blood Storage',
-                    icon: Package,
-                    href: '/blood-storage',
+                    label: 'Question',
+                    icon: FileEdit,
+                    href: 'question',
                 },
                 {
-                    label: 'Blood Request',
+                    label: 'Request',
                     icon: Droplets,
                     href: '/request',
+                },
+                {
+                    label: 'Appointment',
+                    icon: Activity,
+                    href: '/appointment/management',
+                },
+                {
+                    label: 'Storage',
+                    icon: Package,
+                    href: '/blood-storage',
                 },
                 {
                     label: 'Blog',
