@@ -32,17 +32,6 @@ import { displayDonationType } from '@/lib/api/dto/donation';
 import { AchievementCard } from '@/components/achievement-card';
 import { useNextDonatableDate } from '@/hooks/use-next-donatable-date';
 
-// Enhanced stats
-const mockStats = {
-    totalDonations: 12,
-    memberSince: '2023',
-    currentLevel: 3,
-    nextLevelProgress: 75,
-    totalPoints: 2400,
-    nextDonationDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-    lastDonationDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
-};
-
 // Achievement system
 const mockAchievements = [
     {
