@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import {
     User,
@@ -427,17 +428,34 @@ export default function ProfilePage() {
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>
-                                            <div className="text-center py-12 bg-blue-50 rounded-lg mb-6">
-                                                <div className="text-4xl font-bold text-gray-900 mb-2">
-                                                    {daysUntilNextDonation}
+                                            {daysUntilNextDonation !==
+                                                undefined &&
+                                            daysUntilNextDonation > 0 ? (
+                                                <div className="text-center py-12 bg-blue-50 rounded-lg mb-6">
+                                                    <div className="text-4xl font-bold text-gray-900 mb-2">
+                                                        {daysUntilNextDonation}
+                                                    </div>
+                                                    <div className="text-gray-600">
+                                                        days remaining
+                                                    </div>
+                                                    <div className="text-sm text-gray-500 mt-1">
+                                                        Until you can donate
+                                                        again
+                                                    </div>
                                                 </div>
-                                                <div className="text-gray-600">
-                                                    days remaining
+                                            ) : (
+                                                <div className="text-center py-12 bg-green-100 rounded-lg mb-6">
+                                                    <div className="text-4xl font-bold text-gray-900 mb-2">
+                                                        {daysUntilNextDonation}
+                                                    </div>
+                                                    <div className="text-gray-600">
+                                                        days remaining
+                                                    </div>
+                                                    <div className="text-sm text-green-800 mt-1">
+                                                        Currently Available
+                                                    </div>
                                                 </div>
-                                                <div className="text-sm text-gray-500 mt-1">
-                                                    Until you can donate again
-                                                </div>
-                                            </div>
+                                            )}
                                         </CardContent>
                                     </Card>
 
