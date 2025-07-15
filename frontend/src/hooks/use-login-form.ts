@@ -1,8 +1,10 @@
 'use client';
 
 import { fetchWrapper, throwIfError } from '@/lib/api';
+import { showErrorToast } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -33,7 +35,9 @@ export const useLoginForm = () => {
 
             await throwIfError(response);
         },
-        onError: (error) => toast.error(error.message),
+        onError: (error) => {
+            showErrorToast(error);
+        },
         onSuccess: () => router.push('/'),
     });
 
