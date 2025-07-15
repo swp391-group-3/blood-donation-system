@@ -72,7 +72,7 @@ pub async fn update(
         .params(&database, &request.with_id(id))
         .await
     {
-        tracing::error!(?error, "Failed to upadte health");
+        tracing::error!(?error, "Failed to update health");
 
         return Err(Error::builder()
             .status(StatusCode::BAD_REQUEST)
