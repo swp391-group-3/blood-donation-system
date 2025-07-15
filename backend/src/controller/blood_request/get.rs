@@ -18,6 +18,9 @@ use crate::{
     get,
     tag = "Blood Request",
     path = "/blood-request/{id}",
+    params(
+        ("id" = Uuid, Path, description = "Blood request id")
+    ),
     operation_id = "blood_request::get"
 )]
 pub async fn get(
