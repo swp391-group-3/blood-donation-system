@@ -24,7 +24,6 @@ export default function BlogReadPage() {
     const { data: comments } = useComment(id);
     const { mutation } = usePostComment(id);
     const { data: account } = useCurrentAccount();
-    console.log(account);
 
     const [isSubmitting] = useState(false);
     const [value, setValue] = useState<Content>('');
