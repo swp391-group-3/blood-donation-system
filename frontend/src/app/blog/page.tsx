@@ -196,9 +196,14 @@ export default function BlogPage() {
                                         {blog.title}
                                     </CardTitle>
                                     <CardContent className="p-0">
-                                        <p className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]">
-                                            {getExcerpt(blog.content)}
-                                        </p>
+                                        <p
+                                            className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]"
+                                            dangerouslySetInnerHTML={{
+                                                __html: getExcerpt(
+                                                    blog.content,
+                                                ),
+                                            }}
+                                        />
                                     </CardContent>
                                 </CardHeader>
                                 <div className="flex-1 flex flex-col justify-end">

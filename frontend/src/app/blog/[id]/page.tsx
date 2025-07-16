@@ -15,6 +15,7 @@ import { AccountPicture } from '@/components/account-picture';
 import { useComment } from '@/hooks/use-comment';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { usePostComment } from '@/hooks/use-post-comment';
+import { useCurrentAccount } from '@/hooks/use-current-account';
 
 export default function BlogReadPage() {
     const params = useParams();
@@ -22,6 +23,7 @@ export default function BlogReadPage() {
     const { data: blog, isLoading, error } = useBlog(id);
     const { data: comments } = useComment(id);
     const { mutation } = usePostComment(id);
+    const { data: account } = useCurrentAccount();
 
     const [isSubmitting] = useState(false);
     const [value, setValue] = useState<Content>('');
@@ -108,9 +110,12 @@ export default function BlogReadPage() {
                         <Separator />
 
                         <div className="p-8">
-                            <div className="text-slate-700 leading-relaxed space-y-6">
-                                {blog.content}
-                            </div>
+                            <div
+                                className="text-slate-700 leading-relaxed space-y-6"
+                                dangerouslySetInnerHTML={{
+                                    __html: blog.content,
+                                }}
+                            />
                         </div>
                     </article>
 
@@ -125,45 +130,47 @@ export default function BlogReadPage() {
                             </h2>
                         </div>
 
-                        <Separator className="mt-2" />
+                        <Separator className={account ? 'mt-2' : 'mt-2 mb-4'} />
 
-                        <div className="space-y-4">
-                            <div className="flex items-start gap-3">
-                                <div className="w-10 h-10 text-xl">
-                                    <AccountPicture name={blog.owner} />
-                                </div>
-                                <div className="flex-1 space-y-3">
-                                    <MinimalTiptapEditor
-                                        key={editorKey}
-                                        value={value}
-                                        onChange={setValue}
-                                        className="w-full h-full min-h-40"
-                                        editorContentClassName="p-5"
-                                        output="html"
-                                        placeholder="Share your think..."
-                                        autofocus={false}
-                                        editable={true}
-                                        editorClassName="focus:outline-hidden"
-                                    />
-                                    <div className="flex justify-end">
-                                        <Button
-                                            onClick={handleSubmitComment}
-                                            size="sm"
-                                            className="bg-blue-600 hover:bg-blue-700 rounded-lg"
-                                            disabled={
-                                                !value?.toString().trim() ||
-                                                isSubmitting
-                                            }
-                                        >
-                                            <Send className="h-4 w-4 mr-2" />
-                                            {isSubmitting
-                                                ? 'Posting...'
-                                                : 'Post Comment'}
-                                        </Button>
+                        {account && (
+                            <div className="space-y-4">
+                                <div className="flex items-start gap-3">
+                                    <div className="w-10 h-10 text-xl">
+                                        <AccountPicture name={account.name} />
+                                    </div>
+                                    <div className="flex-1 space-y-3">
+                                        <MinimalTiptapEditor
+                                            key={editorKey}
+                                            value={value}
+                                            onChange={setValue}
+                                            className="w-full h-full min-h-40"
+                                            editorContentClassName="p-5"
+                                            output="html"
+                                            placeholder="Share your think..."
+                                            autofocus={false}
+                                            editable={true}
+                                            editorClassName="focus:outline-hidden"
+                                        />
+                                        <div className="flex justify-end">
+                                            <Button
+                                                onClick={handleSubmitComment}
+                                                size="sm"
+                                                className="bg-blue-600 hover:bg-blue-700 rounded-lg"
+                                                disabled={
+                                                    !value?.toString().trim() ||
+                                                    isSubmitting
+                                                }
+                                            >
+                                                <Send className="h-4 w-4 mr-2" />
+                                                {isSubmitting
+                                                    ? 'Posting...'
+                                                    : 'Post Comment'}
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     <div className="space-y-6">

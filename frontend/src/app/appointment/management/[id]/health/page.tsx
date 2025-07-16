@@ -14,7 +14,6 @@ import { capitalCase } from 'change-case';
 export default function AppointmentHealthPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
-
     if (isPending) {
         return <div></div>;
     }
@@ -73,6 +72,10 @@ export default function AppointmentHealthPage() {
                                 <div className="text-lg font-bold text-slate-900">
                                     {new Date(
                                         apt.request.start_time,
+                                    ).toLocaleDateString()}{' '}
+                                    -{' '}
+                                    {new Date(
+                                        apt.request.end_time,
                                     ).toLocaleDateString()}
                                 </div>
                                 <div className="text-sm text-slate-600">

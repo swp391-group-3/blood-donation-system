@@ -155,6 +155,10 @@ export default function AppointmentDonationPage() {
                                 <div className="text-lg font-bold text-slate-900">
                                     {new Date(
                                         apt.request.start_time,
+                                    ).toLocaleDateString()}{' '}
+                                    -{' '}
+                                    {new Date(
+                                        apt.request.end_time,
                                     ).toLocaleDateString()}
                                 </div>
                                 <div className="text-sm text-slate-600">
