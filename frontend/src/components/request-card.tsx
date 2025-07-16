@@ -32,9 +32,36 @@ const priorityConfig = {
     },
 };
 
-export const RequestCard = (request: BloodRequest) => {
+const ActionButton = (request: BloodRequest) => {
     const { data: account } = useCurrentAccount();
 
+    if (account?.role === 'donor') {
+        return (
+            <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                <Link
+                    className="w-full h-full"
+                    href={`/request/apply/${request.id}`}
+                >
+                    Apply Now
+                </Link>
+            </Button>
+        );
+    }
+
+    if (request.is_editable) {
+        return (
+            <UpdateBloodRequestDialog id={request.id}>
+                <Button className="w-full h-10 font-semibold rounded-xl shadow-lg transition-all duration-200">
+                    Edit
+                </Button>
+            </UpdateBloodRequestDialog>
+        );
+    }
+
+    return <></>;
+};
+
+export const RequestCard = (request: BloodRequest) => {
     const config = priorityConfig[request.priority];
     const progress = Math.round(
         (request.current_people / request.max_people) * 100,
@@ -156,23 +183,7 @@ export const RequestCard = (request: BloodRequest) => {
                         donors needed
                     </div>
                 </div>
-
-                {account?.role === 'donor' ? (
-                    <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
-                        <Link
-                            className="w-full h-full"
-                            href={`/request/apply/${request.id}`}
-                        >
-                            Apply Now
-                        </Link>
-                    </Button>
-                ) : (
-                    <UpdateBloodRequestDialog id={request.id}>
-                        <Button className="w-full h-10 font-semibold rounded-xl shadow-lg transition-all duration-200">
-                            Edit
-                        </Button>
-                    </UpdateBloodRequestDialog>
-                )}
+                <ActionButton {...request} />
             </CardContent>
         </Card>
     );
