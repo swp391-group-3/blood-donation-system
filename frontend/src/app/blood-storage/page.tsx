@@ -199,11 +199,6 @@ export default function BloodStorage() {
                         Create Blood Request
                     </Button>
                     <div className="flex gap-3">
-                        <Input
-                            type="text"
-                            placeholder="Search by name..."
-                            className="w-64 border-slate-200"
-                        />
                         <Select
                             value={component}
                             onValueChange={(value: BloodComponent | 'all') =>
