@@ -14,7 +14,6 @@ import { capitalCase } from 'change-case';
 export default function AppointmentHealthPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
-    console.log(apt);
     if (isPending) {
         return <div></div>;
     }
