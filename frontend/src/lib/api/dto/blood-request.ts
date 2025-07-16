@@ -13,4 +13,5 @@ export interface BloodRequest {
     max_people: number;
     start_time: Date;
     end_time: Date;
+    is_editable: boolean;
 }
