@@ -15,6 +15,7 @@ import {
 import {
     Activity,
     AlertTriangle,
+    Blend,
     Calendar,
     Check,
     CircleX,
@@ -132,14 +133,6 @@ const isExpired = (date: Date) => new Date(date) <= new Date();
 const isExpiringSoon = (date: Date) =>
     differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
 
-const normalizeBloodGroup = (raw: string): BloodGroup => {
-    return raw
-        .replace('plus', '+')
-        .replace('minus', '-')
-        .replace(/_/g, '')
-        .toUpperCase() as BloodGroup;
-};
-
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
@@ -254,14 +247,13 @@ export default function BloodStorage() {
                                 ))}
                             </SelectContent>
                         </Select>
-
                         <Select
-                            value={component}
+                            value={mode}
                             onValueChange={(value: Mode) => setMode(value)}
                             defaultValue={'Compatible'}
                         >
                             <SelectTrigger className="w-fit border-slate-200">
-                                <Filter className="h-4 w-4 mr-2" />
+                                <Blend className="h-4 w-4 mr-2" />
                                 <SelectValue placeholder="Mode" />
                             </SelectTrigger>
                             <SelectContent>
@@ -329,9 +321,11 @@ export default function BloodStorage() {
                                             <Badge
                                                 className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[bag.blood_group]}`}
                                             >
-                                                {normalizeBloodGroup(
-                                                    bag.blood_group,
-                                                )}
+                                                {
+                                                    bloodGroupLabels[
+                                                        bag.blood_group
+                                                    ]
+                                                }
                                             </Badge>
                                         </div>
                                     </TableCell>
