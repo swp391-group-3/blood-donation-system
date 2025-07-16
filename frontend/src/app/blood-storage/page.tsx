@@ -15,6 +15,7 @@ import {
 import {
     Activity,
     AlertTriangle,
+    Blend,
     Calendar,
     Check,
     CircleX,
@@ -27,7 +28,11 @@ import {
     XCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useBloodStorageList } from '@/hooks/use-blood-storage-list';
+import {
+    Mode,
+    modes,
+    useBloodStorageList,
+} from '@/hooks/use-blood-storage-list';
 import { toast } from 'sonner';
 import {
     Select,
@@ -128,19 +133,12 @@ const isExpired = (date: Date) => new Date(date) <= new Date();
 const isExpiringSoon = (date: Date) =>
     differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
 
-const normalizeBloodGroup = (raw: string): BloodGroup => {
-    return raw
-        .replace('plus', '+')
-        .replace('minus', '-')
-        .replace(/_/g, '')
-        .toUpperCase() as BloodGroup;
-};
-
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
     const [showUseDialog, setShowUseDialog] = useState(false);
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
+    const [mode, setMode] = useState<Mode>('Compatible');
     const [openRequestDialog, setOpenRequestDialog] = useState(false);
 
     const { mutate: deleteBloodBag, isPending: isDeleting } =
@@ -153,6 +151,7 @@ export default function BloodStorage() {
     } = useBloodStorageList({
         blood_group: bloodGroup === 'all' ? undefined : bloodGroup,
         component: component === 'all' ? undefined : component,
+        mode,
     });
 
     const stats = useMemo(
@@ -248,6 +247,23 @@ export default function BloodStorage() {
                                 ))}
                             </SelectContent>
                         </Select>
+                        <Select
+                            value={mode}
+                            onValueChange={(value: Mode) => setMode(value)}
+                            defaultValue={'Compatible'}
+                        >
+                            <SelectTrigger className="w-fit border-slate-200">
+                                <Blend className="h-4 w-4 mr-2" />
+                                <SelectValue placeholder="Mode" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {modes.map((mode) => (
+                                    <SelectItem key={mode} value={mode}>
+                                        {capitalCase(mode)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
@@ -305,9 +321,11 @@ export default function BloodStorage() {
                                             <Badge
                                                 className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[bag.blood_group]}`}
                                             >
-                                                {normalizeBloodGroup(
-                                                    bag.blood_group,
-                                                )}
+                                                {
+                                                    bloodGroupLabels[
+                                                        bag.blood_group
+                                                    ]
+                                                }
                                             </Badge>
                                         </div>
                                     </TableCell>
