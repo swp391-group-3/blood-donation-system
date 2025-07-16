@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "dayjs": "^1.11.13",
+    "pg": "^8.16.3",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.14",
+    "@types/pg": "^8.15.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
