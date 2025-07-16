@@ -27,7 +27,11 @@ import {
     XCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useBloodStorageList } from '@/hooks/use-blood-storage-list';
+import {
+    Mode,
+    modes,
+    useBloodStorageList,
+} from '@/hooks/use-blood-storage-list';
 import { toast } from 'sonner';
 import {
     Select,
@@ -141,6 +145,7 @@ export default function BloodStorage() {
     const [showUseDialog, setShowUseDialog] = useState(false);
     const [component, setComponent] = useState<BloodComponent | 'all'>('all');
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
+    const [mode, setMode] = useState<Mode>('Compatible');
     const [openRequestDialog, setOpenRequestDialog] = useState(false);
 
     const { mutate: deleteBloodBag, isPending: isDeleting } =
@@ -153,6 +158,7 @@ export default function BloodStorage() {
     } = useBloodStorageList({
         blood_group: bloodGroup === 'all' ? undefined : bloodGroup,
         component: component === 'all' ? undefined : component,
+        mode,
     });
 
     const stats = useMemo(
@@ -244,6 +250,24 @@ export default function BloodStorage() {
                                 {bloodGroups.map((group) => (
                                     <SelectItem key={group} value={group}>
                                         {bloodGroupLabels[group]}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        <Select
+                            value={component}
+                            onValueChange={(value: Mode) => setMode(value)}
+                            defaultValue={'Compatible'}
+                        >
+                            <SelectTrigger className="w-fit border-slate-200">
+                                <Filter className="h-4 w-4 mr-2" />
+                                <SelectValue placeholder="Mode" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {modes.map((mode) => (
+                                    <SelectItem key={mode} value={mode}>
+                                        {capitalCase(mode)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
