@@ -8,10 +8,10 @@ import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 
 const DB_CONFIG = {
-  user: 'postgres',
-  host: 'localhost',
-  database: 'blood_donation',
-  password: '12345',
+  user: 'postgres',                     //change this
+  host: 'localhost',                    //change this
+  database: 'blood_donation',           //change this
+  password: '12345',                    //change this
   port: 5432,
 };
 
