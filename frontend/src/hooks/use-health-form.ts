@@ -3,6 +3,7 @@
 import { fetchWrapper, throwIfError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -23,6 +24,8 @@ export const schema = z
     });
 
 export const useHealthForm = (appointmentId: string) => {
+    const router = useRouter();
+
     const mutation = useMutation({
         mutationFn: async (values: z.infer<typeof schema>) => {
             const response = await fetchWrapper(
@@ -40,7 +43,10 @@ export const useHealthForm = (appointmentId: string) => {
             await throwIfError(response);
         },
         onError: (error) => toast.error(error.message),
-        onSuccess: () => toast.info('Add health successfully'),
+        onSuccess: () => {
+            toast.info('Add health successfully');
+            router.push('/appointment/management');
+        },
     });
 
     const form = useForm<z.infer<typeof schema>>({
