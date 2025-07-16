@@ -108,9 +108,12 @@ export default function BlogReadPage() {
                         <Separator />
 
                         <div className="p-8">
-                            <div className="text-slate-700 leading-relaxed space-y-6">
-                                {blog.content}
-                            </div>
+                            <div
+                                className="text-slate-700 leading-relaxed space-y-6"
+                                dangerouslySetInnerHTML={{
+                                    __html: blog.content,
+                                }}
+                            />
                         </div>
                     </article>
 
