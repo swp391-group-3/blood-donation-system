@@ -188,7 +188,7 @@ async function seed() {
     }
   }
 
-    for (const requestId of requestIds) {
+  for (const requestId of requestIds) {
     const [start, end] = requestTimeMap.get(requestId)!;
     const isActive = new Date() >= start && new Date() <= end;
     const donors = faker.helpers.shuffle(donorIds);
