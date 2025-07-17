@@ -37,7 +37,7 @@ pub async fn get_by_blog_id(
     {
         Ok(comments) => Ok(Json(comments)),
         Err(error) => {
-            tracing::error!(?error, "Failed to get question list");
+            tracing::error!(?error, "Failed to get comment list");
 
             Err(Error::builder()
                 .status(StatusCode::BAD_REQUEST)
