@@ -46,6 +46,13 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useCreateBloodBags } from '@/hooks/use-create-blood-bags';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 
 const componentConfigs = {
     red_cell: {
@@ -81,6 +88,8 @@ function calculateExpectedExpiryDate(shelfLife: string): Date {
 }
 
 export default function AppointmentDonationPage() {
+    const [open, setOpen] = useState(false);
+    const [reason, setReason] = useState('');
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
     const reject = useRejectAppointment(id);
@@ -96,6 +105,15 @@ export default function AppointmentDonationPage() {
         () => bloodBags.reduce((prev, bag) => prev + bag.amount, 0),
         [bloodBags],
     );
+
+    const handleReject = () => {
+        reject.mutate(reason, {
+            onSuccess: () => {
+                setOpen(false);
+                setReason('');
+            },
+        });
+    };
 
     if (isPending) {
         return <div></div>;
@@ -208,9 +226,7 @@ export default function AppointmentDonationPage() {
                                         variant="outline"
                                         size="sm"
                                         disabled={reject.isPending}
-                                        onClick={() => {
-                                            reject.mutate();
-                                        }}
+                                        onClick={() => setOpen(true)}
                                         className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all"
                                     >
                                         {reject.isPending ? (
@@ -222,6 +238,53 @@ export default function AppointmentDonationPage() {
                                             </>
                                         )}
                                     </Button>
+
+                                    <Dialog open={open} onOpenChange={setOpen}>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>
+                                                    Reject Appointment
+                                                </DialogTitle>
+                                            </DialogHeader>
+                                            <div>
+                                                <label className="text-sm font-medium">
+                                                    Reason
+                                                </label>
+                                                <Input
+                                                    placeholder="Your blood type is not compatible..."
+                                                    className="mt-2"
+                                                    value={reason}
+                                                    onChange={(e) =>
+                                                        setReason(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                            <DialogFooter>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() =>
+                                                        setOpen(false)
+                                                    }
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    disabled={
+                                                        !reason ||
+                                                        reject.isPending
+                                                    }
+                                                    onClick={handleReject}
+                                                >
+                                                    {reject.isPending
+                                                        ? 'Rejecting...'
+                                                        : 'Confirm Reject'}
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+
                                     <Button
                                         size="sm"
                                         variant="outline"
