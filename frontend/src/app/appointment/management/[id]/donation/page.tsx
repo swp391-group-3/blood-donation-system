@@ -46,7 +46,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useCreateBloodBags } from '@/hooks/use-create-blood-bags';
-import { RejectAppointmentDialog } from '@/components/RejectAppointmentDialog';
+import { RejectAppointmentDialog } from '@/components/reject-appointment-dialog';
 
 const componentConfigs = {
     red_cell: {
