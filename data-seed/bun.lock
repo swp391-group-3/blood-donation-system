@@ -7,16 +7,16 @@
         "dayjs": "^1.11.13",
         "pg": "^8.16.3",
         "postgres": "^3.4.7",
-        "uuid": "^11.1.0",
+        "uuid": "^11.1.0"
       },
       "devDependencies": {
         "@types/bun": "latest",
         "@types/node": "^24.0.14",
         "@types/pg": "^8.15.4",
         "ts-node": "^10.9.2",
-        "typescript": "^5.8.3",
-      },
-    },
+        "typescript": "^5.8.3"
+      }
+    }
   },
   "packages": {
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
@@ -103,6 +103,6 @@
 
     "xtend": ["xtend@4.0.2", "", {}, "sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ=="],
 
-    "yn": ["yn@3.1.1", "", {}, "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q=="],
+    "yn": ["yn@3.1.1", "", {}, "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q=="]
   }
 }
