@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { useAppointment } from '@/hooks/use-appointent';
@@ -46,13 +46,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useCreateBloodBags } from '@/hooks/use-create-blood-bags';
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { RejectAppointmentDialog } from '@/components/RejectAppointmentDialog';
 
 const componentConfigs = {
     red_cell: {
@@ -88,9 +82,7 @@ function calculateExpectedExpiryDate(shelfLife: string): Date {
 }
 
 export default function AppointmentDonationPage() {
-    const router = useRouter();
     const [open, setOpen] = useState(false);
-    const [reason, setReason] = useState('');
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
     const reject = useRejectAppointment(id);
@@ -231,53 +223,11 @@ export default function AppointmentDonationPage() {
                                         )}
                                     </Button>
 
-                                    <Dialog open={open} onOpenChange={setOpen}>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>
-                                                    Reject Appointment
-                                                </DialogTitle>
-                                            </DialogHeader>
-                                            <div>
-                                                <label className="text-sm font-medium">
-                                                    Reason
-                                                </label>
-                                                <Input
-                                                    placeholder="Your blood type is not compatible..."
-                                                    className="mt-2"
-                                                    value={reason}
-                                                    onChange={(e) =>
-                                                        setReason(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                />
-                                            </div>
-                                            <DialogFooter>
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() =>
-                                                        setOpen(false)
-                                                    }
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button
-                                                    disabled={
-                                                        !reason ||
-                                                        reject.isPending
-                                                    }
-                                                    onClick={() =>
-                                                        reject.mutate(reason)
-                                                    }
-                                                >
-                                                    {reject.isPending
-                                                        ? 'Rejecting...'
-                                                        : 'Confirm Reject'}
-                                                </Button>
-                                            </DialogFooter>
-                                        </DialogContent>
-                                    </Dialog>
+                                    <RejectAppointmentDialog
+                                        open={open}
+                                        onOpenChange={setOpen}
+                                        appointmentId={id}
+                                    />
 
                                     <Button
                                         size="sm"
