@@ -119,7 +119,7 @@ async function seed() {
   for (let i = 0; i < 2000; i++) {
     const id = uuidv4();
     const role = i < 50 ? 'staff' : 'donor';
-    const email = faker.internet.email();
+    const email = faker.internet.exampleEmail();
     const password = '$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W';
     const phone = '09' + faker.string.numeric(8);
     const name = faker.person.firstName() + ' ' + faker.person.lastName();
