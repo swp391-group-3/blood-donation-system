@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { useAppointment } from '@/hooks/use-appointent';
@@ -88,6 +88,7 @@ function calculateExpectedExpiryDate(shelfLife: string): Date {
 }
 
 export default function AppointmentDonationPage() {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState('');
     const { id } = useParams<{ id: string }>();
@@ -105,15 +106,6 @@ export default function AppointmentDonationPage() {
         () => bloodBags.reduce((prev, bag) => prev + bag.amount, 0),
         [bloodBags],
     );
-
-    const handleReject = () => {
-        reject.mutate(reason, {
-            onSuccess: () => {
-                setOpen(false);
-                setReason('');
-            },
-        });
-    };
 
     if (isPending) {
         return <div></div>;
@@ -275,7 +267,9 @@ export default function AppointmentDonationPage() {
                                                         !reason ||
                                                         reject.isPending
                                                     }
-                                                    onClick={handleReject}
+                                                    onClick={() =>
+                                                        reject.mutate(reason)
+                                                    }
                                                 >
                                                     {reject.isPending
                                                         ? 'Rejecting...'
