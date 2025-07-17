@@ -1,5 +1,5 @@
 /**
- * Complete Database Seeding Script for Blood Donation Platform
+ * Complete Database Seeding Script for Blood Donation Platform (Reduced Volume)
  */
 
 import { Client } from 'pg';
@@ -116,9 +116,10 @@ async function seed() {
   const donorActiveApptMap: Record<string, boolean> = {};
   const donorBloodMap: Record<string, string> = {};
 
-  for (let i = 0; i < 2000; i++) {
+  // Generate 10% of previous accounts (200 instead of 2000)
+  for (let i = 0; i < 200; i++) {
     const id = uuidv4();
-    const role = i < 50 ? 'staff' : 'donor';
+    const role = i < 5 ? 'staff' : 'donor'; // 10% of 50 staff => 5
     const email = faker.internet.exampleEmail();
     const password = '$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W';
     const phone = '09' + faker.string.numeric(8);
@@ -187,7 +188,7 @@ async function seed() {
     }
   }
 
-  for (const requestId of requestIds) {
+    for (const requestId of requestIds) {
     const [start, end] = requestTimeMap.get(requestId)!;
     const isActive = new Date() >= start && new Date() <= end;
     const donors = faker.helpers.shuffle(donorIds);
@@ -280,6 +281,7 @@ async function seed() {
     }
   }
 
+  // Generate 50 blogs instead of 100
   const tagNames = ['Donation', 'Health', 'Events', 'Volunteers', 'Urgent', 'Awareness'];
   const tagIds: string[] = [];
   for (const name of tagNames) {
@@ -289,7 +291,7 @@ async function seed() {
   }
 
   const blogIds: string[] = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 50; i++) {
     const blogId = uuidv4();
     const authorId = pick(accountIds);
     const title = faker.lorem.sentence();
@@ -324,7 +326,7 @@ async function seed() {
     }
   }
 
-  console.log('✅ Database seeded successfully.');
+  console.log('✅ Database seeded successfully (reduced volume).');
   await client.end();
 }
 
