@@ -12,7 +12,10 @@ pub async fn alert_low_stock(
 ) -> anyhow::Result<()> {
     let database = database_pool.get().await?;
 
-    let blood_bags = queries::blood_bag::get_all().bind(&database).all().await?;
+    let blood_bags = queries::blood_bag::get_all_scheduler()
+        .bind(&database)
+        .all()
+        .await?;
 
     let mut stock_map: HashMap<(BloodGroup, BloodComponent), i32> = HashMap::new();
 

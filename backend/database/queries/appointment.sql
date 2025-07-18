@@ -23,7 +23,9 @@ WHERE (
     EXISTS (
         SELECT 1
         FROM accounts
-        WHERE (name % :query OR email % :query)
+        WHERE
+            (name % :query OR email % :query) AND
+            accounts.id = appointments.donor_id
         LIMIT 1
     )
 ) AND (

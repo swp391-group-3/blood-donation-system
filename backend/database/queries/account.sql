@@ -61,10 +61,17 @@ FROM accounts
 WHERE role = :role
     AND is_active = true;
 
---! get_all : Account
+--! get_all (query?, role?) : Account
 SELECT *
 FROM accounts
-WHERE is_active = true;
+WHERE (
+    :query::text IS NULL OR 
+    (name % :query OR email % :query)
+) AND (
+    :role::role IS NULL OR role = :role
+) AND is_active = true
+LIMIT :page_size::int
+OFFSET :page_size::int * :page_index::int;
 
 --! update (phone?, name?, gender?, address?, birthday?)
 UPDATE accounts
