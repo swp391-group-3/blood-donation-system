@@ -4,15 +4,24 @@ use axum::{
     Json,
     extract::{Query, State},
 };
-use ctypes::{BloodComponent, BloodGroup};
-use database::queries::{self, blood_bag::BloodBag};
+use ctypes::{BloodComponent, BloodGroup, Role};
+use database::{
+    client::Params,
+    queries::{
+        self,
+        blood_bag::{BloodBag, GetAllParams},
+    },
+};
 use serde::Deserialize;
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::blood::get_compatible_donors,
+    util::{
+        auth::{Claims, authorize},
+        pagination,
+    },
 };
 
 #[derive(Deserialize, ToSchema)]
@@ -21,12 +30,36 @@ pub enum Mode {
     Compatible,
 }
 
-#[derive(Deserialize, ToSchema)]
-#[schema(as = blood_bag::create::request)]
+fn default_mode() -> Mode {
+    Mode::Compatible
+}
+
+impl Mode {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Mode::Exact => "Exact",
+            Mode::Compatible => "Compatible",
+        }
+    }
+}
+
+#[derive(Deserialize, IntoParams)]
+#[into_params(parameter_in = Query)]
 pub struct Request {
-    pub blood_group: Option<BloodGroup>,
+    #[param(required = false)]
     pub component: Option<BloodComponent>,
-    pub mode: Option<Mode>,
+
+    #[param(required = false)]
+    pub blood_group: Option<BloodGroup>,
+
+    #[serde(default = "default_mode")]
+    pub mode: Mode,
+
+    #[serde(default = "pagination::default_page_size")]
+    pub page_size: usize,
+
+    #[serde(default = "pagination::default_page_index")]
+    pub page_index: usize,
 }
 
 #[utoipa::path(
@@ -34,40 +67,33 @@ pub struct Request {
     tag = "Blood Bag",
     path = "/blood-bag",
     operation_id = "blood_bag::get_all",
-    params(
-        ("blood_group" = Option<BloodGroup>, Query, description = "Filter by blood group"),
-        ("component" = Option<BloodComponent>, Query, description = "Filter by blood component"),
-        ("mode" = Option<Mode>, Query, description = "Mode for filtering blood bags")
-    ),
+    params(Request),
     security(("jwt_token" = []))
 )]
 pub async fn get_all(
     state: State<Arc<ApiState>>,
+    claims: Claims,
     Query(request): Query<Request>,
 ) -> Result<Json<Vec<BloodBag>>> {
     let database = state.database().await?;
 
-    match queries::blood_bag::get_all().bind(&database).all().await {
-        Ok(mut blood_bags) => {
-            if let Some(component) = request.component {
-                blood_bags.retain(|bb| bb.component == component);
-            }
+    authorize(&claims, [Role::Staff], &database).await?;
 
-            if let Some(blood_group) = request.blood_group {
-                let mode = request.mode.unwrap_or(Mode::Compatible);
-                match mode {
-                    Mode::Exact => {
-                        blood_bags.retain(|bb| bb.blood_group == blood_group);
-                    }
-                    Mode::Compatible => {
-                        let compatible = get_compatible_donors(blood_group);
-                        blood_bags.retain(|bb| compatible.contains(&bb.blood_group));
-                    }
-                }
-            }
-
-            Ok(Json(blood_bags))
-        }
+    match queries::blood_bag::get_all()
+        .params(
+            &database,
+            &GetAllParams {
+                component: request.component,
+                blood_group: request.blood_group,
+                mode: request.mode.as_str(),
+                page_size: request.page_size as i32,
+                page_index: request.page_index as i32,
+            },
+        )
+        .all()
+        .await
+    {
+        Ok(blood_bags) => Ok(Json(blood_bags)),
         Err(error) => {
             tracing::error!(?error, "Failed to get blood bag list");
 
