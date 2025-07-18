@@ -30,6 +30,13 @@ pub struct CreateStaffParams<
     pub name: T4,
 }
 #[derive(Debug)]
+pub struct GetAllParams<T1: crate::StringSql> {
+    pub query: Option<T1>,
+    pub role: Option<ctypes::Role>,
+    pub page_size: i32,
+    pub page_index: i32,
+}
+#[derive(Debug)]
 pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
     pub phone: Option<T1>,
     pub name: Option<T2>,
@@ -615,18 +622,22 @@ impl GetByRoleStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM accounts WHERE is_active = true",
+        "SELECT * FROM accounts WHERE ( $1::text IS NULL OR (name % $1 OR email % $1) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true LIMIT $3::int OFFSET $3::int * $4::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-    ) -> AccountQuery<'c, 'a, 's, C, Account, 0> {
+        query: &'a Option<T1>,
+        role: &'a Option<ctypes::Role>,
+        page_size: &'a i32,
+        page_index: &'a i32,
+    ) -> AccountQuery<'c, 'a, 's, C, Account, 4> {
         AccountQuery {
             client,
-            params: [],
+            params: [query, role, page_size, page_index],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<AccountBorrowed, tokio_postgres::Error> {
@@ -647,6 +658,30 @@ impl GetAllStmt {
                 },
             mapper: |it| Account::from(it),
         }
+    }
+}
+impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        GetAllParams<T1>,
+        AccountQuery<'c, 'a, 's, C, Account, 4>,
+        C,
+    > for GetAllStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a GetAllParams<T1>,
+    ) -> AccountQuery<'c, 'a, 's, C, Account, 4> {
+        self.bind(
+            client,
+            &params.query,
+            &params.role,
+            &params.page_size,
+            &params.page_index,
+        )
     }
 }
 pub fn update() -> UpdateStmt {
