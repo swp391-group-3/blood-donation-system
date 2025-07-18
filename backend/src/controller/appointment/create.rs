@@ -69,6 +69,27 @@ pub async fn create(
 
     authorize(&claims, [Role::Donor], &database).await?;
 
+    match queries::blood_request::get()
+        .bind(&database, &claims.sub, &id)
+        .one()
+        .await
+    {
+        Ok(blood_request) => {
+            let now = chrono::Utc::now().with_timezone(blood_request.end_time.offset());
+            if (!blood_request.is_active) || (blood_request.end_time < now) {
+                return Err(Error::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .message("This blood request is not available".into())
+                    .build());
+            }
+        }
+        Err(error) => {
+            tracing::error!(?error, "Failed to check if blood request is available");
+
+            return Err(Error::internal());
+        }
+    }
+
     match queries::account::next_donatable_date()
         .bind(&database, &claims.sub)
         .one()
