@@ -10,6 +10,17 @@ import Link from 'next/link';
 import { UpdateBloodRequestDialog } from '@/components/update-blood-request-dialog';
 import { useCurrentAccount } from '@/hooks/use-current-account';
 import { Progress } from '@/components/ui/progress';
+import { useNextDonatableDate } from '@/hooks/use-next-donatable-date';
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const priorityConfig = {
     high: {
@@ -34,17 +45,62 @@ const priorityConfig = {
 
 const ActionButton = (request: BloodRequest) => {
     const { data: account } = useCurrentAccount();
+    const { data: nextDonatableDate } = useNextDonatableDate();
+
+    function isSameDate(nextDonatableDate: Date): boolean {
+        const targetDate = new Date(nextDonatableDate);
+        const now = new Date();
+
+        return (
+            targetDate.getFullYear() === now.getFullYear() &&
+            targetDate.getMonth() === now.getMonth() &&
+            targetDate.getDate() === now.getDate()
+        );
+    }
+
+    const daysUntilNextDonation = nextDonatableDate
+        ? Math.ceil(
+              (nextDonatableDate.getTime() - Date.now()) /
+                  (1000 * 60 * 60 * 24),
+          )
+        : undefined;
 
     if (account?.role === 'donor') {
         return (
-            <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
-                <Link
-                    className="w-full h-full"
-                    href={`/request/apply/${request.id}`}
-                >
-                    Apply Now
-                </Link>
-            </Button>
+            nextDonatableDate && (
+                <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                    {isSameDate(nextDonatableDate) ? (
+                        <Link
+                            className="w-full h-full"
+                            href={`/request/apply/${request.id}`}
+                        >
+                            Apply Now
+                        </Link>
+                    ) : (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <div className="w-full h-full">Apply Now</div>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        You are unable to apply this request now
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        You will be able to donate in{' '}
+                                        {daysUntilNextDonation} days.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Cancel
+                                    </AlertDialogCancel>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+                </Button>
+            )
         );
     }
 
