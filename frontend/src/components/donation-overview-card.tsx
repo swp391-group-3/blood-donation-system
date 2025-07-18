@@ -6,6 +6,8 @@ import { Badge } from './ui/badge';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from './ui/button';
 import { useRejectAppointment } from '@/hooks/use-reject-appointment';
+import { useState } from 'react';
+import { RejectAppointmentDialog } from './reject-appointment-dialog';
 
 const donationTypeConfig = {
     whole_blood: {
@@ -43,6 +45,7 @@ export const DonationOverviewCard = ({
 }: Props) => {
     const config = donationTypeConfig[donation.type];
     const mutation = useRejectAppointment(appointmentId);
+    const [open, setOpen] = useState(false);
 
     return (
         <Card
@@ -119,7 +122,7 @@ export const DonationOverviewCard = ({
                         Print Label
                     </Button>
                     <Button
-                        onClick={() => mutation.mutate()}
+                        onClick={() => setOpen(true)}
                         variant="destructive"
                         disabled={mutation.isPending}
                     >
@@ -130,6 +133,11 @@ export const DonationOverviewCard = ({
                         )}
                         Reject Donation
                     </Button>
+                    <RejectAppointmentDialog
+                        open={open}
+                        onOpenChange={setOpen}
+                        appointmentId={appointmentId}
+                    />
                 </div>
             </CardContent>
         </Card>

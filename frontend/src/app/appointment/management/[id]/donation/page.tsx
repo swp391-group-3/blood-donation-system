@@ -46,6 +46,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useCreateBloodBags } from '@/hooks/use-create-blood-bags';
+import { RejectAppointmentDialog } from '@/components/reject-appointment-dialog';
 
 const componentConfigs = {
     red_cell: {
@@ -81,6 +82,7 @@ function calculateExpectedExpiryDate(shelfLife: string): Date {
 }
 
 export default function AppointmentDonationPage() {
+    const [open, setOpen] = useState(false);
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
     const reject = useRejectAppointment(id);
@@ -208,9 +210,7 @@ export default function AppointmentDonationPage() {
                                         variant="outline"
                                         size="sm"
                                         disabled={reject.isPending}
-                                        onClick={() => {
-                                            reject.mutate();
-                                        }}
+                                        onClick={() => setOpen(true)}
                                         className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all"
                                     >
                                         {reject.isPending ? (
@@ -222,6 +222,13 @@ export default function AppointmentDonationPage() {
                                             </>
                                         )}
                                     </Button>
+
+                                    <RejectAppointmentDialog
+                                        open={open}
+                                        onOpenChange={setOpen}
+                                        appointmentId={id}
+                                    />
+
                                     <Button
                                         size="sm"
                                         variant="outline"
