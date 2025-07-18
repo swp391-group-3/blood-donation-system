@@ -5,6 +5,13 @@ pub struct CreateParams {
     pub request_id: uuid::Uuid,
     pub donor_id: uuid::Uuid,
 }
+#[derive(Debug)]
+pub struct GetAllParams<T1: crate::StringSql> {
+    pub query: Option<T1>,
+    pub status: Option<ctypes::AppointmentStatus>,
+    pub page_size: i32,
+    pub page_index: i32,
+}
 #[derive(Clone, Copy, Debug)]
 pub struct UpdateStatusParams {
     pub status: ctypes::AppointmentStatus,
@@ -278,18 +285,22 @@ impl GetByDonorIdStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM appointments",
+        "SELECT * FROM appointments WHERE ( $1::text IS NULL OR EXISTS ( SELECT 1 FROM accounts WHERE (name % $1 OR email % $1) LIMIT 1 ) ) AND ( $2::appointment_status IS NULL OR status = $2 ) LIMIT $3::int OFFSET $3::int * $4::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-    ) -> AppointmentQuery<'c, 'a, 's, C, Appointment, 0> {
+        query: &'a Option<T1>,
+        status: &'a Option<ctypes::AppointmentStatus>,
+        page_size: &'a i32,
+        page_index: &'a i32,
+    ) -> AppointmentQuery<'c, 'a, 's, C, Appointment, 4> {
         AppointmentQuery {
             client,
-            params: [],
+            params: [query, status, page_size, page_index],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<AppointmentBorrowed, tokio_postgres::Error> {
@@ -303,6 +314,30 @@ impl GetAllStmt {
                 },
             mapper: |it| Appointment::from(it),
         }
+    }
+}
+impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        GetAllParams<T1>,
+        AppointmentQuery<'c, 'a, 's, C, Appointment, 4>,
+        C,
+    > for GetAllStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a GetAllParams<T1>,
+    ) -> AppointmentQuery<'c, 'a, 's, C, Appointment, 4> {
+        self.bind(
+            client,
+            &params.query,
+            &params.status,
+            &params.page_size,
+            &params.page_index,
+        )
     }
 }
 pub fn update_status() -> UpdateStatusStmt {

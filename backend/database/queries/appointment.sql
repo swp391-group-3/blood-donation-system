@@ -15,9 +15,22 @@ SELECT *
 FROM appointments
 WHERE donor_id = :donor_id;
 
---! get_all : Appointment
+--! get_all (query?, status?) : Appointment
 SELECT *
-FROM appointments;
+FROM appointments
+WHERE (
+    :query::text IS NULL OR
+    EXISTS (
+        SELECT 1
+        FROM accounts
+        WHERE (name % :query OR email % :query)
+        LIMIT 1
+    )
+) AND (
+    :status::appointment_status IS NULL OR status = :status
+)
+LIMIT :page_size::int
+OFFSET :page_size::int * :page_index::int;
 
 --! update_status
 UPDATE appointments
