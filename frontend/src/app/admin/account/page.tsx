@@ -69,7 +69,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
-import { PaginationRange } from '@/components/pagination-render';
+import { PaginationRange } from '@/components/pagination-range';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -89,8 +89,6 @@ function Page() {
                 setIsAddStaff(false);
             },
         });
-
-
 
     // Close import dialog on success
     useEffect(() => {
@@ -314,7 +312,7 @@ function Page() {
                                                 )}
                                             />
                                             {mutationAccount.status ===
-                                                'pending' ? (
+                                            'pending' ? (
                                                 <Button
                                                     disabled
                                                     className="w-full py-5"
@@ -407,11 +405,11 @@ function Page() {
                                                     {header.isPlaceholder
                                                         ? null
                                                         : flexRender(
-                                                            header.column
-                                                                .columnDef
-                                                                .header,
-                                                            header.getContext(),
-                                                        )}
+                                                              header.column
+                                                                  .columnDef
+                                                                  .header,
+                                                              header.getContext(),
+                                                          )}
                                                 </TableHead>
                                             );
                                         })}
@@ -480,7 +478,13 @@ function Page() {
                                     />
                                 </PaginationItem>
                                 {/* PAGE NUMBERS */}
-                                <PaginationRange table={table} />
+                                <PaginationRange
+                                    pageIndex={
+                                        table.getState().pagination.pageIndex
+                                    }
+                                    pageCount={table.getPageCount()}
+                                    onPageChange={table.setPageIndex}
+                                />
                                 {/* NEXT */}
                                 <PaginationItem>
                                     <PaginationNext

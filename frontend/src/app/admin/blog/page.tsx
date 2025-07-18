@@ -35,7 +35,7 @@ import {
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Blog } from '@/lib/api/dto/blog';
-import { PaginationRange } from '@/components/pagination-render';
+import { PaginationRange } from '@/components/pagination-range';
 
 function BlogPage() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -109,11 +109,11 @@ function BlogPage() {
                                                     {header.isPlaceholder
                                                         ? null
                                                         : flexRender(
-                                                            header.column
-                                                                .columnDef
-                                                                .header,
-                                                            header.getContext(),
-                                                        )}
+                                                              header.column
+                                                                  .columnDef
+                                                                  .header,
+                                                              header.getContext(),
+                                                          )}
                                                 </TableHead>
                                             );
                                         })}
@@ -180,7 +180,13 @@ function BlogPage() {
                                     />
                                 </PaginationItem>
                                 {/* NUMBERS */}
-                                <PaginationRange table={table} />
+                                <PaginationRange
+                                    pageIndex={
+                                        table.getState().pagination.pageIndex
+                                    }
+                                    pageCount={table.getPageCount()}
+                                    onPageChange={table.setPageIndex}
+                                />
                                 <PaginationItem>
                                     <PaginationNext
                                         href="#"
