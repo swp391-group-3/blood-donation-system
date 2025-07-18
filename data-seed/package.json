@@ -1,18 +1,23 @@
 {
-  "dependencies": {
-    "@faker-js/faker": "^9.9.0",
-    "dayjs": "^1.11.13",
-    "pg": "^8.16.3",
-    "postgres": "^3.4.7",
-    "uuid": "^11.1.0"
-  },
-  "devDependencies": {
-    "@types/node": "^24.0.14",
-    "@types/pg": "^8.15.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "@types/bun": "latest"
-  },
-  "name": "data-seed",
-  "private": true
+    "name": "data-seed",
+    "private": true,
+    "dependencies": {
+        "@faker-js/faker": "^9.9.0",
+        "dayjs": "^1.11.13",
+        "pg": "^8.16.3",
+        "postgres": "^3.4.7",
+        "uuid": "^11.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.14",
+        "@types/pg": "^8.15.4",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3",
+        "@types/bun": "latest",
+        "prettier": "^3.5.3"
+    },
+    "scripts": {
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    }
 }
