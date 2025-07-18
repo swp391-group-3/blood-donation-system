@@ -14,21 +14,15 @@ import {
     bloodComponents,
 } from '@/lib/api/dto/blood-bag';
 import {
-    Activity,
-    AlertTriangle,
     Blend,
-    Calendar,
     Check,
     CircleX,
     Droplet,
-    Droplets,
     Filter,
     Package,
     Plus,
     TriangleAlert,
-    XCircle,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import {
     Mode,
     modes,
@@ -52,7 +46,6 @@ import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -117,23 +110,6 @@ const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
             color: 'rose',
         },
     ];
-};
-
-const componentColors: Record<BloodComponent, string> = {
-    plasma: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    red_cell: 'bg-red-100 text-red-800 border-red-200',
-    platelet: 'bg-blue-100 text-blue-800 border-blue-200',
-};
-
-const bloodGroupColors: Record<BloodGroup, string> = {
-    o_plus: 'bg-red-100 text-red-800 border-red-200',
-    o_minus: 'bg-red-200 text-red-900 border-red-300',
-    a_plus: 'bg-blue-100 text-blue-800 border-blue-200',
-    a_minus: 'bg-blue-200 text-blue-900 border-blue-300',
-    b_plus: 'bg-green-100 text-green-800 border-green-200',
-    b_minus: 'bg-green-200 text-green-900 border-green-300',
-    a_b_plus: 'bg-purple-100 text-purple-800 border-purple-200',
-    a_b_minus: 'bg-purple-200 text-purple-900 border-purple-300',
 };
 
 const isExpired = (date: Date) => new Date(date) <= new Date();
