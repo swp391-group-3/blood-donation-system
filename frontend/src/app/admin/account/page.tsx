@@ -14,7 +14,6 @@ import {
     Pagination,
     PaginationContent,
     PaginationItem,
-    PaginationLink,
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
@@ -70,6 +69,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
+import { PaginationRange } from '@/components/pagination-render';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -89,6 +89,8 @@ function Page() {
                 setIsAddStaff(false);
             },
         });
+
+
 
     // Close import dialog on success
     useEffect(() => {
@@ -144,6 +146,7 @@ function Page() {
             },
         },
     });
+
     return (
         <div className="flex-1 overflow-auto ">
             <div className="p-8 max-w-6xl mx-auto">
@@ -311,7 +314,7 @@ function Page() {
                                                 )}
                                             />
                                             {mutationAccount.status ===
-                                            'pending' ? (
+                                                'pending' ? (
                                                 <Button
                                                     disabled
                                                     className="w-full py-5"
@@ -404,11 +407,11 @@ function Page() {
                                                     {header.isPlaceholder
                                                         ? null
                                                         : flexRender(
-                                                              header.column
-                                                                  .columnDef
-                                                                  .header,
-                                                              header.getContext(),
-                                                          )}
+                                                            header.column
+                                                                .columnDef
+                                                                .header,
+                                                            header.getContext(),
+                                                        )}
                                                 </TableHead>
                                             );
                                         })}
@@ -477,31 +480,7 @@ function Page() {
                                     />
                                 </PaginationItem>
                                 {/* PAGE NUMBERS */}
-                                {table.getPageOptions().map((pageIndex) => {
-                                    const isCurrent =
-                                        pageIndex ===
-                                        table.getState().pagination.pageIndex;
-                                    return (
-                                        <PaginationItem key={pageIndex}>
-                                            <PaginationLink
-                                                href="#"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    table.setPageIndex(
-                                                        pageIndex,
-                                                    );
-                                                }}
-                                                aria-current={
-                                                    isCurrent
-                                                        ? 'page'
-                                                        : undefined
-                                                }
-                                            >
-                                                {pageIndex + 1}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    );
-                                })}
+                                <PaginationRange table={table} />
                                 {/* NEXT */}
                                 <PaginationItem>
                                     <PaginationNext
