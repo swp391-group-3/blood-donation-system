@@ -75,6 +75,7 @@ export default function AppointmentPage() {
         isPending,
         error,
     } = useCurrentAccountAppointment();
+    console.log(appointments);
     const stats = useMemo(
         () => (appointments ? getStats(appointments) : undefined),
         [appointments],

@@ -6,7 +6,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { toast } from 'sonner';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { useApproveAppointment } from '@/hooks/use-approve-appointment';
 import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 import { useAppointment } from '@/hooks/use-appointent';
+import { RejectAppointmentDialog } from './reject-appointment-dialog';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
@@ -33,7 +34,7 @@ export const ReviewDialog = ({
     appointmentId,
 }: PropsWithChildren<{ appointmentId: string }>) => {
     const { data: apt, isPending, error } = useAppointment(appointmentId);
-
+    const [open, setOpen] = useState(false);
     const approve = useApproveAppointment(appointmentId);
     const reject = useRejectAppointment(appointmentId);
 
@@ -148,15 +149,18 @@ export const ReviewDialog = ({
                         </Button>
                         <Button
                             disabled={approve.isPending || reject.isPending}
-                            onClick={() => {
-                                reject.mutate();
-                            }}
+                            onClick={() => setOpen(true)}
                             variant="outline"
                             className="flex-1 border-red-200 text-red-700 hover:bg-red-50 h-12 rounded-xl"
                         >
                             <XCircle className="h-5 w-5 mr-2" />
                             Reject
                         </Button>
+                        <RejectAppointmentDialog
+                            open={open}
+                            onOpenChange={setOpen}
+                            appointmentId={apt.id}
+                        />
                     </div>
                 </div>
             </DialogContent>

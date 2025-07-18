@@ -131,6 +131,17 @@ export const AppointmentCard = ({
                                         Request: {appointment.request_id}
                                     </span>
                                 </div>
+                                {appointment.reason && (
+                                    <div className="flex items-start gap-1">
+                                        <XCircle className="h-4 w-4 text-red-500 mt-0.5" />
+                                        <span>
+                                            <span className="font-medium text-slate-800">
+                                                Reason:
+                                            </span>{' '}
+                                            {appointment.reason}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
