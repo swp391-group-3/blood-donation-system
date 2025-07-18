@@ -71,6 +71,12 @@ import {
 import { useDeleteBloodBag } from '@/hooks/use-delete-blood-bag';
 import RequestBloodDialog from '@/components/request-blood-form';
 import { EmptyState } from '@/components/ui/empty-state';
+import {
+    getCoreRowModel,
+    getPaginationRowModel,
+    useReactTable,
+} from '@tanstack/react-table';
+import { getColumns } from './column';
 
 const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
     return [
@@ -141,6 +147,10 @@ export default function BloodStorage() {
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
     const [mode, setMode] = useState<Mode>('Compatible');
     const [openRequestDialog, setOpenRequestDialog] = useState(false);
+    const [pagination, setPagination] = useState({
+        pageIndex: 1,
+        pageSize: 10,
+    });
 
     const { mutate: deleteBloodBag, isPending: isDeleting } =
         useDeleteBloodBag();
@@ -159,6 +169,27 @@ export default function BloodStorage() {
         () => (bloodBags ? getStats(bloodBags) : undefined),
         [bloodBags],
     );
+    const columns = useMemo(
+        () =>
+            getColumns((bag) => {
+                setSelectedBag(bag);
+                setShowUseDialog(true);
+            }),
+        [],
+    );
+
+    const pageCount = Math.ceil(bloodBags?.length || 0 / pagination.pageSize);
+
+    const table = useReactTable({
+        data: bloodBags || [],
+        columns,
+        state: {
+            pagination,
+        },
+        onPaginationChange: setPagination,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
 
     if (isPending) {
         return <div></div>;
@@ -272,169 +303,210 @@ export default function BloodStorage() {
                             icons={[Package]}
                         />
                     ) : (
-                        <Table>
-                            <TableCaption></TableCaption>
-                            <TableHeader>
-                                <TableHead className="text-center p-6 font-semibold text-slate-900">
-                                    Bag Details
-                                </TableHead>
-                                <TableHead className="text-center p-6 font-semibold text-slate-900">
-                                    Blood Group
-                                </TableHead>
-                                <TableHead className="text-center p-6 font-semibold text-slate-900">
-                                    Component
-                                </TableHead>
-                                <TableHead className="text-center p-6 font-semibold text-slate-900">
-                                    Amount
-                                </TableHead>
-                                <TableHead className="text-center p-6 font-semibold text-slate-900">
-                                    Expiry Date
-                                </TableHead>
-                                <TableHead className="text-center p-6 font-semibold text-slate-900">
-                                    Action
-                                </TableHead>
-                            </TableHeader>
-                            <TableBody>
-                                {bloodBags?.map((bag) => (
-                                    <TableRow key={bag.id}>
-                                        <TableCell className="p-6">
-                                            <div className="flex items-center gap-4">
-                                                <div className="flex items-center mx-auto gap-4">
-                                                    <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center text-red-700 text-sm font-bold shadow-sm border border-white">
-                                                        <Droplets className="h-5 w-5" />
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <div className="font-semibold text-slate-900 truncate">
-                                                            ID:{' '}
-                                                            {bag.id.slice(0, 8)}
-                                                            ...
+                        <>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                            Bag Details
+                                        </TableHead>
+                                        <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                            Blood Group
+                                        </TableHead>
+                                        <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                            Component
+                                        </TableHead>
+                                        <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                            Amount
+                                        </TableHead>
+                                        <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                            Expiry Date
+                                        </TableHead>
+                                        <TableHead className="text-center p-6 font-semibold text-slate-900">
+                                            Action
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {table.getRowModel().rows.map((row) => {
+                                        const bag = row.original;
+                                        return (
+                                            <TableRow key={bag.id}>
+                                                <TableCell className="p-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="flex items-center mx-auto gap-4">
+                                                            <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center text-red-700 text-sm font-bold shadow-sm border border-white">
+                                                                <Droplets className="h-5 w-5" />
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="font-semibold text-slate-900 truncate">
+                                                                    ID:{' '}
+                                                                    {bag.id.slice(
+                                                                        0,
+                                                                        8,
+                                                                    )}
+                                                                    ...
+                                                                </div>
+                                                                <div className="text-sm text-slate-600 truncate">
+                                                                    Donation:{' '}
+                                                                    {bag.donation_id.slice(
+                                                                        0,
+                                                                        8,
+                                                                    )}
+                                                                    ...
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className="text-sm text-slate-600 truncate">
-                                                            Donation:{' '}
-                                                            {bag.donation_id.slice(
-                                                                0,
-                                                                8,
-                                                            )}
-                                                            ...
-                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="p-6">
-                                            <div>
-                                                <Badge
-                                                    className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[bag.blood_group]}`}
-                                                >
-                                                    {
-                                                        bloodGroupLabels[
-                                                            bag.blood_group
-                                                        ]
-                                                    }
-                                                </Badge>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="p-6">
-                                            <div>
-                                                <Badge
-                                                    className={`block mx-auto px-3 py-1 font-semibold ${componentColors[bag.component]}`}
-                                                >
-                                                    {capitalCase(bag.component)}
-                                                </Badge>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="p-6">
-                                            <div className="flex items-center gap-2">
-                                                <div className="mx-auto flex gap-2">
-                                                    <Droplets className="h-4 w-4 text-red-500" />
-                                                    <span className="font-semibold text-slate-900">
-                                                        {bag.amount} ml
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </TableCell>
-
-                                        <TableCell className="p-6">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex gap-2 mx-auto">
-                                                    <Calendar className="h-4 w-4 text-slate-400" />
-                                                    <span
-                                                        className={`${
-                                                            isExpired(
-                                                                bag.expired_time,
-                                                            )
-                                                                ? 'text-red-600 font-semibold'
-                                                                : isExpiringSoon(
-                                                                        bag.expired_time,
-                                                                    )
-                                                                  ? 'text-orange-600 font-semibold'
-                                                                  : 'text-slate-600'
-                                                        }`}
+                                                </TableCell>
+                                                <TableCell className="p-6">
+                                                    <Badge
+                                                        className={`block mx-auto px-3 py-1 font-semibold ${bloodGroupColors[bag.blood_group]}`}
                                                     >
-                                                        {formatDateTime(
-                                                            new Date(
-                                                                bag.expired_time,
-                                                            ),
+                                                        {
+                                                            bloodGroupLabels[
+                                                                bag.blood_group
+                                                            ]
+                                                        }
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="p-6">
+                                                    <Badge
+                                                        className={`block mx-auto px-3 py-1 font-semibold ${componentColors[bag.component]}`}
+                                                    >
+                                                        {capitalCase(
+                                                            bag.component,
                                                         )}
-                                                    </span>
-                                                    {isExpired(
-                                                        bag.expired_time,
-                                                    ) && (
-                                                        <XCircle className="w-4 h-4 text-red-500" />
-                                                    )}
-                                                    {isExpiringSoon(
-                                                        bag.expired_time,
-                                                    ) && (
-                                                        <AlertTriangle className="w-4 h-4 text-orange-500" />
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="p-6">
-                                            <div className="flex gap-2">
-                                                <div className="mx-auto">
-                                                    {!bag.is_used &&
-                                                        !isExpired(
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="p-6">
+                                                    <div className="mx-auto flex gap-2 items-center">
+                                                        <Droplets className="h-4 w-4 text-red-500" />
+                                                        <span className="font-semibold text-slate-900">
+                                                            {bag.amount} ml
+                                                        </span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="p-6">
+                                                    <div className="flex gap-2 mx-auto items-center">
+                                                        <Calendar className="h-4 w-4 text-slate-400" />
+                                                        <span
+                                                            className={`${
+                                                                isExpired(
+                                                                    bag.expired_time,
+                                                                )
+                                                                    ? 'text-red-600 font-semibold'
+                                                                    : isExpiringSoon(
+                                                                            bag.expired_time,
+                                                                        )
+                                                                      ? 'text-orange-600 font-semibold'
+                                                                      : 'text-slate-600'
+                                                            }`}
+                                                        >
+                                                            {formatDateTime(
+                                                                new Date(
+                                                                    bag.expired_time,
+                                                                ),
+                                                            )}
+                                                        </span>
+                                                        {isExpired(
                                                             bag.expired_time,
                                                         ) && (
-                                                            <Button
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    setSelectedBag(
-                                                                        bag,
-                                                                    );
-                                                                    setShowUseDialog(
-                                                                        true,
-                                                                    );
-                                                                }}
-                                                                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-                                                            >
-                                                                <Activity className="h-3 w-3 mr-1" />
-                                                                Mark as Used
-                                                            </Button>
+                                                            <XCircle className="w-4 h-4 text-red-500" />
                                                         )}
-                                                    {bag.is_used && (
-                                                        <Badge className="bg-gray-100 text-gray-800 border-gray-200 px-3 py-1">
-                                                            <Activity className="h-3 w-3 mr-1" />
-                                                            Used
-                                                        </Badge>
-                                                    )}
-                                                    {isExpired(
-                                                        bag.expired_time,
-                                                    ) &&
-                                                        !bag.is_used && (
-                                                            <Badge className="bg-red-100 text-red-800 border-red-200 px-3 py-1">
-                                                                <XCircle className="h-3 w-3 mr-1" />
-                                                                Expired
+                                                        {!isExpired(
+                                                            bag.expired_time,
+                                                        ) &&
+                                                            isExpiringSoon(
+                                                                bag.expired_time,
+                                                            ) && (
+                                                                <AlertTriangle className="w-4 h-4 text-orange-500" />
+                                                            )}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="p-6">
+                                                    <div className="mx-auto">
+                                                        {!bag.is_used &&
+                                                            !isExpired(
+                                                                bag.expired_time,
+                                                            ) && (
+                                                                <Button
+                                                                    size="sm"
+                                                                    onClick={() => {
+                                                                        setSelectedBag(
+                                                                            bag,
+                                                                        );
+                                                                        setShowUseDialog(
+                                                                            true,
+                                                                        );
+                                                                    }}
+                                                                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                                                                >
+                                                                    <Activity className="h-3 w-3 mr-1" />
+                                                                    Mark as Used
+                                                                </Button>
+                                                            )}
+                                                        {bag.is_used && (
+                                                            <Badge className="bg-gray-100 text-gray-800 border-gray-200 px-3 py-1">
+                                                                <Activity className="h-3 w-3 mr-1" />
+                                                                Used
                                                             </Badge>
                                                         )}
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                                        {isExpired(
+                                                            bag.expired_time,
+                                                        ) &&
+                                                            !bag.is_used && (
+                                                                <Badge className="bg-red-100 text-red-800 border-red-200 px-3 py-1">
+                                                                    <XCircle className="h-3 w-3 mr-1" />
+                                                                    Expired
+                                                                </Badge>
+                                                            )}
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+
+                            <div className="flex justify-between items-center mt-4 px-4 pb-2">
+                                <div className="text-sm text-slate-600">
+                                    Page {pagination.pageIndex + 1} of{' '}
+                                    {pageCount}
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={pagination.pageIndex === 0}
+                                        onClick={() =>
+                                            setPagination((prev) => ({
+                                                ...prev,
+                                                pageIndex: prev.pageIndex - 1,
+                                            }))
+                                        }
+                                    >
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={
+                                            pagination.pageIndex + 1 >=
+                                            pageCount
+                                        }
+                                        onClick={() =>
+                                            setPagination((prev) => ({
+                                                ...prev,
+                                                pageIndex: prev.pageIndex + 1,
+                                            }))
+                                        }
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        </>
                     )}
                 </div>
 
