@@ -36,6 +36,7 @@ import {
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Blog } from '@/lib/api/dto/blog';
+import { PaginationRange } from '@/components/pagination-render';
 
 function BlogPage() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -180,31 +181,7 @@ function BlogPage() {
                                     />
                                 </PaginationItem>
                                 {/* NUMBERS */}
-                                {table.getPageOptions().map((pageIndex) => {
-                                    const isCurrent =
-                                        pageIndex ===
-                                        table.getState().pagination.pageIndex;
-                                    return (
-                                        <PaginationItem key={pageIndex}>
-                                            <PaginationLink
-                                                href="#"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    table.setPageIndex(
-                                                        pageIndex,
-                                                    );
-                                                }}
-                                                aria-current={
-                                                    isCurrent
-                                                        ? 'page'
-                                                        : undefined
-                                                }
-                                            >
-                                                {pageIndex + 1}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    );
-                                })}
+                                <PaginationRange table={table} />
                                 <PaginationItem>
                                     <PaginationNext
                                         href="#"
