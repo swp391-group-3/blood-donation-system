@@ -1,5 +1,13 @@
 // This file was generated with `clorinde`. Do not modify.
 
+#[derive(Debug)]
+pub struct GetAllParams<T1: crate::StringSql> {
+    pub component: Option<ctypes::BloodComponent>,
+    pub blood_group: Option<ctypes::BloodGroup>,
+    pub mode: T1,
+    pub page_size: i32,
+    pub page_index: i32,
+}
 #[derive(Clone, Copy, Debug)]
 pub struct CreateParams {
     pub donation_id: uuid::Uuid,
@@ -181,18 +189,23 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags ORDER BY is_used ASC, expired_time ASC",
+        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags WHERE ( $1::blood_component IS NULL OR component = $1 ) AND ( $2::blood_group IS NULL OR ( CASE $3 WHEN 'Exact' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = $2 WHEN 'Compatible' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = ANY ( CASE $2 WHEN 'a_plus'   THEN ARRAY['a_plus','a_minus','o_plus','o_minus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_minus','o_minus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus','b_minus','o_plus','o_minus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_minus','o_minus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_minus','a_minus','b_minus','o_minus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['o_plus','o_minus']::blood_group[] WHEN 'o_minus'  THEN ARRAY['o_minus']::blood_group[] END ) END ) ) AND is_used = false ORDER BY expired_time ASC LIMIT $4::int OFFSET $4::int * $5::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-    ) -> BloodBagQuery<'c, 'a, 's, C, BloodBag, 0> {
+        component: &'a Option<ctypes::BloodComponent>,
+        blood_group: &'a Option<ctypes::BloodGroup>,
+        mode: &'a T1,
+        page_size: &'a i32,
+        page_index: &'a i32,
+    ) -> BloodBagQuery<'c, 'a, 's, C, BloodBag, 5> {
         BloodBagQuery {
             client,
-            params: [],
+            params: [component, blood_group, mode, page_size, page_index],
             stmt: &mut self.0,
             extractor: |row: &tokio_postgres::Row| -> Result<BloodBag, tokio_postgres::Error> {
                 Ok(BloodBag {
@@ -207,6 +220,31 @@ impl GetAllStmt {
             },
             mapper: |it| BloodBag::from(it),
         }
+    }
+}
+impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        GetAllParams<T1>,
+        BloodBagQuery<'c, 'a, 's, C, BloodBag, 5>,
+        C,
+    > for GetAllStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a GetAllParams<T1>,
+    ) -> BloodBagQuery<'c, 'a, 's, C, BloodBag, 5> {
+        self.bind(
+            client,
+            &params.component,
+            &params.blood_group,
+            &params.mode,
+            &params.page_size,
+            &params.page_index,
+        )
     }
 }
 pub fn create() -> CreateStmt {
