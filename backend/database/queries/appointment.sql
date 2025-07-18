@@ -28,7 +28,7 @@ WHERE (
     )
 ) AND (
     :status::appointment_status IS NULL OR status = :status
-)
+) AND status NOT IN ('done'::appointment_status, 'rejected'::appointment_status)
 LIMIT :page_size::int
 OFFSET :page_size::int * :page_index::int;
 

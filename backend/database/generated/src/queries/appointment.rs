@@ -285,7 +285,7 @@ impl GetByDonorIdStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM appointments WHERE ( $1::text IS NULL OR EXISTS ( SELECT 1 FROM accounts WHERE (name % $1 OR email % $1) LIMIT 1 ) ) AND ( $2::appointment_status IS NULL OR status = $2 ) LIMIT $3::int OFFSET $3::int * $4::int",
+        "SELECT * FROM appointments WHERE ( $1::text IS NULL OR EXISTS ( SELECT 1 FROM accounts WHERE (name % $1 OR email % $1) LIMIT 1 ) ) AND ( $2::appointment_status IS NULL OR status = $2 ) AND status NOT IN ('done'::appointment_status, 'rejected'::appointment_status) LIMIT $3::int OFFSET $3::int * $4::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
