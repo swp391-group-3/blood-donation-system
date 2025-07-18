@@ -13,19 +13,12 @@ import {
     Clock,
     CheckCircle,
     XCircle,
-    Calendar,
-    LucideIcon,
-    Stethoscope,
-    Eye,
-    AlertTriangle,
-    PlusSquare,
     Search,
 } from 'lucide-react';
 import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
 import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
 import { capitalCase } from 'change-case';
-import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { Hero, HeroDescription, HeroTitle } from '@/components/hero';
 import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
 import { useAppointmentList } from '@/hooks/use-appointment-list';
@@ -37,12 +30,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { AccountPicture } from '@/components/account-picture';
-import { Badge } from '@/components/ui/badge';
-import { ReviewDialog } from '@/components/review-dialog';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { useAppointment } from '@/hooks/use-appointent';
 import { Input } from '@/components/ui/input';
 import {
     flexRender,
@@ -99,48 +86,6 @@ const getStats = (appointments: Appointment[]): StatsProps[] => {
     ];
 };
 
-const statusConfigs: Record<Status, { color: string; icon: LucideIcon }> = {
-    on_process: {
-        color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-        icon: Clock,
-    },
-    approved: {
-        color: 'bg-green-100 text-green-800 border-green-200',
-        icon: CheckCircle,
-    },
-    checked_in: {
-        color: 'bg-blue-100 text-blue-800 border-blue-200',
-        icon: Stethoscope,
-    },
-    donated: {
-        color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-        icon: CheckCircle,
-    },
-    done: {
-        color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-        icon: CheckCircle,
-    },
-    rejected: {
-        color: 'bg-red-100 text-red-800 border-red-200',
-        icon: XCircle,
-    },
-};
-
-const priorityConfigs = {
-    high: {
-        color: 'bg-rose-100 text-rose-800 border-rose-200',
-        icon: AlertTriangle,
-    },
-    medium: {
-        color: 'bg-amber-100 text-amber-800 border-amber-200',
-        icon: Clock,
-    },
-    low: {
-        color: 'bg-blue-100 text-blue-800 border-blue-200',
-        icon: Calendar,
-    },
-};
-
 export default function AppointmentManagementPage() {
     const { data: appointments, isPending, error } = useAppointmentList();
     const stats = useMemo(
@@ -172,13 +117,7 @@ export default function AppointmentManagementPage() {
             });
     }, [appointments, selectedStatus, search]);
 
-    const [pagination, setPagination] = useState({
-        pageIndex: 1,
-        pageSize: 10,
-    });
-    const pageCount = Math.ceil(
-        filteredAppointments.length || 0 / pagination.pageSize,
-    );
+    // TODO: check pagination to see if it work
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
         {},
     );
@@ -310,7 +249,7 @@ export default function AppointmentManagementPage() {
                         </TableBody>
                     </Table>
                 </div>
-                <Pagination className='m-8'>
+                <Pagination className="m-8">
                     <PaginationContent>
                         {/* PREVIOUS */}
                         <PaginationItem>
