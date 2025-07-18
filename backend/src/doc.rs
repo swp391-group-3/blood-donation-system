@@ -7,6 +7,8 @@ use utoipa::{
 };
 use utoipa_swagger_ui::SwaggerUi;
 
+use crate::error::ErrorResponse;
+
 use super::{controller, state::ApiState};
 
 struct SecurityAddon;
@@ -99,6 +101,9 @@ struct ChatDoc;
         controller::blood_bag::delete,
         controller::blood_bag::update,
     ),
+    components(schemas(
+        ErrorResponse,
+    )),
     modifiers(&SecurityAddon),
 )]
 struct ApiDoc;
