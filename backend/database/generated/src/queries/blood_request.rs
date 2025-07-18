@@ -314,7 +314,7 @@ impl<'a, C: GenericClient + Send + Sync>
 }
 pub fn get() -> GetStmt {
     GetStmt(crate::client::async_::Stmt::new(
-        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, (staff_id = $1) as is_editable FROM blood_requests WHERE id = $2 AND is_active = true",
+        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, (staff_id = $1) as is_editable FROM blood_requests WHERE id = $2",
     ))
 }
 pub struct GetStmt(crate::client::async_::Stmt);

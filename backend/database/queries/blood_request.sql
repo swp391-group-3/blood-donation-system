@@ -46,7 +46,7 @@ SELECT
     ) as current_people,
     (staff_id = :account_id) as is_editable
 FROM blood_requests
-WHERE id = :id AND is_active = true;
+WHERE id = :id;
 
 --! get_all : BloodRequest
 SELECT 

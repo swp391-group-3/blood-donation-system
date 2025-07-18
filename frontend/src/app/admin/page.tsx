@@ -87,8 +87,10 @@ function Page() {
         totalUsers: accounts?.length,
         activeRequests: bloodRequests?.length,
         donations: donations?.length,
-        bloodBagsAvailable: bloodBags?.length,
+        bloodBagsAvailable: bloodBags?.filter(bg => !bg.is_used).length,
     };
+
+
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
             <div className="max-w-7xl mx-auto space-y-8">
