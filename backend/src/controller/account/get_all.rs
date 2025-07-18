@@ -27,10 +27,8 @@ use crate::{
 #[derive(Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub struct Request {
-    #[param(required = false)]
     pub query: Option<String>,
 
-    #[param(required = false)]
     pub role: Option<Role>,
 
     #[serde(default = "pagination::default_page_size")]

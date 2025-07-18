@@ -46,10 +46,8 @@ impl Mode {
 #[derive(Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub struct Request {
-    #[param(required = false)]
     pub component: Option<BloodComponent>,
 
-    #[param(required = false)]
     pub blood_group: Option<BloodGroup>,
 
     #[serde(default = "default_mode")]
