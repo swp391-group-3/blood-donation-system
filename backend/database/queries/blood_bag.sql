@@ -19,6 +19,25 @@ SELECT
 FROM blood_bags
 WHERE id = :id;
 
+--! get_all_scheduler : BloodBag
+SELECT 
+    *,
+    (
+        SELECT blood_group
+        FROM accounts
+        WHERE id = (
+            SELECT donor_id
+            FROM appointments
+            WHERE id = (
+                SELECT appointment_id
+                FROM donations
+                WHERE id = blood_bags.donation_id
+            )
+        )
+    ) AS blood_group
+FROM blood_bags
+WHERE is_used = false;
+
 --! get_all (component?, blood_group?) : BloodBag
 SELECT 
     *,
