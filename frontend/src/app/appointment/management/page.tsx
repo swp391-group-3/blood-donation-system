@@ -54,6 +54,14 @@ import {
 import { deserialize, fetchWrapper } from '@/lib/api';
 import { Account } from '@/lib/api/dto/account';
 import { columns } from './column';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import { PaginationRange } from '@/components/pagination-range';
 
 const getStats = (appointments: Appointment[]): StatsProps[] => {
     return [
@@ -177,10 +185,6 @@ export default function AppointmentManagementPage() {
     const table = useReactTable({
         data: filteredAppointments,
         columns: columns,
-        state: {
-            pagination,
-        },
-        onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -306,6 +310,54 @@ export default function AppointmentManagementPage() {
                         </TableBody>
                     </Table>
                 </div>
+                <Pagination className='m-8'>
+                    <PaginationContent>
+                        {/* PREVIOUS */}
+                        <PaginationItem>
+                            <PaginationPrevious
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    table.previousPage();
+                                }}
+                                aria-disabled={!table.getCanPreviousPage()}
+                                tabIndex={
+                                    !table.getCanPreviousPage() ? -1 : undefined
+                                }
+                                className={
+                                    !table.getCanPreviousPage()
+                                        ? 'pointer-events-none opacity-50'
+                                        : undefined
+                                }
+                            />
+                        </PaginationItem>
+                        {/* PAGE NUMBERS */}
+                        <PaginationRange
+                            pageIndex={table.getState().pagination.pageIndex}
+                            pageCount={table.getPageCount()}
+                            onPageChange={table.setPageIndex}
+                        />
+                        {/* NEXT */}
+                        <PaginationItem>
+                            <PaginationNext
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    table.nextPage();
+                                }}
+                                aria-disabled={!table.getCanNextPage()}
+                                tabIndex={
+                                    !table.getCanNextPage() ? -1 : undefined
+                                }
+                                className={
+                                    !table.getCanNextPage()
+                                        ? 'pointer-events-none opacity-50'
+                                        : undefined
+                                }
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
             </div>
         </div>
     );
