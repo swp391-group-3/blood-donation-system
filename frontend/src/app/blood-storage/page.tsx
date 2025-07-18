@@ -141,7 +141,10 @@ export default function BloodStorage() {
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | 'all'>('all');
     const [mode, setMode] = useState<Mode>('Compatible');
     const [openRequestDialog, setOpenRequestDialog] = useState(false);
-
+    const [pagination, setPagination] = useState({
+        pageIndex: 1,
+        pageSize: 10,
+    });
     const { mutate: deleteBloodBag, isPending: isDeleting } =
         useDeleteBloodBag();
 
