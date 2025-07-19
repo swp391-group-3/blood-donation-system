@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{Json, extract::State};
 use ctypes::Role;
 use database::queries::{self, blood_bag::BloodStorageStats};
 
