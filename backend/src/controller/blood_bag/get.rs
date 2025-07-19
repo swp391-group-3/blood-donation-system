@@ -17,7 +17,7 @@ use crate::{
     get,
     tag = "Blood Bag",
     path = "/blood-bag/{id}",
-    operation_id = "blood-bag::get",
+    operation_id = "blood_bag::get",
     params(
         ("id" = Uuid, Path, description = "The UUID of the blood bag")
     ),

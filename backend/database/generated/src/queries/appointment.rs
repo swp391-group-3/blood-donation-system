@@ -56,6 +56,13 @@ impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
         }
     }
 }
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
+pub struct AppointmentsStats {
+    pub on_process_appointments: i64,
+    pub approved_appointments: i64,
+    pub done_appointments: i64,
+    pub rejected_appointments: i64,
+}
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
 pub struct UuidUuidQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
@@ -135,6 +142,70 @@ where
         mapper: fn(AppointmentBorrowed) -> R,
     ) -> AppointmentQuery<'c, 'a, 's, C, R, N> {
         AppointmentQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
+pub struct AppointmentsStatsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<AppointmentsStats, tokio_postgres::Error>,
+    mapper: fn(AppointmentsStats) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> AppointmentsStatsQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(
+        self,
+        mapper: fn(AppointmentsStats) -> R,
+    ) -> AppointmentsStatsQuery<'c, 'a, 's, C, R, N> {
+        AppointmentsStatsQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -416,5 +487,33 @@ impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
         Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
     > {
         Box::pin(self.bind(client, &params.reason, &params.id))
+    }
+}
+pub fn get_stats() -> GetStatsStmt {
+    GetStatsStmt(crate::client::async_::Stmt::new(
+        "SELECT (SELECT COUNT(id) FROM appointments WHERE status = 'on_process'::appointment_status) AS on_process_appointments, (SELECT COUNT(id) FROM appointments WHERE status = 'approved'::appointment_status) AS approved_appointments, (SELECT COUNT(id) FROM appointments WHERE status = 'done'::appointment_status) AS done_appointments, (SELECT COUNT(id) FROM appointments WHERE status = 'rejected'::appointment_status) AS rejected_appointments",
+    ))
+}
+pub struct GetStatsStmt(crate::client::async_::Stmt);
+impl GetStatsStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+    ) -> AppointmentsStatsQuery<'c, 'a, 's, C, AppointmentsStats, 0> {
+        AppointmentsStatsQuery {
+            client,
+            params: [],
+            stmt: &mut self.0,
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<AppointmentsStats, tokio_postgres::Error> {
+                    Ok(AppointmentsStats {
+                        on_process_appointments: row.try_get(0)?,
+                        approved_appointments: row.try_get(1)?,
+                        done_appointments: row.try_get(2)?,
+                        rejected_appointments: row.try_get(3)?,
+                    })
+                },
+            mapper: |it| AppointmentsStats::from(it),
+        }
     }
 }

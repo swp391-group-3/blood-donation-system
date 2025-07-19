@@ -62,6 +62,7 @@ struct ChatDoc;
         controller::blood_request::get_all,
         controller::blood_request::update,
         controller::blood_request::delete,
+        controller::blood_request::stats,
 
         controller::appointment::create,
         controller::appointment::get,
@@ -71,6 +72,7 @@ struct ChatDoc;
         controller::appointment::approve,
         controller::appointment::reject,
         controller::appointment::done,
+        controller::appointment::stats,
 
         controller::blog::create,
         controller::blog::get,
@@ -100,6 +102,12 @@ struct ChatDoc;
         controller::blood_bag::get,
         controller::blood_bag::delete,
         controller::blood_bag::update,
+        controller::blood_bag::stats,
+
+        controller::dashboard::stats,
+        controller::dashboard::donation_trends,
+        controller::dashboard::request_trends,
+        controller::dashboard::blood_group_distribution,
     ),
     components(schemas(
         ErrorResponse,
