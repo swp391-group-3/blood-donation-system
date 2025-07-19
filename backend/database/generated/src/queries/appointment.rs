@@ -57,7 +57,7 @@ impl<'a> From<AppointmentBorrowed<'a>> for Appointment {
     }
 }
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
-pub struct AppointmentStats {
+pub struct AppointmentsStats {
     pub on_process_appointments: i64,
     pub approved_appointments: i64,
     pub done_appointments: i64,
@@ -190,22 +190,22 @@ where
         Ok(it)
     }
 }
-pub struct AppointmentStatsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct AppointmentsStatsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<AppointmentStats, tokio_postgres::Error>,
-    mapper: fn(AppointmentStats) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<AppointmentsStats, tokio_postgres::Error>,
+    mapper: fn(AppointmentsStats) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> AppointmentStatsQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> AppointmentsStatsQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
     pub fn map<R>(
         self,
-        mapper: fn(AppointmentStats) -> R,
-    ) -> AppointmentStatsQuery<'c, 'a, 's, C, R, N> {
-        AppointmentStatsQuery {
+        mapper: fn(AppointmentsStats) -> R,
+    ) -> AppointmentsStatsQuery<'c, 'a, 's, C, R, N> {
+        AppointmentsStatsQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -499,21 +499,21 @@ impl GetStatsStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> AppointmentStatsQuery<'c, 'a, 's, C, AppointmentStats, 0> {
-        AppointmentStatsQuery {
+    ) -> AppointmentsStatsQuery<'c, 'a, 's, C, AppointmentsStats, 0> {
+        AppointmentsStatsQuery {
             client,
             params: [],
             stmt: &mut self.0,
             extractor:
-                |row: &tokio_postgres::Row| -> Result<AppointmentStats, tokio_postgres::Error> {
-                    Ok(AppointmentStats {
+                |row: &tokio_postgres::Row| -> Result<AppointmentsStats, tokio_postgres::Error> {
+                    Ok(AppointmentsStats {
                         on_process_appointments: row.try_get(0)?,
                         approved_appointments: row.try_get(1)?,
                         done_appointments: row.try_get(2)?,
                         rejected_appointments: row.try_get(3)?,
                     })
                 },
-            mapper: |it| AppointmentStats::from(it),
+            mapper: |it| AppointmentsStats::from(it),
         }
     }
 }

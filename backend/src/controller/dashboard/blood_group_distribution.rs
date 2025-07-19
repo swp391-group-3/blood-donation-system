@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{Json, extract::State};
 use ctypes::Role;
-use database::queries::{self, dashboard::BloodGroup};
+use database::queries::{self, dashboard::BloodGroupDistribution};
 
 use crate::{
     state::ApiState,
@@ -21,7 +21,7 @@ use crate::error::{Error, Result};
 pub async fn blood_group_distribution(
     state: State<Arc<ApiState>>,
     claims: Claims,
-) -> Result<Json<Vec<BloodGroup>>> {
+) -> Result<Json<Vec<BloodGroupDistribution>>> {
     let database = state.database().await?;
 
     authorize(&claims, [Role::Admin], &database).await?;

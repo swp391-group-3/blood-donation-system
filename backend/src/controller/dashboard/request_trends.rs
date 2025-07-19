@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{Json, extract::State};
 use ctypes::Role;
-use database::queries::{self, dashboard::RequestTrend};
+use database::queries::{self, dashboard::RequestTrends};
 
 use crate::{
     state::ApiState,
@@ -21,7 +21,7 @@ use crate::error::{Error, Result};
 pub async fn request_trends(
     state: State<Arc<ApiState>>,
     claims: Claims,
-) -> Result<Json<Vec<RequestTrend>>> {
+) -> Result<Json<Vec<RequestTrends>>> {
     let database = state.database().await?;
 
     authorize(&claims, [Role::Admin], &database).await?;

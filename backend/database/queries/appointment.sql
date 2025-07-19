@@ -46,7 +46,7 @@ SET
     reason = :reason
 WHERE id = :id;
 
---! get_stats : AppointmentStats()
+--! get_stats : AppointmentsStats()
 SELECT
     (SELECT COUNT(id) FROM appointments WHERE status = 'on_process'::appointment_status) AS on_process_appointments,
     (SELECT COUNT(id) FROM appointments WHERE status = 'approved'::appointment_status) AS approved_appointments,

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{Json, extract::State};
 use ctypes::Role;
-use database::queries::{self, appointment::AppointmentStats};
+use database::queries::{self, appointment::AppointmentsStats};
 
 use crate::{
     error::{Error, Result},
@@ -17,7 +17,7 @@ use crate::{
     operation_id = "appointment::stats",
     security(("jwt_token" = []))
 )]
-pub async fn stats(state: State<Arc<ApiState>>, claims: Claims) -> Result<Json<AppointmentStats>> {
+pub async fn stats(state: State<Arc<ApiState>>, claims: Claims) -> Result<Json<AppointmentsStats>> {
     let database = state.database().await?;
 
     authorize(&claims, [Role::Staff], &database).await?;

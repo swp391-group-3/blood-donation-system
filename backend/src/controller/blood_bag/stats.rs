@@ -14,7 +14,7 @@ use crate::{
     get,
     tag = "Blood Bag",
     path = "/blood-bag/stats",
-    operation_id = "blood-bag::stats",
+    operation_id = "blood_bag::stats",
     security(("jwt_token" = []))
 )]
 pub async fn stats(state: State<Arc<ApiState>>, claims: Claims) -> Result<Json<BloodStorageStats>> {

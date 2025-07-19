@@ -8,15 +8,15 @@ pub struct DashboardStats {
     pub available_blood_bags: i64,
 }
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
-pub struct DonationTrend {
+pub struct DonationTrends {
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 }
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
-pub struct RequestTrend {
+pub struct RequestTrends {
     pub start_time: chrono::DateTime<chrono::FixedOffset>,
 }
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
-pub struct BloodGroup {
+pub struct BloodGroupDistribution {
     pub blood_group: ctypes::BloodGroup,
 }
 use crate::client::async_::GenericClient;
@@ -85,19 +85,22 @@ where
         Ok(it)
     }
 }
-pub struct DonationTrendQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct DonationTrendsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<DonationTrend, tokio_postgres::Error>,
-    mapper: fn(DonationTrend) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<DonationTrends, tokio_postgres::Error>,
+    mapper: fn(DonationTrends) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> DonationTrendQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> DonationTrendsQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(DonationTrend) -> R) -> DonationTrendQuery<'c, 'a, 's, C, R, N> {
-        DonationTrendQuery {
+    pub fn map<R>(
+        self,
+        mapper: fn(DonationTrends) -> R,
+    ) -> DonationTrendsQuery<'c, 'a, 's, C, R, N> {
+        DonationTrendsQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -146,19 +149,19 @@ where
         Ok(it)
     }
 }
-pub struct RequestTrendQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct RequestTrendsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<RequestTrend, tokio_postgres::Error>,
-    mapper: fn(RequestTrend) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<RequestTrends, tokio_postgres::Error>,
+    mapper: fn(RequestTrends) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> RequestTrendQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> RequestTrendsQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(RequestTrend) -> R) -> RequestTrendQuery<'c, 'a, 's, C, R, N> {
-        RequestTrendQuery {
+    pub fn map<R>(self, mapper: fn(RequestTrends) -> R) -> RequestTrendsQuery<'c, 'a, 's, C, R, N> {
+        RequestTrendsQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -207,19 +210,22 @@ where
         Ok(it)
     }
 }
-pub struct BloodGroupQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct BloodGroupDistributionQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<BloodGroup, tokio_postgres::Error>,
-    mapper: fn(BloodGroup) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<BloodGroupDistribution, tokio_postgres::Error>,
+    mapper: fn(BloodGroupDistribution) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> BloodGroupQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> BloodGroupDistributionQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(BloodGroup) -> R) -> BloodGroupQuery<'c, 'a, 's, C, R, N> {
-        BloodGroupQuery {
+    pub fn map<R>(
+        self,
+        mapper: fn(BloodGroupDistribution) -> R,
+    ) -> BloodGroupDistributionQuery<'c, 'a, 's, C, R, N> {
+        BloodGroupDistributionQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -306,17 +312,18 @@ impl GetDonationTrendsStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> DonationTrendQuery<'c, 'a, 's, C, DonationTrend, 0> {
-        DonationTrendQuery {
+    ) -> DonationTrendsQuery<'c, 'a, 's, C, DonationTrends, 0> {
+        DonationTrendsQuery {
             client,
             params: [],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<DonationTrend, tokio_postgres::Error> {
-                Ok(DonationTrend {
-                    created_at: row.try_get(0)?,
-                })
-            },
-            mapper: |it| DonationTrend::from(it),
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<DonationTrends, tokio_postgres::Error> {
+                    Ok(DonationTrends {
+                        created_at: row.try_get(0)?,
+                    })
+                },
+            mapper: |it| DonationTrends::from(it),
         }
     }
 }
@@ -330,17 +337,17 @@ impl GetRequestTrendsStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> RequestTrendQuery<'c, 'a, 's, C, RequestTrend, 0> {
-        RequestTrendQuery {
+    ) -> RequestTrendsQuery<'c, 'a, 's, C, RequestTrends, 0> {
+        RequestTrendsQuery {
             client,
             params: [],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<RequestTrend, tokio_postgres::Error> {
-                Ok(RequestTrend {
+            extractor: |row: &tokio_postgres::Row| -> Result<RequestTrends, tokio_postgres::Error> {
+                Ok(RequestTrends {
                     start_time: row.try_get(0)?,
                 })
             },
-            mapper: |it| RequestTrend::from(it),
+            mapper: |it| RequestTrends::from(it),
         }
     }
 }
@@ -354,17 +361,19 @@ impl GetBloodGroupDistributionStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> BloodGroupQuery<'c, 'a, 's, C, BloodGroup, 0> {
-        BloodGroupQuery {
+    ) -> BloodGroupDistributionQuery<'c, 'a, 's, C, BloodGroupDistribution, 0> {
+        BloodGroupDistributionQuery {
             client,
             params: [],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<BloodGroup, tokio_postgres::Error> {
-                Ok(BloodGroup {
+            extractor: |
+                row: &tokio_postgres::Row,
+            | -> Result<BloodGroupDistribution, tokio_postgres::Error> {
+                Ok(BloodGroupDistribution {
                     blood_group: row.try_get(0)?,
                 })
             },
-            mapper: |it| BloodGroup::from(it),
+            mapper: |it| BloodGroupDistribution::from(it),
         }
     }
 }
