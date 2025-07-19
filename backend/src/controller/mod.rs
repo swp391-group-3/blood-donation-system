@@ -7,6 +7,7 @@ pub mod blood_request;
 #[cfg(feature = "rag")]
 pub mod chat;
 pub mod comment;
+pub mod dashboard;
 pub mod donation;
 pub mod health;
 mod ping;
@@ -31,7 +32,8 @@ pub fn build() -> Router<Arc<ApiState>> {
         .merge(appointment::build())
         .merge(health::build())
         .merge(blood_bag::build())
-        .merge(donation::build());
+        .merge(donation::build())
+        .merge(dashboard::build());
 
     #[cfg(feature = "rag")]
     let router = router.merge(chat::build());

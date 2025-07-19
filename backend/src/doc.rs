@@ -100,6 +100,8 @@ struct ChatDoc;
         controller::blood_bag::get,
         controller::blood_bag::delete,
         controller::blood_bag::update,
+
+        controller::dashboard::stats,
     ),
     components(schemas(
         ErrorResponse,
