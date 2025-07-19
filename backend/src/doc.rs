@@ -71,6 +71,7 @@ struct ChatDoc;
         controller::appointment::approve,
         controller::appointment::reject,
         controller::appointment::done,
+        controller::appointment::stats,
 
         controller::blog::create,
         controller::blog::get,
