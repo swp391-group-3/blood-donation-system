@@ -62,6 +62,7 @@ struct ChatDoc;
         controller::blood_request::get_all,
         controller::blood_request::update,
         controller::blood_request::delete,
+        controller::blood_request::stats,
 
         controller::appointment::create,
         controller::appointment::get,
