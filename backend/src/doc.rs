@@ -102,6 +102,8 @@ struct ChatDoc;
         controller::blood_bag::update,
 
         controller::dashboard::stats,
+        controller::dashboard::donation_trend,
+        controller::dashboard::request_trend,
     ),
     components(schemas(
         ErrorResponse,
