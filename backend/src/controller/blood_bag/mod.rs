@@ -2,6 +2,7 @@ mod create;
 mod delete;
 mod get;
 mod get_all;
+mod stats;
 mod update;
 
 use std::sync::Arc;
@@ -14,6 +15,7 @@ pub use create::*;
 pub use delete::*;
 pub use get::*;
 pub use get_all::*;
+pub use stats::*;
 pub use update::*;
 
 pub fn build() -> Router<Arc<ApiState>> {
@@ -23,4 +25,5 @@ pub fn build() -> Router<Arc<ApiState>> {
         .route("/donation/{id}/blood-bag", routing::post(create))
         .route("/blood-bag/{id}", routing::delete(delete))
         .route("/blood-bag/{id}", routing::patch(update))
+        .route("/blood-bag/stats", routing::get(stats))
 }

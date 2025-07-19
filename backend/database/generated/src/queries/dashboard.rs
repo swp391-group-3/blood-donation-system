@@ -1,7 +1,7 @@
 // This file was generated with `clorinde`. Do not modify.
 
 #[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
-pub struct GetStats {
+pub struct DashboardStats {
     pub total_users: i64,
     pub total_donations: i64,
     pub active_blood_requests: i64,
@@ -21,19 +21,22 @@ pub struct BloodGroup {
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
-pub struct GetStatsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+pub struct DashboardStatsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
     client: &'c C,
     params: [&'a (dyn postgres_types::ToSql + Sync); N],
     stmt: &'s mut crate::client::async_::Stmt,
-    extractor: fn(&tokio_postgres::Row) -> Result<GetStats, tokio_postgres::Error>,
-    mapper: fn(GetStats) -> T,
+    extractor: fn(&tokio_postgres::Row) -> Result<DashboardStats, tokio_postgres::Error>,
+    mapper: fn(DashboardStats) -> T,
 }
-impl<'c, 'a, 's, C, T: 'c, const N: usize> GetStatsQuery<'c, 'a, 's, C, T, N>
+impl<'c, 'a, 's, C, T: 'c, const N: usize> DashboardStatsQuery<'c, 'a, 's, C, T, N>
 where
     C: GenericClient,
 {
-    pub fn map<R>(self, mapper: fn(GetStats) -> R) -> GetStatsQuery<'c, 'a, 's, C, R, N> {
-        GetStatsQuery {
+    pub fn map<R>(
+        self,
+        mapper: fn(DashboardStats) -> R,
+    ) -> DashboardStatsQuery<'c, 'a, 's, C, R, N> {
+        DashboardStatsQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -275,20 +278,21 @@ impl GetStatsStmt {
     pub fn bind<'c, 'a, 's, C: GenericClient>(
         &'s mut self,
         client: &'c C,
-    ) -> GetStatsQuery<'c, 'a, 's, C, GetStats, 0> {
-        GetStatsQuery {
+    ) -> DashboardStatsQuery<'c, 'a, 's, C, DashboardStats, 0> {
+        DashboardStatsQuery {
             client,
             params: [],
             stmt: &mut self.0,
-            extractor: |row: &tokio_postgres::Row| -> Result<GetStats, tokio_postgres::Error> {
-                Ok(GetStats {
-                    total_users: row.try_get(0)?,
-                    total_donations: row.try_get(1)?,
-                    active_blood_requests: row.try_get(2)?,
-                    available_blood_bags: row.try_get(3)?,
-                })
-            },
-            mapper: |it| GetStats::from(it),
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<DashboardStats, tokio_postgres::Error> {
+                    Ok(DashboardStats {
+                        total_users: row.try_get(0)?,
+                        total_donations: row.try_get(1)?,
+                        active_blood_requests: row.try_get(2)?,
+                        available_blood_bags: row.try_get(3)?,
+                    })
+                },
+            mapper: |it| DashboardStats::from(it),
         }
     }
 }

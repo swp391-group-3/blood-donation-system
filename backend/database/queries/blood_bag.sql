@@ -131,3 +131,15 @@ SET
     amount = COALESCE(:amount, amount),
     expired_time = COALESCE(:expired_time, expired_time)
 WHERE id = :id;
+
+--! get_stats : BloodStorageStats()
+SELECT
+    (SELECT COUNT(id) FROM blood_bags) AS total_bags,
+    (SELECT COUNT(id) FROM blood_bags WHERE is_used = false) AS available_bags,
+    (SELECT COUNT(id) FROM blood_bags
+        WHERE is_used = false 
+        AND expired_time > NOW()
+        AND expired_time <= NOW() + INTERVAL '7 day') AS expiring_bags,
+    (SELECT COUNT(id) FROM blood_bags 
+        WHERE is_used = false 
+        AND expired_time <= NOW()) AS expired_bags;

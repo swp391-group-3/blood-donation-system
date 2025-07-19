@@ -1,6 +1,6 @@
 --: Dashboard()
 
---! get_stats
+--! get_stats : DashboardStats()
 SELECT 
     (SELECT COUNT(id) FROM accounts) AS total_users,
     (SELECT COUNT(id) FROM donations) AS total_donations,

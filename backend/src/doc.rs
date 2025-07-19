@@ -100,6 +100,7 @@ struct ChatDoc;
         controller::blood_bag::get,
         controller::blood_bag::delete,
         controller::blood_bag::update,
+        controller::blood_bag::stats,
 
         controller::dashboard::stats,
         controller::dashboard::donation_trends,
