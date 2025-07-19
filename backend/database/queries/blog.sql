@@ -46,7 +46,7 @@ SELECT
 FROM blogs
 WHERE id = :id;
 
---! get_all (query?) : Blog
+--! get_all (query?, tag?) : Blog
 SELECT 
     id,
     (SELECT name FROM accounts WHERE id = blogs.account_id) AS owner,
@@ -61,12 +61,30 @@ SELECT
     content,
     created_at
 FROM blogs
-WHERE 
-    :query::text is null or
-    (title LIKE '%' || :query || '%' ) or
-    (description LIKE '%' || :query || '%' ) or
+WHERE (
+    :query::text IS NULL OR
+    (title LIKE '%' || :query || '%' ) OR
+    (description LIKE '%' || :query || '%' ) OR
     (content LIKE '%' || :query || '%' )
-ORDER BY created_at DESC;
+) AND (
+    :tag::text is NULL OR
+    EXISTS (
+        SELECT 1
+        FROM tags
+        WHERE id IN (
+            SELECT tag_id 
+            FROM blog_tags 
+            WHERE blog_id = blogs.id
+        )
+        AND name = :tag
+    )
+)
+ORDER BY
+    CASE WHEN :mode = 'Most Recent'  THEN created_at END DESC,
+    CASE WHEN :mode = 'Oldest First' THEN created_at END ASC,
+    CASE WHEN :mode = 'Title A-Z'    THEN title      END ASC
+LIMIT  :page_size::int
+OFFSET :page_size::int * :page_index::int;
 
 --! update (title?, description?, content?)
 UPDATE blogs
