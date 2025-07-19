@@ -31,7 +31,7 @@ VALUES (
 
 --! get : BloodRequest
 SELECT 
-    *,
+    id, priority, title, max_people, start_time, end_time, is_active, created_at,
     (
         SELECT ARRAY(
             SELECT blood_group
@@ -48,9 +48,9 @@ SELECT
 FROM blood_requests
 WHERE id = :id;
 
---! get_all : BloodRequest
+--! get_all (query?, priority?, blood_group?) : BloodRequest
 SELECT 
-    *,
+    id, priority, title, max_people, start_time, end_time, is_active, created_at,
     (
         SELECT ARRAY(
             SELECT blood_group
@@ -65,7 +65,50 @@ SELECT
     ) as current_people,
     (staff_id = :account_id) as is_editable
 FROM blood_requests
-WHERE now() < end_time AND is_active = true;
+WHERE (
+    :account_id = '00000000-0000-0000-0000-000000000000'
+    OR (
+        SELECT role
+        FROM accounts
+        WHERE id = :account_id
+    ) != 'donor'::role
+    OR EXISTS (
+        SELECT 1
+        FROM request_blood_groups
+        WHERE request_id = blood_requests.id
+        AND blood_group = ANY (
+            CASE (
+                SELECT blood_group
+                FROM accounts
+                WHERE id = :account_id
+            )
+                WHEN 'o_minus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[]
+                WHEN 'o_plus'   THEN ARRAY['a_plus','b_plus','ab_plus','o_plus']::blood_group[]
+                WHEN 'a_minus'  THEN ARRAY['a_plus','a_minus','ab_plus','ab_minus']::blood_group[]
+                WHEN 'a_plus'   THEN ARRAY['a_plus','ab_plus']::blood_group[]
+                WHEN 'b_minus'  THEN ARRAY['b_plus','b_minus','ab_plus','ab_minus']::blood_group[]
+                WHEN 'b_plus'   THEN ARRAY['b_plus','ab_plus']::blood_group[]
+                WHEN 'ab_minus' THEN ARRAY['ab_plus','ab_minus']::blood_group[]
+                WHEN 'ab_plus'  THEN ARRAY['ab_plus']::blood_group[]
+            END
+        )
+    )
+) AND (
+    :query::text IS NULL OR
+    (title LIKE '%' || :query || '%' )
+) AND (
+    :priority::request_priority IS NULL OR priority = :priority
+) AND (
+    :blood_group::blood_group IS NULL
+    OR EXISTS (
+        SELECT 1
+        FROM request_blood_groups
+        WHERE request_id = blood_requests.id
+        AND blood_group = :blood_group
+    )
+) AND now() < end_time AND is_active = true
+LIMIT :page_size::int
+OFFSET :page_size::int * :page_index::int;
 
 --! update (priority?, title?, max_people?)
 UPDATE blood_requests

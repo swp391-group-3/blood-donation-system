@@ -15,6 +15,14 @@ pub struct CreateParams<
     pub tags: T5,
 }
 #[derive(Debug)]
+pub struct GetAllParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
+    pub query: Option<T1>,
+    pub tag: Option<T2>,
+    pub mode: T3,
+    pub page_size: i32,
+    pub page_index: i32,
+}
+#[derive(Debug)]
 pub struct UpdateParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
     pub title: Option<T1>,
     pub description: Option<T2>,
@@ -296,19 +304,31 @@ impl GetStmt {
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS owner, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id) ) ) AS tags, title, description, content, created_at FROM blogs WHERE $1::text is null or (title LIKE '%' || $1 || '%' ) or (description LIKE '%' || $1 || '%' ) or (content LIKE '%' || $1 || '%' ) ORDER BY created_at DESC",
+        "SELECT id, (SELECT name FROM accounts WHERE id = blogs.account_id) AS owner, ( SELECT ARRAY( SELECT name FROM tags WHERE id IN (SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id) ) ) AS tags, title, description, content, created_at FROM blogs WHERE ( $1::text IS NULL OR (title LIKE '%' || $1 || '%' ) OR (description LIKE '%' || $1 || '%' ) OR (content LIKE '%' || $1 || '%' ) ) AND ( $2::text is NULL OR EXISTS ( SELECT 1 FROM tags WHERE id IN ( SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id ) AND name = $2 ) ) ORDER BY CASE WHEN $3 = 'Most Recent'  THEN created_at END DESC, CASE WHEN $3 = 'Oldest First' THEN created_at END ASC, CASE WHEN $3 = 'Title A-Z'    THEN title      END ASC LIMIT  $4::int OFFSET $4::int * $5::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
+    pub fn bind<
+        'c,
+        'a,
+        's,
+        C: GenericClient,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >(
         &'s mut self,
         client: &'c C,
         query: &'a Option<T1>,
-    ) -> BlogQuery<'c, 'a, 's, C, Blog, 1> {
+        tag: &'a Option<T2>,
+        mode: &'a T3,
+        page_size: &'a i32,
+        page_index: &'a i32,
+    ) -> BlogQuery<'c, 'a, 's, C, Blog, 5> {
         BlogQuery {
             client,
-            params: [query],
+            params: [query, tag, mode, page_size, page_index],
             stmt: &mut self.0,
             extractor: |row: &tokio_postgres::Row| -> Result<BlogBorrowed, tokio_postgres::Error> {
                 Ok(BlogBorrowed {
@@ -323,6 +343,39 @@ impl GetAllStmt {
             },
             mapper: |it| Blog::from(it),
         }
+    }
+}
+impl<
+        'c,
+        'a,
+        's,
+        C: GenericClient,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        GetAllParams<T1, T2, T3>,
+        BlogQuery<'c, 'a, 's, C, Blog, 5>,
+        C,
+    > for GetAllStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a GetAllParams<T1, T2, T3>,
+    ) -> BlogQuery<'c, 'a, 's, C, Blog, 5> {
+        self.bind(
+            client,
+            &params.query,
+            &params.tag,
+            &params.mode,
+            &params.page_size,
+            &params.page_index,
+        )
     }
 }
 pub fn update() -> UpdateStmt {
