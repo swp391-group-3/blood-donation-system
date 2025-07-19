@@ -51,13 +51,13 @@ pub async fn get_all(
 ) -> Result<Json<Vec<BloodRequest>>> {
     let database = state.database().await?;
 
-    let account_id = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
+    let sub = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
 
     match queries::blood_request::get_all()
         .params(
             &database,
             &GetAllParams {
-                account_id: account_id,
+                account_id: sub,
                 query: request.query,
                 priority: request.priority,
                 blood_group: request.blood_group,
