@@ -20,6 +20,15 @@ pub struct GetParams {
     pub id: uuid::Uuid,
 }
 #[derive(Debug)]
+pub struct GetAllParams<T1: crate::StringSql> {
+    pub account_id: Option<uuid::Uuid>,
+    pub blood_group: Option<ctypes::BloodGroup>,
+    pub query: Option<T1>,
+    pub priority: Option<ctypes::RequestPriority>,
+    pub page_size: i32,
+    pub page_index: i32,
+}
+#[derive(Debug)]
 pub struct UpdateParams<T1: crate::StringSql> {
     pub priority: Option<ctypes::RequestPriority>,
     pub title: Option<T1>,
@@ -441,19 +450,31 @@ impl<'c, 'a, 's, C: GenericClient>
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, (staff_id = $1) as is_editable FROM blood_requests WHERE now() < end_time AND is_active = true",
+        "SELECT *, ( SELECT ARRAY( SELECT blood_group FROM request_blood_groups WHERE request_id = blood_requests.id ) ) AS blood_groups, ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id ) as current_people, (staff_id = $1) as is_editable FROM blood_requests WHERE ( $1 IS NULL OR ( SELECT role FROM accounts WHERE id = $1 ) != 'donor'::role OR EXISTS ( SELECT 1 FROM request_blood_groups WHERE request_id = blood_requests.id AND blood_group = ANY ( CASE $2::blood_group WHEN 'o_minus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['a_plus','b_plus','ab_plus','o_plus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_plus','a_minus','ab_plus','ab_minus']::blood_group[] WHEN 'a_plus'   THEN ARRAY['a_plus','ab_plus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_plus','b_minus','ab_plus','ab_minus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus','ab_plus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_plus','ab_minus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['ab_plus']::blood_group[] END ) ) ) AND ( $3::text IS NULL OR title % $3 ) AND ( $4::request_priority IS NULL OR priority = $4 ) AND ( $2::blood_group IS NULL OR EXISTS ( SELECT 1 FROM request_blood_groups WHERE request_id = blood_requests.id AND blood_group = $2 ) ) AND now() < end_time AND is_active = true LIMIT $5::int OFFSET $5::int * $6::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
 impl GetAllStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
         &'s mut self,
         client: &'c C,
-        account_id: &'a uuid::Uuid,
-    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 1> {
+        account_id: &'a Option<uuid::Uuid>,
+        blood_group: &'a Option<ctypes::BloodGroup>,
+        query: &'a Option<T1>,
+        priority: &'a Option<ctypes::RequestPriority>,
+        page_size: &'a i32,
+        page_index: &'a i32,
+    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 6> {
         BloodRequestQuery {
             client,
-            params: [account_id],
+            params: [
+                account_id,
+                blood_group,
+                query,
+                priority,
+                page_size,
+                page_index,
+            ],
             stmt: &mut self.0,
             extractor:
                 |row: &tokio_postgres::Row| -> Result<BloodRequestBorrowed, tokio_postgres::Error> {
@@ -474,6 +495,32 @@ impl GetAllStmt {
                 },
             mapper: |it| BloodRequest::from(it),
         }
+    }
+}
+impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        GetAllParams<T1>,
+        BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 6>,
+        C,
+    > for GetAllStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a GetAllParams<T1>,
+    ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 6> {
+        self.bind(
+            client,
+            &params.account_id,
+            &params.blood_group,
+            &params.query,
+            &params.priority,
+            &params.page_size,
+            &params.page_index,
+        )
     }
 }
 pub fn update() -> UpdateStmt {
