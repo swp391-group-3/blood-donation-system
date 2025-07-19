@@ -31,7 +31,7 @@ VALUES (
 
 --! get : BloodRequest
 SELECT 
-    *,
+    id, priority, title, max_people, start_time, end_time, is_active, created_at,
     (
         SELECT ARRAY(
             SELECT blood_group
@@ -48,9 +48,9 @@ SELECT
 FROM blood_requests
 WHERE id = :id;
 
---! get_all (account_id?, query?, priority?, blood_group?) : BloodRequest
+--! get_all (query?, priority?, blood_group?) : BloodRequest
 SELECT 
-    *,
+    id, priority, title, max_people, start_time, end_time, is_active, created_at,
     (
         SELECT ARRAY(
             SELECT blood_group
@@ -66,7 +66,7 @@ SELECT
     (staff_id = :account_id) as is_editable
 FROM blood_requests
 WHERE (
-    :account_id IS NULL
+    :account_id = '00000000-0000-0000-0000-000000000000'
     OR (
         SELECT role
         FROM accounts
@@ -77,7 +77,11 @@ WHERE (
         FROM request_blood_groups
         WHERE request_id = blood_requests.id
         AND blood_group = ANY (
-            CASE :blood_group::blood_group
+            CASE (
+                SELECT blood_group
+                FROM accounts
+                WHERE id = :account_id
+            )
                 WHEN 'o_minus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[]
                 WHEN 'o_plus'   THEN ARRAY['a_plus','b_plus','ab_plus','o_plus']::blood_group[]
                 WHEN 'a_minus'  THEN ARRAY['a_plus','a_minus','ab_plus','ab_minus']::blood_group[]
@@ -90,7 +94,8 @@ WHERE (
         )
     )
 ) AND (
-    :query::text IS NULL OR title % :query
+    :query::text IS NULL OR
+    (title LIKE '%' || :query || '%' )
 ) AND (
     :priority::request_priority IS NULL OR priority = :priority
 ) AND (

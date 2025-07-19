@@ -1,81 +1,78 @@
-use std::{collections::HashSet, sync::Arc};
+use std::sync::Arc;
 
-use axum::{Json, extract::State, http::StatusCode};
-use ctypes::Role;
-use database::queries::{self, blood_request::BloodRequest};
+use axum::{
+    Json,
+    extract::{Query, State},
+};
+use ctypes::{BloodGroup, RequestPriority};
+use database::{
+    client::Params,
+    queries::{
+        self,
+        blood_request::{BloodRequest, GetAllParams},
+    },
+};
+use serde::Deserialize;
+use utoipa::IntoParams;
 
 use crate::{
     error::{Error, Result},
     state::ApiState,
-    util::auth::Claims,
+    util::{auth::Claims, pagination},
 };
 
-use crate::util::blood::get_compatible;
+#[derive(Deserialize, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub struct Request {
+    pub query: Option<String>,
+
+    pub priority: Option<RequestPriority>,
+
+    pub blood_group: Option<BloodGroup>,
+
+    #[serde(default = "pagination::default_page_size")]
+    pub page_size: usize,
+
+    #[serde(default = "pagination::default_page_index")]
+    pub page_index: usize,
+}
 
 #[utoipa::path(
     get,
     tag = "Blood Request",
     path = "/blood-request",
+    params(Request),
     operation_id = "blood_request::get_all"
 )]
 pub async fn get_all(
     state: State<Arc<ApiState>>,
     claims: Option<Claims>,
+    Query(request): Query<Request>,
 ) -> Result<Json<Vec<BloodRequest>>> {
     let database = state.database().await?;
-    let account_id = claims
-        .as_ref()
-        .map(|c| c.sub)
-        .unwrap_or_else(uuid::Uuid::nil);
 
-    let requests = match queries::blood_request::get_all()
-        .bind(&database, &account_id)
+    let account_id = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
+
+    match queries::blood_request::get_all()
+        .params(
+            &database,
+            &GetAllParams {
+                account_id: account_id,
+                query: request.query,
+                priority: request.priority,
+                blood_group: request.blood_group,
+                page_size: request.page_size as i32,
+                page_index: request.page_index as i32,
+            },
+        )
         .all()
         .await
     {
-        Ok(requests) => requests,
+        Ok(requests) => Ok(Json(requests)),
         Err(error) => {
             tracing::error!(?error, "Failed to get request list");
 
-            return Err(Error::internal());
-        }
-    };
-
-    let Some(claims) = claims else {
-        return Ok(Json(requests));
-    };
-
-    let account = match queries::account::get()
-        .bind(&database, &claims.sub)
-        .one()
-        .await
-    {
-        Ok(account) => account,
-        Err(error) => {
-            tracing::error!(?error, "Invalid claims");
-
-            return Err(Error::builder().status(StatusCode::UNAUTHORIZED).build());
-        }
-    };
-
-    if account.role != Role::Donor {
-        return Ok(Json(requests));
-    }
-
-    let compatible_blood_groups = match account.blood_group {
-        Some(blood_group) => get_compatible(blood_group),
-        None => return Ok(Json(requests)),
-    };
-
-    let mut filtered_requests = Vec::new();
-
-    for request in requests {
-        let blood_groups: HashSet<_> = request.blood_groups.iter().cloned().collect();
-
-        if !blood_groups.is_disjoint(&compatible_blood_groups) {
-            filtered_requests.push(request);
+            Err(Error::internal())
         }
     }
-
-    Ok(Json(filtered_requests))
 }
