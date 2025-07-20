@@ -19,6 +19,7 @@ use validator::Validate;
 pub struct Request {
     #[validate(length(min = 1))]
     pub reason: String,
+    pub is_banned: bool,
 }
 
 #[utoipa::path(
@@ -42,15 +43,6 @@ pub async fn reject(
 
     authorize(&claims, [Role::Staff], &database).await?;
 
-    if let Err(error) = queries::appointment::reject()
-        .bind(&database, &request.reason, &id)
-        .await
-    {
-        tracing::error!(?error, id =? id, "Failed to reject appointment");
-
-        return Err(Error::internal());
-    }
-
     let appointment = match queries::appointment::get().bind(&database, &id).one().await {
         Ok(appointment) => appointment,
         Err(error) => {
@@ -68,12 +60,31 @@ pub async fn reject(
         .one()
         .await
     {
-        Ok(account) => account,
+        Ok(account) => {
+            if account.is_banned {
+                return Err(Error::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .message("You are banned from applying blood requests".into())
+                    .build());
+            }
+
+            account
+        }
         Err(error) => {
             tracing::error!(?error, "No account match appointment");
+
             return Err(Error::internal());
         }
     };
+
+    if let Err(error) = queries::appointment::reject()
+        .bind(&database, &request.reason, &id, &request.is_banned)
+        .await
+    {
+        tracing::error!(?error, id =? id, "Failed to reject appointment");
+
+        return Err(Error::internal());
+    }
 
     let subject = "Appointment Rejected".to_string();
     let body = format!(
