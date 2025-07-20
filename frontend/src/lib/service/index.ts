@@ -1,3 +1,4 @@
+import { UndefinedInitialDataOptions } from '@tanstack/react-query';
 import { getApiUrl } from './api-url';
 
 export class ApiError extends Error {
@@ -36,3 +37,19 @@ export const fetchWrapper = async (
         credentials: 'include',
     });
 };
+
+export const buildParams = (data: Object): URLSearchParams => {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(data)) {
+        if (value) params.append(key, value);
+    }
+
+    return params;
+};
+
+export type QueryData<T> = UndefinedInitialDataOptions<
+    T,
+    ApiError,
+    T,
+    object[]
+>;
