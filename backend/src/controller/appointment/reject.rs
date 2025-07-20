@@ -76,27 +76,51 @@ pub async fn reject(
         }
     };
 
-    let subject = "Appointment Rejected".to_string();
-    let body = format!(
-        "<html>
-        <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
-            <p>Dear <strong>{}</strong>,</p>
+    let (subject, body) = if request.is_banned {
+        let subject = "Account Banned".to_string();
+        let body = format!(
+            "<html>
+            <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
+                <p>Dear <strong>{}</strong>,</p>
 
-            <p>We regret to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: red;\"><strong>rejected</strong></span>.</p>
-            
-            <p>Reason for rejection: {}</p>
-            
-            <p>If you believe this is a mistake or would like to schedule another appointment, please contact our staff or try again via the system.</p>
+                <p>We regret to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: red;\"><strong>rejected</strong></span>, and your account has been <strong>banned</strong>.</p>
+                
+                <p>Reason: {}</p>
+                
+                <p>If you believe this is a mistake or would like to appeal, please contact support.</p>
 
-            <p>We appreciate your willingness to donate and hope to see you again soon.</p>
+                <p>Sincerely,<br><strong>Blood Donation Team</strong></p>
+            </body>
+            </html>",
+            account.name,
+            id,
+            request.reason,
+        );
+        (subject, body)
+    } else {
+        let subject = "Appointment Rejected".to_string();
+        let body = format!(
+            "<html>
+            <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
+                <p>Dear <strong>{}</strong>,</p>
 
-            <p>Sincerely,<br><strong>Blood Donation Team</strong></p>
-        </body>
-        </html>",
-        account.name,
-        id,
-        request.reason,
-    );
+                <p>We regret to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: red;\"><strong>rejected</strong></span>.</p>
+                
+                <p>Reason for rejection: {}</p>
+                
+                <p>If you believe this is a mistake or would like to schedule another appointment, please contact our staff or try again via the system.</p>
+
+                <p>We appreciate your willingness to donate and hope to see you again soon.</p>
+
+                <p>Sincerely,<br><strong>Blood Donation Team</strong></p>
+            </body>
+            </html>",
+            account.name,
+            id,
+            request.reason,
+        );
+        (subject, body)
+    };
 
     send(&account, subject, body, &state.mailer).await?;
 
