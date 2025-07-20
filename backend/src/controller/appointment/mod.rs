@@ -6,6 +6,7 @@ mod get_all;
 mod get_answer;
 mod get_by_donor_id;
 mod reject;
+mod stats;
 
 use std::sync::Arc;
 
@@ -21,6 +22,7 @@ pub use get_all::*;
 pub use get_answer::*;
 pub use get_by_donor_id::*;
 pub use reject::*;
+pub use stats::*;
 
 pub fn build() -> Router<Arc<ApiState>> {
     Router::new()
@@ -31,6 +33,7 @@ pub fn build() -> Router<Arc<ApiState>> {
         .route("/appointment/{id}/done", routing::patch(done))
         .route("/appointment", routing::get(get_all))
         .route("/appointment/me", routing::get(get_by_donor_id))
+        .route("/appointment/stats", routing::get(stats))
         .route(
             "/blood-request/{id}/create-appointment",
             routing::post(create),

@@ -23,7 +23,9 @@ WHERE (
     EXISTS (
         SELECT 1
         FROM accounts
-        WHERE (name % :query OR email % :query)
+        WHERE
+            (name % :query OR email % :query) AND
+            accounts.id = appointments.donor_id
         LIMIT 1
     )
 ) AND (
@@ -43,3 +45,10 @@ SET
     status = 'rejected'::appointment_status,
     reason = :reason
 WHERE id = :id;
+
+--! get_stats : AppointmentsStats()
+SELECT
+    (SELECT COUNT(id) FROM appointments WHERE status = 'on_process'::appointment_status) AS on_process_appointments,
+    (SELECT COUNT(id) FROM appointments WHERE status = 'approved'::appointment_status) AS approved_appointments,
+    (SELECT COUNT(id) FROM appointments WHERE status = 'done'::appointment_status) AS done_appointments,
+    (SELECT COUNT(id) FROM appointments WHERE status = 'rejected'::appointment_status) AS rejected_appointments;

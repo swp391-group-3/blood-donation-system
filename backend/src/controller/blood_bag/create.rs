@@ -45,7 +45,7 @@ pub struct Request {
     post,
     tags = ["Blood Bag", "Donation"],
     path = "/donation/{id}/blood-bag",
-    operation_id = "blood-bag::create",
+    operation_id = "blood_bag::create",
     request_body = Request,
     params(
         ("id" = Uuid, Path, description = "Donation id")

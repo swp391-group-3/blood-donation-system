@@ -94,6 +94,13 @@ impl<'a> From<BloodRequestBorrowed<'a>> for BloodRequest {
         }
     }
 }
+#[derive(serde::Serialize, Debug, Clone, PartialEq, Copy, utoipa::ToSchema)]
+pub struct BloodRequestsStats {
+    pub total_requests: i64,
+    pub urgent_requests: i64,
+    pub donors_needed: i64,
+    pub recommended_requests: i64,
+}
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
 pub struct UuidUuidQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
@@ -173,6 +180,70 @@ where
         mapper: fn(BloodRequestBorrowed) -> R,
     ) -> BloodRequestQuery<'c, 'a, 's, C, R, N> {
         BloodRequestQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
+pub struct BloodRequestsStatsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<BloodRequestsStats, tokio_postgres::Error>,
+    mapper: fn(BloodRequestsStats) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> BloodRequestsStatsQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(
+        self,
+        mapper: fn(BloodRequestsStats) -> R,
+    ) -> BloodRequestsStatsQuery<'c, 'a, 's, C, R, N> {
+        BloodRequestsStatsQuery {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -493,5 +564,34 @@ impl<'a, C: GenericClient + Send + Sync>
         Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
     > {
         Box::pin(self.bind(client, &params.id, &params.staff_id))
+    }
+}
+pub fn get_stats() -> GetStatsStmt {
+    GetStatsStmt(crate::client::async_::Stmt::new(
+        "SELECT ( SELECT COUNT(id) FROM blood_requests WHERE is_active = true AND now() < end_time ) AS total_requests, ( SELECT COUNT(id) FROM blood_requests WHERE is_active = true AND now() < end_time AND priority = 'high'::request_priority ) AS urgent_requests, ( SELECT CAST( COALESCE(SUM(max_people - ( SELECT COUNT(id) FROM appointments WHERE request_id = blood_requests.id )), 0) AS BIGINT ) FROM blood_requests WHERE is_active = true AND now() < end_time ) AS donors_needed, ( SELECT COUNT(id) FROM blood_requests WHERE is_active = true AND now() < end_time AND EXISTS ( SELECT 1 FROM request_blood_groups WHERE request_id = blood_requests.id AND blood_group = ANY ( CASE ( SELECT blood_group FROM accounts WHERE id = $1 ) WHEN 'o_minus'  THEN ARRAY['o_minus', 'o_plus', 'a_minus', 'a_plus', 'b_minus', 'b_plus', 'ab_minus', 'ab_plus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['o_plus', 'a_plus', 'b_plus', 'ab_plus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_minus', 'a_plus', 'ab_minus', 'ab_plus']::blood_group[] WHEN 'a_plus'   THEN ARRAY['a_plus', 'ab_plus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_minus', 'b_plus', 'ab_minus', 'ab_plus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus', 'ab_plus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_minus', 'ab_plus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['ab_plus']::blood_group[] END ) ) ) AS recommended_requests",
+    ))
+}
+pub struct GetStatsStmt(crate::client::async_::Stmt);
+impl GetStatsStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s mut self,
+        client: &'c C,
+        account_id: &'a uuid::Uuid,
+    ) -> BloodRequestsStatsQuery<'c, 'a, 's, C, BloodRequestsStats, 1> {
+        BloodRequestsStatsQuery {
+            client,
+            params: [account_id],
+            stmt: &mut self.0,
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<BloodRequestsStats, tokio_postgres::Error> {
+                    Ok(BloodRequestsStats {
+                        total_requests: row.try_get(0)?,
+                        urgent_requests: row.try_get(1)?,
+                        donors_needed: row.try_get(2)?,
+                        recommended_requests: row.try_get(3)?,
+                    })
+                },
+            mapper: |it| BloodRequestsStats::from(it),
+        }
     }
 }
