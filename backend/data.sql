@@ -4,10 +4,10 @@
 -- ============================================
 
 -- 1. Accounts — only the three originals
-INSERT INTO accounts (id, role, email, password, phone, name, gender, address, birthday, blood_group, is_active, created_at) VALUES
-  ('11111111-1111-1111-1111-111111111111','admin','admin@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+841234567890','Nguyen Van A','male','123 Le Loi St, HCMC','1980-05-10','o_plus',true,'2025-06-01T08:00:00Z'),
-  ('22222222-2222-2222-2222-222222222222','staff','staff@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+849876543210','Tran Thi B','female','456 Nguyen Hue Blvd, HCMC','1990-12-20','a_minus',true,'2025-06-05T09:30:00Z'),
-  ('33333333-3333-3333-3333-333333333333','donor','donor@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+848765432109','Le Van C','male','789 Pasteur Ave, HCMC','1995-07-15','b_plus',true,'2025-06-10T14:45:00Z')
+INSERT INTO accounts (id, role, email, password, phone, name, gender, address, birthday, blood_group, is_active, created_at, is_banned) VALUES
+  ('11111111-1111-1111-1111-111111111111','admin','admin@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+841234567890','Nguyen Van A','male','123 Le Loi St, HCMC','1980-05-10','o_plus',true,'2025-06-01T08:00:00Z', false),
+  ('22222222-2222-2222-2222-222222222222','staff','staff@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+849876543210','Tran Thi B','female','456 Nguyen Hue Blvd, HCMC','1990-12-20','a_minus',true,'2025-06-05T09:30:00Z', false),
+  ('33333333-3333-3333-3333-333333333333','donor','donor@test.com','$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W','+848765432109','Le Van C','male','789 Pasteur Ave, HCMC','1995-07-15','b_plus',true,'2025-06-10T14:45:00Z', false)
 ON CONFLICT DO NOTHING;
 
 -- 2. Questions
