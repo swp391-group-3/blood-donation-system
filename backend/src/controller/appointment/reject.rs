@@ -19,7 +19,7 @@ use validator::Validate;
 pub struct Request {
     #[validate(length(min = 1))]
     pub reason: String,
-    pub ban: bool,
+    pub is_banned: bool,
 }
 
 #[utoipa::path(
@@ -44,7 +44,7 @@ pub async fn reject(
     authorize(&claims, [Role::Staff], &database).await?;
 
     if let Err(error) = queries::appointment::reject()
-        .bind(&database, &request.reason, &id, &request.ban)
+        .bind(&database, &request.reason, &id, &request.is_banned)
         .await
     {
         tracing::error!(?error, id =? id, "Failed to reject appointment");

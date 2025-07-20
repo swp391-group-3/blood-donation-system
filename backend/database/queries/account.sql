@@ -127,3 +127,8 @@ SELECT EXISTS (
         AND status != 'rejected'::appointment_status
         AND status != 'done'::appointment_status
 ) AS is_applied;
+
+--! is_banned
+SELECT is_banned
+FROM accounts
+WHERE id = :id;
