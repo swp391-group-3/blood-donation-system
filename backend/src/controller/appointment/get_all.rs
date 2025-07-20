@@ -5,13 +5,7 @@ use axum::{
     extract::{Query, State},
 };
 use ctypes::{AppointmentStatus, Role};
-use database::{
-    client::Params,
-    queries::{
-        self,
-        appointment::{Appointment, GetAllParams},
-    },
-};
+use database::queries::{self, appointment::Appointment};
 use serde::Deserialize;
 use utoipa::IntoParams;
 

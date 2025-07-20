@@ -5,13 +5,7 @@ use axum::{
     extract::{Query, State},
 };
 use ctypes::Role;
-use database::{
-    client::Params,
-    queries::{
-        self,
-        account::{Account, CountParams, GetAllParams},
-    },
-};
+use database::queries::{self, account::Account};
 use serde::Deserialize;
 use utoipa::IntoParams;
 

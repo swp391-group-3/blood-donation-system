@@ -2,13 +2,7 @@ use axum::{
     Json,
     extract::{Query, State},
 };
-use database::{
-    client::Params,
-    queries::{
-        self,
-        blog::{Blog, GetAllParams},
-    },
-};
+use database::queries::{self, blog::Blog};
 use serde::Deserialize;
 use std::sync::Arc;
 use utoipa::{IntoParams, ToSchema};

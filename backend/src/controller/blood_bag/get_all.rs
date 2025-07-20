@@ -5,13 +5,7 @@ use axum::{
     extract::{Query, State},
 };
 use ctypes::{BloodComponent, BloodGroup, Role};
-use database::{
-    client::Params,
-    queries::{
-        self,
-        blood_bag::{BloodBag, GetAllParams},
-    },
-};
+use database::queries::{self, blood_bag::BloodBag};
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 
