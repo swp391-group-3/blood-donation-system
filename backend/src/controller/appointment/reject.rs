@@ -77,13 +77,13 @@ pub async fn reject(
     };
 
     let (subject, body) = if request.is_banned {
-        let subject = "Account Banned".to_string();
+        let subject = "Blood Donation Support System - Account Banned".to_string();
         let body = format!(
             "<html>
             <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
                 <p>Dear <strong>{}</strong>,</p>
 
-                <p>We regret to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: red;\"><strong>rejected</strong></span>, and your account has been <strong>banned</strong>.</p>
+                <p>We regret to inform you that your blood donation appointment (ID: <strong>{}</strong>) has been <span style=\"color: red;\"><strong>rejected</strong></span>, and your account has been <span style=\"color: red;\"><strong>banned</strong></span>.</p>
                 
                 <p>Reason: {}</p>
                 
@@ -98,7 +98,7 @@ pub async fn reject(
         );
         (subject, body)
     } else {
-        let subject = "Appointment Rejected".to_string();
+        let subject = "Blood Donation Support System - Appointment Rejected".to_string();
         let body = format!(
             "<html>
             <body style=\"font-family: Arial, sans-serif; line-height: 1.6;\">
