@@ -145,10 +145,7 @@ pub async fn create(
                 .build());
         }
         Err(error) => {
-            tracing::error!(
-                ?error,
-                "Failed to check if account is banned or not"
-            );
+            tracing::error!(?error, "Failed to check if account is banned or not");
 
             return Err(Error::internal());
         }
