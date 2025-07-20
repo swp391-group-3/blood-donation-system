@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS accounts(
     birthday date,
     blood_group blood_group,
     is_active boolean NOT NULL DEFAULT true,
-    created_at timestamptz NOT NULL DEFAULT now()
+    created_at timestamptz NOT NULL DEFAULT now(),
+    is_banned boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS blogs(
