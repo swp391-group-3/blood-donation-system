@@ -46,6 +46,28 @@ SELECT
 FROM blogs
 WHERE id = :id;
 
+--! count (query?, tag?)
+SELECT COUNT(id)
+FROM blogs
+WHERE (
+    :query::text IS NULL OR
+    (title LIKE '%' || :query || '%' ) OR
+    (description LIKE '%' || :query || '%' ) OR
+    (content LIKE '%' || :query || '%' )
+) AND (
+    :tag::text is NULL OR
+    EXISTS (
+        SELECT 1
+        FROM tags
+        WHERE id IN (
+            SELECT tag_id 
+            FROM blog_tags 
+            WHERE blog_id = blogs.id
+        )
+        AND name = :tag
+    )
+);
+
 --! get_all (query?, tag?) : Blog
 SELECT 
     id,

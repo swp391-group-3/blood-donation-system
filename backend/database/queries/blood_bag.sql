@@ -38,6 +38,55 @@ SELECT
 FROM blood_bags
 WHERE is_used = false;
 
+--! count (component?, blood_group?)
+SELECT COUNT(id)
+FROM blood_bags
+WHERE (
+    :component::blood_component IS NULL OR component = :component
+) AND (
+    :blood_group::blood_group IS NULL OR (
+        CASE :mode
+            WHEN 'Exact' THEN (
+                SELECT blood_group
+                FROM accounts
+                WHERE id = (
+                    SELECT donor_id
+                    FROM appointments
+                    WHERE id = (
+                        SELECT appointment_id
+                        FROM donations
+                        WHERE id = blood_bags.donation_id
+                    )
+                )
+            ) = :blood_group
+            WHEN 'Compatible' THEN (
+                SELECT blood_group
+                FROM accounts
+                WHERE id = (
+                    SELECT donor_id
+                    FROM appointments
+                    WHERE id = (
+                        SELECT appointment_id
+                        FROM donations
+                        WHERE id = blood_bags.donation_id
+                    )
+                )
+            ) = ANY (
+                CASE :blood_group
+                    WHEN 'a_plus'   THEN ARRAY['a_plus','a_minus','o_plus','o_minus']::blood_group[]
+                    WHEN 'a_minus'  THEN ARRAY['a_minus','o_minus']::blood_group[]
+                    WHEN 'b_plus'   THEN ARRAY['b_plus','b_minus','o_plus','o_minus']::blood_group[]
+                    WHEN 'b_minus'  THEN ARRAY['b_minus','o_minus']::blood_group[]
+                    WHEN 'ab_plus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[]
+                    WHEN 'ab_minus' THEN ARRAY['ab_minus','a_minus','b_minus','o_minus']::blood_group[]
+                    WHEN 'o_plus'   THEN ARRAY['o_plus','o_minus']::blood_group[]
+                    WHEN 'o_minus'  THEN ARRAY['o_minus']::blood_group[]
+                END
+            )
+        END
+    )
+) AND is_used = false;
+
 --! get_all (component?, blood_group?) : BloodBag
 SELECT 
     *,

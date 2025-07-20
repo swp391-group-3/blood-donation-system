@@ -20,6 +20,13 @@ pub struct GetParams {
     pub id: uuid::Uuid,
 }
 #[derive(Debug)]
+pub struct CountParams<T1: crate::StringSql> {
+    pub account_id: uuid::Uuid,
+    pub query: Option<T1>,
+    pub priority: Option<ctypes::RequestPriority>,
+    pub blood_group: Option<ctypes::BloodGroup>,
+}
+#[derive(Debug)]
 pub struct GetAllParams<T1: crate::StringSql> {
     pub account_id: uuid::Uuid,
     pub query: Option<T1>,
@@ -185,6 +192,67 @@ where
         mapper: fn(BloodRequestBorrowed) -> R,
     ) -> BloodRequestQuery<'c, 'a, 's, C, R, N> {
         BloodRequestQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
+pub struct I64Query<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<i64, tokio_postgres::Error>,
+    mapper: fn(i64) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> I64Query<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(self, mapper: fn(i64) -> R) -> I64Query<'c, 'a, 's, C, R, N> {
+        I64Query {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -441,6 +509,48 @@ impl<'c, 'a, 's, C: GenericClient>
         params: &'a GetParams,
     ) -> BloodRequestQuery<'c, 'a, 's, C, BloodRequest, 2> {
         self.bind(client, &params.account_id, &params.id)
+    }
+}
+pub fn count() -> CountStmt {
+    CountStmt(crate::client::async_::Stmt::new(
+        "SELECT COUNT(*) FROM blood_requests WHERE ( $1 = '00000000-0000-0000-0000-000000000000'::uuid OR ( SELECT role FROM accounts WHERE id = $1 ) != 'donor'::role OR EXISTS ( SELECT 1 FROM request_blood_groups WHERE request_id = blood_requests.id AND blood_group = ANY ( CASE ( SELECT blood_group FROM accounts WHERE id = $1 ) WHEN 'o_minus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['a_plus','b_plus','ab_plus','o_plus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_plus','a_minus','ab_plus','ab_minus']::blood_group[] WHEN 'a_plus'   THEN ARRAY['a_plus','ab_plus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_plus','b_minus','ab_plus','ab_minus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus','ab_plus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_plus','ab_minus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['ab_plus']::blood_group[] END ) ) ) AND ( $2::text IS NULL OR (title LIKE '%' || $2 || '%' ) ) AND ( $3::request_priority IS NULL OR priority = $3 ) AND ( $4::blood_group IS NULL OR EXISTS ( SELECT 1 FROM request_blood_groups WHERE request_id = blood_requests.id AND blood_group = $4 ) ) AND now() < end_time AND is_active = true",
+    ))
+}
+pub struct CountStmt(crate::client::async_::Stmt);
+impl CountStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
+        &'s mut self,
+        client: &'c C,
+        account_id: &'a uuid::Uuid,
+        query: &'a Option<T1>,
+        priority: &'a Option<ctypes::RequestPriority>,
+        blood_group: &'a Option<ctypes::BloodGroup>,
+    ) -> I64Query<'c, 'a, 's, C, i64, 4> {
+        I64Query {
+            client,
+            params: [account_id, query, priority, blood_group],
+            stmt: &mut self.0,
+            extractor: |row| Ok(row.try_get(0)?),
+            mapper: |it| it,
+        }
+    }
+}
+impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
+    crate::client::async_::Params<'c, 'a, 's, CountParams<T1>, I64Query<'c, 'a, 's, C, i64, 4>, C>
+    for CountStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a CountParams<T1>,
+    ) -> I64Query<'c, 'a, 's, C, i64, 4> {
+        self.bind(
+            client,
+            &params.account_id,
+            &params.query,
+            &params.priority,
+            &params.blood_group,
+        )
     }
 }
 pub fn get_all() -> GetAllStmt {

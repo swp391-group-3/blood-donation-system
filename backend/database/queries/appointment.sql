@@ -15,6 +15,23 @@ SELECT *
 FROM appointments
 WHERE donor_id = :donor_id;
 
+--! count (query?, status?)
+SELECT COUNT(id)
+FROM appointments
+WHERE (
+    :query::text IS NULL OR
+    EXISTS (
+        SELECT 1
+        FROM accounts
+        WHERE
+            (name % :query OR email % :query) AND
+            accounts.id = appointments.donor_id
+        LIMIT 1
+    )
+) AND (
+    :status::appointment_status IS NULL OR status = :status
+) AND status NOT IN ('done'::appointment_status, 'rejected'::appointment_status);
+
 --! get_all (query?, status?) : Appointment
 SELECT *
 FROM appointments
