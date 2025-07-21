@@ -30,6 +30,11 @@ pub struct CreateStaffParams<
     pub name: T4,
 }
 #[derive(Debug)]
+pub struct CountParams<T1: crate::StringSql> {
+    pub query: Option<T1>,
+    pub role: Option<ctypes::Role>,
+}
+#[derive(Debug)]
 pub struct GetAllParams<T1: crate::StringSql> {
     pub query: Option<T1>,
     pub role: Option<ctypes::Role>,
@@ -187,6 +192,67 @@ where
 {
     pub fn map<R>(self, mapper: fn(AccountBorrowed) -> R) -> AccountQuery<'c, 'a, 's, C, R, N> {
         AccountQuery {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
+pub struct I64Query<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<i64, tokio_postgres::Error>,
+    mapper: fn(i64) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> I64Query<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(self, mapper: fn(i64) -> R) -> I64Query<'c, 'a, 's, C, R, N> {
+        I64Query {
             client: self.client,
             params: self.params,
             stmt: self.stmt,
@@ -625,6 +691,40 @@ impl GetByRoleStmt {
                 },
             mapper: |it| Account::from(it),
         }
+    }
+}
+pub fn count() -> CountStmt {
+    CountStmt(crate::client::async_::Stmt::new(
+        "SELECT COUNT(id) FROM accounts WHERE ( $1::text IS NULL OR (name % $1 OR email % $1) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true",
+    ))
+}
+pub struct CountStmt(crate::client::async_::Stmt);
+impl CountStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
+        &'s mut self,
+        client: &'c C,
+        query: &'a Option<T1>,
+        role: &'a Option<ctypes::Role>,
+    ) -> I64Query<'c, 'a, 's, C, i64, 2> {
+        I64Query {
+            client,
+            params: [query, role],
+            stmt: &mut self.0,
+            extractor: |row| Ok(row.try_get(0)?),
+            mapper: |it| it,
+        }
+    }
+}
+impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
+    crate::client::async_::Params<'c, 'a, 's, CountParams<T1>, I64Query<'c, 'a, 's, C, i64, 2>, C>
+    for CountStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a CountParams<T1>,
+    ) -> I64Query<'c, 'a, 's, C, i64, 2> {
+        self.bind(client, &params.query, &params.role)
     }
 }
 pub fn get_all() -> GetAllStmt {

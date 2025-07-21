@@ -61,6 +61,16 @@ FROM accounts
 WHERE role = :role
     AND is_active = true;
 
+--! count (query?, role?)
+SELECT COUNT(id)
+FROM accounts
+WHERE (
+    :query::text IS NULL OR 
+    (name % :query OR email % :query)
+) AND (
+    :role::role IS NULL OR role = :role
+) AND is_active = true;
+
 --! get_all (query?, role?) : Account
 SELECT *
 FROM accounts

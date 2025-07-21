@@ -15,6 +15,11 @@ pub struct CreateParams<
     pub tags: T5,
 }
 #[derive(Debug)]
+pub struct CountParams<T1: crate::StringSql, T2: crate::StringSql> {
+    pub query: Option<T1>,
+    pub tag: Option<T2>,
+}
+#[derive(Debug)]
 pub struct GetAllParams<T1: crate::StringSql, T2: crate::StringSql, T3: crate::StringSql> {
     pub query: Option<T1>,
     pub tag: Option<T2>,
@@ -201,6 +206,67 @@ where
         Ok(it)
     }
 }
+pub struct I64Query<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    stmt: &'s mut crate::client::async_::Stmt,
+    extractor: fn(&tokio_postgres::Row) -> Result<i64, tokio_postgres::Error>,
+    mapper: fn(i64) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> I64Query<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(self, mapper: fn(i64) -> R) -> I64Query<'c, 'a, 's, C, R, N> {
+        I64Query {
+            client: self.client,
+            params: self.params,
+            stmt: self.stmt,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let row = self.client.query_one(stmt, &self.params).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let stmt = self.stmt.prepare(self.client).await?;
+        Ok(self
+            .client
+            .query_opt(stmt, &self.params)
+            .await?
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stmt = self.stmt.prepare(self.client).await?;
+        let it = self
+            .client
+            .query_raw(stmt, crate::slice_iter(&self.params))
+            .await?
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(it)
+    }
+}
 pub fn create() -> CreateStmt {
     CreateStmt(crate::client::async_::Stmt::new(
         "WITH blog AS ( INSERT INTO blogs (account_id, title, description, content) VALUES ($1, $2, $3, $4) RETURNING id ), new_tags AS ( INSERT INTO tags (name) SELECT DISTINCT tag FROM UNNEST($5::text[]) AS tag ON CONFLICT DO NOTHING RETURNING id ), existing_tags AS ( SELECT id FROM tags WHERE name = ANY($5) ), all_tags AS ( SELECT id FROM new_tags UNION SELECT id FROM existing_tags ), blog_tags_insert AS ( INSERT INTO blog_tags (blog_id, tag_id) SELECT (SELECT id FROM blog), id FROM all_tags ) SELECT id AS blog_id FROM blog",
@@ -300,6 +366,46 @@ impl GetStmt {
             },
             mapper: |it| Blog::from(it),
         }
+    }
+}
+pub fn count() -> CountStmt {
+    CountStmt(crate::client::async_::Stmt::new(
+        "SELECT COUNT(id) FROM blogs WHERE ( $1::text IS NULL OR (title LIKE '%' || $1 || '%' ) OR (description LIKE '%' || $1 || '%' ) OR (content LIKE '%' || $1 || '%' ) ) AND ( $2::text is NULL OR EXISTS ( SELECT 1 FROM tags WHERE id IN ( SELECT tag_id FROM blog_tags WHERE blog_id = blogs.id ) AND name = $2 ) )",
+    ))
+}
+pub struct CountStmt(crate::client::async_::Stmt);
+impl CountStmt {
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::StringSql>(
+        &'s mut self,
+        client: &'c C,
+        query: &'a Option<T1>,
+        tag: &'a Option<T2>,
+    ) -> I64Query<'c, 'a, 's, C, i64, 2> {
+        I64Query {
+            client,
+            params: [query, tag],
+            stmt: &mut self.0,
+            extractor: |row| Ok(row.try_get(0)?),
+            mapper: |it| it,
+        }
+    }
+}
+impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::StringSql>
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        CountParams<T1, T2>,
+        I64Query<'c, 'a, 's, C, i64, 2>,
+        C,
+    > for CountStmt
+{
+    fn params(
+        &'s mut self,
+        client: &'c C,
+        params: &'a CountParams<T1, T2>,
+    ) -> I64Query<'c, 'a, 's, C, i64, 2> {
+        self.bind(client, &params.query, &params.tag)
     }
 }
 pub fn get_all() -> GetAllStmt {
