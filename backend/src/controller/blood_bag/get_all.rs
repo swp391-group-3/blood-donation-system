@@ -5,13 +5,7 @@ use axum::{
     extract::{Query, State},
 };
 use ctypes::{BloodComponent, BloodGroup, Role};
-use database::{
-    client::Params,
-    queries::{
-        self,
-        blood_bag::{BloodBag, GetAllParams},
-    },
-};
+use database::queries::{self, blood_bag::BloodBag};
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
 
@@ -20,7 +14,7 @@ use crate::{
     state::ApiState,
     util::{
         auth::{Claims, authorize},
-        pagination,
+        pagination::{self, Pagination},
     },
 };
 
@@ -66,32 +60,52 @@ pub struct Request {
     path = "/blood-bag",
     operation_id = "blood_bag::get_all",
     params(Request),
+    responses(
+        (status = StatusCode::OK, body = Pagination<BloodBag>)
+    ),
     security(("jwt_token" = []))
 )]
 pub async fn get_all(
     state: State<Arc<ApiState>>,
     claims: Claims,
     Query(request): Query<Request>,
-) -> Result<Json<Vec<BloodBag>>> {
+) -> Result<Json<Pagination<BloodBag>>> {
     let database = state.database().await?;
 
     authorize(&claims, [Role::Staff], &database).await?;
 
-    match queries::blood_bag::get_all()
-        .params(
-            &database,
-            &GetAllParams {
-                component: request.component,
-                blood_group: request.blood_group,
-                mode: request.mode.as_str(),
-                page_size: request.page_size as i32,
-                page_index: request.page_index as i32,
-            },
-        )
-        .all()
-        .await
-    {
-        Ok(blood_bags) => Ok(Json(blood_bags)),
+    let queries_result = tokio::try_join! {
+        async {
+            queries::blood_bag::get_all()
+                .bind(
+                    &database,
+                    &request.component,
+                    &request.blood_group,
+                    &request.mode.as_str(),
+                    &(request.page_size as i32),
+                    &(request.page_index as i32),
+                )
+                .all()
+                .await
+        },
+        async {
+            queries::blood_bag::count()
+                .bind(
+                    &database,
+                    &request.component,
+                    &request.blood_group,
+                    &request.mode.as_str(),
+                )
+                .one()
+                .await
+        }
+    };
+
+    match queries_result {
+        Ok((blood_bags, count)) => Ok(Json(Pagination {
+            element_count: count as usize,
+            data: blood_bags,
+        })),
         Err(error) => {
             tracing::error!(?error, "Failed to get blood bag list");
 
