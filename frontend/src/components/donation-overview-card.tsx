@@ -1,13 +1,13 @@
-import { displayDonationType, Donation } from '@/lib/api/dto/donation';
 import { formatDistanceToNow } from 'date-fns';
 import { Calendar, Clock, Droplets, Printer, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from './ui/button';
-import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 import { useState } from 'react';
 import { RejectAppointmentDialog } from './reject-appointment-dialog';
+import { Donation } from '@/lib/service/donation';
+import { camelCase } from 'change-case';
 
 const donationTypeConfig = {
     whole_blood: {
@@ -35,17 +35,10 @@ const donationTypeConfig = {
 interface Props {
     appointmentId: string;
     donation: Donation;
-    onPrint: () => void;
 }
 
-export const DonationOverviewCard = ({
-    appointmentId,
-    donation,
-    onPrint,
-}: Props) => {
+export const DonationOverviewCard = ({ appointmentId, donation }: Props) => {
     const config = donationTypeConfig[donation.type];
-    const mutation = useRejectAppointment(appointmentId);
-    const [open, setOpen] = useState(false);
 
     return (
         <Card
@@ -61,7 +54,7 @@ export const DonationOverviewCard = ({
                     </div>
                     <div className="flex-1 min-w-0">
                         <CardTitle className="text-lg font-bold text-slate-900 leading-tight mb-2">
-                            {displayDonationType(donation.type)}
+                            {camelCase(donation.type)}
                         </CardTitle>
                         <div className="flex items-center gap-2 text-sm text-slate-600">
                             <span>Id: {donation.id}</span>
@@ -73,7 +66,7 @@ export const DonationOverviewCard = ({
                     <Badge
                         className={`${config.badgeColor} border text-xs font-semibold px-2 py-1`}
                     >
-                        {displayDonationType(donation.type)}
+                        {camelCase(donation.type)}
                     </Badge>
                 </div>
             </CardHeader>
@@ -114,30 +107,16 @@ export const DonationOverviewCard = ({
                     </div>
                 </div>
                 <div className="flex justify-end space-x-2">
-                    <Button
-                        onClick={onPrint}
-                        className="bg-blue-600 hover:bg-blue-700"
-                    >
+                    <Button className="bg-blue-600 hover:bg-blue-700">
                         <Printer className="h-4 w-4 mr-2" />
                         Print Label
                     </Button>
-                    <Button
-                        onClick={() => setOpen(true)}
-                        variant="destructive"
-                        disabled={mutation.isPending}
-                    >
-                        {mutation.isPending ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        ) : (
+                    <RejectAppointmentDialog id={appointmentId}>
+                        <Button variant="destructive">
                             <X className="h-4 w-4 mr-2" />
-                        )}
-                        Reject Donation
-                    </Button>
-                    <RejectAppointmentDialog
-                        open={open}
-                        onOpenChange={setOpen}
-                        appointmentId={appointmentId}
-                    />
+                            Reject Donation
+                        </Button>
+                    </RejectAppointmentDialog>
                 </div>
             </CardContent>
         </Card>

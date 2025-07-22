@@ -18,7 +18,7 @@ import {
     Trash2,
     Users,
 } from 'lucide-react';
-import { FormEdit } from '@/components/edit-profile';
+import { FormEdit } from '@/components/update-account-dialog';
 import { useState } from 'react';
 import {
     Dialog,

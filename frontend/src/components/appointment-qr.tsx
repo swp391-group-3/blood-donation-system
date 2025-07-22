@@ -1,26 +1,42 @@
-import { PropsWithChildren, useRef } from 'react';
+'use client';
+
+import { PropsWithChildren, useRef, useState } from 'react';
 import {
     Dialog,
     DialogContent,
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download, Share2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
+import { Appointment } from '@/lib/service/appointment';
 
-const size = 256;
+const generateUrl = (appointment: Appointment): string => {
+    switch (appointment.status) {
+        case 'approved':
+            return `${window.location.href}/management/${appointment.id}/health`;
+        case 'checked_in':
+            return `${window.location.href}/management/${appointment.id}/donation`;
+        default:
+            return '';
+    }
+};
 
-export const QRDialog = ({
+interface Props {
+    appointment: Appointment;
+    size?: number;
+}
+
+export const AppointmentQR = ({
     children,
-    url,
-    onReset,
-}: PropsWithChildren<{
-    url?: string;
-    onReset: () => void;
-}>) => {
+    appointment,
+    size = 256,
+}: PropsWithChildren<Props>) => {
+    const url = generateUrl(appointment);
     const qrRef = useRef<HTMLDivElement>(null);
 
     const handleDownload = () => {
@@ -52,10 +68,18 @@ export const QRDialog = ({
     };
 
     return (
-        <Dialog open={!!url} onOpenChange={onReset}>
+        <Dialog>
+            <DialogTrigger>{children}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{children}</DialogTitle>
+                    <DialogTitle>
+                        <p className="font-semibold text-slate-900 text-lg">
+                            Check-in QR
+                        </p>
+                        <p className="text-xs text-slate-500">
+                            #{appointment.id}
+                        </p>
+                    </DialogTitle>
                 </DialogHeader>
                 {url && (
                     <div ref={qrRef}>

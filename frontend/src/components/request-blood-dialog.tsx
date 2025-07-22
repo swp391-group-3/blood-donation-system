@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { PropsWithChildren, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Form,
@@ -16,6 +18,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
 import {
     Select,
@@ -24,21 +27,38 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useBloodRequestForm } from '@/hooks/use-create-blood-request';
 import { Droplet } from 'lucide-react';
-import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
-import { priorities } from '@/lib/api/dto/blood-request';
 import { DateTimePicker } from '@/components/date-time-picker';
 import { MultiSelect } from '@/components/multi-select';
+import { useMutation } from '@tanstack/react-query';
+import {
+    createBloodRequest,
+    createBloodRequestSchema,
+    priorities,
+} from '@/lib/service/blood-request';
+import { bloodGroupLabels, bloodGroups } from '@/lib/service/account';
+import { ApiError } from '@/lib/service';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 
-export default function RequestBloodDialog({
-    open,
-    onOpenChange,
-}: {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}) {
-    const { form, mutation } = useBloodRequestForm();
+export const RequestBloodDialog = ({ children }: PropsWithChildren) => {
+    const [open, setOpen] = useState(false);
+
+    const mutation = useMutation({
+        mutationFn: createBloodRequest,
+        onError: (error: ApiError) => toast.error(error.message),
+        onSuccess: () => {
+            toast.info('Create blood request successfully');
+            setOpen(true);
+        },
+    });
+
+    const form = useForm<z.infer<typeof createBloodRequestSchema>>({
+        resolver: zodResolver(createBloodRequestSchema),
+        defaultValues: {},
+    });
 
     const bloodGroupOptions = bloodGroups.map((bg) => ({
         value: bg,
@@ -46,7 +66,8 @@ export default function RequestBloodDialog({
     }));
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger>{children}</DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
@@ -209,7 +230,7 @@ export default function RequestBloodDialog({
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => onOpenChange(false)}
+                                onClick={() => setOpen(false)}
                             >
                                 Cancel
                             </Button>
@@ -226,4 +247,4 @@ export default function RequestBloodDialog({
             </DialogContent>
         </Dialog>
     );
-}
+};

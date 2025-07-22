@@ -1,11 +1,12 @@
-import { displayDonationType, Donation } from '@/lib/api/dto/donation';
 import { formatDistanceToNow } from 'date-fns';
 import { BookOpenCheck, Calendar, Clock, Droplets, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { formatDateTime, generateCertificate } from '@/lib/utils';
 import { Button } from './ui/button';
-import { useCurrentAccount } from '@/hooks/use-current-account';
+import { Donation } from '@/lib/service/donation';
+import { Account } from '@/lib/service/account';
+import { capitalCase } from 'change-case';
 
 const donationTypeConfig = {
     whole_blood: {
@@ -30,9 +31,13 @@ const donationTypeConfig = {
     },
 };
 
-export const DonationCard = (donation: Donation) => {
+interface Props {
+    account: Account;
+    donation: Donation;
+}
+
+export const DonationCard = ({ donation, account }: Props) => {
     const config = donationTypeConfig[donation.type];
-    const { data: account } = useCurrentAccount();
 
     return (
         <Card
@@ -48,7 +53,7 @@ export const DonationCard = (donation: Donation) => {
                     </div>
                     <div className="flex-1 min-w-0">
                         <CardTitle className="text-lg font-bold text-slate-900 leading-tight mb-2">
-                            {displayDonationType(donation.type)}
+                            {capitalCase(donation.type)}
                         </CardTitle>
                         <div className="flex items-center gap-2 text-sm text-slate-600">
                             <span>Id: {donation.id}</span>
@@ -60,7 +65,7 @@ export const DonationCard = (donation: Donation) => {
                     <Badge
                         className={`${config.badgeColor} border text-xs font-semibold px-2 py-1`}
                     >
-                        {displayDonationType(donation.type)}
+                        {capitalCase(donation.type)}
                     </Badge>
                 </div>
                 <Button
@@ -129,9 +134,8 @@ export const DonationCard = (donation: Donation) => {
                     </div>
                     <p className="text-xs text-rose-700 leading-relaxed">
                         Your {donation.amount}ml{' '}
-                        {displayDonationType(donation.type).toLowerCase()}{' '}
-                        donation can help save lives and support medical
-                        treatments.
+                        {capitalCase(donation.type).toLowerCase()} donation can
+                        help save lives and support medical treatments.
                     </p>
                 </div>
             </CardContent>

@@ -20,8 +20,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { AddQuestionDialog } from '@/components/add-question-dialog';
-import { EditQuestionDialog } from '@/components/edit-question-dialog';
+import { CreateQuestionDialog } from '@/components/create-question-dialog';
+import { EditQuestionDialog } from '@/components/update-question-dialog';
 import { DeleteQuestionDialog } from '@/components/delete-question-dialog';
 
 export default function QuestionPage() {
@@ -68,12 +68,12 @@ export default function QuestionPage() {
                             className="p-4 pl-11 border-slate-200 focus:border-rose-300 focus:ring-rose-200"
                         />
                     </div>
-                    <AddQuestionDialog>
+                    <CreateQuestionDialog>
                         <Button>
                             <Plus className="w-5 h-5 mr-2" />
                             New Question
                         </Button>
-                    </AddQuestionDialog>
+                    </CreateQuestionDialog>
                 </div>
                 <div className="rounded-md border">
                     <Table>

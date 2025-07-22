@@ -36,7 +36,9 @@ export function PaginationRange({ pageIndex, pageCount, onPageChange }: Props) {
 
             {end < pageCount - 1 && (
                 <>
-                    {end < pageCount - 2 && <PaginationEllipsis className='px-2' />}
+                    {end < pageCount - 2 && (
+                        <PaginationEllipsis className="px-2" />
+                    )}
                     <PaginationItem>
                         <PaginationLink
                             onClick={() => onPageChange(pageCount - 1)}

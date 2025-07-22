@@ -22,11 +22,6 @@ export interface Appointment {
 }
 
 export interface Answer {
-    question_id: number;
-    content?: AnswerType;
-}
-
-export interface Answer {
     question: string;
     answer: string;
 }
@@ -35,13 +30,12 @@ export interface RejectAppointmentData {
     reason: string;
 }
 
+export const answerSchema = z.object({
+    question_id: z.number(),
+    content: z.enum(answerTypes),
+});
 export const createAppointmentSchema = z.object({
-    answers: z.array(
-        z.object({
-            question_id: z.number(),
-            content: z.string(),
-        }),
-    ),
+    answers: z.array(answerSchema),
 });
 
 export interface AppointmentFilter {

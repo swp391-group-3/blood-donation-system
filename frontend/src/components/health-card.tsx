@@ -1,4 +1,3 @@
-import { Health } from '@/lib/api/dto/health';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
     Activity,
@@ -12,8 +11,13 @@ import {
 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
+import { Health } from '@/lib/service/health';
 
-export const HealthCard = (health: Health) => {
+interface Props {
+    health: Health;
+}
+
+export const HealthCard = ({ health }: Props) => {
     return (
         <Card className="border-slate-200 rounded-2xl hover:shadow-lg transition-all duration-200 overflow-hidden">
             <CardHeader>

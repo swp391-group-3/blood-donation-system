@@ -1,5 +1,8 @@
-import { useCurrentAccount } from '@/hooks/use-current-account';
-import { Role } from '@/lib/api/dto/account';
+'use client';
+
+import { Role } from '@/lib/service/account';
+import { getCurrentAccount, getCurrentAccountKey } from '@/lib/service/auth';
+import { useQuery } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
 import { PropsWithChildren } from 'react';
 import { toast } from 'sonner';
@@ -9,7 +12,14 @@ interface Props {
 }
 
 export function WithRole({ children, roles }: PropsWithChildren<Props>) {
-    const { data: account, isPending, error } = useCurrentAccount();
+    const {
+        data: account,
+        isPending,
+        error,
+    } = useQuery({
+        queryFn: getCurrentAccount,
+        queryKey: getCurrentAccountKey,
+    });
 
     if (isPending) {
         return <div></div>;

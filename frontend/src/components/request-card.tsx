@@ -1,16 +1,12 @@
-import { BloodRequest } from '@/lib/api/dto/blood-request';
 import { formatDistanceToNow } from 'date-fns';
 import { AlertTriangle, Calendar, Clock, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { capitalCase } from 'change-case';
-import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { UpdateBloodRequestDialog } from '@/components/update-blood-request-dialog';
-import { useCurrentAccount } from '@/hooks/use-current-account';
 import { Progress } from '@/components/ui/progress';
-import { useNextDonatableDate } from '@/hooks/use-next-donatable-date';
 import {
     AlertDialog,
     AlertDialogCancel,
@@ -21,6 +17,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { BloodRequest } from '@/lib/service/blood-request';
+import { Account, bloodGroupLabels } from '@/lib/service/account';
 
 const priorityConfig = {
     high: {
@@ -43,21 +41,24 @@ const priorityConfig = {
     },
 };
 
-const ActionButton = (request: BloodRequest) => {
-    const { data: account } = useCurrentAccount();
-    const { data: nextDonatableDate } = useNextDonatableDate();
+interface Props {
+    account: Account;
+    nextDonatableDate: Date;
+    request: BloodRequest;
+}
 
-    function isSameDate(nextDonatableDate: Date): boolean {
-        const targetDate = new Date(nextDonatableDate);
-        const now = new Date();
+const isSameDate = (nextDonatableDate: Date): boolean => {
+    const targetDate = new Date(nextDonatableDate);
+    const now = new Date();
 
-        return (
-            targetDate.getFullYear() === now.getFullYear() &&
-            targetDate.getMonth() === now.getMonth() &&
-            targetDate.getDate() === now.getDate()
-        );
-    }
+    return (
+        targetDate.getFullYear() === now.getFullYear() &&
+        targetDate.getMonth() === now.getMonth() &&
+        targetDate.getDate() === now.getDate()
+    );
+};
 
+const ActionButton = ({ account, nextDonatableDate, request }: Props) => {
     const daysUntilNextDonation = nextDonatableDate
         ? Math.ceil(
               (nextDonatableDate.getTime() - Date.now()) /
@@ -65,42 +66,42 @@ const ActionButton = (request: BloodRequest) => {
           )
         : undefined;
 
-    if (account?.role === 'donor') {
+    if (account.role === 'donor' && !isSameDate(nextDonatableDate)) {
         return (
-            nextDonatableDate && (
-                <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
-                    {isSameDate(nextDonatableDate) ? (
-                        <Link
-                            className="w-full h-full"
-                            href={`/request/apply/${request.id}`}
-                        >
-                            Apply Now
-                        </Link>
-                    ) : (
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <div className="w-full h-full">Apply Now</div>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        You are unable to apply this request now
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        You will be able to donate in{' '}
-                                        {daysUntilNextDonation} days.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    )}
-                </Button>
-            )
+            <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <div className="w-full h-full">Apply Now</div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                You are unable to apply this request now
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                You will be able to donate in{' '}
+                                {daysUntilNextDonation} days.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </Button>
+        );
+    }
+
+    if (account.role === 'donor') {
+        return (
+            <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                <Link
+                    className="w-full h-full"
+                    href={`/request/apply/${request.id}`}
+                >
+                    Apply Now
+                </Link>
+            </Button>
         );
     }
 
@@ -117,7 +118,7 @@ const ActionButton = (request: BloodRequest) => {
     return <></>;
 };
 
-export const RequestCard = (request: BloodRequest) => {
+export const RequestCard = ({ account, nextDonatableDate, request }: Props) => {
     const config = priorityConfig[request.priority];
     const progress = Math.round(
         (request.current_people / request.max_people) * 100,
@@ -239,7 +240,11 @@ export const RequestCard = (request: BloodRequest) => {
                         donors needed
                     </div>
                 </div>
-                <ActionButton {...request} />
+                <ActionButton
+                    account={account}
+                    nextDonatableDate={nextDonatableDate}
+                    request={request}
+                />
             </CardContent>
         </Card>
     );

@@ -1,3 +1,5 @@
+'use client';
+
 import {
     Form,
     FormControl,
@@ -23,13 +25,16 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from './ui/alert';
-import { useDonationForm } from '@/hooks/use-donation-form';
-import { donationTypes } from '@/lib/api/dto/donation';
 import { capitalCase } from 'change-case';
-
-interface Props {
-    appointmentId: string;
-}
+import { useMutation } from '@tanstack/react-query';
+import {
+    createDonation,
+    createDonationSchema,
+    donationTypes,
+} from '@/lib/service/donation';
+import z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
 const donationTypeConfigs = {
     whole_blood: {
@@ -70,8 +75,20 @@ const donationTypeConfigs = {
     },
 };
 
+interface Props {
+    appointmentId: string;
+}
+
 export const DonationForm = ({ appointmentId }: Props) => {
-    const { mutation, form } = useDonationForm(appointmentId);
+    const mutation = useMutation({
+        mutationFn: async (values: z.infer<typeof createDonationSchema>) =>
+            createDonation(appointmentId, values),
+    });
+
+    const form = useForm<z.infer<typeof createDonationSchema>>({
+        resolver: zodResolver(createDonationSchema),
+        defaultValues: {},
+    });
 
     return (
         <Form {...form}>

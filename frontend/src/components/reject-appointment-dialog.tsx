@@ -9,25 +9,35 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { useRejectAppointment } from '@/hooks/use-reject-appointment';
+import { PropsWithChildren, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { rejectAppointment } from '@/lib/service/appointment';
+import { ApiError } from '@/lib/service';
+import { toast } from 'sonner';
+import { DialogTrigger } from '@radix-ui/react-dialog';
 
-interface RejectAppointmentDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    appointmentId: string;
+interface Props {
+    id: string;
 }
 
 export const RejectAppointmentDialog = ({
-    open,
-    onOpenChange,
-    appointmentId,
-}: RejectAppointmentDialogProps) => {
+    children,
+    id,
+}: PropsWithChildren<Props>) => {
+    const [open, setOpen] = useState(false);
     const [reason, setReason] = useState('');
-    const reject = useRejectAppointment(appointmentId);
+    const mutation = useMutation({
+        mutationFn: async (reason: string) => rejectAppointment(id, { reason }),
+        onError: (error: ApiError) => toast.error(error.message),
+        onSuccess: () => {
+            toast.info('Appointment rejected');
+            setOpen(false);
+        },
+    });
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger>{children}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Reject Appointment</DialogTitle>
@@ -42,17 +52,14 @@ export const RejectAppointmentDialog = ({
                     />
                 </div>
                 <DialogFooter>
-                    <Button
-                        variant="outline"
-                        onClick={() => onOpenChange(false)}
-                    >
+                    <Button variant="outline" onClick={() => setOpen(false)}>
                         Cancel
                     </Button>
                     <Button
-                        disabled={!reason || reject.isPending}
-                        onClick={() => reject.mutate(reason)}
+                        disabled={!reason || mutation.isPending}
+                        onClick={() => mutation.mutate(reason)}
                     >
-                        {reject.isPending ? 'Rejecting...' : 'Confirm Reject'}
+                        {mutation.isPending ? 'Rejecting...' : 'Confirm Reject'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

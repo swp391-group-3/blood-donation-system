@@ -8,13 +8,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { PropsWithChildren, useState } from 'react';
 import { toast } from 'sonner';
-import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useApproveAppointment } from '@/hooks/use-approve-appointment';
-import { useRejectAppointment } from '@/hooks/use-reject-appointment';
-import { useAppointment } from '@/hooks/use-appointent';
 import { RejectAppointmentDialog } from './reject-appointment-dialog';
+import {
+    Appointment,
+    approveAppointment,
+    getAppointmentAnswers,
+    getAppointmentAnswersKey,
+} from '@/lib/service/appointment';
+import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
+import {
+    bloodGroupLabels,
+    getAccount,
+    getAccountKey,
+} from '@/lib/service/account';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
@@ -29,14 +37,19 @@ const getAnswerIcon = (answer: string) => {
     }
 };
 
-export const ReviewDialog = ({
-    children,
-    appointmentId,
-}: PropsWithChildren<{ appointmentId: string }>) => {
-    const { data: apt, isPending, error } = useAppointment(appointmentId);
-    const [open, setOpen] = useState(false);
-    const approve = useApproveAppointment(appointmentId);
-    const reject = useRejectAppointment(appointmentId);
+interface Props {
+    appointment: Appointment;
+}
+
+const ReviewAnswer = ({ appointment }: Props) => {
+    const {
+        data: answers,
+        isPending,
+        error,
+    } = useQuery({
+        queryFn: () => getAppointmentAnswers(appointment.id),
+        queryKey: getAppointmentAnswersKey(appointment.id),
+    });
 
     if (isPending) {
         return <div></div>;
@@ -48,12 +61,81 @@ export const ReviewDialog = ({
     }
 
     return (
-        <Dialog>
+        <div className="bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                Screening Questionnaire
+            </h3>
+            <div className="space-y-4">
+                {answers.map((answer, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg"
+                        >
+                            <div className="flex-shrink-0 mt-1">
+                                {getAnswerIcon(answer.answer)}
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-slate-900 mb-1">
+                                    Q{index}: {answer.question}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <Badge
+                                        className={`capitalize text-xs ${
+                                            answer.answer === 'yes'
+                                                ? 'bg-green-100 text-green-800'
+                                                : answer.answer === 'no'
+                                                  ? 'bg-red-100 text-red-800'
+                                                  : 'bg-yellow-100 text-yellow-800'
+                                        }`}
+                                    >
+                                        {answer.answer}
+                                    </Badge>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+export const ReviewDialog = ({
+    children,
+    appointment,
+}: PropsWithChildren<Props>) => {
+    const [open, setOpen] = useState(false);
+
+    const {
+        data: donor,
+        isPending,
+        error,
+    } = useQuery({
+        queryFn: () => getAccount(appointment.donor_id),
+        queryKey: getAccountKey(appointment.donor_id),
+    });
+
+    const approve = useMutation({
+        mutationFn: () => approveAppointment(appointment.id),
+    });
+
+    if (isPending) {
+        return <div></div>;
+    }
+
+    if (error) {
+        toast.error(error.message);
+        return <div></div>;
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-slate-900">
-                        Application Review - {apt.donor.name}
+                        Application Review - {donor.name}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -68,7 +150,7 @@ export const ReviewDialog = ({
                                     Name:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.donor.name}
+                                    {donor.name}
                                 </div>
                             </div>
                             <div>
@@ -76,7 +158,7 @@ export const ReviewDialog = ({
                                     Blood Group:
                                 </span>
                                 <div className="font-semibold text-red-600">
-                                    {bloodGroupLabels[apt.donor.blood_group]}
+                                    {bloodGroupLabels[donor.blood_group]}
                                 </div>
                             </div>
                             <div>
@@ -84,7 +166,7 @@ export const ReviewDialog = ({
                                     Email:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.donor.email}
+                                    {donor.email}
                                 </div>
                             </div>
                             <div>
@@ -92,53 +174,16 @@ export const ReviewDialog = ({
                                     Phone:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.donor.phone}
+                                    {donor.phone}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl p-6 border border-slate-200">
-                        <h3 className="text-lg font-semibold text-slate-900 mb-4">
-                            Screening Questionnaire
-                        </h3>
-                        <div className="space-y-4">
-                            {apt.answers.map((answer, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg"
-                                    >
-                                        <div className="flex-shrink-0 mt-1">
-                                            {getAnswerIcon(answer.answer)}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-slate-900 mb-1">
-                                                Q{index}: {answer.question}
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                <Badge
-                                                    className={`capitalize text-xs ${
-                                                        answer.answer === 'yes'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : answer.answer ===
-                                                                'no'
-                                                              ? 'bg-red-100 text-red-800'
-                                                              : 'bg-yellow-100 text-yellow-800'
-                                                    }`}
-                                                >
-                                                    {answer.answer}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                    <ReviewAnswer appointment={appointment} />
 
                     <div className="flex gap-4 pt-6 border-t border-slate-200">
                         <Button
-                            disabled={approve.isPending || reject.isPending}
+                            disabled={approve.isPending}
                             onClick={() => {
                                 approve.mutate();
                             }}
@@ -147,20 +192,16 @@ export const ReviewDialog = ({
                             <CheckCircle className="h-5 w-5 mr-2" />
                             Approve
                         </Button>
-                        <Button
-                            disabled={approve.isPending || reject.isPending}
-                            onClick={() => setOpen(true)}
-                            variant="outline"
-                            className="flex-1 border-red-200 text-red-700 hover:bg-red-50 h-12 rounded-xl"
-                        >
-                            <XCircle className="h-5 w-5 mr-2" />
-                            Reject
-                        </Button>
-                        <RejectAppointmentDialog
-                            open={open}
-                            onOpenChange={setOpen}
-                            appointmentId={apt.id}
-                        />
+                        <RejectAppointmentDialog id={appointment.id}>
+                            <Button
+                                disabled={approve.isPending}
+                                variant="outline"
+                                className="flex-1 border-red-200 text-red-700 hover:bg-red-50 h-12 rounded-xl"
+                            >
+                                <XCircle className="h-5 w-5 mr-2" />
+                                Reject
+                            </Button>
+                        </RejectAppointmentDialog>
                     </div>
                 </div>
             </DialogContent>

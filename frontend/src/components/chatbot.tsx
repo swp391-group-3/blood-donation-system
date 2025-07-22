@@ -9,10 +9,10 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Bot, Minimize2, X, Send, Maximize2 } from 'lucide-react';
-import { useGetChatHistory } from '@/hooks/use-get-chat-history';
-import { useChatHandler } from '@/hooks/use-handler-message';
 import Markdown from 'react-markdown';
 import { Textarea } from '@/components/ui/textarea';
+import { useQuery } from '@tanstack/react-query';
+import { getChatHistory, getChatHistoryKey } from '@/lib/service/chat';
 
 export function BloodDonationChatbot() {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,10 +20,10 @@ export function BloodDonationChatbot() {
     const [input, setInput] = useState('');
     const chatEndRef = useRef<HTMLDivElement>(null);
 
-    const toggleChat = () => setIsOpen(!isOpen);
-
-    const { data: chatHistory = [], isLoading: loadingChat } =
-        useGetChatHistory();
+    const { data: chatHistory = [], isLoading: loadingChat } = useQuery({
+        queryFn: getChatHistory,
+        queryKey: getChatHistoryKey,
+    });
 
     const { messages, setMessages, isTyping, handleSendMessage } =
         useChatHandler();

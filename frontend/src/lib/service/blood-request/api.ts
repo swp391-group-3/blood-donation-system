@@ -20,7 +20,7 @@ export const getBloodRequestStats = async (): Promise<BloodRequestStats> => {
     return await deserialize(response);
 };
 
-export const createBloogRequest = async (
+export const createBloodRequest = async (
     values: z.infer<typeof createBloodRequestSchema>,
 ) => {
     const response = await fetchWrapper('/blood-request', {

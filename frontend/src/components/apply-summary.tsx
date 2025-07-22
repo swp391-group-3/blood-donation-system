@@ -1,3 +1,5 @@
+'use client';
+
 import {
     AlertTriangle,
     ArrowLeft,
@@ -9,32 +11,35 @@ import {
     XCircle,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useBloodRequest } from '@/hooks/use-blood-request';
-import { toast } from 'sonner';
-import { Question } from '@/lib/api/dto/question';
-import { Answer } from '@/lib/api/dto/answer';
-import { Button } from './ui/button';
-import { useApplyRequest } from '@/hooks/use-apply-request';
-import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
+import { Button } from '@/components/ui/button';
+import { Question } from '@/lib/service/question';
+import {
+    answerSchema,
+    createAppointment,
+    createAppointmentSchema,
+} from '@/lib/service/appointment';
+import { useMutation } from '@tanstack/react-query';
+import { BloodRequest } from '@/lib/service/blood-request';
+import z from 'zod';
+import { bloodGroupLabels } from '@/lib/service/account';
 
 interface Props {
-    id: string;
+    request: BloodRequest;
     questions: Question[];
-    answers: Record<number, Answer>;
+    answers: Record<number, z.infer<typeof answerSchema>>;
     onCancel: () => void;
 }
 
-export const ApplySummary = ({ id, questions, answers, onCancel }: Props) => {
-    const { data: request, isPending, error } = useBloodRequest(id);
-    const mutation = useApplyRequest(id);
-
-    if (isPending) {
-        return <div></div>;
-    }
-    if (error) {
-        toast.error(error.message);
-        return <div></div>;
-    }
+export const ApplySummary = ({
+    request,
+    questions,
+    answers,
+    onCancel,
+}: Props) => {
+    const mutation = useMutation({
+        mutationFn: (values: z.infer<typeof createAppointmentSchema>) =>
+            createAppointment(request.id, values),
+    });
 
     return (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -137,7 +142,9 @@ export const ApplySummary = ({ id, questions, answers, onCancel }: Props) => {
                 </Button>
                 <Button
                     onClick={() =>
-                        mutation.mutate({ answers: Object.values(answers) })
+                        mutation.mutate({
+                            answers: Object.values(answers),
+                        })
                     }
                     disabled={mutation.isPending}
                     className="flex-1 bg-rose-600 hover:bg-rose-700"

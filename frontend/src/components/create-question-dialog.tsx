@@ -1,3 +1,5 @@
+'use client';
+
 import {
     Dialog,
     DialogContent,
@@ -9,16 +11,23 @@ import { PropsWithChildren, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useAddQuestion } from '@/hooks/use-add-question';
 import { Save } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { createQuestion } from '@/lib/service/question';
+import { ApiError } from '@/lib/service';
+import { toast } from 'sonner';
 
-export const AddQuestionDialog = ({ children }: PropsWithChildren) => {
-    const [isOpen, setIsOpen] = useState(false);
+export const CreateQuestionDialog = ({ children }: PropsWithChildren) => {
+    const [open, setOpen] = useState(false);
     const [newQuestion, setNewQuestion] = useState('');
-    const addQuestion = useAddQuestion();
+    const mutation = useMutation({
+        mutationFn: createQuestion,
+        onError: (error: ApiError) => toast.error(error.message),
+        onSuccess: () => setOpen(false),
+    });
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
@@ -49,19 +58,17 @@ export const AddQuestionDialog = ({ children }: PropsWithChildren) => {
                     <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                         <Button
                             variant="outline"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => setOpen(false)}
                             className="px-6 py-3 text-base border-gray-300 text-gray-700 hover:bg-gray-50"
                         >
                             Cancel
                         </Button>
                         <Button
-                            onClick={() => addQuestion.mutate(newQuestion)}
-                            disabled={
-                                !newQuestion.trim() || addQuestion.isPending
-                            }
+                            onClick={() => mutation.mutate(newQuestion)}
+                            disabled={!newQuestion.trim() || mutation.isPending}
                             className="bg-emerald-600 hover:bg-emerald-700 px-6 py-3 text-base"
                         >
-                            {addQuestion.isPending ? (
+                            {mutation.isPending ? (
                                 <>
                                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
                                     Adding question ...

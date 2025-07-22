@@ -1,16 +1,10 @@
-import { Answer } from '@/lib/api/dto/answer';
-import { Question } from '@/lib/api/dto/question';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useMemo } from 'react';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
-
-interface Props {
-    questions: Question[];
-    answers: Record<number, Answer>;
-    step: number;
-    onNavigate: (newStep: number) => void;
-}
+import { Question } from '@/lib/service/question';
+import { answerSchema } from '@/lib/service/appointment';
+import z from 'zod';
 
 const configs = {
     yes: {
@@ -23,6 +17,13 @@ const configs = {
         color: 'text-amber-700 bg-amber-100 border-amber-300',
     },
 };
+
+interface Props {
+    questions: Question[];
+    answers: Record<number, z.infer<typeof answerSchema>>;
+    step: number;
+    onNavigate: (newStep: number) => void;
+}
 
 export const QuestionNavigation = ({
     questions,

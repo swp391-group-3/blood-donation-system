@@ -1,4 +1,7 @@
-import { UndefinedInitialDataOptions } from '@tanstack/react-query';
+import {
+    UndefinedInitialDataOptions,
+    UseQueryResult,
+} from '@tanstack/react-query';
 import { getApiUrl } from './api-url';
 
 export class ApiError extends Error {
@@ -46,10 +49,3 @@ export const buildParams = (data: Object): URLSearchParams => {
 
     return params;
 };
-
-export type QueryData<T> = UndefinedInitialDataOptions<
-    T,
-    ApiError,
-    T,
-    object[]
->;

@@ -62,7 +62,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeleteBloodBag } from '@/hooks/use-delete-blood-bag';
-import RequestBloodDialog from '@/components/request-blood-form';
+import RequestBloodDialog from '@/components/request-blood-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import {
     flexRender,

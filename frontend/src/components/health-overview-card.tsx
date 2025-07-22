@@ -1,4 +1,3 @@
-import { Health } from '@/lib/api/dto/health';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
@@ -12,6 +11,7 @@ import {
     X,
     XCircle,
 } from 'lucide-react';
+import { Health } from '@/lib/service/health';
 
 export const HealthOverviewCard = ({ healths }: { healths: Health[] }) => {
     const approvedCount = healths.filter(

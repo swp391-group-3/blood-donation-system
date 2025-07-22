@@ -1,10 +1,10 @@
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-export interface AccountPictureProps {
+interface Props {
     name: string;
 }
 
-export const AccountPicture = ({ name }: AccountPictureProps) => {
+export const AccountPicture = ({ name }: Props) => {
     return (
         <Avatar className="rounded-lg size-full">
             <AvatarFallback className="bg-rose-400/20 text-rose-500 rounded font-medium">

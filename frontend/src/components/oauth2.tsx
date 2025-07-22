@@ -1,16 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { FcGoogle } from 'react-icons/fc';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
-import { getApiUrl } from '@/lib/api/api-url';
-
-type Provider = 'google' | 'microsoft';
-
-const oauth2 = async (provider: Provider) => {
-    const apiUrl = await getApiUrl();
-
-    redirect(`${apiUrl}/oauth2/${provider}`);
-};
+import { oauth2 } from '@/lib/service/auth';
 
 export const OAuth2 = () => {
     return (

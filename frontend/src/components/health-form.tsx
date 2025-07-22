@@ -1,4 +1,3 @@
-import { useHealthForm } from '@/hooks/use-health-form';
 import {
     Form,
     FormControl,
@@ -25,6 +24,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
+import z from 'zod';
+import { createHealth, createHealthSchema } from '@/lib/service/health';
+import { ApiError } from '@/lib/service';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface Props {
     appointmentId: string;
@@ -32,7 +38,21 @@ interface Props {
 
 export const HealthForm = ({ appointmentId }: Props) => {
     const router = useRouter();
-    const { mutation, form } = useHealthForm(appointmentId);
+
+    const mutation = useMutation({
+        mutationFn: (values: z.infer<typeof createHealthSchema>) =>
+            createHealth(appointmentId, values),
+        onError: (error: ApiError) => toast.error(error.message),
+        onSuccess: () => {
+            toast.info('Create health successfully');
+            router.push('/appointment/management');
+        },
+    });
+
+    const form = useForm<z.infer<typeof createHealthSchema>>({
+        resolver: zodResolver(createHealthSchema),
+        defaultValues: {},
+    });
 
     return (
         <Form {...form}>

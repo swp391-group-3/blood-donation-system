@@ -1,4 +1,3 @@
-import { Appointment } from '@/lib/api/dto/appointment';
 import { formatDistanceToNow } from 'date-fns';
 import {
     Activity,
@@ -15,8 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDateTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useBloodRequest } from '@/hooks/use-blood-request';
-import { toast } from 'sonner';
+import { Appointment, Status } from '@/lib/service/appointment';
+import { BloodRequest } from '@/lib/service/blood-request';
+import { AppointmentQR } from './appointment-qr';
 
 const statusConfig = {
     on_process: {
@@ -74,28 +74,12 @@ const getTimeDisplay = (startTime: Date, endTime: Date): string => {
     }
 };
 
-export const AppointmentCard = ({
-    appointment,
-    onDisplayQR,
-}: {
+interface Props {
+    request: BloodRequest;
     appointment: Appointment;
-    onDisplayQR: () => void;
-}) => {
-    const {
-        data: request,
-        isPending,
-        error,
-    } = useBloodRequest(appointment.request_id);
+}
 
-    if (isPending) {
-        return <div></div>;
-    }
-
-    if (error) {
-        toast.error(error.message);
-        return <div></div>;
-    }
-
+export const AppointmentCard = ({ request, appointment }: Props) => {
     const config = statusConfig[appointment.status];
     const timeDisplay = getTimeDisplay(request.start_time, request.end_time);
 
@@ -182,15 +166,16 @@ export const AppointmentCard = ({
                     {(appointment.status === 'approved' ||
                         appointment.status === 'checked_in') && (
                         <div className="space-y-2">
-                            <Button
-                                onClick={onDisplayQR}
-                                variant="outline"
-                                size="sm"
-                                className="w-full border-slate-200 hover:bg-slate-50 rounded"
-                            >
-                                <QrCode className="h-4 w-4 mr-2" />
-                                Show QR Code
-                            </Button>
+                            <AppointmentQR appointment={appointment}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full border-slate-200 hover:bg-slate-50 rounded"
+                                >
+                                    <QrCode className="h-4 w-4 mr-2" />
+                                    Show QR Code
+                                </Button>
+                            </AppointmentQR>
                         </div>
                     )}
                 </div>

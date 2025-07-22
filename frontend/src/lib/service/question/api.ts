@@ -34,7 +34,7 @@ export const updateQuestion = async (id: number, content: string) => {
     await throwIfError(response);
 };
 
-export const deleteQuestion = async (id: string) => {
+export const deleteQuestion = async (id: number) => {
     const response = await fetchWrapper(`/question/${id}`, {
         method: 'DELETE',
     });

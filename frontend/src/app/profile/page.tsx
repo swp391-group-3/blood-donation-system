@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 import { redirect } from 'next/navigation';
 import { AccountPicture } from '@/components/account-picture';
 import { capitalCase } from 'change-case';
-import { EditProfileModel } from '@/components/edit-profile';
+import { EditProfileDialog } from '@/components/update-account-dialog';
 import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import { displayDonationType } from '@/lib/api/dto/donation';
 import { AchievementCard } from '@/components/achievement-card';
@@ -244,7 +244,7 @@ export default function ProfilePage() {
                                             preferences
                                         </p>
                                     </div>
-                                    <EditProfileModel
+                                    <EditProfileDialog
                                         isOpen={isEditModalOpen}
                                         onOpenChange={setIsEditModalOpen}
                                         form={form}

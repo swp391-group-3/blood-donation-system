@@ -1,10 +1,13 @@
 'use client';
+
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Heart } from 'lucide-react';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useCurrentAccount } from '@/hooks/use-current-account';
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentAccount, getCurrentAccountKey } from '@/lib/service/auth';
+
 const steps = [
     {
         title: 'Registration',
@@ -32,7 +35,11 @@ export default function LandingPage() {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: false, amount: 0.2 });
     const router = useRouter();
-    const { data: account } = useCurrentAccount();
+    const { data: account } = useQuery({
+        queryFn: getCurrentAccount,
+        queryKey: getCurrentAccountKey,
+    });
+
     return (
         <div className="min-h-screen bg-white">
             <main className="container mx-auto px-4">

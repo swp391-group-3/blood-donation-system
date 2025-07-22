@@ -23,57 +23,33 @@ import {
     SelectTrigger,
     SelectValue,
 } from './ui/select';
-import { genders } from '@/lib/api/dto/account';
 import { capitalCase } from 'change-case';
 import { Textarea } from './ui/textarea';
-import { schema as updateAccountSchema } from '@/hooks/use-update-account-form';
 import { z } from 'zod';
-import { UseFormReturn } from 'react-hook-form';
-import { UseMutationResult } from '@tanstack/react-query';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { useMutation, UseMutationResult } from '@tanstack/react-query';
+import { genders, updateAccountSchema, updateCurrentAccount } from '@/lib/service/account';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 
-export type AccountUpdate = z.infer<typeof updateAccountSchema>;
-interface EditProfileProps {
-    isOpen: boolean;
-    onOpenChange: (open: boolean) => void;
-    form: UseFormReturn<AccountUpdate>;
-    mutation: UseMutationResult<void, Error, AccountUpdate>;
-}
+export const UpdateAccountDialog = () => {
 
-export function EditProfileModel({
-    isOpen,
-    onOpenChange,
-    form,
-    mutation,
-}: EditProfileProps) {
-    return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogTrigger asChild>
-                <Button>
-                    <Edit3 className="h-4 w-4 mr-2" />
-                    Edit Profile
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col">
-                <DialogHeader>
-                    <DialogTitle>Edit Profile</DialogTitle>
-                </DialogHeader>
-                <div className="overflow-y-auto flex-1 pr-2">
-                    <FormEdit form={form} mutation={mutation} />
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
+    const mutation = useMutation({
+        mutationFn: updateCurrentAccount,
+        onError: (error) => toast.error(error.message),
+        onSuccess: () => {
+            toast.info('Create Donation Successfully');
+            queryClient.invalidateQueries({
+                queryKey: ['appointment', appointmentId],
+            });
+        },
+ } );
 
-interface formEditProps {
-    form: UseFormReturn<AccountUpdate>;
-    mutation: UseMutationResult<void, Error, AccountUpdate>;
-}
+    const form = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
+        defaultValues: {},
+    });
 
-export function FormEdit({ form, mutation }: formEditProps) {
-    const handleFormSubmit = (values: AccountUpdate) => {
-        mutation.mutate(values);
-    };
     return (
         <Form {...form}>
             <form
@@ -193,4 +169,4 @@ export function FormEdit({ form, mutation }: formEditProps) {
             </form>
         </Form>
     );
-}
+};
