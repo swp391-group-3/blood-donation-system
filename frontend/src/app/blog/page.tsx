@@ -26,36 +26,23 @@ import {
     HeroTitle,
 } from '@/components/hero';
 import { useTagList } from '@/hooks/use-tag-list';
-
-const getTimeAgo = (date: Date): string => {
-    return formatDistanceToNow(date, { addSuffix: true });
-};
-
-const getExcerpt = (content: string, maxLength = 100): string => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength).trim() + '...';
-};
+import { BlogCard } from '@/components/blog-card';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
     const [search, setSearch] = useState<string | undefined>();
     const [sortOption, setSortOption] = useState<Mode | undefined>();
-    const [pagination, setPagination] = useState({
-        pageIndex: 0,
-        pageSize: 10,
-    });
-
-    const {
-        data: blogs,
-        isLoading,
-        error,
-    } = useBlogList({
-        query: search,
-        tag: selectedTag === 'all' ? undefined : selectedTag,
-        mode: sortOption,
-        page_index: pagination.pageIndex,
-        page_size: pagination.pageSize,
-    });
+    const filter = useMemo(
+        () => ({
+            query: search,
+            tag: selectedTag === 'all' ? undefined : selectedTag,
+            mode: sortOption,
+            page_size: 10,
+        }),
+        [search, selectedTag, sortOption],
+    );
+    const { items, next, hasMore } = useBlogList(filter);
     const { data: tags } = useTagList();
 
     return (
@@ -135,77 +122,17 @@ export default function BlogPage() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {blogs &&
-                        blogs.data.map((blog) => (
-                            <Link key={blog.id} href={`/blog/${blog.id}`}>
-                                <Card className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200">
-                                    <CardHeader className="flex-1 pt-1 pb-2 px-5">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="h-8 w-8">
-                                                <AccountPicture
-                                                    name={blog.owner}
-                                                />
-                                            </div>
-                                            <div>
-                                                <div className="font-medium text-zinc-900 text-[15px]">
-                                                    {blog.owner}
-                                                </div>
-                                                <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
-                                                    <Clock className="h-3 w-3" />
-                                                    {getTimeAgo(
-                                                        blog.created_at,
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <CardTitle className="block text-base font-semibold text-zinc-900 leading-snug mb-2 line-clamp-2 hover:text-blue-600">
-                                            {blog.title}
-                                        </CardTitle>
-                                        <CardContent className="p-0">
-                                            <p
-                                                className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: getExcerpt(
-                                                        blog.content,
-                                                    ),
-                                                }}
-                                            />
-                                        </CardContent>
-                                    </CardHeader>
-                                    <div className="flex-1 flex flex-col justify-end">
-                                        <div className="flex flex-wrap gap-1.5 px-5 pb-4">
-                                            {(Array.isArray(blog.tags)
-                                                ? blog.tags.flat()
-                                                : []
-                                            )
-                                                .slice(0, 3)
-                                                .map((tag, index) => (
-                                                    <Badge
-                                                        key={index}
-                                                        variant="outline"
-                                                        className="bg-zinc-50 text-zinc-700 border-zinc-200 text-xs px-2 py-0.5"
-                                                    >
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                            {Array.isArray(blog.tags) &&
-                                                blog.tags.flat().length > 3 && (
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
-                                                    >
-                                                        +
-                                                        {blog.tags.flat()
-                                                            .length - 3}
-                                                    </Badge>
-                                                )}
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Link>
-                        ))}
-                </div>
+                <InfiniteScroll
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    dataLength={items.length}
+                    next={next}
+                    hasMore={hasMore}
+                    loader={<h4>Loading...</h4>}
+                >
+                    {items.map((blog) => (
+                        <BlogCard key={blog.id} blog={blog} />
+                    ))}
+                </InfiniteScroll>
             </main>
         </div>
     );
