@@ -18,7 +18,9 @@ export const schema = z.object({
     name: z.string().min(1, { message: 'Name must be provided.' }),
     phone: z
         .string()
-        .regex(/0[\d]{9,9}/, { message: 'Phone must consist of 10 number' }),
+        .regex(/^0\d{9}$/, {
+            message: 'Phone must be exactly 10 digits.',
+        }),
     address: z.string().min(1, { message: 'Address must be provided.' }),
     birthday: z.string(),
     blood_group: z.enum(bloodGroups),
