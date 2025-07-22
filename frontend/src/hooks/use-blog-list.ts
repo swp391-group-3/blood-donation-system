@@ -7,11 +7,11 @@ import { useQuery } from '@tanstack/react-query';
 type Mode = 'MostRecent' | 'OldestFirst' | 'TitleAZ';
 
 interface Filter {
-    query: string;
-    tag: string;
-    mode: Mode;
-    page_size: number;
-    page_index: number;
+    query?: string;
+    tag?: string;
+    mode?: Mode;
+    page_index?: number;
+    page_size?: number;
 }
 
 export const useBlogList = (filter: Filter) => {
@@ -23,6 +23,6 @@ export const useBlogList = (filter: Filter) => {
 
             return await deserialize<Pagination<Blog>>(response);
         },
-        queryKey: ['blog'],
+        queryKey: ['blog', filter],
     });
 };
