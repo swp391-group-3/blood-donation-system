@@ -12,6 +12,7 @@ pub mod donation;
 pub mod health;
 mod ping;
 pub mod question;
+pub mod tag;
 
 use std::sync::Arc;
 
@@ -33,7 +34,8 @@ pub fn build() -> Router<Arc<ApiState>> {
         .merge(health::build())
         .merge(blood_bag::build())
         .merge(donation::build())
-        .merge(dashboard::build());
+        .merge(dashboard::build())
+        .merge(tag::build());
 
     #[cfg(feature = "rag")]
     let router = router.merge(chat::build());
