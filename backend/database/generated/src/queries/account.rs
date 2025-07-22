@@ -918,24 +918,3 @@ impl IsAppliedStmt {
         }
     }
 }
-pub fn is_banned() -> IsBannedStmt {
-    IsBannedStmt(crate::client::async_::Stmt::new(
-        "SELECT is_banned FROM accounts WHERE id = $1",
-    ))
-}
-pub struct IsBannedStmt(crate::client::async_::Stmt);
-impl IsBannedStmt {
-    pub fn bind<'c, 'a, 's, C: GenericClient>(
-        &'s mut self,
-        client: &'c C,
-        id: &'a uuid::Uuid,
-    ) -> BoolQuery<'c, 'a, 's, C, bool, 1> {
-        BoolQuery {
-            client,
-            params: [id],
-            stmt: &mut self.0,
-            extractor: |row| Ok(row.try_get(0)?),
-            mapper: |it| it,
-        }
-    }
-}
