@@ -304,19 +304,15 @@ async function seed() {
             const weight = faker.number.int({ min: 45, max: 100 });
             const good = Math.random() < 0.9;
 
-            let status = good
-                ? pick(APPT_STATUSES.filter((s) => s !== 'rejected'))
-                : 'rejected';
-            if (
-                !isActive &&
-                ['on_process', 'approved', 'checked_in'].includes(status)
-            )
+            let status: typeof APPT_STATUSES[number];
+
+            if (!good) {
+                status = 'rejected';
+            } else if (isActive) {
+                status = pick(['on_process', 'approved', 'checked_in', 'donated']);
+            } else {
                 status = 'done';
-            if (
-                status === 'donated' &&
-                !currentActiveRequests.includes(requestId)
-            )
-                continue;
+            }
 
             const reason =
                 status === 'rejected'
