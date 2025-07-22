@@ -32,13 +32,7 @@ interface MenuItem {
     items?: MenuItem[];
 }
 
-interface Navbar1Props {
-    logo?: {
-        url: string;
-        src: string;
-        alt: string;
-        title: string;
-    };
+interface NavbarProps {
     menu?: MenuItem[];
     mobileExtraLinks?: {
         name: string;
@@ -57,12 +51,6 @@ interface Navbar1Props {
 }
 
 const Navbar = ({
-    logo = {
-        url: 'https://www.shadcnblocks.com',
-        src: 'https://www.shadcnblocks.com/images/block/block-1.svg',
-        alt: 'logo',
-        title: 'Shadcnblocks.com',
-    },
     menu = [
         { title: 'Home', url: '#' },
         {
@@ -150,15 +138,15 @@ const Navbar = ({
         login: { text: 'Log in', url: '#' },
         signup: { text: 'Sign up', url: '#' },
     },
-}: Navbar1Props) => {
+}: NavbarProps) => {
     return (
         <section className="py-4">
             <div className="container">
-                <nav className="hidden justify-between lg:flex">
+                <nav className="hidden justify-between px-8 lg:flex">
+                    <a className="flex items-center gap-2">
+                        <Logo />
+                    </a>
                     <div className="flex items-center gap-6">
-                        <a className="flex items-center gap-2">
-                            <Logo />
-                        </a>
                         <div className="flex items-center">
                             <NavigationMenu>
                                 <NavigationMenuList>
@@ -190,18 +178,8 @@ const Navbar = ({
                             <SheetContent className="overflow-y-auto">
                                 <SheetHeader>
                                     <SheetTitle>
-                                        <a
-                                            href={logo.url}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <img
-                                                src={logo.src}
-                                                className="w-8"
-                                                alt={logo.alt}
-                                            />
-                                            <span className="text-lg font-semibold">
-                                                {logo.title}
-                                            </span>
+                                        <a className="flex items-center gap-2">
+                                            <Logo />
                                         </a>
                                     </SheetTitle>
                                 </SheetHeader>
