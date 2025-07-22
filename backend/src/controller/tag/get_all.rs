@@ -15,8 +15,7 @@ use crate::{
     operation_id = "tag::get_all",
     responses(
         (status = Status::OK, body = Vec<Tag>)
-    ),
-    security(("jwt_token" = []))
+    )
 )]
 pub async fn get_all(state: State<Arc<ApiState>>) -> Result<Json<Vec<Tag>>> {
     let database = state.database().await?;
