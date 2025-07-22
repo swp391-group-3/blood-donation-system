@@ -11,7 +11,7 @@ const schema = z.object({
         message: 'Name must not be empty',
     }),
     password: z.string().nonempty({
-        message: 'Password must not be empty.',
+        message: 'Password must not be empty',
     }),
     phone: z
         .string()
