@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/select';
 import { Filter, Plus, Search, Tag } from 'lucide-react';
 import Link from 'next/link';
-import { Mode, useBlogList } from '@/hooks/use-blog-list';
+import { Mode, useBlogList } from '@/hooks/use-blog-infinite-scroll';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
