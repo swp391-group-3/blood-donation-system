@@ -11,17 +11,9 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
-import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
@@ -70,7 +62,6 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
-import { PaginationRange } from '@/components/pagination-range';
 import { PaginationControl } from '@/components/pagination-control';
 
 function Page() {

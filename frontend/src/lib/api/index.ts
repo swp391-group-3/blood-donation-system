@@ -42,7 +42,7 @@ export interface Pagination<T> {
     data: T[];
 }
 
-export const buildParams = (data: Object) => {
+export const buildParams = (data: object) => {
     const params = new URLSearchParams();
 
     for (const [key, value] of Object.entries(data)) {
