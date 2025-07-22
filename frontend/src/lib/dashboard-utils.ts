@@ -27,7 +27,15 @@ function initTrendData() {
     }));
 }
 
-export function getTrendData(donations: Donation[], requests: BloodRequest[]) {
+export interface DonationTrend {
+    created_at: Date;
+}
+export interface BloodRequestTrend {
+    start_time: Date;
+}
+
+
+export function getTrendData(donations: DonationTrend[], requests: BloodRequestTrend[]) {
     const trends = initTrendData();
 
     donations.forEach((d) => {
