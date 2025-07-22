@@ -8,7 +8,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Filter, Calendar, Clock, CheckCircle, Activity } from 'lucide-react';
-import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
+import { Stats, StatsGrid } from '@/components/stats';
 import { toast } from 'sonner';
 import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
 import { useCurrentAccountAppointment } from '@/hooks/use-current-account-appointment';
@@ -75,7 +75,7 @@ export default function AppointmentPage() {
         isPending,
         error,
     } = useCurrentAccountAppointment();
-    console.log(appointments);
+
     const stats = useMemo(
         () => (appointments ? getStats(appointments) : undefined),
         [appointments],
