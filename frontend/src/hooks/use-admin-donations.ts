@@ -1,4 +1,5 @@
 import { deserialize, fetchWrapper } from "@/lib/api"
+import { DonationTrend } from "@/lib/dashboard-utils";
 import { useQuery } from "@tanstack/react-query"
 
 
@@ -7,7 +8,7 @@ export const useAdminDonation = () => {
         queryFn: async () => {
             const response = await fetchWrapper("/dashboard/donation-trends");
 
-            return await deserialize(response)
+            return await deserialize<DonationTrend[]>(response)
         },
         queryKey: ["/dashboard/donation-trends"]
     })
