@@ -2,7 +2,7 @@
 
 import { buildParams, deserialize, fetchWrapper, Pagination } from '@/lib/api';
 import { Blog } from '@/lib/api/dto/blog';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiteScroll } from './use-infinite-scroll';
 
 export type Mode = 'MostRecent' | 'OldestFirst' | 'TitleAZ';
 
@@ -15,14 +15,10 @@ interface Filter {
 }
 
 export const useBlogList = (filter: Filter) => {
-    const params = buildParams(filter);
+    return useInfiteScroll<Filter, Blog>(filter, async (filter) => {
+        const params = buildParams(filter);
+        const response = await fetchWrapper(`/blog?${params.toString()}`);
 
-    return useQuery({
-        queryFn: async () => {
-            const response = await fetchWrapper(`/blog?${params.toString()}`);
-
-            return await deserialize<Pagination<Blog>>(response);
-        },
-        queryKey: ['blog', filter],
+        return await deserialize<Pagination<Blog>>(response);
     });
 };
