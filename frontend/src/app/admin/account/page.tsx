@@ -77,7 +77,7 @@ function Page() {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState<Role | 'all'>('all');
     const [pagination, setPagination] = useState<PaginationState>({
-        pageSize: 5,
+        pageSize: 10,
         pageIndex: 0,
     });
     const [isAddStaff, setIsAddStaff] = useState(false);
