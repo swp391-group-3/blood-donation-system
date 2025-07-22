@@ -13,8 +13,10 @@ import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useApproveAppointment } from '@/hooks/use-approve-appointment';
 import { useRejectAppointment } from '@/hooks/use-reject-appointment';
-import { useAppointment } from '@/hooks/use-appointent';
 import { RejectAppointmentDialog } from './reject-appointment-dialog';
+import { Appointment } from '@/lib/api/dto/appointment';
+import { useAccount } from '@/hooks/use-account';
+import { useApppointmentAnswer } from '@/hooks/use-apppointment-answer';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
@@ -29,14 +31,19 @@ const getAnswerIcon = (answer: string) => {
     }
 };
 
+interface Props {
+    appointment: Appointment;
+}
+
 export const ReviewDialog = ({
     children,
-    appointmentId,
-}: PropsWithChildren<{ appointmentId: string }>) => {
-    const { data: apt, isPending, error } = useAppointment(appointmentId);
+    appointment,
+}: PropsWithChildren<Props>) => {
+    const { data: donor, isPending, error } = useAccount(appointment.donor_id);
+    const { data: answers = [] } = useApppointmentAnswer(appointment.id);
     const [open, setOpen] = useState(false);
-    const approve = useApproveAppointment(appointmentId);
-    const reject = useRejectAppointment(appointmentId);
+    const approve = useApproveAppointment(appointment.id);
+    const reject = useRejectAppointment(appointment.id);
 
     if (isPending) {
         return <div></div>;
@@ -53,7 +60,7 @@ export const ReviewDialog = ({
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-slate-900">
-                        Application Review - {apt.donor.name}
+                        Application Review - {donor.name}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -68,7 +75,7 @@ export const ReviewDialog = ({
                                     Name:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.donor.name}
+                                    {donor.name}
                                 </div>
                             </div>
                             <div>
@@ -76,7 +83,7 @@ export const ReviewDialog = ({
                                     Blood Group:
                                 </span>
                                 <div className="font-semibold text-red-600">
-                                    {bloodGroupLabels[apt.donor.blood_group]}
+                                    {bloodGroupLabels[donor.blood_group]}
                                 </div>
                             </div>
                             <div>
@@ -84,7 +91,7 @@ export const ReviewDialog = ({
                                     Email:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.donor.email}
+                                    {donor.email}
                                 </div>
                             </div>
                             <div>
@@ -92,7 +99,7 @@ export const ReviewDialog = ({
                                     Phone:
                                 </span>
                                 <div className="font-semibold text-slate-900">
-                                    {apt.donor.phone}
+                                    {donor.phone}
                                 </div>
                             </div>
                         </div>
@@ -102,37 +109,34 @@ export const ReviewDialog = ({
                             Screening Questionnaire
                         </h3>
                         <div className="space-y-4">
-                            {apt.answers.map((answer, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg"
-                                    >
-                                        <div className="flex-shrink-0 mt-1">
-                                            {getAnswerIcon(answer.answer)}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-slate-900 mb-1">
-                                                Q{index}: {answer.question}
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                <Badge
-                                                    className={`capitalize text-xs ${
-                                                        answer.answer === 'yes'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : answer.answer ===
-                                                                'no'
-                                                              ? 'bg-red-100 text-red-800'
-                                                              : 'bg-yellow-100 text-yellow-800'
-                                                    }`}
-                                                >
-                                                    {answer.answer}
-                                                </Badge>
-                                            </div>
+                            {answers.map((answer, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg"
+                                >
+                                    <div className="flex-shrink-0 mt-1">
+                                        {getAnswerIcon(answer.answer)}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-slate-900 mb-1">
+                                            Q{index}: {answer.question}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <Badge
+                                                className={`capitalize text-xs ${
+                                                    answer.answer === 'yes'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : answer.answer === 'no'
+                                                          ? 'bg-red-100 text-red-800'
+                                                          : 'bg-yellow-100 text-yellow-800'
+                                                }`}
+                                            >
+                                                {answer.answer}
+                                            </Badge>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -159,7 +163,7 @@ export const ReviewDialog = ({
                         <RejectAppointmentDialog
                             open={open}
                             onOpenChange={setOpen}
-                            appointmentId={apt.id}
+                            appointmentId={appointment.id}
                         />
                     </div>
                 </div>
