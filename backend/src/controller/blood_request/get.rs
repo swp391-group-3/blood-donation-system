@@ -29,6 +29,7 @@ pub async fn get(
     Path(id): Path<Uuid>,
 ) -> Result<Json<BloodRequest>> {
     let database = state.database().await?;
+
     let account_id = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
 
     match queries::blood_request::get()

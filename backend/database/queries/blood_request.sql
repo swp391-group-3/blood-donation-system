@@ -199,6 +199,7 @@ SELECT
         SELECT COUNT(id) FROM blood_requests
         WHERE is_active = true 
         AND now() < end_time
+        AND :account_id != '00000000-0000-0000-0000-000000000000'::uuid
         AND EXISTS (
             SELECT 1
             FROM request_blood_groups
@@ -209,13 +210,13 @@ SELECT
                     FROM accounts
                     WHERE id = :account_id
                 )
-                    WHEN 'o_minus'  THEN ARRAY['o_minus', 'o_plus', 'a_minus', 'a_plus', 'b_minus', 'b_plus', 'ab_minus', 'ab_plus']::blood_group[]
-                    WHEN 'o_plus'   THEN ARRAY['o_plus', 'a_plus', 'b_plus', 'ab_plus']::blood_group[]
-                    WHEN 'a_minus'  THEN ARRAY['a_minus', 'a_plus', 'ab_minus', 'ab_plus']::blood_group[]
-                    WHEN 'a_plus'   THEN ARRAY['a_plus', 'ab_plus']::blood_group[]
-                    WHEN 'b_minus'  THEN ARRAY['b_minus', 'b_plus', 'ab_minus', 'ab_plus']::blood_group[]
-                    WHEN 'b_plus'   THEN ARRAY['b_plus', 'ab_plus']::blood_group[]
-                    WHEN 'ab_minus' THEN ARRAY['ab_minus', 'ab_plus']::blood_group[]
+                    WHEN 'o_minus'  THEN ARRAY['o_minus','o_plus','a_minus','a_plus','b_minus','b_plus','ab_minus','ab_plus']::blood_group[]
+                    WHEN 'o_plus'   THEN ARRAY['o_plus','a_plus','b_plus','ab_plus']::blood_group[]
+                    WHEN 'a_minus'  THEN ARRAY['a_minus','a_plus','ab_minus','ab_plus']::blood_group[]
+                    WHEN 'a_plus'   THEN ARRAY['a_plus','ab_plus']::blood_group[]
+                    WHEN 'b_minus'  THEN ARRAY['b_minus','b_plus','ab_minus','ab_plus']::blood_group[]
+                    WHEN 'b_plus'   THEN ARRAY['b_plus','ab_plus']::blood_group[]
+                    WHEN 'ab_minus' THEN ARRAY['ab_minus','ab_plus']::blood_group[]
                     WHEN 'ab_plus'  THEN ARRAY['ab_plus']::blood_group[]
                 END
             )
