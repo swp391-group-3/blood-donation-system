@@ -8,10 +8,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { useBloodRequestList } from '@/hooks/use-blood-request-list';
-import { useAllAccounts } from '@/hooks/use-all-account';
-import { useAllBloodBag } from '@/hooks/use-all-blood-bag';
-import { useAllDonation } from '@/hooks/use-all-donation';
 import {
     getBloodGroupData,
     getTrendData,
@@ -87,9 +83,6 @@ function Page() {
     );
 
     const { data: stats } = useAdminStats();
-
-
-
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
             <div className="max-w-7xl mx-auto space-y-8">

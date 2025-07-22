@@ -1,7 +1,5 @@
-import { Account, Staff } from './api/dto/account';
+import { Staff } from './api/dto/account';
 import { BloodGroup, bloodGroupLabels } from './api/dto/blood-group';
-import { BloodRequest } from './api/dto/blood-request';
-import { Donation } from './api/dto/donation';
 import Papa from 'papaparse';
 
 const Months = [
