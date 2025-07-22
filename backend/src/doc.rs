@@ -108,6 +108,8 @@ struct ChatDoc;
         controller::dashboard::donation_trends,
         controller::dashboard::request_trends,
         controller::dashboard::blood_group_distribution,
+
+        controller::tag::get_all,
     ),
     components(schemas(
         ErrorResponse,
