@@ -5,10 +5,10 @@ import { Appointment, Status } from '@/lib/api/dto/appointment';
 import { useQuery } from '@tanstack/react-query';
 
 interface Filter {
-    query: string;
-    status: Status;
-    page_size: number;
-    page_index: number;
+    query?: string;
+    status?: Status;
+    page_size?: number;
+    page_index?: number;
 }
 
 export const useAppointmentList = (filter: Filter) => {
