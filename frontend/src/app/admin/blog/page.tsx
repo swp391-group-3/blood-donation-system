@@ -8,7 +8,7 @@ import {
     PaginationState,
     useReactTable,
 } from '@tanstack/react-table';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { columns } from './column';
 import {
     Table,
@@ -22,21 +22,11 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Blog } from '@/lib/api/dto/blog';
-import { PaginationRange } from '@/components/pagination-range';
 import { PaginationControl } from '@/components/pagination-control';
 
 function BlogPage() {

@@ -1,11 +1,4 @@
 import {
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
-} from 'lucide-react';
-import { Button } from './ui/button';
-import {
     Pagination,
     PaginationContent,
     PaginationEllipsis,
@@ -14,7 +7,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from './ui/pagination';
-import { cn } from '@/lib/utils';
 
 interface Props {
     className?: string;

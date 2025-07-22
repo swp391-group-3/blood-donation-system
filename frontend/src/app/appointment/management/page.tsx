@@ -7,20 +7,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Filter,
-    Droplets,
-    Clock,
-    CheckCircle,
-    XCircle,
-    Search,
-} from 'lucide-react';
-import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
-import { toast } from 'sonner';
-import { useMemo, useState } from 'react';
+import { Filter, Search } from 'lucide-react';
+import { useState } from 'react';
 import { capitalCase } from 'change-case';
 import { Hero, HeroDescription, HeroTitle } from '@/components/hero';
-import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
+import { Status, statuses } from '@/lib/api/dto/appointment';
 import { useAppointmentList } from '@/hooks/use-appointment-list';
 import {
     Table,
@@ -37,56 +28,45 @@ import {
     getPaginationRowModel,
     PaginationState,
     useReactTable,
-    VisibilityState,
 } from '@tanstack/react-table';
-import { deserialize, fetchWrapper } from '@/lib/api';
-import { Account } from '@/lib/api/dto/account';
 import { columns } from './column';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
-import { PaginationRange } from '@/components/pagination-range';
 import { PaginationControl } from '@/components/pagination-control';
 
-const getStats = (appointments: Appointment[]): StatsProps[] => {
-    return [
-        {
-            label: 'Need Review',
-            value: appointments.filter((apt) => apt.status === 'on_process')
-                .length,
-            icon: Clock,
-            description: 'Requires staff attention',
-            color: 'yellow',
-        },
-        {
-            label: 'Approved',
-            value: appointments.filter((apt) => apt.status === 'approved')
-                .length,
-            icon: CheckCircle,
-            description: 'Ready for health check',
-            color: 'green',
-        },
-        {
-            label: 'Completed',
-            value: appointments.filter((apt) => apt.status === 'done').length,
-            icon: Droplets,
-            description: 'Donation that has been completed',
-            color: 'blue',
-        },
-        {
-            label: 'Rejected',
-            value: appointments.filter((apt) => apt.status === 'rejected')
-                .length,
-            icon: XCircle,
-            description: 'Did not meet criteria',
-            color: 'red',
-        },
-    ];
-};
+// const getStats = (appointments: Appointment[]): StatsProps[] => {
+//     return [
+//         {
+//             label: 'Need Review',
+//             value: appointments.filter((apt) => apt.status === 'on_process')
+//                 .length,
+//             icon: Clock,
+//             description: 'Requires staff attention',
+//             color: 'yellow',
+//         },
+//         {
+//             label: 'Approved',
+//             value: appointments.filter((apt) => apt.status === 'approved')
+//                 .length,
+//             icon: CheckCircle,
+//             description: 'Ready for health check',
+//             color: 'green',
+//         },
+//         {
+//             label: 'Completed',
+//             value: appointments.filter((apt) => apt.status === 'done').length,
+//             icon: Droplets,
+//             description: 'Donation that has been completed',
+//             color: 'blue',
+//         },
+//         {
+//             label: 'Rejected',
+//             value: appointments.filter((apt) => apt.status === 'rejected')
+//                 .length,
+//             icon: XCircle,
+//             description: 'Did not meet criteria',
+//             color: 'red',
+//         },
+//     ];
+// };
 
 export default function AppointmentManagementPage() {
     const [search, setSearch] = useState<string | undefined>();
@@ -102,10 +82,10 @@ export default function AppointmentManagementPage() {
         page_index: pagination.pageIndex,
         page_size: pagination.pageSize,
     });
-    const stats = useMemo(
-        () => (appointments ? getStats(appointments?.data ?? []) : undefined),
-        [appointments],
-    );
+    // const stats = useMemo(
+    //     () => (appointments ? getStats(appointments?.data ?? []) : undefined),
+    //     [appointments],
+    // );
 
     const table = useReactTable({
         data: appointments?.data ?? [],

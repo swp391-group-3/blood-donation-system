@@ -3,7 +3,6 @@
 import { buildParams, deserialize, fetchWrapper, Pagination } from '@/lib/api';
 import { BloodGroup } from '@/lib/api/dto/blood-group';
 import { BloodRequest, Priority } from '@/lib/api/dto/blood-request';
-import { useQuery } from '@tanstack/react-query';
 import { useInfiteScroll } from './use-infinite-scroll';
 
 interface Filter {

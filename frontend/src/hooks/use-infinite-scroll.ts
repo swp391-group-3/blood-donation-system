@@ -26,12 +26,13 @@ export const useInfiteScroll = <F, T>(
         }
     };
 
+    // data only need to be refreshed when filter changed not when fetchDataWrapper changed
     useEffect(() => {
         setItems([]);
         setPageIndex(0);
         setHasMore(true);
         fetchDataWrapper(0);
-    }, [filter]);
+    }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return {
         items,
