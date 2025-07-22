@@ -7,12 +7,13 @@ import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 
+if (!process.env.DATABASE_URL) {
+    console.error('❌ Missing DATABASE_URL in .env');
+    process.exit(1);
+}
+
 const DB_CONFIG = {
-    user: 'postgres', //change this
-    host: 'localhost', //change this
-    database: 'blood_donation', //change this
-    password: '12345', //change this
-    port: 5432,
+    connectionString: process.env.DATABASE_URL,
 };
 
 const START_DATE = dayjs().subtract(1, 'year').toDate();
@@ -212,16 +213,30 @@ async function seed() {
     const currentActiveRequests: string[] = [];
 
     for (const staffId of staffIds) {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 30; i++) { // Will be changed to 3
             const id = uuidv4();
             const priority = pick(PRIORITIES);
             const title = `Blood Drive - ${priority}`;
             const max_people = faker.number.int({ min: 10, max: 100 });
-            const start = randomDate(START_DATE, END_DATE);
-            const end = dayjs(start)
-                .add(faker.number.int({ min: 1, max: 10 }), 'day')
+            let start: Date, end: Date;
+            if (Math.random() < 0.3) {
+                start = randomDate(
+                    dayjs().subtract(4, 'day').toDate(),
+                    new Date()
+                );
+                end = dayjs(start)
+                    .add(faker.number.int({ min: 1, max: 10 }), 'day')
+                    .toDate();
+            } else {
+                start = randomDate(START_DATE, END_DATE);
+                end = dayjs(start)
+                    .add(faker.number.int({ min: 1, max: 10 }), 'day')
+                    .toDate();
+            }
+            const hoursBefore = faker.number.int({ min: 1, max: 24 });
+            const created_at = dayjs(start)
+                .subtract(hoursBefore, 'hour')
                 .toDate();
-            const created_at = randomDate(START_DATE, END_DATE);
             const currentTime = new Date();
             const isActive = currentTime >= start && currentTime <= end;
 
@@ -290,31 +305,27 @@ async function seed() {
             const weight = faker.number.int({ min: 45, max: 100 });
             const good = Math.random() < 0.9;
 
-            let status = good
-                ? pick(APPT_STATUSES.filter((s) => s !== 'rejected'))
-                : 'rejected';
-            if (
-                !isActive &&
-                ['on_process', 'approved', 'checked_in'].includes(status)
-            )
+            let status: typeof APPT_STATUSES[number];
+
+            if (!good) {
+                status = 'rejected';
+            } else if (isActive) {
+                status = pick(['on_process', 'approved', 'checked_in', 'donated']);
+            } else {
                 status = 'done';
-            if (
-                status === 'donated' &&
-                !currentActiveRequests.includes(requestId)
-            )
-                continue;
+            }
 
             const reason =
                 status === 'rejected'
                     ? pick([
-                          'Low hemoglobin level',
-                          'High blood pressure',
-                          'Recent illness or infection',
-                          'Not feeling well today',
-                          'Recent vaccination',
-                          'Ineligible due to recent travel',
-                          'Did not meet health requirements',
-                      ])
+                        'Low hemoglobin level',
+                        'High blood pressure',
+                        'Recent illness or infection',
+                        'Not feeling well today',
+                        'Recent vaccination',
+                        'Ineligible due to recent travel',
+                        'Did not meet health requirements',
+                    ])
                     : null;
 
             await client.query(
@@ -357,9 +368,9 @@ async function seed() {
                 const donationDate =
                     Math.random() < 0.3
                         ? randomDate(
-                              dayjs().subtract(90, 'day').toDate(),
-                              dayjs().toDate(),
-                          ) // 30% recent
+                            dayjs().subtract(90, 'day').toDate(),
+                            dayjs().toDate(),
+                        ) // 30% recent
                         : randomDate(START_DATE, END_DATE); // 70% older (could be expired)
 
                 let donationType = pick(DONATION_TYPES);
@@ -367,7 +378,7 @@ async function seed() {
                 let tries = 0;
                 while (
                     dayjs(donationDate).diff(last, 'day') <
-                        DONATION_INTERVALS[donationType] &&
+                    DONATION_INTERVALS[donationType] &&
                     tries < 10
                 ) {
                     donationType = pick(DONATION_TYPES);
