@@ -51,58 +51,23 @@ import { CardGrid } from '@/components/card-grid';
 import { RequestCard } from '@/components/request-card';
 import { useBloodRequestStats } from '@/hooks/use-blood-request-stats';
 import { PaginationState } from '@tanstack/react-table';
-
-// const parseStats = (raw: BloodRequestStats): StatsProps[] => {
-//     return [
-//         {
-//             label: 'Urgent Requests',
-//             value: bloodRequests.filter(
-//                 (request) => request.priority === 'high',
-//             ).length,
-//             icon: Droplet,
-//             description: 'Number of urgent blood request',
-//             color: 'rose',
-//         },
-//         {
-//             label: 'Donors Needed',
-//             value: bloodRequests.reduce(
-//                 (count, request) =>
-//                     count + (request.max_people - request.current_people),
-//                 0,
-//             ),
-//             icon: User,
-//             description: 'Number of donors need across all request',
-//             color: 'blue',
-//         },
-//         {
-//             label: 'Recommended Requests',
-//             value: '0',
-//             icon: UserSearch,
-//             description: 'Number of recommended request for you',
-//             color: 'emerald',
-//         },
-//     ];
-// };
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function BloodRequestPage() {
     const [priority, setPriority] = useState<Priority | undefined>();
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | undefined>();
     const [search, setSearch] = useState<string | undefined>();
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 10,
-    });
-    const {
-        data: request,
-        isPending,
-        error,
-    } = useBloodRequestList({
-        query: search,
-        blood_group: bloodGroup,
-        priority,
-        page_index: pagination.pageIndex,
-        page_size: pagination.pageSize,
-    });
+    const filter = useMemo(
+        () => ({
+            query: search,
+            blood_group: bloodGroup,
+            priority,
+            page_size: 10,
+        }),
+        [priority, bloodGroup, search],
+    );
+    const { items, next, hasMore } = useBloodRequestList(filter);
     const { data: stats } = useBloodRequestStats();
 
     return (
@@ -218,13 +183,26 @@ export default function BloodRequestPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                {request && (
-                    <CardGrid className="grid md:grid-cols-2 gap-10">
-                        {request.data.map((request, index) => (
-                            <RequestCard key={index} {...request} />
-                        ))}
-                    </CardGrid>
-                )}
+                <InfiniteScroll
+                    className="grid md:grid-cols-2 gap-10"
+                    dataLength={items.length}
+                    next={next}
+                    hasMore={hasMore}
+                    loader={<h4>Loading...</h4>}
+                >
+                    {items.length === 0 ? (
+                        <EmptyState
+                            className="mx-auto col-span-full"
+                            title="No Results Found"
+                            description="Try adjusting your search filters."
+                            icons={[Search]}
+                        />
+                    ) : (
+                        items.map((request) => (
+                            <RequestCard key={request.id} {...request} />
+                        ))
+                    )}
+                </InfiniteScroll>
             </div>
         </div>
     );

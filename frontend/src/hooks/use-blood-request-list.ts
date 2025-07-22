@@ -4,6 +4,7 @@ import { buildParams, deserialize, fetchWrapper, Pagination } from '@/lib/api';
 import { BloodGroup } from '@/lib/api/dto/blood-group';
 import { BloodRequest, Priority } from '@/lib/api/dto/blood-request';
 import { useQuery } from '@tanstack/react-query';
+import { useInfiteScroll } from './use-infinite-scroll';
 
 interface Filter {
     query?: string;
@@ -14,16 +15,12 @@ interface Filter {
 }
 
 export const useBloodRequestList = (filter: Filter) => {
-    const params = buildParams(filter);
+    return useInfiteScroll<Filter, BloodRequest>(filter, async (filter) => {
+        const params = buildParams(filter);
+        const response = await fetchWrapper(
+            `/blood-request?${params.toString()}`,
+        );
 
-    return useQuery({
-        queryFn: async () => {
-            const response = await fetchWrapper(
-                `/blood-request?${params.toString()}`,
-            );
-
-            return await deserialize<Pagination<BloodRequest>>(response);
-        },
-        queryKey: ['blood-request', filter],
+        return await deserialize<Pagination<BloodRequest>>(response);
     });
 };
