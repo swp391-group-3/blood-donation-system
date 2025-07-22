@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 interface Filter {
     query?: string;
     priority?: Priority;
-    blood_group: BloodGroup;
+    blood_group?: BloodGroup;
     page_size?: number;
     page_index?: number;
 }
@@ -19,7 +19,7 @@ export const useBloodRequestList = (filter: Filter) => {
     return useQuery({
         queryFn: async () => {
             const response = await fetchWrapper(
-                `/blood-request/${params.toString()}`,
+                `/blood-request?${params.toString()}`,
             );
 
             return await deserialize<Pagination<BloodRequest>>(response);

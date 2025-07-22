@@ -4,7 +4,7 @@ import { buildParams, deserialize, fetchWrapper, Pagination } from '@/lib/api';
 import { Blog } from '@/lib/api/dto/blog';
 import { useQuery } from '@tanstack/react-query';
 
-type Mode = 'MostRecent' | 'OldestFirst' | 'TitleAZ';
+export type Mode = 'MostRecent' | 'OldestFirst' | 'TitleAZ';
 
 interface Filter {
     query?: string;
