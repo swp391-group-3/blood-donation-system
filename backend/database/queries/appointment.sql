@@ -24,7 +24,8 @@ WHERE (
         SELECT 1
         FROM accounts
         WHERE
-            (name % :query OR email % :query) AND
+            ((name LIKE '%' || :query || '%' ) OR
+            (email LIKE '%' || :query || '%' )) AND
             accounts.id = appointments.donor_id
         LIMIT 1
     )
@@ -41,7 +42,8 @@ WHERE (
         SELECT 1
         FROM accounts
         WHERE
-            (name % :query OR email % :query) AND
+            ((name LIKE '%' || :query || '%' ) OR
+            (email LIKE '%' || :query || '%' )) AND
             accounts.id = appointments.donor_id
         LIMIT 1
     )
