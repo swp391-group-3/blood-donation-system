@@ -14,6 +14,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from './ui/pagination';
+import { cn } from '@/lib/utils';
 
 interface Props {
     className?: string;
@@ -39,94 +40,67 @@ export const PaginationControl = ({
     }
 
     return (
-        <div className="flex items-center">
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full p-0 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                onClick={() => onPageChange(0)}
-                disabled={pageIndex === 0}
-            >
-                <span className="sr-only">Go to first page</span>
-                <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full p-0 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                onClick={() => onPageChange(pageIndex - 1)}
-                disabled={pageIndex === 0}
-            >
-                <span className="sr-only">Go to previous page</span>
-                <ChevronLeft className="h-4 w-4" />
-            </Button>
-
-            <div className="flex items-center mx-2">
-                {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
-                    let pageNumber;
-                    if (pageCount <= 5) {
-                        pageNumber = i;
-                    } else {
-                        const middlePoint = Math.min(
-                            Math.max(2, pageIndex),
-                            pageCount - 3,
-                        );
-                        pageNumber = i + Math.max(0, middlePoint - 2);
-                    }
-
-                    const isActive = pageNumber === pageIndex;
-
-                    return (
-                        <Button
-                            key={pageNumber}
-                            variant="ghost"
-                            size="sm"
-                            className={`h-8 min-w-[32px] rounded-md px-3 text-sm font-medium ${
-                                isActive
-                                    ? 'bg-gray-100 text-gray-900'
-                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                            onClick={() => onPageChange(pageNumber)}
+        <Pagination className={className}>
+            <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onPageChange(pageIndex - 1);
+                        }}
+                        aria-disabled={pageIndex === 0}
+                        className={
+                            pageIndex === 0 ? 'opacity-50' : 'cursor-pointer'
+                        }
+                    />
+                </PaginationItem>
+                {visiblePages.map((idx) => (
+                    <PaginationItem key={idx}>
+                        <PaginationLink
+                            className={
+                                idx === pageIndex
+                                    ? 'bg-gray-200 cursor-pointer'
+                                    : 'cursor-pointer'
+                            }
+                            aria-current={
+                                idx === pageIndex ? 'page' : undefined
+                            }
+                            onClick={() => onPageChange(idx)}
                         >
-                            {pageNumber + 1}
-                        </Button>
-                    );
-                })}
-                {pageCount > 5 && (
+                            {idx + 1}
+                        </PaginationLink>
+                    </PaginationItem>
+                ))}
+
+                {end < pageCount - 1 && (
                     <>
-                        <span className="mx-1 text-gray-400">...</span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 min-w-[32px] rounded-md px-3 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                            onClick={() => onPageChange(pageCount - 1)}
-                        >
-                            {pageCount}
-                        </Button>
+                        {end < pageCount - 2 && (
+                            <PaginationEllipsis className="px-2" />
+                        )}
+                        <PaginationItem>
+                            <PaginationLink
+                                onClick={() => onPageChange(pageCount - 1)}
+                            >
+                                {pageCount}
+                            </PaginationLink>
+                        </PaginationItem>
                     </>
                 )}
-            </div>
-
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full p-0 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                onClick={() => onPageChange(pageIndex - 1)}
-                disabled={pageIndex === pageCount - 1}
-            >
-                <span className="sr-only">Go to next page</span>
-                <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full p-0 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                onClick={() => onPageChange(Math.max(pageCount - 1, 0))}
-                disabled={pageIndex === pageCount - 1}
-            >
-                <span className="sr-only">Go to last page</span>
-                <ChevronsRight className="h-4 w-4" />
-            </Button>
-        </div>
+                <PaginationItem>
+                    <PaginationNext
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onPageChange(pageIndex + 1);
+                        }}
+                        aria-disabled={pageIndex == pageCount - 1}
+                        className={
+                            pageIndex === pageCount - 1
+                                ? 'pointer-events-none opacity-50'
+                                : 'cursor-pointer'
+                        }
+                    />
+                </PaginationItem>
+            </PaginationContent>
+        </Pagination>
     );
 };
