@@ -8,6 +8,5 @@ pub use get_all::*;
 use crate::state::ApiState;
 
 pub fn build() -> Router<Arc<ApiState>> {
-    Router::new()
-        .route("/tag", routing::get(get_all))
+    Router::new().route("/tag", routing::get(get_all))
 }
