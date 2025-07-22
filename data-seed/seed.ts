@@ -7,12 +7,13 @@ import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 
+if (!process.env.DATABASE_URL) {
+    console.error('❌ Missing DATABASE_URL in .env');
+    process.exit(1);
+}
+
 const DB_CONFIG = {
-    user: 'postgres', // Change this
-    host: 'localhost', // Change this
-    database: 'blood_donation', // Change this
-    password: '12345', // Change this
-    port: 5432,
+    connectionString: process.env.DATABASE_URL,
 };
 
 const START_DATE = dayjs().subtract(1, 'year').toDate();
