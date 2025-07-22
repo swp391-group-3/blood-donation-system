@@ -219,23 +219,23 @@ async function seed() {
             const max_people = faker.number.int({ min: 10, max: 100 });
             let start: Date, end: Date;
             if (Math.random() < 0.3) {
-            start = randomDate(
-                dayjs().subtract(4, 'day').toDate(),
-                new Date()
-            );
-            end = dayjs(start)
-                .add(faker.number.int({ min: 1, max: 10 }), 'day')
-                .toDate();
+                start = randomDate(
+                    dayjs().subtract(4, 'day').toDate(),
+                    new Date()
+                );
+                end = dayjs(start)
+                    .add(faker.number.int({ min: 1, max: 10 }), 'day')
+                    .toDate();
             } else {
-            start = randomDate(START_DATE, END_DATE);
-            end = dayjs(start)
-                .add(faker.number.int({ min: 1, max: 10 }), 'day')
-                .toDate();
+                start = randomDate(START_DATE, END_DATE);
+                end = dayjs(start)
+                    .add(faker.number.int({ min: 1, max: 10 }), 'day')
+                    .toDate();
             }
             const hoursBefore = faker.number.int({ min: 1, max: 24 });
             const created_at = dayjs(start)
-            .subtract(hoursBefore, 'hour')
-            .toDate();
+                .subtract(hoursBefore, 'hour')
+                .toDate();
             const currentTime = new Date();
             const isActive = currentTime >= start && currentTime <= end;
 
@@ -321,14 +321,14 @@ async function seed() {
             const reason =
                 status === 'rejected'
                     ? pick([
-                          'Low hemoglobin level',
-                          'High blood pressure',
-                          'Recent illness or infection',
-                          'Not feeling well today',
-                          'Recent vaccination',
-                          'Ineligible due to recent travel',
-                          'Did not meet health requirements',
-                      ])
+                        'Low hemoglobin level',
+                        'High blood pressure',
+                        'Recent illness or infection',
+                        'Not feeling well today',
+                        'Recent vaccination',
+                        'Ineligible due to recent travel',
+                        'Did not meet health requirements',
+                    ])
                     : null;
 
             await client.query(
@@ -371,9 +371,9 @@ async function seed() {
                 const donationDate =
                     Math.random() < 0.3
                         ? randomDate(
-                              dayjs().subtract(90, 'day').toDate(),
-                              dayjs().toDate(),
-                          ) // 30% recent
+                            dayjs().subtract(90, 'day').toDate(),
+                            dayjs().toDate(),
+                        ) // 30% recent
                         : randomDate(START_DATE, END_DATE); // 70% older (could be expired)
 
                 let donationType = pick(DONATION_TYPES);
@@ -381,7 +381,7 @@ async function seed() {
                 let tries = 0;
                 while (
                     dayjs(donationDate).diff(last, 'day') <
-                        DONATION_INTERVALS[donationType] &&
+                    DONATION_INTERVALS[donationType] &&
                     tries < 10
                 ) {
                     donationType = pick(DONATION_TYPES);
