@@ -423,7 +423,7 @@ impl GetByDonorIdStmt {
 }
 pub fn count() -> CountStmt {
     CountStmt(crate::client::async_::Stmt::new(
-        "SELECT COUNT(id) FROM appointments WHERE ( $1::text IS NULL OR EXISTS ( SELECT 1 FROM accounts WHERE (name % $1 OR email % $1) AND accounts.id = appointments.donor_id LIMIT 1 ) ) AND ( $2::appointment_status IS NULL OR status = $2 ) AND status NOT IN ('done'::appointment_status, 'rejected'::appointment_status)",
+        "SELECT COUNT(id) FROM appointments WHERE ( $1::text IS NULL OR EXISTS ( SELECT 1 FROM accounts WHERE ((name LIKE '%' || $1 || '%' ) OR (email LIKE '%' || $1 || '%' )) AND accounts.id = appointments.donor_id LIMIT 1 ) ) AND ( $2::appointment_status IS NULL OR status = $2 ) AND status NOT IN ('done'::appointment_status, 'rejected'::appointment_status)",
     ))
 }
 pub struct CountStmt(crate::client::async_::Stmt);
@@ -457,7 +457,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM appointments WHERE ( $1::text IS NULL OR EXISTS ( SELECT 1 FROM accounts WHERE (name % $1 OR email % $1) AND accounts.id = appointments.donor_id LIMIT 1 ) ) AND ( $2::appointment_status IS NULL OR status = $2 ) AND status NOT IN ('done'::appointment_status, 'rejected'::appointment_status) LIMIT $3::int OFFSET $3::int * $4::int",
+        "SELECT * FROM appointments WHERE ( $1::text IS NULL OR EXISTS ( SELECT 1 FROM accounts WHERE ((name LIKE '%' || $1 || '%' ) OR (email LIKE '%' || $1 || '%' )) AND accounts.id = appointments.donor_id LIMIT 1 ) ) AND ( $2::appointment_status IS NULL OR status = $2 ) AND status NOT IN ('done'::appointment_status, 'rejected'::appointment_status) LIMIT $3::int OFFSET $3::int * $4::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);

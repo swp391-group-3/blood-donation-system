@@ -695,7 +695,7 @@ impl GetByRoleStmt {
 }
 pub fn count() -> CountStmt {
     CountStmt(crate::client::async_::Stmt::new(
-        "SELECT COUNT(id) FROM accounts WHERE ( $1::text IS NULL OR (name % $1 OR email % $1) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true",
+        "SELECT COUNT(id) FROM accounts WHERE ( $1::text IS NULL OR (name LIKE '%' || $1 || '%' ) OR (email LIKE '%' || $1 || '%' ) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true",
     ))
 }
 pub struct CountStmt(crate::client::async_::Stmt);
@@ -729,7 +729,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM accounts WHERE ( $1::text IS NULL OR (name % $1 OR email % $1) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true LIMIT $3::int OFFSET $3::int * $4::int",
+        "SELECT * FROM accounts WHERE ( $1::text IS NULL OR (name LIKE '%' || $1 || '%' ) OR (email LIKE '%' || $1 || '%' ) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true LIMIT $3::int OFFSET $3::int * $4::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);

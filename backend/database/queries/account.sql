@@ -66,7 +66,8 @@ SELECT COUNT(id)
 FROM accounts
 WHERE (
     :query::text IS NULL OR 
-    (name % :query OR email % :query)
+    (name LIKE '%' || :query || '%' ) OR
+    (email LIKE '%' || :query || '%' )
 ) AND (
     :role::role IS NULL OR role = :role
 ) AND is_active = true;
@@ -76,7 +77,8 @@ SELECT *
 FROM accounts
 WHERE (
     :query::text IS NULL OR 
-    (name % :query OR email % :query)
+    (name LIKE '%' || :query || '%' ) OR
+    (email LIKE '%' || :query || '%' )
 ) AND (
     :role::role IS NULL OR role = :role
 ) AND is_active = true
