@@ -217,11 +217,25 @@ async function seed() {
             const priority = pick(PRIORITIES);
             const title = `Blood Drive - ${priority}`;
             const max_people = faker.number.int({ min: 10, max: 100 });
-            const start = randomDate(START_DATE, END_DATE);
-            const end = dayjs(start)
+            let start: Date, end: Date;
+            if (Math.random() < 0.3) {
+            start = randomDate(
+                dayjs().subtract(4, 'day').toDate(),
+                new Date()
+            );
+            end = dayjs(start)
                 .add(faker.number.int({ min: 1, max: 10 }), 'day')
                 .toDate();
-            const created_at = randomDate(START_DATE, END_DATE);
+            } else {
+            start = randomDate(START_DATE, END_DATE);
+            end = dayjs(start)
+                .add(faker.number.int({ min: 1, max: 10 }), 'day')
+                .toDate();
+            }
+            const hoursBefore = faker.number.int({ min: 1, max: 24 });
+            const created_at = dayjs(start)
+            .subtract(hoursBefore, 'hour')
+            .toDate();
             const currentTime = new Date();
             const isActive = currentTime >= start && currentTime <= end;
 
