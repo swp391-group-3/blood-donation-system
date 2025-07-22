@@ -5,6 +5,7 @@ import QueryProvider from './query-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/header';
 import { BloodDonationChatbot } from '@/components/chatbot';
+import { Navbar1Demo } from '@/components/header2';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
