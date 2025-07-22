@@ -85,8 +85,6 @@ function Page() {
     // const bloodGroupData = getBloodGroupData(accounts).sort(
     //     (a, b) => b.value - a.value,
     // );
-    console.log({ bloodRequests });
-    console.log({ donations });
 
     const { data: stats } = useAdminStats();
 
