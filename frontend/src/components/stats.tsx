@@ -1,35 +1,83 @@
-import { LucideIcon } from 'lucide-react';
-import { PropsWithChildren } from 'react';
+import { cn } from '@/lib/utils';
+import { JSX, PropsWithChildren } from 'react';
 
-export interface Props {
-    icon: LucideIcon;
-    color: string;
-    label: string;
-    description: string;
-    value: string | number;
-}
+export const StatsIcon = ({
+    children,
+    className,
+    ...props
+}: PropsWithChildren<JSX.IntrinsicElements['div']>) => {
+    return (
+        <div
+            className={cn(
+                className,
+                'inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200',
+            )}
+            {...props}
+        >
+            {children}
+        </div>
+    );
+};
+
+export const StatsLabel = ({
+    children,
+    className,
+    ...props
+}: PropsWithChildren<JSX.IntrinsicElements['div']>) => {
+    return (
+        <div
+            className={cn(
+                className,
+                'text-sm font-semibold text-slate-900 mb-1',
+            )}
+            {...props}
+        >
+            {children}
+        </div>
+    );
+};
+
+export const StatsDescription = ({
+    children,
+    className,
+    ...props
+}: PropsWithChildren<JSX.IntrinsicElements['div']>) => {
+    return (
+        <div className={cn(className, 'text-xs text-slate-500')} {...props}>
+            {children}
+        </div>
+    );
+};
+
+export const StatsValue = ({
+    children,
+    className,
+    ...props
+}: PropsWithChildren<JSX.IntrinsicElements['div']>) => {
+    return (
+        <div
+            className={cn(className, 'text-3xl font-bold text-slate-900 mb-2')}
+            {...props}
+        >
+            {children}
+        </div>
+    );
+};
 
 export const Stats = ({
-    icon: Icon,
-    color,
-    label,
-    description,
-    value,
-}: Props) => {
+    children,
+    className,
+    ...props
+}: PropsWithChildren<JSX.IntrinsicElements['div']>) => {
     return (
-        <div className="mx-auto w-full text-center p-6 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition-all duration-200 hover:shadow-lg hover:shadow-slate-200/50">
-            <div
-                className={`bg-${color}-50 text-${color}-600 inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200`}
-            >
-                <Icon />
-            </div>
-            <div className="text-3xl font-bold text-slate-900 mb-2">
-                {value}
-            </div>
-            <div className="text-sm font-semibold text-slate-900 mb-1">
-                {label}
-            </div>
-            <div className="text-xs text-slate-500">{description}</div>
+        <div
+            className={cn(
+                className,
+                'mx-auto w-full text-center p-6 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition-all duration-200 hover:shadow-lg hover:shadow-slate-200/50',
+            )}
+            {...props}
+        >
+            {children}
         </div>
     );
 };
