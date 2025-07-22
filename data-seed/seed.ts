@@ -8,10 +8,10 @@ import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 
 const DB_CONFIG = {
-    user: 'postgres', //change this
-    host: 'localhost', //change this
-    database: 'blood_donation', //change this
-    password: '12345', //change this
+    user: 'postgres', // Change this
+    host: 'localhost', // Change this
+    database: 'blood_donation', // Change this
+    password: '12345', // Change this
     port: 5432,
 };
 
@@ -212,7 +212,7 @@ async function seed() {
     const currentActiveRequests: string[] = [];
 
     for (const staffId of staffIds) {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 30; i++) { // Will be changed to 3
             const id = uuidv4();
             const priority = pick(PRIORITIES);
             const title = `Blood Drive - ${priority}`;
