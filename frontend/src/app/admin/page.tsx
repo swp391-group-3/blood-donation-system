@@ -32,6 +32,8 @@ import {
     Legend,
 } from 'recharts';
 import { useAdminStats } from '@/hooks/use-admin-stats';
+import { useAdminDonation } from '@/hooks/use-admin-donations';
+import { useAdminRequest } from '@/hooks/use-admin-requests';
 
 const renderCustomizedLabel = ({
     cx,
@@ -76,14 +78,18 @@ const renderCustomizedLabel = ({
 
 function Page() {
     // const { data: accounts = [] } = useAllAccounts();
-    // const { data: bloodRequests = [] } = useBloodRequestList();
-    // const { data: donations = [] } = useAllDonation();
+    const { data: bloodRequests = [] } = useAdminRequest();
+    const { data: donations = [] } = useAdminDonation();
     // const { data: bloodBags } = useAllBloodBag();
-    // const dataTrend = getTrendData(donations, bloodRequests);
+    const dataTrend = getTrendData(donations, bloodRequests);
     // const bloodGroupData = getBloodGroupData(accounts).sort(
     //     (a, b) => b.value - a.value,
     // );
+    console.log({ bloodRequests });
+    console.log({ donations });
+
     const { data: stats } = useAdminStats();
+
 
 
     return (
@@ -178,7 +184,7 @@ function Page() {
                                         height={300}
                                     >
                                         <LineChart
-                                            // data={dataTrend}
+                                            data={dataTrend}
                                             margin={{
                                                 top: 5,
                                                 right: 30,
