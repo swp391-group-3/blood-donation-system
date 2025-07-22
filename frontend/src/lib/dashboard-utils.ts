@@ -1,5 +1,5 @@
 import { Account, Staff } from './api/dto/account';
-import { bloodGroupLabels } from './api/dto/blood-group';
+import { BloodGroup, bloodGroupLabels } from './api/dto/blood-group';
 import { BloodRequest } from './api/dto/blood-request';
 import { Donation } from './api/dto/donation';
 import Papa from 'papaparse';
@@ -34,6 +34,9 @@ export interface BloodRequestTrend {
     start_time: Date;
 }
 
+export interface BloodGroupDistribution {
+    blood_group: BloodGroup;
+}
 
 export function getTrendData(donations: DonationTrend[], requests: BloodRequestTrend[]) {
     const trends = initTrendData();
