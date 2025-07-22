@@ -8,7 +8,7 @@ export const useBloodGroupDistribution = () => {
         queryFn: async () => {
             const response = await fetchWrapper("/dashboard/blood-group-distribution")
 
-            return await deserialize<BloodGroupDistribution>(response);
+            return await deserialize<BloodGroupDistribution []>(response);
         },
         queryKey: ["/dashboard/blood-group-distribution"]
     })
