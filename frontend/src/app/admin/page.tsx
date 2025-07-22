@@ -34,6 +34,7 @@ import {
 import { useAdminStats } from '@/hooks/use-admin-stats';
 import { useAdminDonation } from '@/hooks/use-admin-donations';
 import { useAdminRequest } from '@/hooks/use-admin-requests';
+import { useBloodGroupDistribution } from '@/hooks/use-blood-group-distribution';
 
 const renderCustomizedLabel = ({
     cx,
@@ -77,14 +78,13 @@ const renderCustomizedLabel = ({
 };
 
 function Page() {
-    // const { data: accounts = [] } = useAllAccounts();
+    const { data: accounts = [] } = useBloodGroupDistribution();
     const { data: bloodRequests = [] } = useAdminRequest();
     const { data: donations = [] } = useAdminDonation();
-    // const { data: bloodBags } = useAllBloodBag();
     const dataTrend = getTrendData(donations, bloodRequests);
-    // const bloodGroupData = getBloodGroupData(accounts).sort(
-    //     (a, b) => b.value - a.value,
-    // );
+    const bloodGroupData = getBloodGroupData(accounts).sort(
+        (a, b) => b.value - a.value,
+    );
 
     const { data: stats } = useAdminStats();
 
@@ -267,7 +267,7 @@ function Page() {
                                     >
                                         <PieChart>
                                             <Pie
-                                                // data={bloodGroupData}
+                                                data={bloodGroupData}
                                                 cx="50%"
                                                 cy="50%"
                                                 labelLine={false}
@@ -278,14 +278,14 @@ function Page() {
                                                 stroke="#ffffff"
                                                 strokeWidth={2}
                                             >
-                                                {/* {bloodGroupData.map(
+                                                {bloodGroupData.map(
                                                     (entry, index) => (
                                                         <Cell
                                                             key={`cell-${index}`}
                                                             fill={entry.color}
                                                         />
                                                     ),
-                                                )} */}
+                                                )}
                                             </Pie>
                                             <Tooltip />
                                             <Legend
@@ -345,32 +345,32 @@ function Page() {
                                             <div className="text-sm font-medium text-red-700 mb-1 flex items-center ">
                                                 Most Common Type
                                                 <span className="text-2xl font-bold text-red-600 ml-3">
-                                                    {/* {bloodGroupData[0].name} */}
+                                                    {bloodGroupData[0].name}
                                                 </span>
                                             </div>
                                             <div className="text-sm text-red-600">
-                                                {/* {(
+                                                {(
                                                     (bloodGroupData[0].value /
                                                         accounts.length) *
                                                     100
                                                 ).toFixed(2)}
-                                                % */}
+                                                %
                                             </div>
                                         </div>
                                         <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
                                             <div className="text-sm font-medium text-blue-700 mb-1">
                                                 Rarest Type
                                                 <span className="text-2xl font-bold text-blue-600 ml-3">
-                                                    {/* {bloodGroupData[1].name} */}
+                                                    {bloodGroupData[1].name}
                                                 </span>
                                             </div>
                                             <div className="text-sm text-blue-600">
-                                                {/* {(
+                                                {(
                                                     (bloodGroupData[1].value /
                                                         accounts.length) *
                                                     100
                                                 ).toFixed(2)}
-                                                % */}
+                                                %
                                             </div>
                                         </div>
                                     </div>

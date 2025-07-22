@@ -82,7 +82,7 @@ function initBloodGroupData() {
     }));
 }
 
-export function getBloodGroupData(accounts: Account[]) {
+export function getBloodGroupData(accounts: BloodGroupDistribution[]) {
     const bloodGroupData = initBloodGroupData();
 
     accounts.forEach((account) => {
