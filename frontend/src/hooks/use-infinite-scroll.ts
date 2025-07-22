@@ -34,6 +34,7 @@ export const useInfiteScroll = <F, T>(
     }, [filter]);
 
     return {
+        items,
         hasMore,
         next: () => {
             const next = pageIndex + 1;
