@@ -8,11 +8,18 @@ import { toast } from 'sonner';
 export const useRejectAppointment = (id: string) => {
     const router = useRouter();
     const queryClient = useQueryClient();
+
     return useMutation({
-        mutationFn: async (reason: string) => {
+        mutationFn: async ({
+            reason,
+            isBanned,
+        }: {
+            reason: string;
+            isBanned: boolean;
+        }) => {
             const response = await fetchWrapper(`/appointment/${id}/reject`, {
                 method: 'PATCH',
-                body: JSON.stringify({ reason }),
+                body: JSON.stringify({ reason, is_banned: isBanned }),
                 headers: {
                     'Content-Type': 'application/json',
                 },
