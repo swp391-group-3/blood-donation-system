@@ -173,8 +173,8 @@ async function seed() {
         const created_at = randomDate(START_DATE, END_DATE);
 
         await client.query(
-            `INSERT INTO accounts (id, role, email, password, phone, name, gender, address, birthday, blood_group, is_active, created_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,true,$11)`,
+            `INSERT INTO accounts (id, role, email, password, phone, name, gender, address, birthday, blood_group, is_active, created_at, is_banned)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,true,$11,false)`,
             [
                 id,
                 role,

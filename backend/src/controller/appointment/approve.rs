@@ -62,7 +62,7 @@ pub async fn approve(
         }
     };
 
-    let subject = "Appointment Approved".to_string();
+    let subject = "Blood Donation Support System - Appointment Approved".to_string();
 
     let body = format!(
         "<html>

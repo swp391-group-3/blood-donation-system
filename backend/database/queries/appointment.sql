@@ -57,11 +57,17 @@ SET status = :status
 WHERE id = :id;
 
 --! reject
-UPDATE appointments
-SET
-    status = 'rejected'::appointment_status,
-    reason = :reason
-WHERE id = :id;
+WITH updated_appointment AS (
+    UPDATE appointments
+    SET
+        status = 'rejected'::appointment_status,
+        reason = :reason
+    WHERE id = :id
+    RETURNING donor_id
+)
+UPDATE accounts
+SET is_banned = :is_banned
+WHERE id = (SELECT donor_id FROM updated_appointment);
 
 --! get_stats : AppointmentsStats()
 SELECT

@@ -133,6 +133,26 @@ pub async fn create(
         _ => {}
     }
 
+    match queries::account::get()
+        .bind(&database, &claims.sub)
+        .one()
+        .await
+    {
+        Ok(account) => {
+            if account.is_banned {
+                return Err(Error::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .message("You are banned from applying blood request".into())
+                    .build());
+            }
+        }
+        Err(error) => {
+            tracing::error!(?error, "Failed to check if account is banned or not");
+
+            return Err(Error::internal());
+        }
+    }
+
     let question_ids: HashSet<_> = match queries::question::get_all()
         .bind(&database)
         .map(|raw| raw.id)

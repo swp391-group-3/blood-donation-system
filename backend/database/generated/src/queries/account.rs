@@ -64,6 +64,7 @@ pub struct Account {
     pub blood_group: Option<ctypes::BloodGroup>,
     pub is_active: bool,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub is_banned: bool,
 }
 pub struct AccountBorrowed<'a> {
     pub id: uuid::Uuid,
@@ -78,6 +79,7 @@ pub struct AccountBorrowed<'a> {
     pub blood_group: Option<ctypes::BloodGroup>,
     pub is_active: bool,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub is_banned: bool,
 }
 impl<'a> From<AccountBorrowed<'a>> for Account {
     fn from(
@@ -94,6 +96,7 @@ impl<'a> From<AccountBorrowed<'a>> for Account {
             blood_group,
             is_active,
             created_at,
+            is_banned,
         }: AccountBorrowed<'a>,
     ) -> Self {
         Self {
@@ -109,6 +112,7 @@ impl<'a> From<AccountBorrowed<'a>> for Account {
             blood_group,
             is_active,
             created_at,
+            is_banned,
         }
     }
 }
@@ -606,6 +610,7 @@ impl GetStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),
@@ -643,6 +648,7 @@ impl GetByEmailStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),
@@ -680,6 +686,7 @@ impl GetByRoleStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),
@@ -754,6 +761,7 @@ impl GetAllStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),
