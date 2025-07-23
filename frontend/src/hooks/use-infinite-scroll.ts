@@ -2,7 +2,7 @@ import { Pagination } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-export const useInfiteScroll = <F, T>(
+export const useInfiniteScroll = <F, T>(
     filter: F,
     fetchData: (filter: F & { page_size?: number }) => Promise<Pagination<T>>,
 ) => {

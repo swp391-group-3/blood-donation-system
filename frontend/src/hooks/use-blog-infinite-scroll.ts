@@ -2,7 +2,7 @@
 
 import { buildParams, deserialize, fetchWrapper, Pagination } from '@/lib/api';
 import { Blog } from '@/lib/api/dto/blog';
-import { useInfiteScroll } from './use-infinite-scroll';
+import { useInfiniteScroll } from './use-infinite-scroll';
 
 export type Mode = 'MostRecent' | 'OldestFirst' | 'TitleAZ';
 
@@ -15,7 +15,7 @@ interface Filter {
 }
 
 export const useBlogList = (filter: Filter) => {
-    return useInfiteScroll<Filter, Blog>(filter, async (filter) => {
+    return useInfiniteScroll<Filter, Blog>(filter, async (filter) => {
         const params = buildParams(filter);
         const response = await fetchWrapper(`/blog?${params.toString()}`);
 
