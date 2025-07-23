@@ -3,9 +3,9 @@ import { BloodBag, BloodComponent } from '@/lib/api/dto/blood-bag';
 import { BloodGroup } from '@/lib/api/dto/blood-group';
 import { useQuery } from '@tanstack/react-query';
 
-type Mode = 'Compatible' | 'Exact';
+export type Mode = 'Compatible' | 'Exact';
 
-interface Filter {
+export interface Filter {
     blood_group?: BloodGroup;
     component?: BloodComponent;
     mode?: Mode;

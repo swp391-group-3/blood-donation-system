@@ -23,11 +23,6 @@ import {
     Plus,
     TriangleAlert,
 } from 'lucide-react';
-import {
-    Mode,
-    modes,
-    useBloodStorageList,
-} from '@/hooks/use-blood-storage-list';
 import { toast } from 'sonner';
 import {
     Select,
@@ -71,46 +66,47 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { getColumns } from './column';
+import { Mode, useAllBloodBag } from '@/hooks/use-all-blood-bag';
 
-const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
-    return [
-        {
-            label: 'Total Bags',
-            value: bloodBags.length,
-            icon: Package,
-            description: 'Complete Inventory',
-            color: 'blue',
-        },
-        {
-            label: 'Available',
-            value: bloodBags.filter((bag) => !bag.is_used).length,
-            icon: Check,
-            description: 'Ready for use',
-            color: 'green',
-        },
-        {
-            label: 'Expiring Soon',
-            value: bloodBags.filter(
-                (bag) =>
-                    !bag.is_used &&
-                    !isExpired(new Date(bag.expired_time)) &&
-                    isExpiringSoon(new Date(bag.expired_time)),
-            ).length,
-            icon: TriangleAlert,
-            description: 'Within 7 days',
-            color: 'yellow',
-        },
-        {
-            label: 'Expired',
-            value: bloodBags.filter(
-                (bag) => !bag.is_used && !isExpired(new Date(bag.expired_time)),
-            ).length,
-            icon: CircleX,
-            description: 'Requires disposal',
-            color: 'rose',
-        },
-    ];
-};
+// const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
+//     return [
+//         {
+//             label: 'Total Bags',
+//             value: bloodBags.length,
+//             icon: Package,
+//             description: 'Complete Inventory',
+//             color: 'blue',
+//         },
+//         {
+//             label: 'Available',
+//             value: bloodBags.filter((bag) => !bag.is_used).length,
+//             icon: Check,
+//             description: 'Ready for use',
+//             color: 'green',
+//         },
+//         {
+//             label: 'Expiring Soon',
+//             value: bloodBags.filter(
+//                 (bag) =>
+//                     !bag.is_used &&
+//                     !isExpired(new Date(bag.expired_time)) &&
+//                     isExpiringSoon(new Date(bag.expired_time)),
+//             ).length,
+//             icon: TriangleAlert,
+//             description: 'Within 7 days',
+//             color: 'yellow',
+//         },
+//         {
+//             label: 'Expired',
+//             value: bloodBags.filter(
+//                 (bag) => !bag.is_used && !isExpired(new Date(bag.expired_time)),
+//             ).length,
+//             icon: CircleX,
+//             description: 'Requires disposal',
+//             color: 'rose',
+//         },
+//     ];
+// };
 
 const isExpired = (date: Date) => new Date(date) <= new Date();
 
@@ -125,7 +121,7 @@ export default function BloodStorage() {
     const [mode, setMode] = useState<Mode>('Compatible');
     const [openRequestDialog, setOpenRequestDialog] = useState(false);
     const [pagination, setPagination] = useState({
-        pageIndex: 1,
+        pageIndex: 0,
         pageSize: 10,
     });
 
@@ -136,16 +132,18 @@ export default function BloodStorage() {
         data: bloodBags,
         isPending,
         error,
-    } = useBloodStorageList({
+    } = useAllBloodBag({
         blood_group: bloodGroup === 'all' ? undefined : bloodGroup,
         component: component === 'all' ? undefined : component,
         mode,
+        page_index: pagination.pageIndex,
+        page_size: pagination.pageSize,
     });
 
-    const stats = useMemo(
-        () => (bloodBags ? getStats(bloodBags) : undefined),
-        [bloodBags],
-    );
+    // const stats = useMemo(
+    //     () => (bloodBags ? getStats(bloodBags) : undefined),
+    //     [bloodBags],
+    // );
     const columns = useMemo(
         () =>
             getColumns((bag) => {
@@ -155,17 +153,17 @@ export default function BloodStorage() {
         [],
     );
 
-    const pageCount = Math.ceil(bloodBags?.length || 0 / pagination.pageSize);
-
     const table = useReactTable({
-        data: bloodBags || [],
-        columns,
-        state: {
-            pagination,
-        },
-        onPaginationChange: setPagination,
+        data: bloodBags?.data || [],
+        columns: columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        rowCount: bloodBags?.element_count ?? 0,
+        initialState: {
+            pagination,
+        },
     });
 
     if (isPending) {
@@ -190,11 +188,11 @@ export default function BloodStorage() {
                 </HeroDescription>
             </Hero>
 
-            <StatsGrid>
-                {stats!.map((entry, index) => (
-                    <Stats key={index} {...entry} />
-                ))}
-            </StatsGrid>
+            {/* <StatsGrid> */}
+            {/*     {stats!.map((entry, index) => ( */}
+            {/*         <Stats key={index} {...entry} /> */}
+            {/*     ))} */}
+            {/* </StatsGrid> */}
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col justify-between sm:flex-row gap-4 mb-10">
