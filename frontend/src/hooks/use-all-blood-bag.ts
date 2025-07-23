@@ -3,7 +3,8 @@ import { BloodBag, BloodComponent } from '@/lib/api/dto/blood-bag';
 import { BloodGroup } from '@/lib/api/dto/blood-group';
 import { useQuery } from '@tanstack/react-query';
 
-export type Mode = 'Compatible' | 'Exact';
+export const modes = ['Compatible', 'Exact'];
+export type Mode = (typeof modes)[number];
 
 export interface Filter {
     blood_group?: BloodGroup;

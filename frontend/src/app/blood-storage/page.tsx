@@ -7,22 +7,12 @@ import {
     HeroKeyword,
     HeroTitle,
 } from '@/components/hero';
-import { StatsGrid, Stats, Props as StatsProps } from '@/components/stats';
 import {
     BloodBag,
     BloodComponent,
     bloodComponents,
 } from '@/lib/api/dto/blood-bag';
-import {
-    Blend,
-    Check,
-    CircleX,
-    Droplet,
-    Filter,
-    Package,
-    Plus,
-    TriangleAlert,
-} from 'lucide-react';
+import { Blend, Droplet, Filter, Package, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import {
     Select,
@@ -47,7 +37,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { formatDateTime } from '@/lib/utils';
-import { differenceInCalendarWeeks } from 'date-fns';
 import {
     Dialog,
     DialogContent,
@@ -66,7 +55,8 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { getColumns } from './column';
-import { Mode, useAllBloodBag } from '@/hooks/use-all-blood-bag';
+import { Mode, modes, useAllBloodBag } from '@/hooks/use-all-blood-bag';
+import { PaginationControl } from '@/components/pagination-control';
 
 // const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
 //     return [
@@ -108,10 +98,10 @@ import { Mode, useAllBloodBag } from '@/hooks/use-all-blood-bag';
 //     ];
 // };
 
-const isExpired = (date: Date) => new Date(date) <= new Date();
-
-const isExpiringSoon = (date: Date) =>
-    differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
+// const isExpired = (date: Date) => new Date(date) <= new Date();
+//
+// const isExpiringSoon = (date: Date) =>
+//     differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
 
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
@@ -270,7 +260,7 @@ export default function BloodStorage() {
                 </div>
 
                 <div className="rounded-md border">
-                    {!bloodBags || bloodBags.length === 0 ? (
+                    {!bloodBags || bloodBags.data.length === 0 ? (
                         <EmptyState
                             className="mx-auto"
                             title="No blood bags found"
@@ -324,47 +314,16 @@ export default function BloodStorage() {
                                     ))}
                                 </TableBody>
                             </Table>
-
-                            <div className="flex justify-between items-center mt-4 px-4 pb-2">
-                                <div className="text-sm text-slate-600">
-                                    Page {pagination.pageIndex + 1} of{' '}
-                                    {pageCount}
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={pagination.pageIndex === 0}
-                                        onClick={() =>
-                                            setPagination((prev) => ({
-                                                ...prev,
-                                                pageIndex: prev.pageIndex - 1,
-                                            }))
-                                        }
-                                    >
-                                        Previous
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={
-                                            pagination.pageIndex + 1 >=
-                                            pageCount
-                                        }
-                                        onClick={() =>
-                                            setPagination((prev) => ({
-                                                ...prev,
-                                                pageIndex: prev.pageIndex + 1,
-                                            }))
-                                        }
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </div>
                         </>
                     )}
                 </div>
+
+                <PaginationControl
+                    className="m-4"
+                    pageCount={table.getPageCount()}
+                    pageIndex={pagination.pageIndex}
+                    onPageChange={table.setPageIndex}
+                />
 
                 <Dialog open={showUseDialog} onOpenChange={setShowUseDialog}>
                     <DialogContent className="max-w-md">
