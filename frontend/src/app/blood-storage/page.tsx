@@ -7,27 +7,12 @@ import {
     HeroKeyword,
     HeroTitle,
 } from '@/components/hero';
-import { StatsGrid, Stats, Props as StatsProps } from '@/components/stats';
 import {
     BloodBag,
     BloodComponent,
     bloodComponents,
 } from '@/lib/api/dto/blood-bag';
-import {
-    Blend,
-    Check,
-    CircleX,
-    Droplet,
-    Filter,
-    Package,
-    Plus,
-    TriangleAlert,
-} from 'lucide-react';
-import {
-    Mode,
-    modes,
-    useBloodStorageList,
-} from '@/hooks/use-blood-storage-list';
+import { Blend, Droplet, Filter, Package, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import {
     Select,
@@ -52,7 +37,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { formatDateTime } from '@/lib/utils';
-import { differenceInCalendarWeeks } from 'date-fns';
 import {
     Dialog,
     DialogContent,
@@ -71,51 +55,53 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { getColumns } from './column';
+import { Mode, modes, useAllBloodBag } from '@/hooks/use-all-blood-bag';
+import { PaginationControl } from '@/components/pagination-control';
 
-const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
-    return [
-        {
-            label: 'Total Bags',
-            value: bloodBags.length,
-            icon: Package,
-            description: 'Complete Inventory',
-            color: 'blue',
-        },
-        {
-            label: 'Available',
-            value: bloodBags.filter((bag) => !bag.is_used).length,
-            icon: Check,
-            description: 'Ready for use',
-            color: 'green',
-        },
-        {
-            label: 'Expiring Soon',
-            value: bloodBags.filter(
-                (bag) =>
-                    !bag.is_used &&
-                    !isExpired(new Date(bag.expired_time)) &&
-                    isExpiringSoon(new Date(bag.expired_time)),
-            ).length,
-            icon: TriangleAlert,
-            description: 'Within 7 days',
-            color: 'yellow',
-        },
-        {
-            label: 'Expired',
-            value: bloodBags.filter(
-                (bag) => !bag.is_used && !isExpired(new Date(bag.expired_time)),
-            ).length,
-            icon: CircleX,
-            description: 'Requires disposal',
-            color: 'rose',
-        },
-    ];
-};
+// const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
+//     return [
+//         {
+//             label: 'Total Bags',
+//             value: bloodBags.length,
+//             icon: Package,
+//             description: 'Complete Inventory',
+//             color: 'blue',
+//         },
+//         {
+//             label: 'Available',
+//             value: bloodBags.filter((bag) => !bag.is_used).length,
+//             icon: Check,
+//             description: 'Ready for use',
+//             color: 'green',
+//         },
+//         {
+//             label: 'Expiring Soon',
+//             value: bloodBags.filter(
+//                 (bag) =>
+//                     !bag.is_used &&
+//                     !isExpired(new Date(bag.expired_time)) &&
+//                     isExpiringSoon(new Date(bag.expired_time)),
+//             ).length,
+//             icon: TriangleAlert,
+//             description: 'Within 7 days',
+//             color: 'yellow',
+//         },
+//         {
+//             label: 'Expired',
+//             value: bloodBags.filter(
+//                 (bag) => !bag.is_used && !isExpired(new Date(bag.expired_time)),
+//             ).length,
+//             icon: CircleX,
+//             description: 'Requires disposal',
+//             color: 'rose',
+//         },
+//     ];
+// };
 
-const isExpired = (date: Date) => new Date(date) <= new Date();
-
-const isExpiringSoon = (date: Date) =>
-    differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
+// const isExpired = (date: Date) => new Date(date) <= new Date();
+//
+// const isExpiringSoon = (date: Date) =>
+//     differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
 
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
@@ -125,7 +111,7 @@ export default function BloodStorage() {
     const [mode, setMode] = useState<Mode>('Compatible');
     const [openRequestDialog, setOpenRequestDialog] = useState(false);
     const [pagination, setPagination] = useState({
-        pageIndex: 1,
+        pageIndex: 0,
         pageSize: 10,
     });
 
@@ -136,16 +122,18 @@ export default function BloodStorage() {
         data: bloodBags,
         isPending,
         error,
-    } = useBloodStorageList({
+    } = useAllBloodBag({
         blood_group: bloodGroup === 'all' ? undefined : bloodGroup,
         component: component === 'all' ? undefined : component,
         mode,
+        page_index: pagination.pageIndex,
+        page_size: pagination.pageSize,
     });
 
-    const stats = useMemo(
-        () => (bloodBags ? getStats(bloodBags) : undefined),
-        [bloodBags],
-    );
+    // const stats = useMemo(
+    //     () => (bloodBags ? getStats(bloodBags) : undefined),
+    //     [bloodBags],
+    // );
     const columns = useMemo(
         () =>
             getColumns((bag) => {
@@ -155,17 +143,17 @@ export default function BloodStorage() {
         [],
     );
 
-    const pageCount = Math.ceil(bloodBags?.length || 0 / pagination.pageSize);
-
     const table = useReactTable({
-        data: bloodBags || [],
-        columns,
-        state: {
-            pagination,
-        },
-        onPaginationChange: setPagination,
+        data: bloodBags?.data || [],
+        columns: columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        rowCount: bloodBags?.element_count ?? 0,
+        initialState: {
+            pagination,
+        },
     });
 
     if (isPending) {
@@ -190,11 +178,11 @@ export default function BloodStorage() {
                 </HeroDescription>
             </Hero>
 
-            <StatsGrid>
-                {stats!.map((entry, index) => (
-                    <Stats key={index} {...entry} />
-                ))}
-            </StatsGrid>
+            {/* <StatsGrid> */}
+            {/*     {stats!.map((entry, index) => ( */}
+            {/*         <Stats key={index} {...entry} /> */}
+            {/*     ))} */}
+            {/* </StatsGrid> */}
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col justify-between sm:flex-row gap-4 mb-10">
@@ -272,7 +260,7 @@ export default function BloodStorage() {
                 </div>
 
                 <div className="rounded-md border">
-                    {!bloodBags || bloodBags.length === 0 ? (
+                    {!bloodBags || bloodBags.data.length === 0 ? (
                         <EmptyState
                             className="mx-auto"
                             title="No blood bags found"
@@ -326,47 +314,16 @@ export default function BloodStorage() {
                                     ))}
                                 </TableBody>
                             </Table>
-
-                            <div className="flex justify-between items-center mt-4 px-4 pb-2">
-                                <div className="text-sm text-slate-600">
-                                    Page {pagination.pageIndex + 1} of{' '}
-                                    {pageCount}
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={pagination.pageIndex === 0}
-                                        onClick={() =>
-                                            setPagination((prev) => ({
-                                                ...prev,
-                                                pageIndex: prev.pageIndex - 1,
-                                            }))
-                                        }
-                                    >
-                                        Previous
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={
-                                            pagination.pageIndex + 1 >=
-                                            pageCount
-                                        }
-                                        onClick={() =>
-                                            setPagination((prev) => ({
-                                                ...prev,
-                                                pageIndex: prev.pageIndex + 1,
-                                            }))
-                                        }
-                                    >
-                                        Next
-                                    </Button>
-                                </div>
-                            </div>
                         </>
                     )}
                 </div>
+
+                <PaginationControl
+                    className="m-4"
+                    pageCount={table.getPageCount()}
+                    pageIndex={pagination.pageIndex}
+                    onPageChange={table.setPageIndex}
+                />
 
                 <Dialog open={showUseDialog} onOpenChange={setShowUseDialog}>
                     <DialogContent className="max-w-md">

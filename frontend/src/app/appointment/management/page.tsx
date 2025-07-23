@@ -7,20 +7,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Filter,
-    Droplets,
-    Clock,
-    CheckCircle,
-    XCircle,
-    Search,
-} from 'lucide-react';
-import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
-import { toast } from 'sonner';
-import { useMemo, useState } from 'react';
+import { Filter, Search } from 'lucide-react';
+import { useState } from 'react';
 import { capitalCase } from 'change-case';
 import { Hero, HeroDescription, HeroTitle } from '@/components/hero';
-import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
+import { Status, statuses } from '@/lib/api/dto/appointment';
 import { useAppointmentList } from '@/hooks/use-appointment-list';
 import {
     Table,
@@ -35,111 +26,79 @@ import {
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
+    PaginationState,
     useReactTable,
-    VisibilityState,
 } from '@tanstack/react-table';
-import { deserialize, fetchWrapper } from '@/lib/api';
-import { Account } from '@/lib/api/dto/account';
 import { columns } from './column';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
-import { PaginationRange } from '@/components/pagination-range';
+import { PaginationControl } from '@/components/pagination-control';
 
-const getStats = (appointments: Appointment[]): StatsProps[] => {
-    return [
-        {
-            label: 'Need Review',
-            value: appointments.filter((apt) => apt.status === 'on_process')
-                .length,
-            icon: Clock,
-            description: 'Requires staff attention',
-            color: 'yellow',
-        },
-        {
-            label: 'Approved',
-            value: appointments.filter((apt) => apt.status === 'approved')
-                .length,
-            icon: CheckCircle,
-            description: 'Ready for health check',
-            color: 'green',
-        },
-        {
-            label: 'Completed',
-            value: appointments.filter((apt) => apt.status === 'done').length,
-            icon: Droplets,
-            description: 'Donation that has been completed',
-            color: 'blue',
-        },
-        {
-            label: 'Rejected',
-            value: appointments.filter((apt) => apt.status === 'rejected')
-                .length,
-            icon: XCircle,
-            description: 'Did not meet criteria',
-            color: 'red',
-        },
-    ];
-};
+// const getStats = (appointments: Appointment[]): StatsProps[] => {
+//     return [
+//         {
+//             label: 'Need Review',
+//             value: appointments.filter((apt) => apt.status === 'on_process')
+//                 .length,
+//             icon: Clock,
+//             description: 'Requires staff attention',
+//             color: 'yellow',
+//         },
+//         {
+//             label: 'Approved',
+//             value: appointments.filter((apt) => apt.status === 'approved')
+//                 .length,
+//             icon: CheckCircle,
+//             description: 'Ready for health check',
+//             color: 'green',
+//         },
+//         {
+//             label: 'Completed',
+//             value: appointments.filter((apt) => apt.status === 'done').length,
+//             icon: Droplets,
+//             description: 'Donation that has been completed',
+//             color: 'blue',
+//         },
+//         {
+//             label: 'Rejected',
+//             value: appointments.filter((apt) => apt.status === 'rejected')
+//                 .length,
+//             icon: XCircle,
+//             description: 'Did not meet criteria',
+//             color: 'red',
+//         },
+//     ];
+// };
 
 export default function AppointmentManagementPage() {
-    const { data: appointments, isPending, error } = useAppointmentList();
-    const stats = useMemo(
-        () => (appointments ? getStats(appointments) : undefined),
-        [appointments],
-    );
     const [search, setSearch] = useState<string | undefined>();
     const [selectedStatus, setSelectedStatus] = useState<Status | 'all'>('all');
-    const filteredAppointments = useMemo(() => {
-        if (!appointments) return [];
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageSize: 10,
+        pageIndex: 0,
+    });
 
-        return appointments
-            .filter((apt) => apt.status !== 'done' && apt.status !== 'rejected')
-            .filter(
-                (apt) =>
-                    selectedStatus === 'all' || apt.status === selectedStatus,
-            )
-            .filter(async (apt) => {
-                if (!search) return true;
+    const { data: appointments } = useAppointmentList({
+        query: search,
+        status: selectedStatus === 'all' ? undefined : selectedStatus,
+        page_index: pagination.pageIndex,
+        page_size: pagination.pageSize,
+    });
+    // const stats = useMemo(
+    //     () => (appointments ? getStats(appointments?.data ?? []) : undefined),
+    //     [appointments],
+    // );
 
-                const searchTerm = search.toLowerCase().trim();
-                const response = await fetchWrapper(`/account/${apt.donor_id}`);
-                const donor: Account = await deserialize(response);
-
-                return (
-                    donor.name.toLowerCase().includes(searchTerm) ||
-                    donor.email.toLowerCase().includes(searchTerm)
-                );
-            });
-    }, [appointments, selectedStatus, search]);
-
-    // TODO: check pagination to see if it work
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-        {},
-    );
     const table = useReactTable({
-        data: filteredAppointments,
+        data: appointments?.data ?? [],
         columns: columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        onColumnVisibilityChange: setColumnVisibility,
-        state: {
-            columnVisibility,
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        rowCount: appointments?.element_count ?? 0,
+        initialState: {
+            pagination,
         },
     });
-
-    if (isPending) {
-        return <div></div>;
-    }
-
-    if (error) {
-        toast.error('Failed to fetch blood request list');
-        return <div></div>;
-    }
 
     return (
         <div className="flex-1 space-y-6 p-6">
@@ -150,11 +109,11 @@ export default function AppointmentManagementPage() {
                 </HeroDescription>
             </Hero>
 
-            <StatsGrid>
-                {stats!.map((entry, index) => (
-                    <Stats key={index} {...entry} />
-                ))}
-            </StatsGrid>
+            {/* <StatsGrid> */}
+            {/*     {stats!.map((entry, index) => ( */}
+            {/*         <Stats key={index} {...entry} /> */}
+            {/*     ))} */}
+            {/* </StatsGrid> */}
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
@@ -249,54 +208,13 @@ export default function AppointmentManagementPage() {
                         </TableBody>
                     </Table>
                 </div>
-                <Pagination className="m-8">
-                    <PaginationContent>
-                        {/* PREVIOUS */}
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    table.previousPage();
-                                }}
-                                aria-disabled={!table.getCanPreviousPage()}
-                                tabIndex={
-                                    !table.getCanPreviousPage() ? -1 : undefined
-                                }
-                                className={
-                                    !table.getCanPreviousPage()
-                                        ? 'pointer-events-none opacity-50'
-                                        : undefined
-                                }
-                            />
-                        </PaginationItem>
-                        {/* PAGE NUMBERS */}
-                        <PaginationRange
-                            pageIndex={table.getState().pagination.pageIndex}
-                            pageCount={table.getPageCount()}
-                            onPageChange={table.setPageIndex}
-                        />
-                        {/* NEXT */}
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    table.nextPage();
-                                }}
-                                aria-disabled={!table.getCanNextPage()}
-                                tabIndex={
-                                    !table.getCanNextPage() ? -1 : undefined
-                                }
-                                className={
-                                    !table.getCanNextPage()
-                                        ? 'pointer-events-none opacity-50'
-                                        : undefined
-                                }
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+
+                <PaginationControl
+                    className="m-4"
+                    pageCount={table.getPageCount()}
+                    pageIndex={pagination.pageIndex}
+                    onPageChange={table.setPageIndex}
+                />
             </div>
         </div>
     );

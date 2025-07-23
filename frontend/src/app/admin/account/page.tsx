@@ -11,22 +11,14 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
-import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
 import { Loader2, Search, Upload, UserPlus, Users } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Select,
     SelectContent,
@@ -46,10 +38,11 @@ import {
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
+    PaginationState,
     useReactTable,
 } from '@tanstack/react-table';
 import { columns } from './column';
-import { Account } from '@/lib/api/dto/account';
+import { Role } from '@/lib/api/dto/account';
 import FileUpload, {
     DropZone,
     FileError,
@@ -69,11 +62,15 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { useCreateStaffAccount } from '@/hooks/use-create-staff-account';
-import { PaginationRange } from '@/components/pagination-range';
+import { PaginationControl } from '@/components/pagination-control';
 
 function Page() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [roleFilter, setRoleFilter] = useState('all');
+    const [roleFilter, setRoleFilter] = useState<Role | 'all'>('all');
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageSize: 10,
+        pageIndex: 0,
+    });
     const [isAddStaff, setIsAddStaff] = useState(false);
 
     // File import state
@@ -82,7 +79,12 @@ function Page() {
     const { mutate, status } = useCreateStaffAccounts();
 
     // hooks for account
-    const { data: accounts = [] } = useAllAccounts();
+    const { data: accounts } = useAllAccounts({
+        query: searchTerm,
+        role: roleFilter === 'all' ? undefined : roleFilter,
+        page_index: pagination?.pageIndex,
+        page_size: pagination?.pageSize,
+    });
     const { mutation: mutationAccount, form: formAccount } =
         useCreateStaffAccount({
             onSuccess() {
@@ -122,26 +124,17 @@ function Page() {
     const onRemove = (fileId: string) => {
         setUploadFiles(uploadFiles.filter((file) => file.id !== fileId));
     };
-    const filtersAccounts: Account[] = useMemo(() => {
-        return accounts.filter((account) => {
-            const matchesSearch =
-                account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                account.email.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchRole =
-                roleFilter === 'all' || account.role === roleFilter;
-            return matchesSearch && matchRole;
-        });
-    }, [searchTerm, roleFilter, accounts]);
+
     const table = useReactTable({
-        data: filtersAccounts,
+        data: accounts?.data ?? [],
         columns: columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        rowCount: accounts?.element_count ?? 0,
         initialState: {
-            pagination: {
-                pageIndex: 0,
-                pageSize: 5,
-            },
+            pagination,
         },
     });
 
@@ -346,7 +339,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
-                                {accounts.length}
+                                {accounts?.element_count ?? 0}
                             </div>
                         </CardContent>
                     </Card>
@@ -368,7 +361,9 @@ function Page() {
                             </div>
                             <Select
                                 value={roleFilter}
-                                onValueChange={setRoleFilter}
+                                onValueChange={(value: Role | 'all') =>
+                                    setRoleFilter(value)
+                                }
                             >
                                 <SelectTrigger className="w-full sm:w-[180px]">
                                     <SelectValue placeholder="Filter by role" />
@@ -388,7 +383,7 @@ function Page() {
                 {/* USER TABLES */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Users ({filtersAccounts.length})</CardTitle>
+                        <CardTitle>Users ({table.getRowCount()})</CardTitle>
                         <CardDescription>
                             {' '}
                             Manage user accounts and their permissions{' '}
@@ -450,66 +445,14 @@ function Page() {
                             </TableBody>
                         </Table>
                     </CardContent>
-                    {/* Pagination */}
-                    <CardFooter>
-                        <Pagination>
-                            <PaginationContent>
-                                {/* PREVIOUS */}
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href="#"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            table.previousPage();
-                                        }}
-                                        aria-disabled={
-                                            !table.getCanPreviousPage()
-                                        }
-                                        tabIndex={
-                                            !table.getCanPreviousPage()
-                                                ? -1
-                                                : undefined
-                                        }
-                                        className={
-                                            !table.getCanPreviousPage()
-                                                ? 'pointer-events-none opacity-50'
-                                                : undefined
-                                        }
-                                    />
-                                </PaginationItem>
-                                {/* PAGE NUMBERS */}
-                                <PaginationRange
-                                    pageIndex={
-                                        table.getState().pagination.pageIndex
-                                    }
-                                    pageCount={table.getPageCount()}
-                                    onPageChange={table.setPageIndex}
-                                />
-                                {/* NEXT */}
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href="#"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            table.nextPage();
-                                        }}
-                                        aria-disabled={!table.getCanNextPage()}
-                                        tabIndex={
-                                            !table.getCanNextPage()
-                                                ? -1
-                                                : undefined
-                                        }
-                                        className={
-                                            !table.getCanNextPage()
-                                                ? 'pointer-events-none opacity-50'
-                                                : undefined
-                                        }
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </CardFooter>
                 </Card>
+
+                <PaginationControl
+                    className="m-4"
+                    pageCount={table.getPageCount()}
+                    pageIndex={pagination.pageIndex}
+                    onPageChange={table.setPageIndex}
+                />
             </div>
         </div>
     );

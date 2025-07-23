@@ -15,3 +15,10 @@ export interface BloodRequest {
     end_time: Date;
     is_editable: boolean;
 }
+
+export interface BloodRequestStats {
+    total_requests: number;
+    urgent_requests: number;
+    donors_needed: number;
+    recommended_requests: number;
+}

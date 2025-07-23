@@ -7,10 +7,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Filter, Calendar, Clock, CheckCircle, Activity } from 'lucide-react';
-import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
+import { Filter, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
-import { Appointment, Status, statuses } from '@/lib/api/dto/appointment';
+import { Status, statuses } from '@/lib/api/dto/appointment';
 import { useCurrentAccountAppointment } from '@/hooks/use-current-account-appointment';
 import { redirect } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -26,48 +25,48 @@ import { CardGrid } from '@/components/card-grid';
 import { AppointmentCard } from '@/components/appointment-card';
 import { QRDialog } from '@/components/qr-dialog';
 
-const getStats = (appointments: Appointment[]): StatsProps[] => {
-    return [
-        {
-            label: 'Total Appointments',
-            value: appointments.length.toString(),
-            icon: Calendar,
-            description: 'All appointments',
-            color: 'blue',
-        },
-        {
-            label: 'Approved',
-            value: appointments
-                .filter((apt) => apt.status === 'approved')
-                .length.toString(),
-            icon: CheckCircle,
-            description: 'Ready to donate',
-            color: 'emerald',
-        },
-        {
-            label: 'In Progress',
-            value: appointments
-                .filter(
-                    (apt) =>
-                        apt.status === 'on_process' ||
-                        apt.status === 'checked_in',
-                )
-                .length.toString(),
-            icon: Clock,
-            description: 'Pending & active',
-            color: 'amber',
-        },
-        {
-            label: 'Completed',
-            value: appointments
-                .filter((apt) => apt.status === 'done')
-                .length.toString(),
-            icon: Activity,
-            description: 'Successfully done',
-            color: 'purple',
-        },
-    ];
-};
+// const getStats = (appointments: Appointment[]): StatsProps[] => {
+//     return [
+//         {
+//             label: 'Total Appointments',
+//             value: appointments.length.toString(),
+//             icon: Calendar,
+//             description: 'All appointments',
+//             color: 'blue',
+//         },
+//         {
+//             label: 'Approved',
+//             value: appointments
+//                 .filter((apt) => apt.status === 'approved')
+//                 .length.toString(),
+//             icon: CheckCircle,
+//             description: 'Ready to donate',
+//             color: 'emerald',
+//         },
+//         {
+//             label: 'In Progress',
+//             value: appointments
+//                 .filter(
+//                     (apt) =>
+//                         apt.status === 'on_process' ||
+//                         apt.status === 'checked_in',
+//                 )
+//                 .length.toString(),
+//             icon: Clock,
+//             description: 'Pending & active',
+//             color: 'amber',
+//         },
+//         {
+//             label: 'Completed',
+//             value: appointments
+//                 .filter((apt) => apt.status === 'done')
+//                 .length.toString(),
+//             icon: Activity,
+//             description: 'Successfully done',
+//             color: 'purple',
+//         },
+//     ];
+// };
 
 export default function AppointmentPage() {
     const {
@@ -75,11 +74,12 @@ export default function AppointmentPage() {
         isPending,
         error,
     } = useCurrentAccountAppointment();
-    console.log(appointments);
-    const stats = useMemo(
-        () => (appointments ? getStats(appointments) : undefined),
-        [appointments],
-    );
+
+    // TODO: stats
+    // const stats = useMemo(
+    //     () => (appointments ? getStats(appointments) : undefined),
+    //     [appointments],
+    // );
     const [status, setStatus] = useState<Status>('approved');
     const filteredAppointments = useMemo(
         () =>
@@ -127,11 +127,11 @@ export default function AppointmentPage() {
                 </HeroDescription>
             </Hero>
 
-            <StatsGrid>
-                {stats!.map((entry, index) => (
-                    <Stats key={index} {...entry} />
-                ))}
-            </StatsGrid>
+            {/* <StatsGrid> */}
+            {/*     {stats!.map((entry, index) => ( */}
+            {/*         <Stats key={index} {...entry} /> */}
+            {/*     ))} */}
+            {/* </StatsGrid> */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div className="mb-12">
                     <div className="flex flex-col sm:flex-row gap-4 mb-10">

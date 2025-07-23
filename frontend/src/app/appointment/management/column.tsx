@@ -188,7 +188,7 @@ export const columns: ColumnDef<Appointment>[] = [
             return (
                 <>
                     {status === 'on_process' && (
-                        <ReviewDialog appointmentId={id}>
+                        <ReviewDialog appointment={row.original}>
                             <Button
                                 size="sm"
                                 className="bg-lime-600 hover:bg-lime-700 text-white rounded-lg"
