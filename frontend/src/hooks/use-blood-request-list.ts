@@ -3,7 +3,7 @@
 import { buildParams, deserialize, fetchWrapper, Pagination } from '@/lib/api';
 import { BloodGroup } from '@/lib/api/dto/blood-group';
 import { BloodRequest, Priority } from '@/lib/api/dto/blood-request';
-import { useInfiteScroll } from './use-infinite-scroll';
+import { useInfiniteScroll } from './use-infinite-scroll';
 
 interface Filter {
     query?: string;
@@ -14,7 +14,7 @@ interface Filter {
 }
 
 export const useBloodRequestList = (filter: Filter) => {
-    return useInfiteScroll<Filter, BloodRequest>(filter, async (filter) => {
+    return useInfiniteScroll<Filter, BloodRequest>(filter, async (filter) => {
         const params = buildParams(filter);
         const response = await fetchWrapper(
             `/blood-request?${params.toString()}`,
