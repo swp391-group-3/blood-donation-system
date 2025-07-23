@@ -63,6 +63,10 @@ export default function BloodRequestPage() {
     const { items, next, hasMore } = useBloodRequestList(filter);
     const { data: stats } = useBloodRequestStats();
 
+    // login for rendering blood request skeleton
+    const cols = 3;
+    const rem = items.length % cols;
+    const skeletonCount = rem === 0 ? cols : cols - rem;
     return (
         <div className="flex-1 space-y-6 p-6">
             <Hero>
@@ -181,7 +185,12 @@ export default function BloodRequestPage() {
                     dataLength={items.length}
                     next={next}
                     hasMore={hasMore}
-                    loader={<RequestCardSkeleton />}
+                    loader={<>
+
+                        {Array.from({ length: skeletonCount }).map((_, i) => {
+                            <RequestCardSkeleton key={i} />
+                        })}
+                    </>}
                 >
                     {items.length === 0 ? (
                         <EmptyState
