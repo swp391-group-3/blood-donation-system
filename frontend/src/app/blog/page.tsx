@@ -40,6 +40,10 @@ export default function BlogPage() {
     );
     const { items, next, hasMore } = useBlogList(filter);
     const { data: tags } = useTagList();
+    // logic for rendering skeleton
+    const cols = 3;
+    const rem = items.length % cols;
+    const skeletonCount = rem === 0 ? cols : cols - rem;
 
     return (
         <div>
@@ -123,7 +127,13 @@ export default function BlogPage() {
                     dataLength={items.length}
                     next={next}
                     hasMore={hasMore}
-                    loader={<BlogCardSkeleton />}
+                    loader={
+                        <>
+                            {Array.from({ length: skeletonCount }).map((_, i) => (
+                                <BlogCardSkeleton key={i} />
+                            ))}
+                        </>
+                    }
                 >
                     {items.map((blog) => (
                         <BlogCard key={blog.id} blog={blog} />
