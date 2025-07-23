@@ -45,6 +45,7 @@ import { RequestCard } from '@/components/request-card';
 import { useBloodRequestStats } from '@/hooks/use-blood-request-stats';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { EmptyState } from '@/components/ui/empty-state';
+import { RequestCardSkeleton } from '@/components/blood-request-skeleton';
 
 export default function BloodRequestPage() {
     const [priority, setPriority] = useState<Priority | undefined>();
@@ -180,7 +181,7 @@ export default function BloodRequestPage() {
                     dataLength={items.length}
                     next={next}
                     hasMore={hasMore}
-                    loader={<h4>Loading...</h4>}
+                    loader={<RequestCardSkeleton />}
                 >
                     {items.length === 0 ? (
                         <EmptyState
