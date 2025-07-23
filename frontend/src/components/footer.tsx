@@ -1,12 +1,12 @@
 import { Hexagon, Github, Twitter } from 'lucide-react';
 import { Footer } from '@/components/ui/footer';
+import { Logo } from '@/components/logo';
 
 function Demo() {
     return (
         <div className="w-full">
             <Footer
-                logo={<Hexagon className="h-10 w-10" />}
-                brandName="Awesome Corp"
+                logo={<Logo />}
                 socialLinks={[
                     {
                         icon: <Twitter className="h-5 w-5" />,
