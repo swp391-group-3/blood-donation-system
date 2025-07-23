@@ -23,6 +23,7 @@ import {
 import { useTagList } from '@/hooks/use-tag-list';
 import { BlogCard } from '@/components/blog-card';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import BlogCardSkeleton from '@/components/blog-skeleton';
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
@@ -122,7 +123,7 @@ export default function BlogPage() {
                     dataLength={items.length}
                     next={next}
                     hasMore={hasMore}
-                    loader={<h4>Loading...</h4>}
+                    loader={<BlogCardSkeleton />}
                 >
                     {items.map((blog) => (
                         <BlogCard key={blog.id} blog={blog} />
