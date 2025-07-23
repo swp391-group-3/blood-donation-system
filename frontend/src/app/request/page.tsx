@@ -64,7 +64,7 @@ export default function BloodRequestPage() {
     const { data: stats } = useBloodRequestStats();
 
     // login for rendering blood request skeleton
-    const cols = 3;
+    const cols = 2;
     const rem = items.length % cols;
     const skeletonCount = rem === 0 ? cols : cols - rem;
     return (
