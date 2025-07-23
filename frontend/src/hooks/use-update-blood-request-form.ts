@@ -9,10 +9,10 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 export const schema = z.object({
-    title: z.string().min(1, 'The title cannot be empty').optional(),
+    title: z.string().min(1, 'Blood Title must be included').optional(),
     priority: z
         .enum(priorities, {
-            errorMap: () => ({ message: 'Invalid Priority' }),
+            errorMap: () => ({ message: 'Priority is invalid' }),
         })
         .optional(),
     max_people: z.number().min(1, 'At least one people').optional(),

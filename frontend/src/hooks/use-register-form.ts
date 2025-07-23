@@ -13,13 +13,15 @@ import z from 'zod';
 export const schema = z.object({
     email: z.string().email(),
     password: z.string().nonempty({
-        message: 'Password must not be empty.',
+        message: 'Password must not be empty',
     }),
-    name: z.string().min(1, { message: 'Name must be provided.' }),
+    name: z.string().min(1, { message: 'Name must be provided' }),
     phone: z
         .string()
-        .regex(/0[\d]{9,9}/, { message: 'Phone must consist of 10 number' }),
-    address: z.string().min(1, { message: 'Address must be provided.' }),
+        .regex(/^0\d{9}$/, {
+            message: 'Phone must be exactly 10 digits',
+        }),
+    address: z.string().min(1, { message: 'Address must be provided' }),
     birthday: z.string(),
     blood_group: z.enum(bloodGroups),
     gender: z.enum(genders),
