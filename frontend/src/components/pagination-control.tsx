@@ -43,7 +43,7 @@ export const PaginationControl = ({
                 (pagination.pageIndex + 1) * pagination.pageSize,
                 itemCount,
             ),
-        [pagination],
+        [pagination, itemCount],
     );
 
     const getPageNumbers = () => {
