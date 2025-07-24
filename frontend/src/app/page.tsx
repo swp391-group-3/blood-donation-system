@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCurrentAccount } from '@/hooks/use-current-account';
-import { Demo } from '@/components/footer';
+import { MainFooter } from '@/components/footer';
 const steps = [
     {
         title: 'Registration',
@@ -171,7 +171,7 @@ export default function LandingPage() {
                     </div>
                 </section>
             </main>
-            <Demo />
+            <MainFooter />
         </div>
     );
 }
