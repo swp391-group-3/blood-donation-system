@@ -91,16 +91,13 @@ export default function QuestionPage() {
                             {filtered.map((question, index) => (
                                 <TableRow key={question.id}>
                                     <TableCell className="p-6 font-medium text-slate-900 ">
-                                        <div className="flex items-start gap-4">
+                                        <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-800 text-sm font-bold shadow-sm border border-purple-200">
                                                 {index + 1}
                                             </div>
                                             <div className="min-w-0 flex-1">
                                                 <div className="font-medium text-slate-900 leading-relaxed">
                                                     {question.content}
-                                                </div>
-                                                <div className="text-xs text-slate-500 mt-1">
-                                                    Question #{question.id}
                                                 </div>
                                             </div>
                                         </div>
