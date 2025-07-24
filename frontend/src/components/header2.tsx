@@ -25,8 +25,34 @@ import {
     FileText,
     Layers,
     HelpCircle,
+    Database,
+    CalendarCheck,
+    Users2,
+    LucideIcon,
+    User,
+    Droplets,
+    Shield,
+    Calendar,
+    Home,
+    LayoutDashboard,
+    FileEdit,
+    Activity,
+    Package,
+    BadgeQuestionMark,
+    Droplet,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Logo } from './logo';
+import { useCurrentAccount } from '@/hooks/use-current-account';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { AccountPicture } from './account-picture';
+import { AccountOverview } from './account-overview';
+import { Role } from '@/lib/api/dto/account';
 
 const gettingStartedItems = [
     {
@@ -97,6 +123,172 @@ const components = [
 export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { data: currentAccount } = useCurrentAccount();
+    const role = currentAccount?.role;
+
+    type NavItem =
+        | { label: string; href: string }
+        | {
+              label: string;
+              children: {
+                  label: string;
+                  href: string;
+                  icon?: LucideIcon;
+                  description?: string;
+              }[];
+          };
+
+    const guestAndDonorNav: NavItem[] = [
+        { label: 'Home', href: '/' },
+        { label: 'Blood Request', href: '/blood-request' },
+        { label: 'Blog', href: '/blog' },
+    ];
+
+    const staffNav: NavItem[] = [
+        ...guestAndDonorNav,
+        {
+            label: 'Management',
+            children: [
+                {
+                    label: 'Question',
+                    href: '/staff/questions',
+                    icon: HelpCircle,
+                    description: 'Manage FAQs and user inquiries',
+                },
+                {
+                    label: 'Storage',
+                    href: '/staff/storage',
+                    icon: Database,
+                    description: 'View and update blood stock',
+                },
+                {
+                    label: 'Appointment',
+                    href: '/staff/appointments',
+                    icon: CalendarCheck,
+                    description: 'Oversee scheduled appointments',
+                },
+            ],
+        },
+    ];
+
+    const adminNav: NavItem[] = [
+        { label: 'Home', href: '/' },
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        {
+            label: 'Management',
+            children: [
+                {
+                    label: 'Blog Management',
+                    href: '/admin/blogs',
+                    icon: FileText,
+                    description: 'Create and manage blog content',
+                },
+                {
+                    label: 'Account Management',
+                    href: '/admin/accounts',
+                    icon: Users2,
+                    description: 'Manage user and staff accounts',
+                },
+            ],
+        },
+    ];
+
+    let navItems: NavItem[] = [];
+
+    if (!role || role === 'donor') {
+        navItems = staffNav;
+    } else if (role === 'staff') {
+        navItems = staffNav;
+    } else if (role === 'admin') {
+        navItems = adminNav;
+    }
+
+    interface NavigationItem {
+        label: string;
+        icon: LucideIcon;
+        href: string;
+    }
+
+    const getNavigationItems = (role?: Role): NavigationItem[] => {
+        switch (role) {
+            case 'staff':
+                return [
+                    {
+                        label: 'Home',
+                        icon: Home,
+                        href: '/',
+                    },
+                    {
+                        label: 'Question',
+                        icon: FileEdit,
+                        href: 'question',
+                    },
+                    {
+                        label: 'Request',
+                        icon: Droplets,
+                        href: '/request',
+                    },
+                    {
+                        label: 'Appointment',
+                        icon: Activity,
+                        href: '/appointment/management',
+                    },
+                    {
+                        label: 'Storage',
+                        icon: Package,
+                        href: '/blood-storage',
+                    },
+                    {
+                        label: 'Blog',
+                        icon: FileText,
+                        href: '/blog',
+                    },
+                ];
+
+            case 'admin':
+                return [
+                    {
+                        label: 'Home',
+                        icon: Home,
+                        href: '/',
+                    },
+                    {
+                        label: 'Dashboard',
+                        icon: LayoutDashboard,
+                        href: '/admin',
+                    },
+                    {
+                        label: 'Account Management',
+                        icon: User,
+                        href: '/admin/account',
+                    },
+                    {
+                        label: 'Blog Management',
+                        icon: FileText,
+                        href: '/admin/blog',
+                    },
+                ];
+
+            default:
+                return [
+                    {
+                        label: 'Home',
+                        icon: Home,
+                        href: '/',
+                    },
+                    {
+                        label: 'Blood Request',
+                        icon: Droplets,
+                        href: '/request',
+                    },
+                    {
+                        label: 'Blog',
+                        icon: FileText,
+                        href: '/blog',
+                    },
+                ];
+        }
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -125,186 +317,141 @@ export function Navbar() {
                             navbarHeight,
                         )}
                     >
-                        {/* Logo */}
                         <div className="flex items-center space-x-2">
                             <Link
                                 href="/"
                                 className="flex items-center space-x-2"
                             >
-                                <div
-                                    className={cn(
-                                        'rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center transition-all duration-300 shadow-lg',
-                                        isScrolled
-                                            ? 'h-7 w-7'
-                                            : 'h-8 w-8 sm:h-9 sm:w-9',
-                                    )}
-                                >
-                                    <span
-                                        className={cn(
-                                            'text-primary-foreground font-bold transition-all duration-300',
-                                            isScrolled ? 'text-xs' : 'text-sm',
-                                        )}
-                                    >
-                                        L
-                                    </span>
-                                </div>
-                                <span
-                                    className={cn(
-                                        'font-bold transition-all duration-300 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent',
-                                        isScrolled
-                                            ? 'text-lg'
-                                            : 'text-xl sm:text-2xl',
-                                    )}
-                                >
-                                    Logo
-                                </span>
+                                <Logo />
                             </Link>
                         </div>
 
-                        {/* Centered Desktop Navigation */}
                         <div className="flex-1 flex justify-center mx-auto">
-                            <NavigationMenu className="hidden md:flex">
+                            <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
                                     <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="bg-transparent hover:bg-accent/80 data-[state=open]:bg-accent/80 transition-all duration-200 font-medium">
-                                            Getting started
+                                        <NavigationMenuLink
+                                            asChild
+                                            className={navigationMenuTriggerStyle()}
+                                        >
+                                            <Link href="/">Home</Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
+                                    <NavigationMenuItem>
+                                        <NavigationMenuLink
+                                            asChild
+                                            className={navigationMenuTriggerStyle()}
+                                        >
+                                            <Link href="/request">
+                                                Blood Request
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
+                                    <NavigationMenuItem>
+                                        <NavigationMenuLink
+                                            asChild
+                                            className={navigationMenuTriggerStyle()}
+                                        >
+                                            <Link href="/blog">Blog</Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
+                                    <NavigationMenuItem>
+                                        <NavigationMenuTrigger>
+                                            Management
                                         </NavigationMenuTrigger>
                                         <NavigationMenuContent>
-                                            <div className="w-[500px] p-6">
-                                                <div className="mb-6">
-                                                    <div className="flex items-center space-x-3 mb-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                                                            <BookOpen className="w-5 h-5 text-primary" />
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                                                                Get Started
-                                                            </h3>
-                                                            <p className="text-sm text-muted-foreground">
-                                                                Everything you
-                                                                need to begin
-                                                                building
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="grid gap-3">
-                                                    {gettingStartedItems.map(
-                                                        (item, index) => (
-                                                            <ListItem
-                                                                key={item.title}
-                                                                title={
-                                                                    item.title
-                                                                }
-                                                                href={item.href}
-                                                                icon={item.icon}
-                                                                delay={
-                                                                    index * 100
-                                                                }
-                                                            >
-                                                                {
-                                                                    item.description
-                                                                }
-                                                            </ListItem>
-                                                        ),
-                                                    )}
-                                                </div>
-                                            </div>
+                                            <ul className="grid w-[300px] gap-4">
+                                                <li>
+                                                    <NavigationMenuLink
+                                                        asChild
+                                                        className="mb-4"
+                                                    >
+                                                        <Link
+                                                            href="/question"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="flex items-start">
+                                                                <div className="p-1.5 bg-green-50 rounded-lg mr-4">
+                                                                    <BadgeQuestionMark className="h-4 w-4 text-green-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <span className="font-medium text-slate-900">
+                                                                        Questions
+                                                                    </span>
+                                                                    <div className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        the
+                                                                        question
+                                                                        for
+                                                                        blood
+                                                                        request
+                                                                        survey
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </NavigationMenuLink>
+                                                    <NavigationMenuLink
+                                                        asChild
+                                                        className="mb-4"
+                                                    >
+                                                        <Link
+                                                            href="/blood-storage"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="flex items-start">
+                                                                <div className="p-1.5 bg-red-50 rounded-lg mr-4">
+                                                                    <Droplet className="h-4 w-4 text-red-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <span className="font-medium text-slate-900">
+                                                                        Blood
+                                                                        Storage
+                                                                    </span>
+                                                                    <div className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        all
+                                                                        blood
+                                                                        bags
+                                                                        exist in
+                                                                        storage
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </NavigationMenuLink>
+                                                    <NavigationMenuLink asChild>
+                                                        <Link
+                                                            href="/appointment"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="flex items-start">
+                                                                <div className="p-1.5 bg-blue-50 rounded-lg mr-4">
+                                                                    <Calendar className="h-4 w-4 text-blue-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <span className="font-medium text-slate-900">
+                                                                        Appointment
+                                                                    </span>
+                                                                    <div className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        all the
+                                                                        appointment
+                                                                        of blood
+                                                                        requests
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </NavigationMenuLink>
+                                                </li>
+                                            </ul>
                                         </NavigationMenuContent>
-                                    </NavigationMenuItem>
-
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="bg-transparent hover:bg-accent/80 data-[state=open]:bg-accent/80 transition-all duration-200 font-medium">
-                                            Components
-                                        </NavigationMenuTrigger>
-                                        <NavigationMenuContent>
-                                            <div className="w-[600px] p-6">
-                                                <div className="mb-6">
-                                                    <div className="flex items-center space-x-3 mb-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/40 to-accent/20 flex items-center justify-center">
-                                                            <Layers className="w-5 h-5 text-accent-foreground" />
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="text-lg font-semibold">
-                                                                UI Components
-                                                            </h3>
-                                                            <p className="text-sm text-muted-foreground">
-                                                                Beautiful and
-                                                                accessible React
-                                                                components
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="grid gap-3 max-h-[400px] overflow-y-auto pr-2">
-                                                    {components.map(
-                                                        (component, index) => (
-                                                            <ListItem
-                                                                key={
-                                                                    component.title
-                                                                }
-                                                                title={
-                                                                    component.title
-                                                                }
-                                                                href={
-                                                                    component.href
-                                                                }
-                                                                icon={
-                                                                    component.icon
-                                                                }
-                                                                delay={
-                                                                    index * 50
-                                                                }
-                                                            >
-                                                                {
-                                                                    component.description
-                                                                }
-                                                            </ListItem>
-                                                        ),
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-
-                                    <NavigationMenuItem>
-                                        <Link
-                                            href="/docs"
-                                            legacyBehavior
-                                            passHref
-                                        >
-                                            <NavigationMenuLink
-                                                className={cn(
-                                                    navigationMenuTriggerStyle(),
-                                                    'bg-transparent hover:bg-accent/80 transition-all duration-200 font-medium',
-                                                )}
-                                            >
-                                                Documentation
-                                            </NavigationMenuLink>
-                                        </Link>
-                                    </NavigationMenuItem>
-
-                                    <NavigationMenuItem>
-                                        <Link
-                                            href="/pricing"
-                                            legacyBehavior
-                                            passHref
-                                        >
-                                            <NavigationMenuLink
-                                                className={cn(
-                                                    navigationMenuTriggerStyle(),
-                                                    'bg-transparent hover:bg-accent/80 transition-all duration-200 font-medium',
-                                                )}
-                                            >
-                                                Pricing
-                                            </NavigationMenuLink>
-                                        </Link>
                                     </NavigationMenuItem>
                                 </NavigationMenuList>
                             </NavigationMenu>
                         </div>
 
-                        {/* Desktop CTA */}
                         <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
                             <Button
                                 variant="ghost"
@@ -349,14 +496,7 @@ export function Navbar() {
                                     {/* Header */}
                                     <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-background to-accent/10">
                                         <div className="flex items-center space-x-3">
-                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
-                                                <span className="text-primary-foreground font-bold text-sm">
-                                                    L
-                                                </span>
-                                            </div>
-                                            <span className="font-bold text-lg bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-                                                Logo
-                                            </span>
+                                            <Logo />
                                         </div>
                                     </div>
 
