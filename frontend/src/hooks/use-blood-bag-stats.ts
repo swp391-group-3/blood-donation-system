@@ -9,6 +9,6 @@ export const useBloodBagStats = () => {
 
             return await deserialize<BloodBagStats>(response);
         },
-        queryKey: ['blood-request', 'stats'],
+        queryKey: ['blood-bag', 'stats'],
     });
 };
