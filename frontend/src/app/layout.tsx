@@ -3,9 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import QueryProvider from './query-provider';
 import { Toaster } from '@/components/ui/sonner';
-import { Header } from '@/components/header';
+import { Navbar } from '@/components/header2';
 import { BloodDonationChatbot } from '@/components/chatbot';
-import { Navbar1Demo } from '@/components/header2';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -33,7 +32,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <QueryProvider>
-                    <Header />
+                    <Navbar />
                     {children}
                     <BloodDonationChatbot />
                     <Toaster richColors />
