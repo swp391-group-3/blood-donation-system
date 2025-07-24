@@ -61,7 +61,7 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    <div className="w-full lg:w-1/3">
+                    <div className="w-full lg:w-1/3 px-1 sm:px-0">
                         <h4 className="text-lg font-semibold text-gray-900 mb-4">
                             Quick Links
                         </h4>
