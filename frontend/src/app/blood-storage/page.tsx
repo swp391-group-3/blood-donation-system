@@ -321,9 +321,9 @@ export default function BloodStorage() {
 
                 <PaginationControl
                     className="m-4"
-                    pageCount={table.getPageCount()}
-                    pageIndex={pagination.pageIndex}
-                    onPageChange={table.setPageIndex}
+                    itemCount={table.getRowCount()}
+                    pagination={pagination}
+                    setPagination={setPagination}
                 />
 
                 <Dialog open={showUseDialog} onOpenChange={setShowUseDialog}>

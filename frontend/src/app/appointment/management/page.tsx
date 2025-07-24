@@ -234,9 +234,9 @@ export default function AppointmentManagementPage() {
 
                 <PaginationControl
                     className="m-4"
-                    pageCount={table.getPageCount()}
-                    pageIndex={pagination.pageIndex}
-                    onPageChange={table.setPageIndex}
+                    itemCount={table.getRowCount()}
+                    pagination={pagination}
+                    setPagination={setPagination}
                 />
             </div>
         </div>
