@@ -17,6 +17,9 @@ import {
     LayoutDashboard,
     FileEdit,
     Activity,
+    BadgeQuestionMark,
+    Droplet,
+    UserCog,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +36,15 @@ import Link from 'next/link';
 import { AccountOverview } from '@/components/account-overview';
 import { Role } from '@/lib/api/dto/account';
 import { useLogout } from '@/hooks/use-logout';
+import {
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
+} from './ui/navigation-menu';
 
 interface NavigationItem {
     label: string;
@@ -127,6 +139,22 @@ export const Header = () => {
     const items = getNavigationItems(account?.role);
     const logout = useLogout();
 
+    const baseLinks = [
+        { label: 'Home', href: '/' },
+        { label: 'Blood Request', href: '/request' },
+        { label: 'Blog', href: '/blog' },
+    ];
+
+    const renderLink = (item: { label: string; href: string }) => (
+        <NavigationMenuItem key={item.label}>
+            <NavigationMenuLink
+                asChild
+                className={navigationMenuTriggerStyle()}
+            >
+                <Link href={item.href}>{item.label}</Link>
+            </NavigationMenuLink>
+        </NavigationMenuItem>
+    );
     return (
         <>
             <header className="bg-white/80 backdrop-blur-xl border-b border-slate-300/60 sticky top-0 z-50">
@@ -134,16 +162,176 @@ export const Header = () => {
                     <div className="flex justify-between items-center h-16">
                         <Logo />
                         <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center space-x-12">
-                            {items.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className="text-slate-700 hover:text-rose-600 font-medium text-sm transition-colors duration-200 relative group"
-                                >
-                                    {item.label}
-                                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-rose-500 group-hover:w-full transition-all duration-300"></span>
-                                </Link>
-                            ))}
+                            <NavigationMenu viewport={false}>
+                                <NavigationMenuList>
+                                    {baseLinks.map(renderLink)}
+                                    {account?.role === 'staff' && (
+                                        <NavigationMenuItem>
+                                            <NavigationMenuTrigger>
+                                                Management
+                                            </NavigationMenuTrigger>
+                                            <NavigationMenuContent>
+                                                <ul className="grid w-[300px] gap-4 p-2">
+                                                    <li>
+                                                        <NavigationMenuLink
+                                                            asChild
+                                                            className="mb-2"
+                                                        >
+                                                            <Link
+                                                                href="/question"
+                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                            >
+                                                                <div className="p-1.5 bg-green-50 rounded-lg">
+                                                                    <BadgeQuestionMark className="h-4 w-4 text-green-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium text-slate-900">
+                                                                        Questions
+                                                                    </p>
+                                                                    <p className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        the
+                                                                        question
+                                                                        for
+                                                                        blood
+                                                                        request
+                                                                        survey
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+
+                                                        <NavigationMenuLink
+                                                            asChild
+                                                            className="mb-2"
+                                                        >
+                                                            <Link
+                                                                href="/blood-storage"
+                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                            >
+                                                                <div className="p-1.5 bg-red-50 rounded-lg">
+                                                                    <Droplet className="h-4 w-4 text-red-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium text-slate-900">
+                                                                        Blood
+                                                                        Storage
+                                                                    </p>
+                                                                    <p className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        all
+                                                                        blood
+                                                                        bags in
+                                                                        storage
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+
+                                                        <NavigationMenuLink
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href="/appointment"
+                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                            >
+                                                                <div className="p-1.5 bg-blue-50 rounded-lg">
+                                                                    <Calendar className="h-4 w-4 text-blue-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium text-slate-900">
+                                                                        Appointment
+                                                                    </p>
+                                                                    <p className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        all
+                                                                        blood
+                                                                        request
+                                                                        appointments
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                    </li>
+                                                </ul>
+                                            </NavigationMenuContent>
+                                        </NavigationMenuItem>
+                                    )}
+                                    {account?.role === 'admin' && (
+                                        <>
+                                            <NavigationMenuItem>
+                                                <NavigationMenuLink
+                                                    asChild
+                                                    className={navigationMenuTriggerStyle()}
+                                                >
+                                                    <Link href="/dashboard">
+                                                        Dashboard
+                                                    </Link>
+                                                </NavigationMenuLink>
+                                            </NavigationMenuItem>
+                                            <NavigationMenuItem>
+                                                <NavigationMenuTrigger>
+                                                    Management
+                                                </NavigationMenuTrigger>
+                                                <NavigationMenuContent>
+                                                    <ul className="grid w-[300px] gap-4 p-2">
+                                                        <li>
+                                                            <NavigationMenuLink
+                                                                asChild
+                                                                className="mb-2"
+                                                            >
+                                                                <Link
+                                                                    href="/blog-management"
+                                                                    className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                                >
+                                                                    <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                        <LayoutDashboard className="h-4 w-4 text-purple-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-medium text-slate-900">
+                                                                            Blog
+                                                                            Management
+                                                                        </p>
+                                                                        <p className="text-xs text-slate-500">
+                                                                            Manage
+                                                                            blog
+                                                                            articles
+                                                                        </p>
+                                                                    </div>
+                                                                </Link>
+                                                            </NavigationMenuLink>
+                                                            <NavigationMenuLink
+                                                                asChild
+                                                            >
+                                                                <Link
+                                                                    href="/account-management"
+                                                                    className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                                >
+                                                                    <div className="p-1.5 bg-yellow-50 rounded-lg">
+                                                                        <UserCog className="h-4 w-4 text-yellow-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-medium text-slate-900">
+                                                                            Account
+                                                                            Management
+                                                                        </p>
+                                                                        <p className="text-xs text-slate-500">
+                                                                            Manage
+                                                                            all
+                                                                            user
+                                                                            accounts
+                                                                        </p>
+                                                                    </div>
+                                                                </Link>
+                                                            </NavigationMenuLink>
+                                                        </li>
+                                                    </ul>
+                                                </NavigationMenuContent>
+                                            </NavigationMenuItem>
+                                        </>
+                                    )}
+                                </NavigationMenuList>
+                            </NavigationMenu>
                         </nav>
 
                         <div className="flex items-center space-x-3 flex-shrink-0">
