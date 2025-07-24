@@ -11,6 +11,7 @@ import {
     CheckCircle,
     Clock,
     Droplets,
+    FileText,
     Filter,
     Search,
     XCircle,
@@ -47,6 +48,7 @@ import {
     StatsLabel,
     StatsValue,
 } from '@/components/stats';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function AppointmentManagementPage() {
     const [search, setSearch] = useState<string | undefined>();
@@ -172,57 +174,62 @@ export default function AppointmentManagementPage() {
                     </Select>
                 </div>
                 <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                          header.column
-                                                              .columnDef.header,
-                                                          header.getContext(),
-                                                      )}
-                                            </TableHead>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={
-                                            row.getIsSelected() && 'selected'
-                                        }
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
+                    {!appointments || appointments.data.length === 0 ? (
+                        <EmptyState
+                            className="mx-auto"
+                            title="No appointments found"
+                            description="Correct your filter to see if there are appointments"
+                            icons={[FileText]}
+                        />
+                    ) : (
+                        <>
+                            <Table>
+                                <TableHeader>
+                                    {table
+                                        .getHeaderGroups()
+                                        .map((headerGroup) => (
+                                            <TableRow key={headerGroup.id}>
+                                                {headerGroup.headers.map(
+                                                    (header) => (
+                                                        <TableHead
+                                                            key={header.id}
+                                                            className="text-center p-6 font-semibold text-slate-900"
+                                                        >
+                                                            {flexRender(
+                                                                header.column
+                                                                    .columnDef
+                                                                    .header,
+                                                                header.getContext(),
+                                                            )}
+                                                        </TableHead>
+                                                    ),
                                                 )}
-                                            </TableCell>
+                                            </TableRow>
                                         ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        No results.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {table.getRowModel().rows.map((row) => (
+                                        <TableRow key={row.id}>
+                                            {row
+                                                .getVisibleCells()
+                                                .map((cell) => (
+                                                    <TableCell
+                                                        key={cell.id}
+                                                        className="p-6"
+                                                    >
+                                                        {flexRender(
+                                                            cell.column
+                                                                .columnDef.cell,
+                                                            cell.getContext(),
+                                                        )}
+                                                    </TableCell>
+                                                ))}
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </>
+                    )}
                 </div>
 
                 <PaginationControl
