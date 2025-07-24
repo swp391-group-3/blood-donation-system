@@ -346,32 +346,47 @@ async function seed() {
                 );
             }
 
-            await client.query(
-                `INSERT INTO healths (id, appointment_id, temperature, weight, upper_blood_pressure, lower_blood_pressure, heart_rate, is_good_health, note, created_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-                [
-                    uuidv4(),
-                    id,
-                    temp,
-                    weight,
-                    sys,
-                    dia,
-                    hr,
-                    good,
-                    good ? 'All vitals normal' : 'Vitals slightly off',
-                    randomDate(START_DATE, END_DATE),
-                ],
-            );
+            let shouldSeedHealth = false;
+            let shouldSeedDonation = false;
 
-            if (status !== 'rejected') {
+            if (status === 'done' || status === 'donated') {
+                shouldSeedHealth = true;
+                shouldSeedDonation = true;
+            } else if (status === 'checked_in') {
+                shouldSeedHealth = true;
+            } else if (status === 'rejected') {
+                const r = Math.random();
+                if (r < 0.2) {
+                    shouldSeedHealth = true;
+                    shouldSeedDonation = true;
+                } else if (r < 0.5) {
+                    shouldSeedHealth = true;
+                }
+            }
+
+            const healthDate = randomDate(start, end);
+            const donationDate = dayjs(healthDate).add(1, 'hour').toDate();
+            if (shouldSeedHealth) {
+                await client.query(
+                    `INSERT INTO healths (id, appointment_id, temperature, weight, upper_blood_pressure, lower_blood_pressure, heart_rate, is_good_health, note, created_at)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+                    [
+                        uuidv4(),
+                        id,
+                        temp,
+                        weight,
+                        sys,
+                        dia,
+                        hr,
+                        good,
+                        good ? 'All vitals normal' : 'Vitals slightly off',
+                        healthDate,
+                    ],
+                );
+            };
+
+            if (shouldSeedDonation) {
                 const donationId = uuidv4();
-                const donationDate =
-                    Math.random() < 0.3
-                        ? randomDate(
-                            dayjs().subtract(90, 'day').toDate(),
-                            dayjs().toDate(),
-                        ) // 30% recent
-                        : randomDate(START_DATE, END_DATE); // 70% older (could be expired)
 
                 let donationType = pick(DONATION_TYPES);
                 const last = donorDonationMap[donorId][donationType];
@@ -395,27 +410,29 @@ async function seed() {
                     [donationId, id, donationType, amount, donationDate],
                 );
 
-                for (const comp of COMPONENTS) {
-                    let expired;
-                    if (comp === 'plasma')
-                        expired = dayjs(donationDate).add(365, 'day').toDate();
-                    else if (comp === 'platelet')
-                        expired = dayjs(donationDate).add(5, 'day').toDate();
-                    else expired = dayjs(donationDate).add(42, 'day').toDate();
+                if (status === 'done') {
+                    for (const comp of COMPONENTS) {
+                        let expired;
+                        if (comp === 'plasma')
+                            expired = dayjs(donationDate).add(365, 'day').toDate();
+                        else if (comp === 'platelet')
+                            expired = dayjs(donationDate).add(5, 'day').toDate();
+                        else expired = dayjs(donationDate).add(42, 'day').toDate();
 
-                    const isUsed = expired < new Date();
-                    await client.query(
-                        `INSERT INTO blood_bags (id, donation_id, component, is_used, amount, expired_time)
+                        const isUsed = expired < new Date();
+                        await client.query(
+                            `INSERT INTO blood_bags (id, donation_id, component, is_used, amount, expired_time)
             VALUES ($1, $2, $3, $4, $5, $6)`,
-                        [
-                            uuidv4(),
-                            donationId,
-                            comp,
-                            isUsed,
-                            comp === 'red_cell' ? 300 : 100,
-                            expired,
-                        ],
-                    );
+                            [
+                                uuidv4(),
+                                donationId,
+                                comp,
+                                isUsed,
+                                comp === 'red_cell' ? 300 : 100,
+                                expired,
+                            ],
+                        );
+                    }
                 }
             }
         }
