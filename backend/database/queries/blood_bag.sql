@@ -38,7 +38,7 @@ SELECT
 FROM blood_bags
 WHERE is_used = false;
 
---! count (component?, blood_group?)
+--! count (component?, blood_group?, is_expired?)
 SELECT COUNT(id)
 FROM blood_bags
 WHERE (
@@ -85,9 +85,17 @@ WHERE (
             )
         END
     )
+) AND (
+    :is_expired::boolean IS NULL
+    OR (
+        CASE
+            WHEN :is_expired::boolean THEN expired_time < NOW()
+            ELSE expired_time >= NOW()
+        END
+    )
 ) AND is_used = false;
 
---! get_all (component?, blood_group?) : BloodBag
+--! get_all (component?, blood_group?, is_expired?) : BloodBag
 SELECT 
     *,
     (
@@ -146,6 +154,14 @@ WHERE (
                     WHEN 'o_minus'  THEN ARRAY['o_minus']::blood_group[]
                 END
             )
+        END
+    )
+) AND (
+    :is_expired::boolean IS NULL
+    OR (
+        CASE
+            WHEN :is_expired::boolean THEN expired_time < NOW()
+            ELSE expired_time >= NOW()
         END
     )
 ) AND is_used = false

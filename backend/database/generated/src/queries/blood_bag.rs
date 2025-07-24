@@ -5,12 +5,14 @@ pub struct CountParams<T1: crate::StringSql> {
     pub component: Option<ctypes::BloodComponent>,
     pub blood_group: Option<ctypes::BloodGroup>,
     pub mode: T1,
+    pub is_expired: Option<bool>,
 }
 #[derive(Debug)]
 pub struct GetAllParams<T1: crate::StringSql> {
     pub component: Option<ctypes::BloodComponent>,
     pub blood_group: Option<ctypes::BloodGroup>,
     pub mode: T1,
+    pub is_expired: Option<bool>,
     pub page_size: i32,
     pub page_index: i32,
 }
@@ -357,7 +359,7 @@ impl GetAllSchedulerStmt {
 }
 pub fn count() -> CountStmt {
     CountStmt(crate::client::async_::Stmt::new(
-        "SELECT COUNT(id) FROM blood_bags WHERE ( $1::blood_component IS NULL OR component = $1 ) AND ( $2::blood_group IS NULL OR ( CASE $3 WHEN 'Exact' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = $2 WHEN 'Compatible' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = ANY ( CASE $2 WHEN 'a_plus'   THEN ARRAY['a_plus','a_minus','o_plus','o_minus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_minus','o_minus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus','b_minus','o_plus','o_minus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_minus','o_minus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_minus','a_minus','b_minus','o_minus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['o_plus','o_minus']::blood_group[] WHEN 'o_minus'  THEN ARRAY['o_minus']::blood_group[] END ) END ) ) AND is_used = false",
+        "SELECT COUNT(id) FROM blood_bags WHERE ( $1::blood_component IS NULL OR component = $1 ) AND ( $2::blood_group IS NULL OR ( CASE $3 WHEN 'Exact' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = $2 WHEN 'Compatible' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = ANY ( CASE $2 WHEN 'a_plus'   THEN ARRAY['a_plus','a_minus','o_plus','o_minus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_minus','o_minus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus','b_minus','o_plus','o_minus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_minus','o_minus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_minus','a_minus','b_minus','o_minus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['o_plus','o_minus']::blood_group[] WHEN 'o_minus'  THEN ARRAY['o_minus']::blood_group[] END ) END ) ) AND ( $4::boolean IS NULL OR ( CASE WHEN $4::boolean THEN expired_time < NOW() ELSE expired_time >= NOW() END ) ) AND is_used = false",
     ))
 }
 pub struct CountStmt(crate::client::async_::Stmt);
@@ -368,10 +370,11 @@ impl CountStmt {
         component: &'a Option<ctypes::BloodComponent>,
         blood_group: &'a Option<ctypes::BloodGroup>,
         mode: &'a T1,
-    ) -> I64Query<'c, 'a, 's, C, i64, 3> {
+        is_expired: &'a Option<bool>,
+    ) -> I64Query<'c, 'a, 's, C, i64, 4> {
         I64Query {
             client,
-            params: [component, blood_group, mode],
+            params: [component, blood_group, mode, is_expired],
             stmt: &mut self.0,
             extractor: |row| Ok(row.try_get(0)?),
             mapper: |it| it,
@@ -379,20 +382,26 @@ impl CountStmt {
     }
 }
 impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
-    crate::client::async_::Params<'c, 'a, 's, CountParams<T1>, I64Query<'c, 'a, 's, C, i64, 3>, C>
+    crate::client::async_::Params<'c, 'a, 's, CountParams<T1>, I64Query<'c, 'a, 's, C, i64, 4>, C>
     for CountStmt
 {
     fn params(
         &'s mut self,
         client: &'c C,
         params: &'a CountParams<T1>,
-    ) -> I64Query<'c, 'a, 's, C, i64, 3> {
-        self.bind(client, &params.component, &params.blood_group, &params.mode)
+    ) -> I64Query<'c, 'a, 's, C, i64, 4> {
+        self.bind(
+            client,
+            &params.component,
+            &params.blood_group,
+            &params.mode,
+            &params.is_expired,
+        )
     }
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags WHERE ( $1::blood_component IS NULL OR component = $1 ) AND ( $2::blood_group IS NULL OR ( CASE $3 WHEN 'Exact' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = $2 WHEN 'Compatible' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = ANY ( CASE $2 WHEN 'a_plus'   THEN ARRAY['a_plus','a_minus','o_plus','o_minus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_minus','o_minus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus','b_minus','o_plus','o_minus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_minus','o_minus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_minus','a_minus','b_minus','o_minus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['o_plus','o_minus']::blood_group[] WHEN 'o_minus'  THEN ARRAY['o_minus']::blood_group[] END ) END ) ) AND is_used = false ORDER BY expired_time ASC LIMIT $4::int OFFSET $4::int * $5::int",
+        "SELECT *, ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) AS blood_group FROM blood_bags WHERE ( $1::blood_component IS NULL OR component = $1 ) AND ( $2::blood_group IS NULL OR ( CASE $3 WHEN 'Exact' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = $2 WHEN 'Compatible' THEN ( SELECT blood_group FROM accounts WHERE id = ( SELECT donor_id FROM appointments WHERE id = ( SELECT appointment_id FROM donations WHERE id = blood_bags.donation_id ) ) ) = ANY ( CASE $2 WHEN 'a_plus'   THEN ARRAY['a_plus','a_minus','o_plus','o_minus']::blood_group[] WHEN 'a_minus'  THEN ARRAY['a_minus','o_minus']::blood_group[] WHEN 'b_plus'   THEN ARRAY['b_plus','b_minus','o_plus','o_minus']::blood_group[] WHEN 'b_minus'  THEN ARRAY['b_minus','o_minus']::blood_group[] WHEN 'ab_plus'  THEN ARRAY['a_plus','a_minus','b_plus','b_minus','ab_plus','ab_minus','o_plus','o_minus']::blood_group[] WHEN 'ab_minus' THEN ARRAY['ab_minus','a_minus','b_minus','o_minus']::blood_group[] WHEN 'o_plus'   THEN ARRAY['o_plus','o_minus']::blood_group[] WHEN 'o_minus'  THEN ARRAY['o_minus']::blood_group[] END ) END ) ) AND ( $4::boolean IS NULL OR ( CASE WHEN $4::boolean THEN expired_time < NOW() ELSE expired_time >= NOW() END ) ) AND is_used = false ORDER BY expired_time ASC LIMIT $5::int OFFSET $5::int * $6::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -403,12 +412,20 @@ impl GetAllStmt {
         component: &'a Option<ctypes::BloodComponent>,
         blood_group: &'a Option<ctypes::BloodGroup>,
         mode: &'a T1,
+        is_expired: &'a Option<bool>,
         page_size: &'a i32,
         page_index: &'a i32,
-    ) -> BloodBagQuery<'c, 'a, 's, C, BloodBag, 5> {
+    ) -> BloodBagQuery<'c, 'a, 's, C, BloodBag, 6> {
         BloodBagQuery {
             client,
-            params: [component, blood_group, mode, page_size, page_index],
+            params: [
+                component,
+                blood_group,
+                mode,
+                is_expired,
+                page_size,
+                page_index,
+            ],
             stmt: &mut self.0,
             extractor: |row: &tokio_postgres::Row| -> Result<BloodBag, tokio_postgres::Error> {
                 Ok(BloodBag {
@@ -431,7 +448,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         'a,
         's,
         GetAllParams<T1>,
-        BloodBagQuery<'c, 'a, 's, C, BloodBag, 5>,
+        BloodBagQuery<'c, 'a, 's, C, BloodBag, 6>,
         C,
     > for GetAllStmt
 {
@@ -439,12 +456,13 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
         &'s mut self,
         client: &'c C,
         params: &'a GetAllParams<T1>,
-    ) -> BloodBagQuery<'c, 'a, 's, C, BloodBag, 5> {
+    ) -> BloodBagQuery<'c, 'a, 's, C, BloodBag, 6> {
         self.bind(
             client,
             &params.component,
             &params.blood_group,
             &params.mode,
+            &params.is_expired,
             &params.page_size,
             &params.page_index,
         )

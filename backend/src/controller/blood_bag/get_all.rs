@@ -47,6 +47,8 @@ pub struct Request {
     #[serde(default = "default_mode")]
     pub mode: Mode,
 
+    pub is_expired: Option<bool>,
+
     #[serde(default = "pagination::default_page_size")]
     pub page_size: usize,
 
@@ -82,6 +84,7 @@ pub async fn get_all(
                     &request.component,
                     &request.blood_group,
                     &request.mode.as_str(),
+                    &request.is_expired,
                     &(request.page_size as i32),
                     &(request.page_index as i32),
                 )
@@ -95,6 +98,7 @@ pub async fn get_all(
                     &request.component,
                     &request.blood_group,
                     &request.mode.as_str(),
+                    &request.is_expired,
                 )
                 .one()
                 .await
