@@ -159,7 +159,7 @@ export default function BloodStorage() {
                         <StatsDescription>Complete inventory</StatsDescription>
                     </Stats>
                     <Stats>
-                        <StatsIcon className="bg-greene-50 text-green-600">
+                        <StatsIcon className="bg-green-50 text-green-600">
                             <Check />
                         </StatsIcon>
                         <StatsValue>{stats.available_bags}</StatsValue>
