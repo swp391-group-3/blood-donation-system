@@ -12,7 +12,16 @@ import {
     BloodComponent,
     bloodComponents,
 } from '@/lib/api/dto/blood-bag';
-import { Blend, Droplet, Filter, Package, Plus } from 'lucide-react';
+import {
+    Blend,
+    Check,
+    CircleX,
+    Droplet,
+    Filter,
+    Package,
+    Plus,
+    TriangleAlert,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import {
     Select,
@@ -57,51 +66,15 @@ import {
 import { getColumns } from './column';
 import { Mode, modes, useAllBloodBag } from '@/hooks/use-all-blood-bag';
 import { PaginationControl } from '@/components/pagination-control';
-
-// const getStats = (bloodBags: BloodBag[]): StatsProps[] => {
-//     return [
-//         {
-//             label: 'Total Bags',
-//             value: bloodBags.length,
-//             icon: Package,
-//             description: 'Complete Inventory',
-//             color: 'blue',
-//         },
-//         {
-//             label: 'Available',
-//             value: bloodBags.filter((bag) => !bag.is_used).length,
-//             icon: Check,
-//             description: 'Ready for use',
-//             color: 'green',
-//         },
-//         {
-//             label: 'Expiring Soon',
-//             value: bloodBags.filter(
-//                 (bag) =>
-//                     !bag.is_used &&
-//                     !isExpired(new Date(bag.expired_time)) &&
-//                     isExpiringSoon(new Date(bag.expired_time)),
-//             ).length,
-//             icon: TriangleAlert,
-//             description: 'Within 7 days',
-//             color: 'yellow',
-//         },
-//         {
-//             label: 'Expired',
-//             value: bloodBags.filter(
-//                 (bag) => !bag.is_used && !isExpired(new Date(bag.expired_time)),
-//             ).length,
-//             icon: CircleX,
-//             description: 'Requires disposal',
-//             color: 'rose',
-//         },
-//     ];
-// };
-
-// const isExpired = (date: Date) => new Date(date) <= new Date();
-//
-// const isExpiringSoon = (date: Date) =>
-//     differenceInCalendarWeeks(new Date(), new Date(date)) <= 1;
+import { useBloodBagStats } from '@/hooks/use-blood-bag-stats';
+import {
+    Stats,
+    StatsDescription,
+    StatsGrid,
+    StatsIcon,
+    StatsLabel,
+    StatsValue,
+} from '@/components/stats';
 
 export default function BloodStorage() {
     const [selectedBag, setSelectedBag] = useState<BloodBag | null>(null);
@@ -129,11 +102,8 @@ export default function BloodStorage() {
         page_index: pagination.pageIndex,
         page_size: pagination.pageSize,
     });
+    const { data: stats } = useBloodBagStats();
 
-    // const stats = useMemo(
-    //     () => (bloodBags ? getStats(bloodBags) : undefined),
-    //     [bloodBags],
-    // );
     const columns = useMemo(
         () =>
             getColumns((bag) => {
@@ -178,11 +148,42 @@ export default function BloodStorage() {
                 </HeroDescription>
             </Hero>
 
-            {/* <StatsGrid> */}
-            {/*     {stats!.map((entry, index) => ( */}
-            {/*         <Stats key={index} {...entry} /> */}
-            {/*     ))} */}
-            {/* </StatsGrid> */}
+            {stats && (
+                <StatsGrid>
+                    <Stats>
+                        <StatsIcon className="bg-blue-50 text-blue-600">
+                            <Package />
+                        </StatsIcon>
+                        <StatsValue>{stats.total_bags}</StatsValue>
+                        <StatsLabel>Total Bags</StatsLabel>
+                        <StatsDescription>Complete inventory</StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-green-50 text-green-600">
+                            <Check />
+                        </StatsIcon>
+                        <StatsValue>{stats.available_bags}</StatsValue>
+                        <StatsLabel>Available</StatsLabel>
+                        <StatsDescription>Ready for use</StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-yellow-50 text-yellow-600">
+                            <TriangleAlert />
+                        </StatsIcon>
+                        <StatsValue>{stats.expiring_bags}</StatsValue>
+                        <StatsLabel>Expiring Soon</StatsLabel>
+                        <StatsDescription>Within 7 days</StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-rose-50 text-rose-600">
+                            <CircleX />
+                        </StatsIcon>
+                        <StatsValue>{stats.expired_bags}</StatsValue>
+                        <StatsLabel>Expired</StatsLabel>
+                        <StatsDescription>Requires disposal</StatsDescription>
+                    </Stats>
+                </StatsGrid>
+            )}
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col justify-between sm:flex-row gap-4 mb-10">

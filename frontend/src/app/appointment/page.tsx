@@ -7,7 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Filter, Calendar } from 'lucide-react';
+import { Filter, Calendar, CheckCircle, Clock, Activity } from 'lucide-react';
 import { toast } from 'sonner';
 import { Status, statuses } from '@/lib/api/dto/appointment';
 import { useCurrentAccountAppointment } from '@/hooks/use-current-account-appointment';
@@ -24,49 +24,14 @@ import {
 import { CardGrid } from '@/components/card-grid';
 import { AppointmentCard } from '@/components/appointment-card';
 import { QRDialog } from '@/components/qr-dialog';
-
-// const getStats = (appointments: Appointment[]): StatsProps[] => {
-//     return [
-//         {
-//             label: 'Total Appointments',
-//             value: appointments.length.toString(),
-//             icon: Calendar,
-//             description: 'All appointments',
-//             color: 'blue',
-//         },
-//         {
-//             label: 'Approved',
-//             value: appointments
-//                 .filter((apt) => apt.status === 'approved')
-//                 .length.toString(),
-//             icon: CheckCircle,
-//             description: 'Ready to donate',
-//             color: 'emerald',
-//         },
-//         {
-//             label: 'In Progress',
-//             value: appointments
-//                 .filter(
-//                     (apt) =>
-//                         apt.status === 'on_process' ||
-//                         apt.status === 'checked_in',
-//                 )
-//                 .length.toString(),
-//             icon: Clock,
-//             description: 'Pending & active',
-//             color: 'amber',
-//         },
-//         {
-//             label: 'Completed',
-//             value: appointments
-//                 .filter((apt) => apt.status === 'done')
-//                 .length.toString(),
-//             icon: Activity,
-//             description: 'Successfully done',
-//             color: 'purple',
-//         },
-//     ];
-// };
+import {
+    Stats,
+    StatsDescription,
+    StatsGrid,
+    StatsIcon,
+    StatsLabel,
+    StatsValue,
+} from '@/components/stats';
 
 export default function AppointmentPage() {
     const {
@@ -75,11 +40,6 @@ export default function AppointmentPage() {
         error,
     } = useCurrentAccountAppointment();
 
-    // TODO: stats
-    // const stats = useMemo(
-    //     () => (appointments ? getStats(appointments) : undefined),
-    //     [appointments],
-    // );
     const [status, setStatus] = useState<Status>('approved');
     const filteredAppointments = useMemo(
         () =>
@@ -127,11 +87,58 @@ export default function AppointmentPage() {
                 </HeroDescription>
             </Hero>
 
-            {/* <StatsGrid> */}
-            {/*     {stats!.map((entry, index) => ( */}
-            {/*         <Stats key={index} {...entry} /> */}
-            {/*     ))} */}
-            {/* </StatsGrid> */}
+            <StatsGrid>
+                <Stats>
+                    <StatsIcon className="bg-blue-50 text-blue-600">
+                        <Calendar />
+                    </StatsIcon>
+                    <StatsValue>{appointments.length}</StatsValue>
+                    <StatsLabel>Total Appointments</StatsLabel>
+                    <StatsDescription>All appointments</StatsDescription>
+                </Stats>
+                <Stats>
+                    <StatsIcon className="bg-emerald-50 text-emerald-600">
+                        <CheckCircle />
+                    </StatsIcon>
+                    <StatsValue>
+                        {appointments
+                            .filter((apt) => apt.status === 'approved')
+                            .length.toString()}
+                    </StatsValue>
+                    <StatsLabel>Approved</StatsLabel>
+                    <StatsDescription>Ready to donate</StatsDescription>
+                </Stats>
+                <Stats>
+                    <StatsIcon className="bg-amber-50 text-amber-600">
+                        <Clock />
+                    </StatsIcon>
+                    <StatsValue>
+                        {
+                            appointments.filter(
+                                (apt) =>
+                                    apt.status === 'on_process' ||
+                                    apt.status === 'checked_in',
+                            ).length
+                        }
+                    </StatsValue>
+                    <StatsLabel>In Progress</StatsLabel>
+                    <StatsDescription>Pending & active</StatsDescription>
+                </Stats>
+                <Stats>
+                    <StatsIcon className="bg-purple-50 text-purple-600">
+                        <Activity />
+                    </StatsIcon>
+                    <StatsValue>
+                        {
+                            appointments.filter((apt) => apt.status === 'done')
+                                .length
+                        }
+                    </StatsValue>
+                    <StatsLabel>Completed</StatsLabel>
+                    <StatsDescription>Successfully done</StatsDescription>
+                </Stats>
+            </StatsGrid>
+
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div className="mb-12">
                     <div className="flex flex-col sm:flex-row gap-4 mb-10">

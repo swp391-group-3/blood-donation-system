@@ -7,7 +7,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Filter, Search } from 'lucide-react';
+import {
+    CheckCircle,
+    Clock,
+    Droplets,
+    Filter,
+    Search,
+    XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
 import { capitalCase } from 'change-case';
 import { Hero, HeroDescription, HeroTitle } from '@/components/hero';
@@ -31,42 +38,15 @@ import {
 } from '@tanstack/react-table';
 import { columns } from './column';
 import { PaginationControl } from '@/components/pagination-control';
-
-// const getStats = (appointments: Appointment[]): StatsProps[] => {
-//     return [
-//         {
-//             label: 'Need Review',
-//             value: appointments.filter((apt) => apt.status === 'on_process')
-//                 .length,
-//             icon: Clock,
-//             description: 'Requires staff attention',
-//             color: 'yellow',
-//         },
-//         {
-//             label: 'Approved',
-//             value: appointments.filter((apt) => apt.status === 'approved')
-//                 .length,
-//             icon: CheckCircle,
-//             description: 'Ready for health check',
-//             color: 'green',
-//         },
-//         {
-//             label: 'Completed',
-//             value: appointments.filter((apt) => apt.status === 'done').length,
-//             icon: Droplets,
-//             description: 'Donation that has been completed',
-//             color: 'blue',
-//         },
-//         {
-//             label: 'Rejected',
-//             value: appointments.filter((apt) => apt.status === 'rejected')
-//                 .length,
-//             icon: XCircle,
-//             description: 'Did not meet criteria',
-//             color: 'red',
-//         },
-//     ];
-// };
+import { useAppointmentStats } from '@/hooks/use-appointment-stats';
+import {
+    Stats,
+    StatsDescription,
+    StatsGrid,
+    StatsIcon,
+    StatsLabel,
+    StatsValue,
+} from '@/components/stats';
 
 export default function AppointmentManagementPage() {
     const [search, setSearch] = useState<string | undefined>();
@@ -82,10 +62,7 @@ export default function AppointmentManagementPage() {
         page_index: pagination.pageIndex,
         page_size: pagination.pageSize,
     });
-    // const stats = useMemo(
-    //     () => (appointments ? getStats(appointments?.data ?? []) : undefined),
-    //     [appointments],
-    // );
+    const { data: stats } = useAppointmentStats();
 
     const table = useReactTable({
         data: appointments?.data ?? [],
@@ -109,11 +86,50 @@ export default function AppointmentManagementPage() {
                 </HeroDescription>
             </Hero>
 
-            {/* <StatsGrid> */}
-            {/*     {stats!.map((entry, index) => ( */}
-            {/*         <Stats key={index} {...entry} /> */}
-            {/*     ))} */}
-            {/* </StatsGrid> */}
+            {stats && (
+                <StatsGrid>
+                    <Stats>
+                        <StatsIcon className="bg-yellow-50 text-yellow-600">
+                            <Clock />
+                        </StatsIcon>
+                        <StatsValue>{stats.on_process_appointments}</StatsValue>
+                        <StatsLabel>Need Review</StatsLabel>
+                        <StatsDescription>
+                            Requires staff attention
+                        </StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-green-50 text-green-600">
+                            <CheckCircle />
+                        </StatsIcon>
+                        <StatsValue>{stats.approved_appointments}</StatsValue>
+                        <StatsLabel>Approved</StatsLabel>
+                        <StatsDescription>
+                            Ready for health check
+                        </StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-blue-50 text-blue-600">
+                            <Droplets />
+                        </StatsIcon>
+                        <StatsValue>{stats.done_appointments}</StatsValue>
+                        <StatsLabel>Completed</StatsLabel>
+                        <StatsDescription>
+                            Donation that has been completed
+                        </StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-rose-50 text-rose-600">
+                            <XCircle />
+                        </StatsIcon>
+                        <StatsValue>{stats.rejected_appointments}</StatsValue>
+                        <StatsLabel>Rejected</StatsLabel>
+                        <StatsDescription>
+                            Did not meet criteria
+                        </StatsDescription>
+                    </Stats>
+                </StatsGrid>
+            )}
 
             <div className="mx-auto max-w-6xl">
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">

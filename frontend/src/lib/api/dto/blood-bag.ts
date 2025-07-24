@@ -18,3 +18,10 @@ export interface CreateBloodBag {
     expired_time: Date;
     component: BloodComponent;
 }
+
+export interface BloodBagStats {
+    total_bags: number;
+    available_bags: number;
+    expiring_bags: number;
+    expired_bags: number;
+}
