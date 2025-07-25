@@ -32,11 +32,11 @@ services:
     networks:
       - network
 
-  redis:
-    container_name: blood-donation-system-redis
-    image: 'bitnami/redis:latest'
+  valkey:
+    container_name: blood-donation-system-valkey
+    image: bitnami/valkey:latest
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - VALKEY_PASSWORD=${REDIS_PASSWORD}
     networks:
       - network
 
@@ -57,7 +57,7 @@ services:
       JWT__EXPIRED_IN: ${JWT_EXPIRED_IN}
 
       REDIS__PASSWORD: ${REDIS_PASSWORD}
-      REDIS__HOST: redis
+      REDIS__HOST: valkey
 
       OIDC__LOGIN_REDIRECT: ${OIDC_LOGIN_REDIRECT}
       OIDC__REGISTER_REDIRECT: ${OIDC_REGISTER_REDIRECT}
@@ -81,7 +81,7 @@ services:
     depends_on:
       - database
       - qdrant
-      - redis
+      - valkey
     volumes:
       - type: bind
         source: ./docs
