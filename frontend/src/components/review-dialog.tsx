@@ -123,13 +123,12 @@ export const ReviewDialog = ({
                                         </p>
                                         <div className="flex items-center gap-2">
                                             <Badge
-                                                className={`capitalize text-xs ${
-                                                    answer.answer === 'yes'
+                                                className={`capitalize text-xs ${answer.answer === 'yes'
                                                         ? 'bg-green-100 text-green-800'
                                                         : answer.answer === 'no'
-                                                          ? 'bg-red-100 text-red-800'
-                                                          : 'bg-yellow-100 text-yellow-800'
-                                                }`}
+                                                            ? 'bg-red-100 text-red-800'
+                                                            : 'bg-yellow-100 text-yellow-800'
+                                                    }`}
                                             >
                                                 {answer.answer}
                                             </Badge>
