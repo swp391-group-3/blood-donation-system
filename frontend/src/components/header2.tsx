@@ -25,23 +25,15 @@ import {
     FileText,
     Layers,
     HelpCircle,
-    Database,
-    CalendarCheck,
-    Users2,
-    LucideIcon,
     User,
     Droplets,
     Shield,
     Calendar,
-    Home,
-    LayoutDashboard,
-    FileEdit,
-    Activity,
-    Package,
     BadgeQuestionMark,
     Droplet,
     UserCog,
     LogOut,
+    Settings,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from './logo';
@@ -141,6 +133,30 @@ export function Navbar() {
         { label: 'Blog', href: '/blog' },
     ];
 
+    const mainMenuItems = isAdmin
+        ? [
+              { label: 'Home', href: '/' },
+              { label: 'Dashboard', href: '/dashboard' },
+          ]
+        : [
+              { label: 'Home', href: '/' },
+              { label: 'Blood Request', href: '/request' },
+              { label: 'Blog', href: '/blog' },
+          ];
+
+    const managementItems = isAdmin
+        ? [
+              { label: 'Blog Management', href: '/blog-management' },
+              { label: 'Account Management', href: '/account-management' },
+          ]
+        : isStaff
+          ? [
+                { label: 'Questions', href: '/question' },
+                { label: 'Blood Storage', href: '/blood-storage' },
+                { label: 'Appointment', href: '/appointment' },
+            ]
+          : [];
+
     const renderLink = (item: { label: string; href: string }) => (
         <NavigationMenuItem key={item.label}>
             <NavigationMenuLink
@@ -191,11 +207,8 @@ export function Navbar() {
                         <div className="flex-1 flex justify-center mx-auto">
                             <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
-                                    {/* Guest, Donor, and Staff all share these base links */}
                                     {(isGuestOrDonor || isStaff) &&
                                         commonLinks.map(renderLink)}
-
-                                    {/* Admin has its own links */}
                                     {isAdmin && (
                                         <>
                                             {renderLink({
@@ -208,8 +221,6 @@ export function Navbar() {
                                             })}
                                         </>
                                     )}
-
-                                    {/* Management section for STAFF */}
                                     {isStaff && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger>
@@ -300,8 +311,6 @@ export function Navbar() {
                                             </NavigationMenuContent>
                                         </NavigationMenuItem>
                                     )}
-
-                                    {/* Management section for ADMIN */}
                                     {isAdmin && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger>
@@ -507,7 +516,6 @@ export function Navbar() {
                             )}
                         </div>
 
-                        {/* Enhanced Mobile Menu */}
                         <Sheet
                             open={isMobileMenuOpen}
                             onOpenChange={setIsMobileMenuOpen}
@@ -527,168 +535,85 @@ export function Navbar() {
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
                             </SheetTrigger>
+
                             <SheetContent
                                 side="right"
                                 className="w-[350px] sm:w-[400px] p-0"
                             >
                                 <div className="flex flex-col h-full">
-                                    {/* Header */}
                                     <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-background to-accent/10">
                                         <div className="flex items-center space-x-3">
                                             <Logo />
                                         </div>
                                     </div>
-
-                                    {/* Navigation Content */}
                                     <div className="flex-1 overflow-y-auto">
                                         <nav className="p-6 space-y-6">
-                                            {/* Getting Started Section */}
                                             <div className="space-y-3">
-                                                <details className="group">
-                                                    <summary className="flex items-center justify-between cursor-pointer py-4 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/50 hover:to-accent/30 transition-all duration-200 border border-transparent hover:border-border/50">
-                                                        <div className="flex items-center space-x-3">
-                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                                                                <BookOpen className="w-4 h-4 text-primary" />
+                                                {mainMenuItems.map((item) => (
+                                                    <Link
+                                                        key={item.label}
+                                                        href={item.href}
+                                                        onClick={() =>
+                                                            setIsMobileMenuOpen(
+                                                                false,
+                                                            )
+                                                        }
+                                                        className="flex items-center space-x-3 py-4 px-4 font-semibold rounded-xl hover:bg-accent/60 transition-all duration-200 border border-transparent hover:border-border/50"
+                                                    >
+                                                        <span>
+                                                            {item.label}
+                                                        </span>
+                                                    </Link>
+                                                ))}
+
+                                                {managementItems.length > 0 && (
+                                                    <details className="group">
+                                                        <summary className="flex items-center justify-between cursor-pointer py-4 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/50 hover:to-accent/30 transition-all duration-200 border border-transparent hover:border-border/50">
+                                                            <div className="flex items-center space-x-3">
+                                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-muted/50 to-muted/30 flex items-center justify-center">
+                                                                    <Settings className="w-4 h-4 text-muted-foreground" />
+                                                                </div>
+                                                                <span className="font-semibold">
+                                                                    Management
+                                                                </span>
                                                             </div>
-                                                            <span className="font-semibold">
-                                                                Getting started
-                                                            </span>
+                                                            <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 text-muted-foreground" />
+                                                        </summary>
+                                                        <div className="mt-3 space-y-2 pl-4">
+                                                            {managementItems.map(
+                                                                (item, idx) => (
+                                                                    <Link
+                                                                        key={
+                                                                            item.label
+                                                                        }
+                                                                        href={
+                                                                            item.href
+                                                                        }
+                                                                        onClick={() =>
+                                                                            setIsMobileMenuOpen(
+                                                                                false,
+                                                                            )
+                                                                        }
+                                                                        className="flex items-center space-x-3 py-3 px-4 text-sm rounded-lg hover:bg-accent/60 transition-all duration-200 group animate-in fade-in slide-in-from-left-2"
+                                                                        style={{
+                                                                            animationDelay: `${idx * 100}ms`,
+                                                                        }}
+                                                                    >
+                                                                        <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                                                                            {
+                                                                                item.label
+                                                                            }
+                                                                        </span>
+                                                                    </Link>
+                                                                ),
+                                                            )}
                                                         </div>
-                                                        <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 text-muted-foreground" />
-                                                    </summary>
-                                                    <div className="mt-3 space-y-2 pl-4">
-                                                        {gettingStartedItems.map(
-                                                            (item, index) => (
-                                                                <Link
-                                                                    key={
-                                                                        item.title
-                                                                    }
-                                                                    href={
-                                                                        item.href
-                                                                    }
-                                                                    className="flex items-center space-x-3 py-3 px-4 text-sm rounded-lg hover:bg-accent/60 transition-all duration-200 group animate-in fade-in slide-in-from-left-2"
-                                                                    style={{
-                                                                        animationDelay: `${index * 100}ms`,
-                                                                    }}
-                                                                    onClick={() =>
-                                                                        setIsMobileMenuOpen(
-                                                                            false,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                                                        <item.icon className="w-3 h-3 text-primary" />
-                                                                    </div>
-                                                                    <div className="flex-1">
-                                                                        <div className="font-medium text-foreground group-hover:text-primary transition-colors">
-                                                                            {
-                                                                                item.title
-                                                                            }
-                                                                        </div>
-                                                                        <div className="text-xs text-muted-foreground line-clamp-1">
-                                                                            {
-                                                                                item.description
-                                                                            }
-                                                                        </div>
-                                                                    </div>
-                                                                </Link>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                </details>
-
-                                                {/* Components Section */}
-                                                <details className="group">
-                                                    <summary className="flex items-center justify-between cursor-pointer py-4 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/50 hover:to-accent/30 transition-all duration-200 border border-transparent hover:border-border/50">
-                                                        <div className="flex items-center space-x-3">
-                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent/40 to-accent/20 flex items-center justify-center">
-                                                                <Layers className="w-4 h-4 text-accent-foreground" />
-                                                            </div>
-                                                            <span className="font-semibold">
-                                                                Components
-                                                            </span>
-                                                        </div>
-                                                        <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 text-muted-foreground" />
-                                                    </summary>
-                                                    <div className="mt-3 space-y-2 pl-4 max-h-64 overflow-y-auto">
-                                                        {components.map(
-                                                            (
-                                                                component,
-                                                                index,
-                                                            ) => (
-                                                                <Link
-                                                                    key={
-                                                                        component.title
-                                                                    }
-                                                                    href={
-                                                                        component.href
-                                                                    }
-                                                                    className="flex items-center space-x-3 py-3 px-4 text-sm rounded-lg hover:bg-accent/60 transition-all duration-200 group animate-in fade-in slide-in-from-left-2"
-                                                                    style={{
-                                                                        animationDelay: `${index * 50}ms`,
-                                                                    }}
-                                                                    onClick={() =>
-                                                                        setIsMobileMenuOpen(
-                                                                            false,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                                                        <component.icon className="w-3 h-3 text-primary" />
-                                                                    </div>
-                                                                    <div className="flex-1">
-                                                                        <div className="font-medium text-foreground group-hover:text-primary transition-colors">
-                                                                            {
-                                                                                component.title
-                                                                            }
-                                                                        </div>
-                                                                        <div className="text-xs text-muted-foreground line-clamp-1">
-                                                                            {
-                                                                                component.description
-                                                                            }
-                                                                        </div>
-                                                                    </div>
-                                                                </Link>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                </details>
-
-                                                {/* Direct Links */}
-                                                <Link
-                                                    href="/docs"
-                                                    className="flex items-center space-x-3 py-4 px-4 font-semibold rounded-xl hover:bg-gradient-to-r hover:from-accent/50 hover:to-accent/30 transition-all duration-200 border border-transparent hover:border-border/50"
-                                                    onClick={() =>
-                                                        setIsMobileMenuOpen(
-                                                            false,
-                                                        )
-                                                    }
-                                                >
-                                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/10 flex items-center justify-center">
-                                                        <FileText className="w-4 h-4 text-blue-600" />
-                                                    </div>
-                                                    <span>Documentation</span>
-                                                </Link>
-
-                                                <Link
-                                                    href="/pricing"
-                                                    className="flex items-center space-x-3 py-4 px-4 font-semibold rounded-xl hover:bg-gradient-to-r hover:from-accent/50 hover:to-accent/30 transition-all duration-200 border border-transparent hover:border-border/50"
-                                                    onClick={() =>
-                                                        setIsMobileMenuOpen(
-                                                            false,
-                                                        )
-                                                    }
-                                                >
-                                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500/20 to-green-500/10 flex items-center justify-center">
-                                                        <BarChart3 className="w-4 h-4 text-green-600" />
-                                                    </div>
-                                                    <span>Pricing</span>
-                                                </Link>
+                                                    </details>
+                                                )}
                                             </div>
                                         </nav>
                                     </div>
 
-                                    {/* Footer Actions */}
                                     <div className="p-6 border-t bg-gradient-to-r from-background to-accent/5">
                                         <div className="flex flex-col space-y-3">
                                             <Button
@@ -717,7 +642,6 @@ export function Navbar() {
                 </div>
             </header>
 
-            {/* Spacer to prevent content overlap */}
             <div
                 className={cn(
                     'transition-all duration-300 ease-in-out',
