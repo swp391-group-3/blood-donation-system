@@ -143,12 +143,18 @@ const ActionButton = (request: BloodRequest) => {
     return <></>;
 };
 
+const calculateRelativeTime = (date: Date) => {
+    const raw = formatDistanceToNow(date);
+
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+};
+
 export const RequestCard = (request: BloodRequest) => {
     const config = priorityConfig[request.priority];
     const progress = Math.round(
         (request.current_people / request.max_people) * 100,
     );
-    const timeRemaining = formatDistanceToNow(request.end_time);
+    const timeRemaining = calculateRelativeTime(request.end_time);
 
     return (
         <Card
