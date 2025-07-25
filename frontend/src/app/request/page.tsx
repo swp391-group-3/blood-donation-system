@@ -120,7 +120,7 @@ export default function BloodRequestPage() {
                         <StatsIcon className="bg-emerald-50 text-emerald-600">
                             <UserSearch />
                         </StatsIcon>
-                        <StatsValue>{stats.total_requests}</StatsValue>
+                        <StatsValue>{stats.recommended_requests}</StatsValue>
                         <StatsLabel>Recommended Requests</StatsLabel>
                         <StatsDescription>
                             Number of recommended request for you
