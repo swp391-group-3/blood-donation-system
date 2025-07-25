@@ -726,38 +726,34 @@ export function Navbar() {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col space-y-3">
-                                                <Link
-                                                    className="w-full"
-                                                    href="/auth/register"
-                                                >
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="justify-start font-medium hover:bg-accent/60 transition-all duration-200"
-                                                        onClick={() =>
-                                                            setIsMobileMenuOpen(
-                                                                false,
-                                                            )
-                                                        }
-                                                    >
-                                                        Register
-                                                    </Button>
-                                                </Link>
-                                                <Link
-                                                    className="w-full"
-                                                    href="/auth/login"
-                                                >
-                                                    <Button
-                                                        className="justify-start bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-                                                        onClick={() =>
-                                                            setIsMobileMenuOpen(
-                                                                false,
-                                                            )
-                                                        }
-                                                    >
-                                                        Login
-                                                    </Button>
-                                                </Link>
+                                            <div className="p-6 bg-gradient-to-r from-background to-accent/5">
+                                                <div className="flex flex-col space-y-3">
+                                                    <Link href="/auth/register">
+                                                        <Button
+                                                            variant="outline"
+                                                            className="w-full justify-start font-medium hover:bg-accent/60 transition-all duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            Register
+                                                        </Button>
+                                                    </Link>
+                                                    <Link href="/auth/login">
+                                                        <Button
+                                                            className="w-full justify-start bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            Login
+                                                        </Button>
+                                                    </Link>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
