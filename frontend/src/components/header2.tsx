@@ -16,15 +16,7 @@ import { Button } from '@/components/ui/button';
 import {
     Menu,
     ChevronDown,
-    BookOpen,
-    Zap,
-    Palette,
-    AlertCircle,
-    Eye,
-    BarChart3,
     FileText,
-    Layers,
-    HelpCircle,
     User,
     Droplets,
     Shield,
@@ -34,6 +26,12 @@ import {
     UserCog,
     LogOut,
     Settings,
+    Home,
+    LayoutDashboard,
+    Newspaper,
+    Users,
+    Warehouse,
+    HelpCircle,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from './logo';
@@ -47,74 +45,7 @@ import {
 } from './ui/dropdown-menu';
 import { AccountPicture } from './account-picture';
 import { AccountOverview } from './account-overview';
-import { Role } from '@/lib/api/dto/account';
 import { useLogout } from '@/hooks/use-logout';
-
-const gettingStartedItems = [
-    {
-        title: 'Introduction',
-        href: '/docs',
-        description:
-            'Re-usable components built using Radix UI and Tailwind CSS.',
-        icon: BookOpen,
-    },
-    {
-        title: 'Installation',
-        href: '/docs/installation',
-        description: 'How to install dependencies and structure your app.',
-        icon: Zap,
-    },
-    {
-        title: 'Typography',
-        href: '/docs/primitives/typography',
-        description: 'Styles for headings, paragraphs, lists and more.',
-        icon: Palette,
-    },
-];
-
-const components = [
-    {
-        title: 'Alert Dialog',
-        href: '/docs/primitives/alert-dialog',
-        description:
-            'A modal dialog that interrupts the user with important content and expects a response.',
-        icon: AlertCircle,
-    },
-    {
-        title: 'Hover Card',
-        href: '/docs/primitives/hover-card',
-        description:
-            'For sighted users to preview content available behind a link.',
-        icon: Eye,
-    },
-    {
-        title: 'Progress',
-        href: '/docs/primitives/progress',
-        description:
-            'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-        icon: BarChart3,
-    },
-    {
-        title: 'Scroll-area',
-        href: '/docs/primitives/scroll-area',
-        description: 'Visually or semantically separates content.',
-        icon: FileText,
-    },
-    {
-        title: 'Tabs',
-        href: '/docs/primitives/tabs',
-        description:
-            'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-        icon: Layers,
-    },
-    {
-        title: 'Tooltip',
-        href: '/docs/primitives/tooltip',
-        description:
-            'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-        icon: HelpCircle,
-    },
-];
 
 export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -135,25 +66,37 @@ export function Navbar() {
 
     const mainMenuItems = isAdmin
         ? [
-              { label: 'Home', href: '/' },
-              { label: 'Dashboard', href: '/dashboard' },
+              { label: 'Home', href: '/', icon: Home },
+              { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
           ]
         : [
-              { label: 'Home', href: '/' },
-              { label: 'Blood Request', href: '/request' },
-              { label: 'Blog', href: '/blog' },
+              { label: 'Home', href: '/', icon: Home },
+              { label: 'Blood Request', href: '/request', icon: Droplet },
+              { label: 'Blog', href: '/blog', icon: Newspaper },
           ];
 
     const managementItems = isAdmin
         ? [
-              { label: 'Blog Management', href: '/blog-management' },
-              { label: 'Account Management', href: '/account-management' },
+              {
+                  label: 'Blog Management',
+                  href: '/blog-management',
+                  icon: FileText,
+              },
+              {
+                  label: 'Account Management',
+                  href: '/account-management',
+                  icon: Users,
+              },
           ]
         : isStaff
           ? [
-                { label: 'Questions', href: '/question' },
-                { label: 'Blood Storage', href: '/blood-storage' },
-                { label: 'Appointment', href: '/appointment' },
+                { label: 'Questions', href: '/question', icon: HelpCircle },
+                {
+                    label: 'Blood Storage',
+                    href: '/blood-storage',
+                    icon: Warehouse,
+                },
+                { label: 'Appointment', href: '/appointment', icon: Calendar },
             ]
           : [];
 
@@ -560,6 +503,22 @@ export function Navbar() {
                                                         }
                                                         className="flex items-center space-x-3 py-4 px-4 font-semibold rounded-xl hover:bg-accent/60 transition-all duration-200 border border-transparent hover:border-border/50"
                                                     >
+                                                        <div
+                                                            className={cn(
+                                                                'w-8 h-8 rounded-lg flex items-center justify-center',
+                                                                {
+                                                                    Home: 'bg-blue-50 text-blue-600',
+                                                                    'Blood Request':
+                                                                        'bg-rose-50 text-rose-600',
+                                                                    Blog: 'bg-yellow-50 text-yellow-600',
+                                                                    Dashboard:
+                                                                        'bg-indigo-50 text-indigo-600',
+                                                                }[item.label] ||
+                                                                    'bg-muted/20 text-muted-foreground',
+                                                            )}
+                                                        >
+                                                            <item.icon className="w-4 h-4" />
+                                                        </div>
                                                         <span>
                                                             {item.label}
                                                         </span>
@@ -570,8 +529,8 @@ export function Navbar() {
                                                     <details className="group">
                                                         <summary className="flex items-center justify-between cursor-pointer py-4 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/50 hover:to-accent/30 transition-all duration-200 border border-transparent hover:border-border/50">
                                                             <div className="flex items-center space-x-3">
-                                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-muted/50 to-muted/30 flex items-center justify-center">
-                                                                    <Settings className="w-4 h-4 text-muted-foreground" />
+                                                                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                                                                    <Settings className="w-4 h-4 text-purple-600" />
                                                                 </div>
                                                                 <span className="font-semibold">
                                                                     Management
@@ -599,6 +558,29 @@ export function Navbar() {
                                                                             animationDelay: `${idx * 100}ms`,
                                                                         }}
                                                                     >
+                                                                        <div
+                                                                            className={cn(
+                                                                                'w-6 h-6 rounded-md flex items-center justify-center group-hover:bg-opacity-20 transition-colors',
+                                                                                {
+                                                                                    Questions:
+                                                                                        'bg-amber-50 text-amber-600',
+                                                                                    'Blood Storage':
+                                                                                        'bg-emerald-50 text-emerald-600',
+                                                                                    Appointment:
+                                                                                        'bg-purple-50 text-purple-600',
+                                                                                    'Blog Management':
+                                                                                        'bg-cyan-50 text-cyan-600',
+                                                                                    'Account Management':
+                                                                                        'bg-pink-50 text-pink-600',
+                                                                                }[
+                                                                                    item
+                                                                                        .label
+                                                                                ] ||
+                                                                                    'bg-muted/20 text-muted-foreground',
+                                                                            )}
+                                                                        >
+                                                                            <item.icon className="w-3 h-3" />
+                                                                        </div>
                                                                         <span className="font-medium text-foreground group-hover:text-primary transition-colors">
                                                                             {
                                                                                 item.label
