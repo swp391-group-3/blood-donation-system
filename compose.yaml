@@ -127,4 +127,4 @@ volumes:
     external: true
   cloudbeaver:
     name: blood-donation-system-cloudbeaver
-    driver: local
+    external: true
