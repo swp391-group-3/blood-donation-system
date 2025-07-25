@@ -16,7 +16,7 @@ import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 import { RejectAppointmentDialog } from './reject-appointment-dialog';
 import { Appointment } from '@/lib/api/dto/appointment';
 import { useAccount } from '@/hooks/use-account';
-import { useApppointmentAnswer } from '@/hooks/use-apppointment-answer';
+import { useAppointmentAnswer } from '@/hooks/use-appointment-answer';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
@@ -40,7 +40,7 @@ export const ReviewDialog = ({
     appointment,
 }: PropsWithChildren<Props>) => {
     const { data: donor, isPending, error } = useAccount(appointment.donor_id);
-    const { data: answers = [] } = useApppointmentAnswer(appointment.id);
+    const { data: answers = [] } = useAppointmentAnswer(appointment.id);
     const [open, setOpen] = useState(false);
     const approve = useApproveAppointment(appointment.id);
     const reject = useRejectAppointment(appointment.id);
@@ -69,8 +69,8 @@ export const ReviewDialog = ({
                         <h3 className="text-lg font-semibold text-slate-900 mb-4">
                             Applicant Information
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className='col-span-2 min-w-0'>
                                 <span className="text-sm font-medium text-slate-500">
                                     Name:
                                 </span>
@@ -86,7 +86,7 @@ export const ReviewDialog = ({
                                     {bloodGroupLabels[donor.blood_group]}
                                 </div>
                             </div>
-                            <div>
+                            <div className='col-span-2 min-w-0'>
                                 <span className="text-sm font-medium text-slate-500">
                                     Email:
                                 </span>
@@ -123,13 +123,12 @@ export const ReviewDialog = ({
                                         </p>
                                         <div className="flex items-center gap-2">
                                             <Badge
-                                                className={`capitalize text-xs ${
-                                                    answer.answer === 'yes'
+                                                className={`capitalize text-xs ${answer.answer === 'yes'
                                                         ? 'bg-green-100 text-green-800'
                                                         : answer.answer === 'no'
-                                                          ? 'bg-red-100 text-red-800'
-                                                          : 'bg-yellow-100 text-yellow-800'
-                                                }`}
+                                                            ? 'bg-red-100 text-red-800'
+                                                            : 'bg-yellow-100 text-yellow-800'
+                                                    }`}
                                             >
                                                 {answer.answer}
                                             </Badge>
