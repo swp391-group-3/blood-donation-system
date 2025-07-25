@@ -151,7 +151,7 @@ export function Navbar() {
                             </Link>
                         </div>
 
-                        <div className="hidden md:flex flex-1 justify-center">
+                        <div className="absolute left-1/2 transform -translate-x-1/2  hidden md:flex flex-1 justify-center">
                             <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
                                     {(isGuestOrDonor || isStaff) &&
