@@ -138,7 +138,7 @@ export function Navbar() {
                 <div className="mx-auto max-w-7xl px-6">
                     <div
                         className={cn(
-                            'flex items-center transition-all duration-300 ease-in-out',
+                            'w-full flex items-center justify-between px-4 md:px-8 transition-all duration-300 ease-in-out',
                             navbarHeight,
                         )}
                     >
@@ -151,11 +151,12 @@ export function Navbar() {
                             </Link>
                         </div>
 
-                        <div className="flex-1 flex justify-center mx-auto">
+                        <div className="hidden md:flex flex-1 justify-center">
                             <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
                                     {(isGuestOrDonor || isStaff) &&
                                         commonLinks.map(renderLink)}
+
                                     {isAdmin && (
                                         <>
                                             {renderLink({
@@ -168,6 +169,7 @@ export function Navbar() {
                                             })}
                                         </>
                                     )}
+
                                     {isStaff && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger>
@@ -258,6 +260,7 @@ export function Navbar() {
                                             </NavigationMenuContent>
                                         </NavigationMenuItem>
                                     )}
+
                                     {isAdmin && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger>
@@ -323,144 +326,151 @@ export function Navbar() {
                             </NavigationMenu>
                         </div>
 
-                        <div className="hidden md:block">
-                            {!currentAccount ? (
-                                <div className="gap-4 flex">
-                                    <Link href="/auth/register">
-                                        <Button variant="outline">
-                                            Register
-                                        </Button>
-                                    </Link>
-                                    <Link href="/auth/login">
-                                        <Button>Login</Button>
-                                    </Link>
-                                </div>
-                            ) : (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <div className="flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-200 group">
-                                            <div className="size-8">
-                                                <AccountPicture
-                                                    name={currentAccount?.name}
+                        <div className="flex items-center space-x-2">
+                            <div className="hidden md:block">
+                                {!currentAccount ? (
+                                    <div className="gap-4 flex">
+                                        <Link href="/auth/register">
+                                            <Button variant="outline">
+                                                Register
+                                            </Button>
+                                        </Link>
+                                        <Link href="/auth/login">
+                                            <Button>Login</Button>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <div className="flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-200 group">
+                                                <div className="size-8">
+                                                    <AccountPicture
+                                                        name={
+                                                            currentAccount?.name
+                                                        }
+                                                    />
+                                                </div>
+                                                <ChevronDown className="h-3 w-3 text-slate-500 group-hover:text-slate-700 transition-colors duration-200" />
+                                            </div>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent
+                                            align="end"
+                                            className="mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/60 shadow-xl rounded-2xl p-2"
+                                        >
+                                            <div className="px-3 py-3 border-b border-slate-100 mb-2">
+                                                <AccountOverview
+                                                    account={currentAccount}
                                                 />
                                             </div>
-                                            <ChevronDown className="h-3 w-3 text-slate-500 group-hover:text-slate-700 transition-colors duration-200" />
-                                        </div>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent
-                                        align="end"
-                                        className="mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/60 shadow-xl rounded-2xl p-2"
-                                    >
-                                        <div className="px-3 py-3 border-b border-slate-100 mb-2">
-                                            <AccountOverview
-                                                account={currentAccount}
-                                            />
-                                        </div>
 
-                                        <DropdownMenuItem asChild>
-                                            <Link
-                                                href="/profile"
-                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href="/profile"
+                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                >
+                                                    <div className="p-1.5 bg-blue-50 rounded-lg">
+                                                        <User className="h-4 w-4 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium text-slate-900">
+                                                            Profile
+                                                        </span>
+                                                        <div className="text-xs text-slate-500">
+                                                            Manage your account
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            {currentAccount.role ===
+                                                'donor' && (
+                                                <>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/donation"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-rose-50 rounded-lg">
+                                                                <Droplets className="h-4 w-4 text-rose-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Donations
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    View
+                                                                    donation
+                                                                    history
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/health"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                                                <Shield className="h-4 w-4 text-emerald-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Health
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Health
+                                                                    records &
+                                                                    status
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/appointment"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                <Calendar className="h-4 w-4 text-purple-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Appointments
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Manage
+                                                                    appointments
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
+
+                                            <DropdownMenuSeparator className="my-2 bg-slate-100" />
+
+                                            <DropdownMenuItem
+                                                onClick={() => logout.mutate()}
+                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 focus:text-red-600 transition-colors duration-200"
                                             >
-                                                <div className="p-1.5 bg-blue-50 rounded-lg">
-                                                    <User className="h-4 w-4 text-blue-600" />
+                                                <div className="p-1.5 bg-red-50 rounded-lg">
+                                                    <LogOut className="h-4 w-4 text-red-600" />
                                                 </div>
                                                 <div>
-                                                    <span className="font-medium text-slate-900">
-                                                        Profile
+                                                    <span className="font-medium">
+                                                        Logout
                                                     </span>
-                                                    <div className="text-xs text-slate-500">
-                                                        Manage your account
+                                                    <div className="text-xs text-red-500">
+                                                        Sign out of your account
                                                     </div>
                                                 </div>
-                                            </Link>
-                                        </DropdownMenuItem>
-
-                                        {currentAccount.role === 'donor' && (
-                                            <>
-                                                <DropdownMenuItem asChild>
-                                                    <Link
-                                                        href="/donation"
-                                                        className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                    >
-                                                        <div className="p-1.5 bg-rose-50 rounded-lg">
-                                                            <Droplets className="h-4 w-4 text-rose-600" />
-                                                        </div>
-                                                        <div>
-                                                            <span className="font-medium text-slate-900">
-                                                                Donations
-                                                            </span>
-                                                            <div className="text-xs text-slate-500">
-                                                                View donation
-                                                                history
-                                                            </div>
-                                                        </div>
-                                                    </Link>
-                                                </DropdownMenuItem>
-
-                                                <DropdownMenuItem asChild>
-                                                    <Link
-                                                        href="/health"
-                                                        className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                    >
-                                                        <div className="p-1.5 bg-emerald-50 rounded-lg">
-                                                            <Shield className="h-4 w-4 text-emerald-600" />
-                                                        </div>
-                                                        <div>
-                                                            <span className="font-medium text-slate-900">
-                                                                Health
-                                                            </span>
-                                                            <div className="text-xs text-slate-500">
-                                                                Health records &
-                                                                status
-                                                            </div>
-                                                        </div>
-                                                    </Link>
-                                                </DropdownMenuItem>
-
-                                                <DropdownMenuItem asChild>
-                                                    <Link
-                                                        href="/appointment"
-                                                        className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                    >
-                                                        <div className="p-1.5 bg-purple-50 rounded-lg">
-                                                            <Calendar className="h-4 w-4 text-purple-600" />
-                                                        </div>
-                                                        <div>
-                                                            <span className="font-medium text-slate-900">
-                                                                Appointments
-                                                            </span>
-                                                            <div className="text-xs text-slate-500">
-                                                                Manage
-                                                                appointments
-                                                            </div>
-                                                        </div>
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                            </>
-                                        )}
-
-                                        <DropdownMenuSeparator className="my-2 bg-slate-100" />
-
-                                        <DropdownMenuItem
-                                            onClick={() => logout.mutate()}
-                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 focus:text-red-600 transition-colors duration-200"
-                                        >
-                                            <div className="p-1.5 bg-red-50 rounded-lg">
-                                                <LogOut className="h-4 w-4 text-red-600" />
-                                            </div>
-                                            <div>
-                                                <span className="font-medium">
-                                                    Logout
-                                                </span>
-                                                <div className="text-xs text-red-500">
-                                                    Sign out of your account
-                                                </div>
-                                            </div>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
+                            </div>
                         </div>
 
                         <Sheet
