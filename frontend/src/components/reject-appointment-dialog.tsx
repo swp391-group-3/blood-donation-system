@@ -55,7 +55,7 @@ export const RejectAppointmentDialog = ({
                         htmlFor="is-banned"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                        Ban permanently this user
+                        Permanently ban this user
                     </label>
                 </div>
 
@@ -71,7 +71,7 @@ export const RejectAppointmentDialog = ({
                         onClick={() =>
                             reject.mutate({
                                 reason,
-                                isBanned: isBanned,
+                                isBanned,
                             })
                         }
                     >
