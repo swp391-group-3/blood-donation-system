@@ -14,7 +14,7 @@ interface Props {
     onDateChange: (date: Date) => void;
 }
 
-export function DateTimePicker({ date, onDateChange }: Props) {
+export function DatePicker({ date, onDateChange }: Props) {
     const [open, setOpen] = useState(false);
 
     return (
