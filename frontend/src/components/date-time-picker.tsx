@@ -27,7 +27,7 @@ export function DateTimePicker({ date, onDateChange }: Props) {
                             id="date-picker"
                             className="w-32 justify-between font-normal"
                         >
-                            {date ? date.toLocaleDateString() : 'Select date'}
+                            {date ? date.toLocaleDateString("en-GB")  : 'Select date'}
                             <ChevronDownIcon />
                         </Button>
                     </PopoverTrigger>
