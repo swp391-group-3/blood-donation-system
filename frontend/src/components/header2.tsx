@@ -130,7 +130,12 @@ export function Navbar() {
     const { data: currentAccount } = useCurrentAccount();
     const logout = useLogout();
 
-    const baseLinks = [
+    const isGuestOrDonor =
+        !currentAccount?.role || currentAccount?.role === 'donor';
+    const isStaff = currentAccount?.role === 'staff';
+    const isAdmin = currentAccount?.role === 'admin';
+
+    const commonLinks = [
         { label: 'Home', href: '/' },
         { label: 'Blood Request', href: '/request' },
         { label: 'Blog', href: '/blog' },
@@ -186,8 +191,26 @@ export function Navbar() {
                         <div className="flex-1 flex justify-center mx-auto">
                             <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
-                                    {baseLinks.map(renderLink)}
-                                    {currentAccount?.role === 'staff' && (
+                                    {/* Guest, Donor, and Staff all share these base links */}
+                                    {(isGuestOrDonor || isStaff) &&
+                                        commonLinks.map(renderLink)}
+
+                                    {/* Admin has its own links */}
+                                    {isAdmin && (
+                                        <>
+                                            {renderLink({
+                                                label: 'Home',
+                                                href: '/',
+                                            })}
+                                            {renderLink({
+                                                label: 'Dashboard',
+                                                href: '/dashboard',
+                                            })}
+                                        </>
+                                    )}
+
+                                    {/* Management section for STAFF */}
+                                    {isStaff && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger>
                                                 Management
@@ -212,8 +235,7 @@ export function Navbar() {
                                                                     </p>
                                                                     <p className="text-xs text-slate-500">
                                                                         Manage
-                                                                        the
-                                                                        question
+                                                                        questions
                                                                         for
                                                                         blood
                                                                         request
@@ -241,7 +263,6 @@ export function Navbar() {
                                                                     </p>
                                                                     <p className="text-xs text-slate-500">
                                                                         Manage
-                                                                        all
                                                                         blood
                                                                         bags in
                                                                         storage
@@ -279,78 +300,68 @@ export function Navbar() {
                                             </NavigationMenuContent>
                                         </NavigationMenuItem>
                                     )}
-                                    {currentAccount?.role === 'admin' && (
-                                        <>
-                                            <NavigationMenuItem>
-                                                <NavigationMenuLink
-                                                    asChild
-                                                    className={navigationMenuTriggerStyle()}
-                                                >
-                                                    <Link href="/dashboard">
-                                                        Dashboard
-                                                    </Link>
-                                                </NavigationMenuLink>
-                                            </NavigationMenuItem>
-                                            <NavigationMenuItem>
-                                                <NavigationMenuTrigger>
-                                                    Management
-                                                </NavigationMenuTrigger>
-                                                <NavigationMenuContent>
-                                                    <ul className="grid w-[300px] gap-4 p-2">
-                                                        <li>
-                                                            <NavigationMenuLink
-                                                                asChild
-                                                                className="mb-2"
+
+                                    {/* Management section for ADMIN */}
+                                    {isAdmin && (
+                                        <NavigationMenuItem>
+                                            <NavigationMenuTrigger>
+                                                Management
+                                            </NavigationMenuTrigger>
+                                            <NavigationMenuContent>
+                                                <ul className="grid w-[300px] gap-4 p-2">
+                                                    <li>
+                                                        <NavigationMenuLink
+                                                            asChild
+                                                            className="mb-2"
+                                                        >
+                                                            <Link
+                                                                href="/blog-management"
+                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
                                                             >
-                                                                <Link
-                                                                    href="/blog-management"
-                                                                    className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
-                                                                >
-                                                                    <div className="p-1.5 bg-purple-50 rounded-lg">
-                                                                        <LayoutDashboard className="h-4 w-4 text-purple-600" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="font-medium text-slate-900">
-                                                                            Blog
-                                                                            Management
-                                                                        </p>
-                                                                        <p className="text-xs text-slate-500">
-                                                                            Manage
-                                                                            blog
-                                                                            articles
-                                                                        </p>
-                                                                    </div>
-                                                                </Link>
-                                                            </NavigationMenuLink>
-                                                            <NavigationMenuLink
-                                                                asChild
+                                                                <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                    <FileText className="h-4 w-4 text-purple-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium text-slate-900">
+                                                                        Blog
+                                                                        Management
+                                                                    </p>
+                                                                    <p className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        blog
+                                                                        articles
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+
+                                                        <NavigationMenuLink
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href="/account-management"
+                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
                                                             >
-                                                                <Link
-                                                                    href="/account-management"
-                                                                    className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
-                                                                >
-                                                                    <div className="p-1.5 bg-yellow-50 rounded-lg">
-                                                                        <UserCog className="h-4 w-4 text-yellow-600" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="font-medium text-slate-900">
-                                                                            Account
-                                                                            Management
-                                                                        </p>
-                                                                        <p className="text-xs text-slate-500">
-                                                                            Manage
-                                                                            all
-                                                                            user
-                                                                            accounts
-                                                                        </p>
-                                                                    </div>
-                                                                </Link>
-                                                            </NavigationMenuLink>
-                                                        </li>
-                                                    </ul>
-                                                </NavigationMenuContent>
-                                            </NavigationMenuItem>
-                                        </>
+                                                                <div className="p-1.5 bg-yellow-50 rounded-lg">
+                                                                    <UserCog className="h-4 w-4 text-yellow-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium text-slate-900">
+                                                                        Account
+                                                                        Management
+                                                                    </p>
+                                                                    <p className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        all user
+                                                                        accounts
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                    </li>
+                                                </ul>
+                                            </NavigationMenuContent>
+                                        </NavigationMenuItem>
                                     )}
                                 </NavigationMenuList>
                             </NavigationMenu>

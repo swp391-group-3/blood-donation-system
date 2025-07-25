@@ -4,12 +4,9 @@ import './globals.css';
 import QueryProvider from './query-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { BloodDonationChatbot } from '@/components/chatbot';
-<<<<<<< HEAD
 import { Header } from '@/components/header';
 import { Navbar } from '@/components/header2';
-=======
 import Footer from '@/components/footer';
->>>>>>> main
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
