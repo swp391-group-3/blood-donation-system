@@ -5,6 +5,7 @@ import QueryProvider from './query-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/header';
 import { BloodDonationChatbot } from '@/components/chatbot';
+import Footer from '@/components/footer';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -35,6 +36,7 @@ export default function RootLayout({
                     <Header />
                     {children}
                     <BloodDonationChatbot />
+                    <Footer />
                     <Toaster richColors />
                 </QueryProvider>
             </body>

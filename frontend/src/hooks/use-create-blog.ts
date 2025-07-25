@@ -6,10 +6,10 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 export const blogPostSchema = z.object({
-    title: z.string().min(1, 'Must inclucde blog title'),
-    description: z.string().min(1, 'Must include blog description'),
+    title: z.string().min(1, 'Blog title must be included'),
+    description: z.string().min(1, 'Blog description must be included'),
     tags: z.array(z.string()),
-    content: z.string().min(1, 'Must include blog content'),
+    content: z.string().min(1, 'Blog Content must be included'),
 });
 
 export const useCreateBlogFrom = () => {

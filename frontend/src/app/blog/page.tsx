@@ -9,14 +9,9 @@ import {
     SelectValue,
     SelectContent,
 } from '@/components/ui/select';
-import { Clock, Filter, Plus, Search, Tag } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AccountPicture } from '@/components/account-picture';
-import { formatDistanceToNow } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
+import { Filter, Plus, Search, Tag } from 'lucide-react';
 import Link from 'next/link';
-import { useBlogList } from '@/hooks/use-blog-list';
-import { toast } from 'sonner';
+import { Mode, useBlogList } from '@/hooks/use-blog-infinite-scroll';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,78 +20,31 @@ import {
     HeroKeyword,
     HeroTitle,
 } from '@/components/hero';
+import { useTagList } from '@/hooks/use-tag-list';
+import { BlogCard } from '@/components/blog-card';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import BlogCardSkeleton from '@/components/blog-skeleton';
 
 export default function BlogPage() {
     const [selectedTag, setSelectedTag] = useState<string>('all');
     const [search, setSearch] = useState<string | undefined>();
-    const [sortOption, setSortOption] = useState<'recent' | 'oldest' | 'title'>(
-        'recent',
+    const [sortOption, setSortOption] = useState<Mode | undefined>();
+    const filter = useMemo(
+        () => ({
+            query: search,
+            tag: selectedTag === 'all' ? undefined : selectedTag,
+            mode: sortOption,
+            page_size: 10,
+        }),
+        [search, selectedTag, sortOption],
     );
-    const { data: blogs, isLoading, error } = useBlogList();
-    const allTags = Array.from(
-        new Set(
-            blogs?.flatMap((blog) =>
-                Array.isArray(blog.tags)
-                    ? blog.tags.flat().map((t) => t.trim())
-                    : [],
-            ),
-        ),
-    );
+    const { items, next, hasMore } = useBlogList(filter);
+    const { data: tags } = useTagList();
+    // logic for rendering skeleton
+    const cols = 3;
+    const rem = items.length % cols;
+    const skeletonCount = rem === 0 ? cols : cols - rem;
 
-    const filteredBlogs = useMemo(() => {
-        if (!blogs) return [];
-
-        const filtered = blogs
-            .filter((blog) => {
-                const flatTags = Array.isArray(blog.tags)
-                    ? blog.tags.flat().map((t) => t.trim())
-                    : [];
-
-                return selectedTag === 'all' || flatTags.includes(selectedTag);
-            })
-            .filter((blog) => {
-                if (!search) return true;
-                const searchTerm = search.toLowerCase().trim();
-                return blog.title.toLowerCase().includes(searchTerm);
-            });
-
-        switch (sortOption) {
-            case 'recent':
-                return filtered.sort(
-                    (a, b) =>
-                        new Date(b.created_at).getTime() -
-                        new Date(a.created_at).getTime(),
-                );
-            case 'oldest':
-                return filtered.sort(
-                    (a, b) =>
-                        new Date(a.created_at).getTime() -
-                        new Date(b.created_at).getTime(),
-                );
-            case 'title':
-                return filtered.sort((a, b) => a.title.localeCompare(b.title));
-            default:
-                return filtered;
-        }
-    }, [blogs, selectedTag, search, sortOption]);
-
-    if (isLoading) {
-        return <div></div>;
-    }
-
-    if (error) {
-        toast.error('Failed to fetch blog list');
-        return <div></div>;
-    }
-
-    const getTimeAgo = (date: Date): string => {
-        return formatDistanceToNow(date, { addSuffix: true });
-    };
-
-    const getExcerpt = (content: string, maxLength = 100): string => {
-        if (content.length <= maxLength) return content;
-        return content.substring(0, maxLength).trim() + '...';
-    };
     return (
         <div>
             <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -132,36 +80,37 @@ export default function BlogPage() {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectItem value="all">All Tags</SelectItem>
-                                {allTags.map((tag) => (
-                                    <SelectItem key={tag} value={tag}>
-                                        {tag.charAt(0).toUpperCase() +
-                                            tag.slice(1)}
-                                    </SelectItem>
-                                ))}
+                                {tags &&
+                                    tags.map((tag) => (
+                                        <SelectItem
+                                            key={tag.id}
+                                            value={tag.name}
+                                        >
+                                            {tag.name}
+                                        </SelectItem>
+                                    ))}
                             </SelectGroup>
                         </SelectContent>
                     </Select>
                     <Select
                         value={sortOption}
-                        onValueChange={(value) =>
-                            setSortOption(
-                                value as 'recent' | 'oldest' | 'title',
-                            )
-                        }
+                        onValueChange={(value: Mode) => setSortOption(value)}
                     >
-                        <SelectTrigger className="w-full sm:w-40 h-11 border-zinc-200 rounded">
+                        <SelectTrigger className="w-full sm:w-45 h-11 border-zinc-200 rounded">
                             <Filter className="h-4 w-4 mr-2" />
                             <SelectValue placeholder="Sort By" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="recent">
+                                <SelectItem value="MostRecent">
                                     Most Recent
                                 </SelectItem>
-                                <SelectItem value="oldest">
+                                <SelectItem value="OldestFirst">
                                     Oldest First
                                 </SelectItem>
-                                <SelectItem value="title">Title A-Z</SelectItem>
+                                <SelectItem value="TitleAZ">
+                                    Title A-Z
+                                </SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -173,72 +122,23 @@ export default function BlogPage() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredBlogs?.map((blog) => (
-                        <Link key={blog.id} href={`/blog/${blog.id}`}>
-                            <Card className="flex flex-col h-full border-zinc-200 rounded-lg shadow-sm transition-all duration-200">
-                                <CardHeader className="flex-1 pt-1 pb-2 px-5">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="h-8 w-8">
-                                            <AccountPicture name={blog.owner} />
-                                        </div>
-                                        <div>
-                                            <div className="font-medium text-zinc-900 text-[15px]">
-                                                {blog.owner}
-                                            </div>
-                                            <div className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
-                                                <Clock className="h-3 w-3" />
-                                                {getTimeAgo(blog.created_at)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <CardTitle className="block text-base font-semibold text-zinc-900 leading-snug mb-2 line-clamp-2 hover:text-blue-600">
-                                        {blog.title}
-                                    </CardTitle>
-                                    <CardContent className="p-0">
-                                        <p
-                                            className="text-sm text-zinc-600 leading-normal mb-3 line-clamp-3 min-h-[56px]"
-                                            dangerouslySetInnerHTML={{
-                                                __html: getExcerpt(
-                                                    blog.content,
-                                                ),
-                                            }}
-                                        />
-                                    </CardContent>
-                                </CardHeader>
-                                <div className="flex-1 flex flex-col justify-end">
-                                    <div className="flex flex-wrap gap-1.5 px-5 pb-4">
-                                        {(Array.isArray(blog.tags)
-                                            ? blog.tags.flat()
-                                            : []
-                                        )
-                                            .slice(0, 3)
-                                            .map((tag, index) => (
-                                                <Badge
-                                                    key={index}
-                                                    variant="outline"
-                                                    className="bg-zinc-50 text-zinc-700 border-zinc-200 text-xs px-2 py-0.5"
-                                                >
-                                                    {tag}
-                                                </Badge>
-                                            ))}
-                                        {Array.isArray(blog.tags) &&
-                                            blog.tags.flat().length > 3 && (
-                                                <Badge
-                                                    variant="outline"
-                                                    className="bg-zinc-50 text-zinc-500 border-zinc-200 text-xs px-2 py-0.5"
-                                                >
-                                                    +
-                                                    {blog.tags.flat().length -
-                                                        3}
-                                                </Badge>
-                                            )}
-                                    </div>
-                                </div>
-                            </Card>
-                        </Link>
+                <InfiniteScroll
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    dataLength={items.length}
+                    next={next}
+                    hasMore={hasMore}
+                    loader={
+                        <>
+                            {Array.from({ length: skeletonCount }).map((_, i) => (
+                                <BlogCardSkeleton key={i} />
+                            ))}
+                        </>
+                    }
+                >
+                    {items.map((blog) => (
+                        <BlogCard key={blog.id} blog={blog} />
                     ))}
-                </div>
+                </InfiniteScroll>
             </main>
         </div>
     );

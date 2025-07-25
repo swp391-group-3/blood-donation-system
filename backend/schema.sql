@@ -1,6 +1,4 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS pg_trgm; 
-CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
 
 CREATE TYPE blood_group AS ENUM (
     'o_plus',
@@ -36,7 +34,8 @@ CREATE TABLE IF NOT EXISTS accounts(
     birthday date,
     blood_group blood_group,
     is_active boolean NOT NULL DEFAULT true,
-    created_at timestamptz NOT NULL DEFAULT now()
+    created_at timestamptz NOT NULL DEFAULT now(),
+    is_banned boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS blogs(

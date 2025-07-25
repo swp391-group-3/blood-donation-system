@@ -64,6 +64,7 @@ pub struct Account {
     pub blood_group: Option<ctypes::BloodGroup>,
     pub is_active: bool,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub is_banned: bool,
 }
 pub struct AccountBorrowed<'a> {
     pub id: uuid::Uuid,
@@ -78,6 +79,7 @@ pub struct AccountBorrowed<'a> {
     pub blood_group: Option<ctypes::BloodGroup>,
     pub is_active: bool,
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub is_banned: bool,
 }
 impl<'a> From<AccountBorrowed<'a>> for Account {
     fn from(
@@ -94,6 +96,7 @@ impl<'a> From<AccountBorrowed<'a>> for Account {
             blood_group,
             is_active,
             created_at,
+            is_banned,
         }: AccountBorrowed<'a>,
     ) -> Self {
         Self {
@@ -109,6 +112,7 @@ impl<'a> From<AccountBorrowed<'a>> for Account {
             blood_group,
             is_active,
             created_at,
+            is_banned,
         }
     }
 }
@@ -606,6 +610,7 @@ impl GetStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),
@@ -643,6 +648,7 @@ impl GetByEmailStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),
@@ -680,6 +686,7 @@ impl GetByRoleStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),
@@ -688,7 +695,7 @@ impl GetByRoleStmt {
 }
 pub fn count() -> CountStmt {
     CountStmt(crate::client::async_::Stmt::new(
-        "SELECT COUNT(id) FROM accounts WHERE ( $1::text IS NULL OR (name % $1 OR email % $1) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true",
+        "SELECT COUNT(id) FROM accounts WHERE ( $1::text IS NULL OR (name LIKE '%' || $1 || '%' ) OR (email LIKE '%' || $1 || '%' ) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true",
     ))
 }
 pub struct CountStmt(crate::client::async_::Stmt);
@@ -722,7 +729,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
 }
 pub fn get_all() -> GetAllStmt {
     GetAllStmt(crate::client::async_::Stmt::new(
-        "SELECT * FROM accounts WHERE ( $1::text IS NULL OR (name % $1 OR email % $1) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true LIMIT $3::int OFFSET $3::int * $4::int",
+        "SELECT * FROM accounts WHERE ( $1::text IS NULL OR (name LIKE '%' || $1 || '%' ) OR (email LIKE '%' || $1 || '%' ) ) AND ( $2::role IS NULL OR role = $2 ) AND is_active = true LIMIT $3::int OFFSET $3::int * $4::int",
     ))
 }
 pub struct GetAllStmt(crate::client::async_::Stmt);
@@ -754,6 +761,7 @@ impl GetAllStmt {
                         blood_group: row.try_get(9)?,
                         is_active: row.try_get(10)?,
                         created_at: row.try_get(11)?,
+                        is_banned: row.try_get(12)?,
                     })
                 },
             mapper: |it| Account::from(it),

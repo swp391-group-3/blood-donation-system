@@ -22,7 +22,9 @@ export const columns = [
             const blog = row.original;
             return (
                 <div>
-                    <div className="text-sm text-gray-500">{blog.title}</div>
+                    <div className="text-sm text-gray-500 text-wrap">
+                        {blog.title}
+                    </div>
                 </div>
             );
         },
@@ -34,7 +36,7 @@ export const columns = [
             const blog = row.original;
             return (
                 <div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 text-wrap">
                         {blog.description}
                     </div>
                 </div>

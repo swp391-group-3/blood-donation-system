@@ -8,14 +8,14 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 export const bloodRequestSchema = z.object({
-    title: z.string().min(1, 'The title cannot be empty'),
+    title: z.string().min(1, 'Blood Title must be included'),
     priority: z.enum(priorities, {
-        errorMap: () => ({ message: 'Invalid Priority' }),
+        errorMap: () => ({ message: 'Priority is invalid' }),
     }),
     blood_groups: z
         .array(
             z.enum(bloodGroups, {
-                errorMap: () => ({ message: 'Invalid Blood Group' }),
+                errorMap: () => ({ message: 'Blood Group is invalid' }),
             }),
         )
         .min(1, 'At least one blood group'),

@@ -144,27 +144,23 @@ export const columns: ColumnDef<Appointment>[] = [
     {
         header: 'Donor',
         accessorKey: 'donor_id',
-        cell: ({ row }) => <AccountCell id={row.getValue('donor_id')} />,
+        cell: ({ row }) => <AccountCell id={row.original.donor_id} />,
     },
     {
         header: 'Blood Type',
         accessorKey: 'donor_id',
-        cell: ({ row }) => (
-            <BloodTypeCell accountId={row.getValue('donor_id')} />
-        ),
+        cell: ({ row }) => <BloodTypeCell accountId={row.original.donor_id} />,
     },
     {
         header: 'Priority',
         accessorKey: 'request_id',
-        cell: ({ row }) => (
-            <PriorityCell requestId={row.getValue('request_id')} />
-        ),
+        cell: ({ row }) => <PriorityCell requestId={row.original.request_id} />,
     },
     {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }) => {
-            const config = statusConfigs[row.getValue('status') as Status];
+            const config = statusConfigs[row.original.status];
 
             return (
                 <Badge
@@ -182,13 +178,13 @@ export const columns: ColumnDef<Appointment>[] = [
         header: 'Action',
         accessorKey: 'status',
         cell: ({ row }) => {
-            const id = row.getValue('id') as string;
-            const status = row.getValue('status') as Status;
+            const id = row.original.id;
+            const status = row.original.status;
 
             return (
                 <>
                     {status === 'on_process' && (
-                        <ReviewDialog appointmentId={id}>
+                        <ReviewDialog appointment={row.original}>
                             <Button
                                 size="sm"
                                 className="bg-lime-600 hover:bg-lime-700 text-white rounded-lg"

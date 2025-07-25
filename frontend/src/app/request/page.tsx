@@ -17,14 +17,16 @@ import {
     User,
     UserSearch,
 } from 'lucide-react';
-import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
-import { useBloodRequestList } from '@/hooks/use-blood-request-list';
-import { toast } from 'sonner';
 import {
-    BloodRequest,
-    priorities,
-    Priority,
-} from '@/lib/api/dto/blood-request';
+    Stats,
+    StatsDescription,
+    StatsGrid,
+    StatsIcon,
+    StatsLabel,
+    StatsValue,
+} from '@/components/stats';
+import { useBloodRequestList } from '@/hooks/use-blood-request-list';
+import { priorities, Priority } from '@/lib/api/dto/blood-request';
 import { useMemo, useState } from 'react';
 import { capitalCase } from 'change-case';
 import {
@@ -39,81 +41,32 @@ import {
     HeroSummary,
     HeroTitle,
 } from '@/components/hero';
-import { CardGrid } from '@/components/card-grid';
 import { RequestCard } from '@/components/request-card';
-
-const getStats = (bloodRequests: BloodRequest[]): StatsProps[] => {
-    return [
-        {
-            label: 'Blood Requests',
-            value: bloodRequests.length,
-            icon: Droplets,
-            description: 'Number of blood request',
-            color: 'rose',
-        },
-        {
-            label: 'Urgent Requests',
-            value: bloodRequests.filter(
-                (request) => request.priority === 'high',
-            ).length,
-            icon: Droplet,
-            description: 'Number of urgent blood request',
-            color: 'rose',
-        },
-        {
-            label: 'Donors Needed',
-            value: bloodRequests.reduce(
-                (count, request) =>
-                    count + (request.max_people - request.current_people),
-                0,
-            ),
-            icon: User,
-            description: 'Number of donors need across all request',
-            color: 'blue',
-        },
-        {
-            label: 'Recommended Requests',
-            value: '0',
-            icon: UserSearch,
-            description: 'Number of recommended request for you',
-            color: 'emerald',
-        },
-    ];
-};
+import { useBloodRequestStats } from '@/hooks/use-blood-request-stats';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { EmptyState } from '@/components/ui/empty-state';
+import { RequestCardSkeleton } from '@/components/blood-request-skeleton';
 
 export default function BloodRequestPage() {
-    const { data: bloodRequests, isPending, error } = useBloodRequestList();
-    const stats = useMemo(
-        () => (bloodRequests ? getStats(bloodRequests) : undefined),
-        [bloodRequests],
-    );
     const [priority, setPriority] = useState<Priority | undefined>();
     const [bloodGroup, setBloodGroup] = useState<BloodGroup | undefined>();
     const [search, setSearch] = useState<string | undefined>();
-    const filteredRequests = useMemo(
-        () =>
-            bloodRequests
-                ?.filter(
-                    (request) => !priority || request.priority === priority,
-                )
-                .filter(
-                    (request) =>
-                        !bloodGroup ||
-                        request.blood_groups.indexOf(bloodGroup) !== -1,
-                )
-                .filter((request) => !search || request.title.includes(search)),
-        [bloodRequests, priority, bloodGroup, search],
+    const filter = useMemo(
+        () => ({
+            query: search,
+            blood_group: bloodGroup,
+            priority,
+            page_size: 10,
+        }),
+        [priority, bloodGroup, search],
     );
+    const { items, next, hasMore } = useBloodRequestList(filter);
+    const { data: stats } = useBloodRequestStats();
 
-    if (isPending) {
-        return <div></div>;
-    }
-
-    if (error) {
-        toast.error('Failed to fetch blood request list');
-        return <div></div>;
-    }
-
+    // login for rendering blood request skeleton
+    const cols = 2;
+    const rem = items.length % cols;
+    const skeletonCount = rem === 0 ? cols : cols - rem;
     return (
         <div className="flex-1 space-y-6 p-6">
             <Hero>
@@ -131,11 +84,50 @@ export default function BloodRequestPage() {
                 </HeroDescription>
             </Hero>
 
-            <StatsGrid>
-                {stats!.map((entry, index) => (
-                    <Stats key={index} {...entry} />
-                ))}
-            </StatsGrid>
+            {stats && (
+                <StatsGrid>
+                    <Stats>
+                        <StatsIcon className="bg-rose-50 text-rose-600">
+                            <Droplets />
+                        </StatsIcon>
+                        <StatsValue>{stats.total_requests}</StatsValue>
+                        <StatsLabel>Blood Requests</StatsLabel>
+                        <StatsDescription>
+                            Number of blood request
+                        </StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-rose-50 text-rose-600">
+                            <Droplet />
+                        </StatsIcon>
+                        <StatsValue>{stats.urgent_requests}</StatsValue>
+                        <StatsLabel>Urgent Requests</StatsLabel>
+                        <StatsDescription>
+                            Number of urgent blood request
+                        </StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-blue-50 text-blue-600">
+                            <User />
+                        </StatsIcon>
+                        <StatsValue>{stats.donors_needed}</StatsValue>
+                        <StatsLabel>Donors Needed</StatsLabel>
+                        <StatsDescription>
+                            Number of donors need across all request
+                        </StatsDescription>
+                    </Stats>
+                    <Stats>
+                        <StatsIcon className="bg-emerald-50 text-emerald-600">
+                            <UserSearch />
+                        </StatsIcon>
+                        <StatsValue>{stats.total_requests}</StatsValue>
+                        <StatsLabel>Recommended Requests</StatsLabel>
+                        <StatsDescription>
+                            Number of recommended request for you
+                        </StatsDescription>
+                    </Stats>
+                </StatsGrid>
+            )}
 
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
@@ -188,11 +180,31 @@ export default function BloodRequestPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                <CardGrid className="grid md:grid-cols-2 gap-10">
-                    {filteredRequests!.map((request, index) => (
-                        <RequestCard key={index} {...request} />
-                    ))}
-                </CardGrid>
+                <InfiniteScroll
+                    className="grid md:grid-cols-2 gap-10"
+                    dataLength={items.length}
+                    next={next}
+                    hasMore={hasMore}
+                    loader={<>
+
+                        {Array.from({ length: skeletonCount }).map((_, i) => {
+                            <RequestCardSkeleton key={i} />
+                        })}
+                    </>}
+                >
+                    {items.length === 0 ? (
+                        <EmptyState
+                            className="mx-auto col-span-full"
+                            title="No Results Found"
+                            description="Try adjusting your search filters."
+                            icons={[Search]}
+                        />
+                    ) : (
+                        items.map((request) => (
+                            <RequestCard key={request.id} {...request} />
+                        ))
+                    )}
+                </InfiniteScroll>
             </div>
         </div>
     );

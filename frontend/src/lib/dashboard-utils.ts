@@ -1,7 +1,5 @@
-import { Account, Staff } from './api/dto/account';
-import { bloodGroupLabels } from './api/dto/blood-group';
-import { BloodRequest } from './api/dto/blood-request';
-import { Donation } from './api/dto/donation';
+import { Staff } from './api/dto/account';
+import { BloodGroup, bloodGroupLabels } from './api/dto/blood-group';
 import Papa from 'papaparse';
 
 const Months = [
@@ -27,7 +25,18 @@ function initTrendData() {
     }));
 }
 
-export function getTrendData(donations: Donation[], requests: BloodRequest[]) {
+export interface DonationTrend {
+    created_at: Date;
+}
+export interface BloodRequestTrend {
+    start_time: Date;
+}
+
+export interface BloodGroupDistribution {
+    blood_group: BloodGroup;
+}
+
+export function getTrendData(donations: DonationTrend[], requests: BloodRequestTrend[]) {
     const trends = initTrendData();
 
     donations.forEach((d) => {
@@ -71,7 +80,7 @@ function initBloodGroupData() {
     }));
 }
 
-export function getBloodGroupData(accounts: Account[]) {
+export function getBloodGroupData(accounts: BloodGroupDistribution[]) {
     const bloodGroupData = initBloodGroupData();
 
     accounts.forEach((account) => {
