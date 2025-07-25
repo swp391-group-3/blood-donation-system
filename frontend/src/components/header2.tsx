@@ -615,25 +615,155 @@ export function Navbar() {
                                     </div>
 
                                     <div className="p-6 border-t bg-gradient-to-r from-background to-accent/5">
-                                        <div className="flex flex-col space-y-3">
-                                            <Button
-                                                variant="ghost"
-                                                className="justify-start font-medium hover:bg-accent/60 transition-all duration-200"
-                                                onClick={() =>
-                                                    setIsMobileMenuOpen(false)
-                                                }
-                                            >
-                                                Sign In
-                                            </Button>
-                                            <Button
-                                                className="justify-start bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-                                                onClick={() =>
-                                                    setIsMobileMenuOpen(false)
-                                                }
-                                            >
-                                                Get Started
-                                            </Button>
-                                        </div>
+                                        {currentAccount ? (
+                                            <div className="space-y-1">
+                                                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                                    Account
+                                                </div>
+
+                                                <Link
+                                                    href="/profile"
+                                                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                    onClick={() =>
+                                                        setIsMobileMenuOpen(
+                                                            false,
+                                                        )
+                                                    }
+                                                >
+                                                    <div className="p-1.5 bg-blue-50 rounded-lg">
+                                                        <User className="h-4 w-4 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-medium">
+                                                            Profile
+                                                        </span>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            Manage your account
+                                                        </div>
+                                                    </div>
+                                                </Link>
+
+                                                {currentAccount?.role ===
+                                                    'donor' && (
+                                                    <>
+                                                        <Link
+                                                            href="/donation"
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="p-1.5 bg-rose-50 rounded-lg">
+                                                                <Droplets className="h-4 w-4 text-rose-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">
+                                                                    Donations
+                                                                </span>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    View
+                                                                    donation
+                                                                    history
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+
+                                                        <Link
+                                                            href="/health"
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                                                <Shield className="h-4 w-4 text-emerald-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">
+                                                                    Health
+                                                                </span>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    Health
+                                                                    records &
+                                                                    status
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+
+                                                        <Link
+                                                            href="/appointment"
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                <Calendar className="h-4 w-4 text-purple-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">
+                                                                    Appointments
+                                                                </span>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    Manage
+                                                                    appointments
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </>
+                                                )}
+
+                                                <button
+                                                    onClick={() =>
+                                                        logout.mutate()
+                                                    }
+                                                    className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full"
+                                                >
+                                                    <div className="p-1.5 bg-red-50 rounded-lg">
+                                                        <LogOut className="h-4 w-4 text-red-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-left font-medium">
+                                                            Logout
+                                                        </p>
+                                                        <div className="text-xs text-red-500">
+                                                            Sign out of your
+                                                            account
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col space-y-3">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="justify-start font-medium hover:bg-accent/60 transition-all duration-200"
+                                                    onClick={() =>
+                                                        setIsMobileMenuOpen(
+                                                            false,
+                                                        )
+                                                    }
+                                                >
+                                                    Sign In
+                                                </Button>
+                                                <Button
+                                                    className="justify-start bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                                                    onClick={() =>
+                                                        setIsMobileMenuOpen(
+                                                            false,
+                                                        )
+                                                    }
+                                                >
+                                                    Get Started
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </SheetContent>
