@@ -8,7 +8,7 @@ import {
     PaginationState,
     useReactTable,
 } from '@tanstack/react-table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { columns } from './column';
 import {
     Table,
@@ -40,6 +40,12 @@ function BlogPage() {
         page_index: pagination.pageIndex,
         page_size: pagination.pageSize,
     });
+    useEffect(() => {
+        setPagination((prev) => ({
+            ...prev,
+            pageIndex: 0,
+        }));
+    }, [searchTerm]);
 
     const table = useReactTable({
         data: blogs?.data ?? [],

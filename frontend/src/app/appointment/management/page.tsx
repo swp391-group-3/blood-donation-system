@@ -16,7 +16,7 @@ import {
     Search,
     XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { capitalCase } from 'change-case';
 import { Hero, HeroDescription, HeroTitle } from '@/components/hero';
 import { Status, statuses } from '@/lib/api/dto/appointment';
@@ -64,6 +64,13 @@ export default function AppointmentManagementPage() {
         page_index: pagination.pageIndex,
         page_size: pagination.pageSize,
     });
+    useEffect(() => {
+        setPagination((prev) => ({
+            ...prev,
+            pageIndex: 0,
+        }));
+    }, [search, selectedStatus]);
+
     const { data: stats } = useAppointmentStats();
 
     const table = useReactTable({

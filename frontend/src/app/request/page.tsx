@@ -185,12 +185,15 @@ export default function BloodRequestPage() {
                     dataLength={items.length}
                     next={next}
                     hasMore={hasMore}
-                    loader={<>
-
-                        {Array.from({ length: skeletonCount }).map((_, i) => {
-                            <RequestCardSkeleton key={i} />
-                        })}
-                    </>}
+                    loader={
+                        <>
+                            {Array.from({ length: skeletonCount }).map(
+                                (_, i) => {
+                                    <RequestCardSkeleton key={i} />;
+                                },
+                            )}
+                        </>
+                    }
                 >
                     {items.length === 0 ? (
                         <EmptyState
