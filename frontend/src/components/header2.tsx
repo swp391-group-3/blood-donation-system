@@ -727,27 +727,37 @@ export function Navbar() {
                                             </div>
                                         ) : (
                                             <div className="flex flex-col space-y-3">
-                                                <Button
-                                                    variant="ghost"
-                                                    className="justify-start font-medium hover:bg-accent/60 transition-all duration-200"
-                                                    onClick={() =>
-                                                        setIsMobileMenuOpen(
-                                                            false,
-                                                        )
-                                                    }
+                                                <Link
+                                                    className="w-full"
+                                                    href="/auth/register"
                                                 >
-                                                    Sign In
-                                                </Button>
-                                                <Button
-                                                    className="justify-start bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-                                                    onClick={() =>
-                                                        setIsMobileMenuOpen(
-                                                            false,
-                                                        )
-                                                    }
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="justify-start font-medium hover:bg-accent/60 transition-all duration-200"
+                                                        onClick={() =>
+                                                            setIsMobileMenuOpen(
+                                                                false,
+                                                            )
+                                                        }
+                                                    >
+                                                        Register
+                                                    </Button>
+                                                </Link>
+                                                <Link
+                                                    className="w-full"
+                                                    href="/auth/login"
                                                 >
-                                                    Get Started
-                                                </Button>
+                                                    <Button
+                                                        className="justify-start bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                                                        onClick={() =>
+                                                            setIsMobileMenuOpen(
+                                                                false,
+                                                            )
+                                                        }
+                                                    >
+                                                        Login
+                                                    </Button>
+                                                </Link>
                                             </div>
                                         )}
                                     </div>
