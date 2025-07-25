@@ -11,10 +11,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const formatDateTime = (value: Date) => {
-    return `${value.toLocaleDateString()} at ${value.toLocaleTimeString([], {
+    const datePart = value.toLocaleDateString('en-GB');
+    const timePart = value.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
-    })}`;
+        hour12: false,
+    });
+    return `${datePart} at ${timePart}`;
 };
 
 export const generateCertificate = async (
