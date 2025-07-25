@@ -67,7 +67,7 @@ export function Navbar() {
     const mainMenuItems = isAdmin
         ? [
               { label: 'Home', href: '/', icon: Home },
-              { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+              { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
           ]
         : [
               { label: 'Home', href: '/', icon: Home },
@@ -79,12 +79,12 @@ export function Navbar() {
         ? [
               {
                   label: 'Blog Management',
-                  href: '/blog-management',
+                  href: '/admin/blog',
                   icon: FileText,
               },
               {
                   label: 'Account Management',
-                  href: '/account-management',
+                  href: '/admin/account',
                   icon: Users,
               },
           ]
@@ -96,7 +96,11 @@ export function Navbar() {
                     href: '/blood-storage',
                     icon: Warehouse,
                 },
-                { label: 'Appointment', href: '/appointment', icon: Calendar },
+                {
+                    label: 'Appointment',
+                    href: '/appointment/management',
+                    icon: Calendar,
+                },
             ]
           : [];
 
