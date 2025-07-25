@@ -428,9 +428,24 @@ export default function ProfilePage() {
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>
-                                            {daysUntilNextDonation !==
-                                                undefined &&
-                                            daysUntilNextDonation > 0 ? (
+                                            {account?.is_banned ? (
+                                                <div className="text-center py-12 bg-red-100 rounded-lg mb-6">
+                                                    <div className="text-4xl font-bold text-red-700 mb-2">
+                                                        Banned
+                                                    </div>
+                                                    <div className="text-red-600">
+                                                        You have been
+                                                        permanently banned
+                                                    </div>
+                                                    <div className="text-sm text-red-500 mt-1">
+                                                        Please check reject
+                                                        appointment for more
+                                                        information
+                                                    </div>
+                                                </div>
+                                            ) : daysUntilNextDonation !==
+                                                  undefined &&
+                                              daysUntilNextDonation > 0 ? (
                                                 <div className="text-center py-12 bg-blue-50 rounded-lg mb-6">
                                                     <div className="text-4xl font-bold text-gray-900 mb-2">
                                                         {daysUntilNextDonation}
