@@ -26,7 +26,7 @@ pub async fn get_by_donor_id(
 ) -> Result<Json<Vec<Donation>>> {
     let database = state.database().await?;
 
-    authorize(&claims, [Role::Donor], &database).await?;
+    authorize(&claims, [Role::Donor, Role::Staff, Role::Admin], &database).await?;
 
     match queries::donation::get_by_donor_id()
         .bind(&database, &claims.sub)
