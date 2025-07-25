@@ -129,9 +129,11 @@ export default function BlogPage() {
                     hasMore={hasMore}
                     loader={
                         <>
-                            {Array.from({ length: skeletonCount }).map((_, i) => (
-                                <BlogCardSkeleton key={i} />
-                            ))}
+                            {Array.from({ length: skeletonCount }).map(
+                                (_, i) => (
+                                    <BlogCardSkeleton key={i} />
+                                ),
+                            )}
                         </>
                     }
                 >

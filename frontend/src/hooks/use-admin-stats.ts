@@ -1,5 +1,5 @@
-import { deserialize, fetchWrapper } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { deserialize, fetchWrapper } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 interface AdminStats {
     total_users: number;
@@ -10,10 +10,10 @@ interface AdminStats {
 export const useAdminStats = () => {
     return useQuery({
         queryFn: async () => {
-            const response = await fetchWrapper("/dashboard/stats")
+            const response = await fetchWrapper('/dashboard/stats');
 
-            return await deserialize<AdminStats>(response)
+            return await deserialize<AdminStats>(response);
         },
-        queryKey: ["/dashboard/stats"]
-    })
-}
+        queryKey: ['/dashboard/stats'],
+    });
+};

@@ -36,7 +36,10 @@ export interface BloodGroupDistribution {
     blood_group: BloodGroup;
 }
 
-export function getTrendData(donations: DonationTrend[], requests: BloodRequestTrend[]) {
+export function getTrendData(
+    donations: DonationTrend[],
+    requests: BloodRequestTrend[],
+) {
     const trends = initTrendData();
 
     donations.forEach((d) => {
