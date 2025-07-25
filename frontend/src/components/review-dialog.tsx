@@ -69,8 +69,8 @@ export const ReviewDialog = ({
                         <h3 className="text-lg font-semibold text-slate-900 mb-4">
                             Applicant Information
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className='col-span-2 min-w-0'>
                                 <span className="text-sm font-medium text-slate-500">
                                     Name:
                                 </span>
@@ -86,7 +86,7 @@ export const ReviewDialog = ({
                                     {bloodGroupLabels[donor.blood_group]}
                                 </div>
                             </div>
-                            <div>
+                            <div className='col-span-2 min-w-0'>
                                 <span className="text-sm font-medium text-slate-500">
                                     Email:
                                 </span>
