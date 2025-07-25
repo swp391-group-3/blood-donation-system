@@ -16,7 +16,7 @@ import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 import { RejectAppointmentDialog } from './reject-appointment-dialog';
 import { Appointment } from '@/lib/api/dto/appointment';
 import { useAccount } from '@/hooks/use-account';
-import { useApppointmentAnswer } from '@/hooks/use-apppointment-answer';
+import { useAppointmentAnswer } from '@/hooks/use-apppointment-answer';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
@@ -40,7 +40,7 @@ export const ReviewDialog = ({
     appointment,
 }: PropsWithChildren<Props>) => {
     const { data: donor, isPending, error } = useAccount(appointment.donor_id);
-    const { data: answers = [] } = useApppointmentAnswer(appointment.id);
+    const { data: answers = [] } = useAppointmentAnswer(appointment.id);
     const [open, setOpen] = useState(false);
     const approve = useApproveAppointment(appointment.id);
     const reject = useRejectAppointment(appointment.id);
