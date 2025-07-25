@@ -44,19 +44,22 @@ export const RejectAppointmentDialog = ({
                         onChange={(e) => setReason(e.target.value)}
                     />
                 </div>
-                <Label className="hover:bg-accent/50 mt-4 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950">
+                <div className="flex items-center space-x-2">
                     <Checkbox
                         id="is-banned"
                         checked={isBanned}
-                        onCheckedChange={(checked) => setIsBanned(!checked)}
-                        className="data-[state=checked]:border-rose-600 data-[state=checked]:bg-rose-600 data-[state=checked]:text-white dark:data-[state=checked]:border-rose-700 dark:data-[state=checked]:bg-rose-700"
+                        onCheckedChange={(checked) =>
+                            setIsBanned(checked === true)
+                        }
                     />
-                    <div className="grid gap-1.5 font-normal">
-                        <p className="text-sm leading-none font-medium">
-                            Ban permanently this user
-                        </p>
-                    </div>
-                </Label>
+                    <label
+                        htmlFor="is-banned"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        Ban permanently this user
+                    </label>
+                </div>
+
                 <DialogFooter>
                     <Button
                         variant="outline"

@@ -11,6 +11,7 @@ export interface Account {
     email: string;
     name: string;
     phone: string;
+    is_banned: boolean;
     address: string;
     birthday: string;
     blood_group: BloodGroup;
