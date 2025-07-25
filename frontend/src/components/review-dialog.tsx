@@ -16,7 +16,7 @@ import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 import { RejectAppointmentDialog } from './reject-appointment-dialog';
 import { Appointment } from '@/lib/api/dto/appointment';
 import { useAccount } from '@/hooks/use-account';
-import { useAppointmentAnswer } from '@/hooks/use-apppointment-answer';
+import { useAppointmentAnswer } from '@/hooks/use-appointment-answer';
 
 const getAnswerIcon = (answer: string) => {
     switch (answer) {
