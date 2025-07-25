@@ -101,8 +101,6 @@ export default function ProfilePage() {
     const { data: account, isPending, error } = useCurrentAccount();
     const { data: donations } = useCurrentAccountDonation();
     const { data: nextDonatableDate } = useNextDonatableDate();
-    console.log(account);
-    console.log(nextDonatableDate);
     const { mutation, form } = useUpdateAccountForm(account, {
         onSuccess() {
             setIsEditModalOpen(false);
