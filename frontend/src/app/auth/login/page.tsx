@@ -16,6 +16,9 @@ import { Loader2 } from 'lucide-react';
 import { Separator } from '@/components/separator';
 import { OAuth2 } from '@/components/oauth2';
 import { useLoginForm } from '@/hooks/use-login-form';
+import { useRouter } from 'next/navigation';
+import { useCurrentAccount } from '@/hooks/use-current-account';
+import { useEffect } from 'react';
 
 const LoginForm = () => {
     const { mutation, form } = useLoginForm();
@@ -76,6 +79,18 @@ const LoginForm = () => {
 };
 
 export default function LoginPage() {
+    const router = useRouter();
+    const { data: account, isLoading } = useCurrentAccount();
+
+    useEffect(() => {
+        if (account) {
+            router.replace('/');
+        }
+    }, [account, router]);
+
+    if (isLoading) {
+        return null;
+    }
     return (
         <div className="w-full p-20">
             <div className="w-full max-w-md mx-auto">
