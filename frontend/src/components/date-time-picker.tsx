@@ -52,15 +52,7 @@ export function DateTimePicker({ date, onDateChange }: Props) {
                     </PopoverContent>
                 </Popover>
             </div>
-            <div className="flex flex-col gap-3">
-                <Input
-                    type="time"
-                    id="time-picker"
-                    step="1"
-                    defaultValue="10:30:00"
-                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                />
-            </div>
+            
         </div>
     );
 }
