@@ -60,12 +60,38 @@ const ActionButton = (request: BloodRequest) => {
 
     const daysUntilNextDonation = nextDonatableDate
         ? Math.ceil(
-            (nextDonatableDate.getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24),
-        )
+              (nextDonatableDate.getTime() - Date.now()) /
+                  (1000 * 60 * 60 * 24),
+          )
         : undefined;
 
     if (account?.role === 'donor') {
+        if (account.is_banned) {
+            return (
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                            Apply Now
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                You are permanently banned
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-red-600">
+                                You are no longer allowed to donate blood.
+                                Please contact support for further assistance.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Close</AlertDialogCancel>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            );
+        }
+
         return (
             nextDonatableDate && (
                 <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
@@ -226,12 +252,13 @@ export const RequestCard = (request: BloodRequest) => {
                     </div>
                     <Progress
                         value={progress}
-                        className={`h-2 bg-slate-200 rounded-full ${request.priority === 'high'
+                        className={`h-2 bg-slate-200 rounded-full ${
+                            request.priority === 'high'
                                 ? '[&>div]:bg-rose-500'
                                 : request.priority === 'medium'
-                                    ? '[&>div]:bg-amber-500'
-                                    : '[&>div]:bg-blue-500'
-                            }`}
+                                  ? '[&>div]:bg-amber-500'
+                                  : '[&>div]:bg-blue-500'
+                        }`}
                     />
                     <div className="text-xs text-slate-500 font-medium">
                         {request.max_people - request.current_people} more
