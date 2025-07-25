@@ -76,6 +76,10 @@ services:
       OTEL_SERVICE_NAME: backend
     image: ${REGISTRY}/backend:latest
     restart: always
+    depends_on:
+      - database
+      - qdrant
+      - redis
     volumes:
       - type: bind
         source: ./docs
