@@ -499,3 +499,8 @@ export function generateUniqueId(prefix: string = 'id'): string {
     const timestamp = Date.now().toString(36);
     return `${prefix}-${timestamp}-${random}`;
 }
+
+export const getExcerpt = (content: string, maxLength = 100): string => {
+    if (content.length <= maxLength) return content;
+    return content.substring(0, maxLength).trim() + '...';
+};

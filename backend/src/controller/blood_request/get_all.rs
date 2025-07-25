@@ -51,14 +51,14 @@ pub async fn get_all(
 ) -> Result<Json<Pagination<BloodRequest>>> {
     let database = state.database().await?;
 
-    let sub = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
+    let account_id = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
 
     let queries_result = tokio::try_join! {
         async {
             queries::blood_request::get_all()
                 .bind(
                     &database,
-                    &sub,
+                    &account_id,
                     &request.query,
                     &request.priority,
                     &request.blood_group,
@@ -72,7 +72,7 @@ pub async fn get_all(
             queries::blood_request::count()
                 .bind(
                     &database,
-                    &sub,
+                    &account_id,
                     &request.query,
                     &request.priority,
                     &request.blood_group,

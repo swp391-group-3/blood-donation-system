@@ -7,8 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Filter, Droplets, Calendar, Activity, Award } from 'lucide-react';
-import { Stats, StatsGrid, Props as StatsProps } from '@/components/stats';
+import { Filter, Droplets, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
 import { capitalCase } from 'change-case';
@@ -20,7 +19,7 @@ import {
     HeroTitle,
 } from '@/components/hero';
 import { CardGrid } from '@/components/card-grid';
-import { Donation, DonationType, donationTypes } from '@/lib/api/dto/donation';
+import { DonationType, donationTypes } from '@/lib/api/dto/donation';
 import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
 import {
     differenceInCalendarMonths,
@@ -29,51 +28,52 @@ import {
 } from 'date-fns';
 import { DonationCard } from '@/components/donation-card';
 
-const getStats = (donations: Donation[]): StatsProps[] => {
-    return [
-        {
-            label: 'Total Donations',
-            value: donations.length.toString(),
-            icon: Droplets,
-            description: 'All donations',
-            color: 'rose',
-        },
-        {
-            label: 'Total Amount',
-            value: `${donations.reduce((sum, donation) => sum + donation.amount, 0)}ml`,
-            icon: Activity,
-            description: 'Volume donated',
-            color: 'blue',
-        },
-        {
-            label: 'This Month',
-            value: donations
-                .filter(
-                    (d) =>
-                        d.created_at >
-                        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-                )
-                .length.toString(),
-            icon: Calendar,
-            description: 'Recent donations',
-            color: 'emerald',
-        },
-        {
-            label: 'Donation Types',
-            value: new Set(donations.map((d) => d.type)).size.toString(),
-            icon: Award,
-            description: 'Different types',
-            color: 'purple',
-        },
-    ];
-};
+// const getStats = (donations: Donation[]): StatsProps[] => {
+//     return [
+//         {
+//             label: 'Total Donations',
+//             value: donations.length.toString(),
+//             icon: Droplets,
+//             description: 'All donations',
+//             color: 'rose',
+//         },
+//         {
+//             label: 'Total Amount',
+//             value: `${donations.reduce((sum, donation) => sum + donation.amount, 0)}ml`,
+//             icon: Activity,
+//             description: 'Volume donated',
+//             color: 'blue',
+//         },
+//         {
+//             label: 'This Month',
+//             value: donations
+//                 .filter(
+//                     (d) =>
+//                         d.created_at >
+//                         new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+//                 )
+//                 .length.toString(),
+//             icon: Calendar,
+//             description: 'Recent donations',
+//             color: 'emerald',
+//         },
+//         {
+//             label: 'Donation Types',
+//             value: new Set(donations.map((d) => d.type)).size.toString(),
+//             icon: Award,
+//             description: 'Different types',
+//             color: 'purple',
+//         },
+//     ];
+// };
 
 export default function DonationPage() {
     const { data: donations, isPending, error } = useCurrentAccountDonation();
-    const stats = useMemo(
-        () => (donations ? getStats(donations) : undefined),
-        [donations],
-    );
+    // TODO: stats
+    // const stats = useMemo(
+    //     () => (donations ? getStats(donations) : undefined),
+    //     [donations],
+    // );
     const [type, setType] = useState<DonationType | 'all'>('all');
     const [period, setPeriod] = useState<'month' | 'quarter' | 'year' | 'all'>(
         'all',
@@ -137,11 +137,11 @@ export default function DonationPage() {
                 </HeroDescription>
             </Hero>
 
-            <StatsGrid>
-                {stats!.map((entry, index) => (
-                    <Stats key={index} {...entry} />
-                ))}
-            </StatsGrid>
+            {/* <StatsGrid> */}
+            {/*     {stats!.map((entry, index) => ( */}
+            {/*         <Stats key={index} {...entry} /> */}
+            {/*     ))} */}
+            {/* </StatsGrid> */}
 
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">

@@ -5,9 +5,10 @@ import {
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
+    PaginationState,
     useReactTable,
 } from '@tanstack/react-table';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { columns } from './column';
 import {
     Table,
@@ -21,45 +22,35 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Blog } from '@/lib/api/dto/blog';
-import { PaginationRange } from '@/components/pagination-range';
+import { PaginationControl } from '@/components/pagination-control';
 
 function BlogPage() {
     const [searchTerm, setSearchTerm] = useState('');
-    const { data: blogs = [] } = useBlogList();
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageSize: 10,
+        pageIndex: 0,
+    });
+    const { data: blogs } = useBlogList({
+        query: searchTerm,
+        page_index: pagination.pageIndex,
+        page_size: pagination.pageSize,
+    });
 
-    const filterBlogs: Blog[] = useMemo(() => {
-        return blogs.filter((blog) => {
-            const searchTermLowerCase = searchTerm.toLowerCase();
-            const match =
-                blog.content.toLowerCase().includes(searchTermLowerCase) ||
-                blog.title.toLowerCase().includes(searchTermLowerCase);
-            return match;
-        });
-    }, [blogs, searchTerm]);
     const table = useReactTable({
-        data: filterBlogs,
+        data: blogs?.data ?? [],
         columns: columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        rowCount: blogs?.element_count ?? 0,
         initialState: {
-            pagination: {
-                pageIndex: 0,
-                pageSize: 5,
-            },
+            pagination,
         },
     });
 
@@ -154,63 +145,14 @@ function BlogPage() {
                             </TableBody>
                         </Table>
                     </CardContent>
-                    <CardFooter>
-                        <Pagination>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href="#"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            table.previousPage();
-                                        }}
-                                        aria-disabled={
-                                            !table.getCanPreviousPage()
-                                        }
-                                        tabIndex={
-                                            !table.getCanPreviousPage()
-                                                ? -1
-                                                : undefined
-                                        }
-                                        className={
-                                            !table.getCanPreviousPage()
-                                                ? 'pointer-events-none opacity-50'
-                                                : undefined
-                                        }
-                                    />
-                                </PaginationItem>
-                                {/* NUMBERS */}
-                                <PaginationRange
-                                    pageIndex={
-                                        table.getState().pagination.pageIndex
-                                    }
-                                    pageCount={table.getPageCount()}
-                                    onPageChange={table.setPageIndex}
-                                />
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href="#"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            table.nextPage();
-                                        }}
-                                        aria-disabled={!table.getCanNextPage()}
-                                        tabIndex={
-                                            !table.getCanNextPage()
-                                                ? -1
-                                                : undefined
-                                        }
-                                        className={
-                                            !table.getCanNextPage()
-                                                ? 'pointer-events-none opacity-50'
-                                                : undefined
-                                        }
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </CardFooter>
                 </Card>
+
+                <PaginationControl
+                    className="m-4"
+                    itemCount={table.getRowCount()}
+                    pagination={pagination}
+                    setPagination={setPagination}
+                />
             </div>
         </div>
     );

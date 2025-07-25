@@ -8,10 +8,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { useBloodRequestList } from '@/hooks/use-blood-request-list';
-import { useAllAccounts } from '@/hooks/use-all-account';
-import { useAllBloodBag } from '@/hooks/use-all-blood-bag';
-import { useAllDonation } from '@/hooks/use-all-donation';
 import {
     getBloodGroupData,
     getTrendData,
@@ -31,6 +27,10 @@ import {
     Cell,
     Legend,
 } from 'recharts';
+import { useAdminStats } from '@/hooks/use-admin-stats';
+import { useAdminDonation } from '@/hooks/use-admin-donations';
+import { useAdminRequest } from '@/hooks/use-admin-requests';
+import { useBloodGroupDistribution } from '@/hooks/use-blood-group-distribution';
 
 const renderCustomizedLabel = ({
     cx,
@@ -74,23 +74,15 @@ const renderCustomizedLabel = ({
 };
 
 function Page() {
-    const { data: accounts = [] } = useAllAccounts();
-    const { data: bloodRequests = [] } = useBloodRequestList();
-    const { data: donations = [] } = useAllDonation();
-    const { data: bloodBags } = useAllBloodBag();
+    const { data: accounts = [] } = useBloodGroupDistribution();
+    const { data: bloodRequests = [] } = useAdminRequest();
+    const { data: donations = [] } = useAdminDonation();
     const dataTrend = getTrendData(donations, bloodRequests);
     const bloodGroupData = getBloodGroupData(accounts).sort(
         (a, b) => b.value - a.value,
     );
 
-    const stats = {
-        totalUsers: accounts?.length,
-        activeRequests: bloodRequests?.length,
-        donations: donations?.length,
-        bloodBagsAvailable: bloodBags?.filter(bg => !bg.is_used).length,
-    };
-
-
+    const { data: stats } = useAdminStats();
     return (
         <div className="min-h-screen bg-gray-50/30 p-6">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -116,7 +108,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {stats.totalUsers?.toLocaleString()}
+                                {stats?.total_users?.toLocaleString()}
                             </div>
                         </CardContent>
                     </Card>
@@ -130,7 +122,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {stats.donations}
+                                {stats?.total_donations}
                             </div>
                         </CardContent>
                     </Card>
@@ -144,7 +136,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {stats.activeRequests}
+                                {stats?.active_blood_requests}
                             </div>
                         </CardContent>
                     </Card>
@@ -158,7 +150,7 @@ function Page() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-3xl font-bold text-gray-900">
-                                {stats.bloodBagsAvailable}
+                                {stats?.available_blood_bags}
                             </div>
                         </CardContent>
                     </Card>

@@ -18,12 +18,14 @@ use crate::{
 )]
 pub async fn stats(
     state: State<Arc<ApiState>>,
-    claims: Claims,
+    claims: Option<Claims>,
 ) -> Result<Json<BloodRequestsStats>> {
     let database = state.database().await?;
 
+    let account_id = claims.map(|c| c.sub).unwrap_or_else(uuid::Uuid::nil);
+
     match queries::blood_request::get_stats()
-        .bind(&database, &claims.sub)
+        .bind(&database, &account_id)
         .one()
         .await
     {

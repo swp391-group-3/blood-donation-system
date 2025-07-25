@@ -16,3 +16,10 @@ export interface Appointment {
     request_id: string;
     status: Status;
 }
+
+export interface AppointmentStats {
+    on_process_appointments: number;
+    approved_appointments: number;
+    done_appointments: number;
+    rejected_appointments: number;
+}

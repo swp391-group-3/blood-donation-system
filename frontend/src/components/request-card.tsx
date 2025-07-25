@@ -66,6 +66,32 @@ const ActionButton = (request: BloodRequest) => {
         : undefined;
 
     if (account?.role === 'donor') {
+        if (account.is_banned) {
+            return (
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
+                            Apply Now
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                You are permanently banned
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-red-600">
+                                You are no longer allowed to donate blood.
+                                Please contact support for further assistance.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Close</AlertDialogCancel>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            );
+        }
+
         return (
             nextDonatableDate && (
                 <Button className="w-full h-10 font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/25 transition-all duration-200">
@@ -117,12 +143,18 @@ const ActionButton = (request: BloodRequest) => {
     return <></>;
 };
 
+const calculateRelativeTime = (date: Date) => {
+    const raw = formatDistanceToNow(date);
+
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+};
+
 export const RequestCard = (request: BloodRequest) => {
     const config = priorityConfig[request.priority];
     const progress = Math.round(
         (request.current_people / request.max_people) * 100,
     );
-    const timeRemaining = formatDistanceToNow(request.end_time);
+    const timeRemaining = calculateRelativeTime(request.end_time);
 
     return (
         <Card

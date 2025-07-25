@@ -1,16 +1,25 @@
 'use client';
 
-import { deserialize, fetchWrapper } from '@/lib/api';
-import { BloodRequest } from '@/lib/api/dto/blood-request';
-import { useQuery } from '@tanstack/react-query';
+import { buildParams, deserialize, fetchWrapper, Pagination } from '@/lib/api';
+import { BloodGroup } from '@/lib/api/dto/blood-group';
+import { BloodRequest, Priority } from '@/lib/api/dto/blood-request';
+import { useInfiniteScroll } from './use-infinite-scroll';
 
-export const useBloodRequestList = () => {
-    return useQuery({
-        queryFn: async () => {
-            const response = await fetchWrapper('/blood-request');
+interface Filter {
+    query?: string;
+    priority?: Priority;
+    blood_group?: BloodGroup;
+    page_size?: number;
+    page_index?: number;
+}
 
-            return await deserialize<BloodRequest[]>(response);
-        },
-        queryKey: ['blood-request'],
+export const useBloodRequestList = (filter: Filter) => {
+    return useInfiniteScroll<Filter, BloodRequest>(filter, async (filter) => {
+        const params = buildParams(filter);
+        const response = await fetchWrapper(
+            `/blood-request?${params.toString()}`,
+        );
+
+        return await deserialize<Pagination<BloodRequest>>(response);
     });
 };
