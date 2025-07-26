@@ -1,41 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import {
-    Home,
-    Droplets,
-    FileText,
-    User,
-    ChevronDown,
-    Calendar,
-    Shield,
-    LogOut,
-    Menu,
-    X,
-    LucideIcon,
-    Package,
-    LayoutDashboard,
-    FileEdit,
-    Activity,
-    BadgeQuestionMark,
-    Droplet,
-    UserCog,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Logo } from '@/components/logo';
-import { AccountPicture } from '@/components/account-picture';
-import { useCurrentAccount } from '@/hooks/use-current-account';
+import { useState, useEffect, forwardRef } from 'react';
 import Link from 'next/link';
-import { AccountOverview } from '@/components/account-overview';
-import { Role } from '@/lib/api/dto/account';
-import { useLogout } from '@/hooks/use-logout';
+import { cn } from '@/lib/utils';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -44,106 +11,98 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
-} from './ui/navigation-menu';
+} from '@/components/ui/navigation-menu';
+import { Button } from '@/components/ui/button';
+import {
+    Menu,
+    ChevronDown,
+    FileText,
+    User,
+    Droplets,
+    Shield,
+    Calendar,
+    BadgeQuestionMark,
+    Droplet,
+    UserCog,
+    LogOut,
+    Settings,
+    Home,
+    LayoutDashboard,
+    Newspaper,
+    Users,
+    Warehouse,
+    HelpCircle,
+} from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Logo } from './logo';
+import { useCurrentAccount } from '@/hooks/use-current-account';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { AccountPicture } from './account-picture';
+import { AccountOverview } from './account-overview';
+import { useLogout } from '@/hooks/use-logout';
 
-interface NavigationItem {
-    label: string;
-    icon: LucideIcon;
-    href: string;
-}
-
-const getNavigationItems = (role?: Role): NavigationItem[] => {
-    switch (role) {
-        case 'staff':
-            return [
-                {
-                    label: 'Home',
-                    icon: Home,
-                    href: '/',
-                },
-                {
-                    label: 'Question',
-                    icon: FileEdit,
-                    href: 'question',
-                },
-                {
-                    label: 'Request',
-                    icon: Droplets,
-                    href: '/request',
-                },
-                {
-                    label: 'Appointment',
-                    icon: Activity,
-                    href: '/appointment/management',
-                },
-                {
-                    label: 'Storage',
-                    icon: Package,
-                    href: '/blood-storage',
-                },
-                {
-                    label: 'Blog',
-                    icon: FileText,
-                    href: '/blog',
-                },
-            ];
-
-        case 'admin':
-            return [
-                {
-                    label: 'Home',
-                    icon: Home,
-                    href: '/',
-                },
-                {
-                    label: 'Dashboard',
-                    icon: LayoutDashboard,
-                    href: '/admin',
-                },
-                {
-                    label: 'Account Management',
-                    icon: User,
-                    href: '/admin/account',
-                },
-                {
-                    label: 'Blog Management',
-                    icon: FileText,
-                    href: '/admin/blog',
-                },
-            ];
-
-        default:
-            return [
-                {
-                    label: 'Home',
-                    icon: Home,
-                    href: '/',
-                },
-                {
-                    label: 'Blood Request',
-                    icon: Droplets,
-                    href: '/request',
-                },
-                {
-                    label: 'Blog',
-                    icon: FileText,
-                    href: '/blog',
-                },
-            ];
-    }
-};
-
-export const Header = () => {
+export function Header() {
+    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { data: account } = useCurrentAccount();
-    const items = getNavigationItems(account?.role);
+    const { data: currentAccount } = useCurrentAccount();
     const logout = useLogout();
 
-    const baseLinks = [
+    const isGuestOrDonor =
+        !currentAccount?.role || currentAccount?.role === 'donor';
+    const isStaff = currentAccount?.role === 'staff';
+    const isAdmin = currentAccount?.role === 'admin';
+
+    const commonLinks = [
         { label: 'Home', href: '/' },
         { label: 'Blood Request', href: '/request' },
         { label: 'Blog', href: '/blog' },
     ];
+
+    const mainMenuItems = isAdmin
+        ? [
+              { label: 'Home', href: '/', icon: Home },
+              { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+          ]
+        : [
+              { label: 'Home', href: '/', icon: Home },
+              { label: 'Blood Request', href: '/request', icon: Droplet },
+              { label: 'Blog', href: '/blog', icon: Newspaper },
+          ];
+
+    const managementItems = isAdmin
+        ? [
+              {
+                  label: 'Blog Management',
+                  href: '/admin/blog',
+                  icon: FileText,
+              },
+              {
+                  label: 'Account Management',
+                  href: '/admin/account',
+                  icon: Users,
+              },
+          ]
+        : isStaff
+          ? [
+                { label: 'Questions', href: '/question', icon: HelpCircle },
+                {
+                    label: 'Blood Storage',
+                    href: '/blood-storage',
+                    icon: Warehouse,
+                },
+                {
+                    label: 'Appointment',
+                    href: '/appointment/management',
+                    icon: Calendar,
+                },
+            ]
+          : [];
 
     const renderLink = (item: { label: string; href: string }) => (
         <NavigationMenuItem key={item.label}>
@@ -155,17 +114,63 @@ export const Header = () => {
             </NavigationMenuLink>
         </NavigationMenuItem>
     );
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const navbarHeight = isScrolled ? 'h-14' : 'h-16 sm:h-18 lg:h-20';
+
     return (
         <>
-            <header className="bg-white/80 backdrop-blur-xl border-b border-slate-300/60 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <Logo />
-                        <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center space-x-12">
+            <header
+                className={cn(
+                    'fixed top-0 w-full z-50 transition-all duration-500 ease-in-out',
+                    isScrolled
+                        ? 'bg-background/20 backdrop-blur-3xl border-b border-border/10 shadow-2xl'
+                        : 'bg-transparent',
+                )}
+            >
+                <div className="mx-auto max-w-7xl px-6">
+                    <div
+                        className={cn(
+                            'w-full flex items-center justify-between px-4 md:px-8 transition-all duration-300 ease-in-out',
+                            navbarHeight,
+                        )}
+                    >
+                        <div className="flex items-center space-x-2">
+                            <Link
+                                href="/"
+                                className="flex items-center space-x-2"
+                            >
+                                <Logo />
+                            </Link>
+                        </div>
+
+                        <div className="absolute left-1/2 transform -translate-x-1/2  hidden md:flex flex-1 justify-center">
                             <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
-                                    {baseLinks.map(renderLink)}
-                                    {account?.role === 'staff' && (
+                                    {(isGuestOrDonor || isStaff) &&
+                                        commonLinks.map(renderLink)}
+
+                                    {isAdmin && (
+                                        <>
+                                            {renderLink({
+                                                label: 'Home',
+                                                href: '/',
+                                            })}
+                                            {renderLink({
+                                                label: 'Dashboard',
+                                                href: '/dashboard',
+                                            })}
+                                        </>
+                                    )}
+
+                                    {isStaff && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger>
                                                 Management
@@ -190,8 +195,7 @@ export const Header = () => {
                                                                     </p>
                                                                     <p className="text-xs text-slate-500">
                                                                         Manage
-                                                                        the
-                                                                        question
+                                                                        questions
                                                                         for
                                                                         blood
                                                                         request
@@ -219,7 +223,6 @@ export const Header = () => {
                                                                     </p>
                                                                     <p className="text-xs text-slate-500">
                                                                         Manage
-                                                                        all
                                                                         blood
                                                                         bags in
                                                                         storage
@@ -257,101 +260,75 @@ export const Header = () => {
                                             </NavigationMenuContent>
                                         </NavigationMenuItem>
                                     )}
-                                    {account?.role === 'admin' && (
-                                        <>
-                                            <NavigationMenuItem>
-                                                <NavigationMenuLink
-                                                    asChild
-                                                    className={navigationMenuTriggerStyle()}
-                                                >
-                                                    <Link href="/dashboard">
-                                                        Dashboard
-                                                    </Link>
-                                                </NavigationMenuLink>
-                                            </NavigationMenuItem>
-                                            <NavigationMenuItem>
-                                                <NavigationMenuTrigger>
-                                                    Management
-                                                </NavigationMenuTrigger>
-                                                <NavigationMenuContent>
-                                                    <ul className="grid w-[300px] gap-4 p-2">
-                                                        <li>
-                                                            <NavigationMenuLink
-                                                                asChild
-                                                                className="mb-2"
+
+                                    {isAdmin && (
+                                        <NavigationMenuItem>
+                                            <NavigationMenuTrigger>
+                                                Management
+                                            </NavigationMenuTrigger>
+                                            <NavigationMenuContent>
+                                                <ul className="grid w-[300px] gap-4 p-2">
+                                                    <li>
+                                                        <NavigationMenuLink
+                                                            asChild
+                                                            className="mb-2"
+                                                        >
+                                                            <Link
+                                                                href="/admin/blog"
+                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
                                                             >
-                                                                <Link
-                                                                    href="/blog-management"
-                                                                    className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
-                                                                >
-                                                                    <div className="p-1.5 bg-purple-50 rounded-lg">
-                                                                        <LayoutDashboard className="h-4 w-4 text-purple-600" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="font-medium text-slate-900">
-                                                                            Blog
-                                                                            Management
-                                                                        </p>
-                                                                        <p className="text-xs text-slate-500">
-                                                                            Manage
-                                                                            blog
-                                                                            articles
-                                                                        </p>
-                                                                    </div>
-                                                                </Link>
-                                                            </NavigationMenuLink>
-                                                            <NavigationMenuLink
-                                                                asChild
+                                                                <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                    <FileText className="h-4 w-4 text-purple-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium text-slate-900">
+                                                                        Blog
+                                                                        Management
+                                                                    </p>
+                                                                    <p className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        blog
+                                                                        articles
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+
+                                                        <NavigationMenuLink
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href="/admin/account"
+                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
                                                             >
-                                                                <Link
-                                                                    href="/account-management"
-                                                                    className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
-                                                                >
-                                                                    <div className="p-1.5 bg-yellow-50 rounded-lg">
-                                                                        <UserCog className="h-4 w-4 text-yellow-600" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="font-medium text-slate-900">
-                                                                            Account
-                                                                            Management
-                                                                        </p>
-                                                                        <p className="text-xs text-slate-500">
-                                                                            Manage
-                                                                            all
-                                                                            user
-                                                                            accounts
-                                                                        </p>
-                                                                    </div>
-                                                                </Link>
-                                                            </NavigationMenuLink>
-                                                        </li>
-                                                    </ul>
-                                                </NavigationMenuContent>
-                                            </NavigationMenuItem>
-                                        </>
+                                                                <div className="p-1.5 bg-yellow-50 rounded-lg">
+                                                                    <UserCog className="h-4 w-4 text-yellow-600" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium text-slate-900">
+                                                                        Account
+                                                                        Management
+                                                                    </p>
+                                                                    <p className="text-xs text-slate-500">
+                                                                        Manage
+                                                                        all user
+                                                                        accounts
+                                                                    </p>
+                                                                </div>
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                    </li>
+                                                </ul>
+                                            </NavigationMenuContent>
+                                        </NavigationMenuItem>
                                     )}
                                 </NavigationMenuList>
                             </NavigationMenu>
-                        </nav>
+                        </div>
 
-                        <div className="flex items-center space-x-3 flex-shrink-0">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="md:hidden hover:bg-slate-100 rounded-xl p-2.5 transition-all duration-200"
-                                onClick={() =>
-                                    setIsMobileMenuOpen(!isMobileMenuOpen)
-                                }
-                            >
-                                {isMobileMenuOpen ? (
-                                    <X className="h-5 w-5 text-slate-600" />
-                                ) : (
-                                    <Menu className="h-5 w-5 text-slate-600" />
-                                )}
-                            </Button>
-
+                        <div className="flex items-center space-x-2">
                             <div className="hidden md:block">
-                                {!account ? (
+                                {!currentAccount ? (
                                     <div className="gap-4 flex">
                                         <Link href="/auth/register">
                                             <Button variant="outline">
@@ -368,7 +345,9 @@ export const Header = () => {
                                             <div className="flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-200 group">
                                                 <div className="size-8">
                                                     <AccountPicture
-                                                        name={account.name}
+                                                        name={
+                                                            currentAccount?.name
+                                                        }
                                                     />
                                                 </div>
                                                 <ChevronDown className="h-3 w-3 text-slate-500 group-hover:text-slate-700 transition-colors duration-200" />
@@ -380,31 +359,33 @@ export const Header = () => {
                                         >
                                             <div className="px-3 py-3 border-b border-slate-100 mb-2">
                                                 <AccountOverview
-                                                    account={account}
+                                                    account={currentAccount}
                                                 />
                                             </div>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/profile"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-blue-50 rounded-lg">
-                                                        <User className="h-4 w-4 text-blue-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Profile
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            Manage your account
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
-
-                                            {account.role === 'donor' && (
+                                            {currentAccount.role ===
+                                                'donor' && (
                                                 <>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/profile"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-blue-50 rounded-lg">
+                                                                <User className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Profile
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Manage your
+                                                                    account
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+
                                                     <DropdownMenuItem asChild>
                                                         <Link
                                                             href="/donation"
@@ -492,168 +473,358 @@ export const Header = () => {
                                 )}
                             </div>
                         </div>
+
+                        <Sheet
+                            open={isMobileMenuOpen}
+                            onOpenChange={setIsMobileMenuOpen}
+                        >
+                            <SheetTrigger asChild className="md:hidden">
+                                <Button
+                                    variant="ghost"
+                                    size={isScrolled ? 'sm' : 'icon'}
+                                    className="transition-all duration-300 hover:bg-accent/80"
+                                >
+                                    <Menu
+                                        className={cn(
+                                            'transition-all duration-300',
+                                            isScrolled ? 'h-4 w-4' : 'h-5 w-5',
+                                        )}
+                                    />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                            </SheetTrigger>
+
+                            <SheetContent
+                                side="right"
+                                className="w-[350px] sm:w-[400px] p-0"
+                            >
+                                <div className="flex flex-col h-full">
+                                    <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-background to-accent/10">
+                                        <div className="flex items-center space-x-3">
+                                            <Logo />
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto">
+                                        <nav className="p-6 space-y-6">
+                                            <div className="space-y-3">
+                                                {mainMenuItems.map((item) => (
+                                                    <Link
+                                                        key={item.label}
+                                                        href={item.href}
+                                                        onClick={() =>
+                                                            setIsMobileMenuOpen(
+                                                                false,
+                                                            )
+                                                        }
+                                                        className="flex items-center space-x-3 py-4 px-4 font-semibold rounded-xl hover:bg-accent/60 transition-all duration-200 border border-transparent hover:border-border/50"
+                                                    >
+                                                        <div
+                                                            className={cn(
+                                                                'w-8 h-8 rounded-lg flex items-center justify-center',
+                                                                {
+                                                                    Home: 'bg-blue-50 text-blue-600',
+                                                                    'Blood Request':
+                                                                        'bg-rose-50 text-rose-600',
+                                                                    Blog: 'bg-yellow-50 text-yellow-600',
+                                                                    Dashboard:
+                                                                        'bg-indigo-50 text-indigo-600',
+                                                                }[item.label] ||
+                                                                    'bg-muted/20 text-muted-foreground',
+                                                            )}
+                                                        >
+                                                            <item.icon className="w-4 h-4" />
+                                                        </div>
+                                                        <span>
+                                                            {item.label}
+                                                        </span>
+                                                    </Link>
+                                                ))}
+
+                                                {managementItems.length > 0 && (
+                                                    <details className="group">
+                                                        <summary className="flex items-center justify-between cursor-pointer py-4 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/50 hover:to-accent/30 transition-all duration-200 border border-transparent hover:border-border/50">
+                                                            <div className="flex items-center space-x-3">
+                                                                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                                                                    <Settings className="w-4 h-4 text-purple-600" />
+                                                                </div>
+                                                                <span className="font-semibold">
+                                                                    Management
+                                                                </span>
+                                                            </div>
+                                                            <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 text-muted-foreground" />
+                                                        </summary>
+                                                        <div className="mt-3 space-y-2 pl-4">
+                                                            {managementItems.map(
+                                                                (item, idx) => (
+                                                                    <Link
+                                                                        key={
+                                                                            item.label
+                                                                        }
+                                                                        href={
+                                                                            item.href
+                                                                        }
+                                                                        onClick={() =>
+                                                                            setIsMobileMenuOpen(
+                                                                                false,
+                                                                            )
+                                                                        }
+                                                                        className="flex items-center space-x-3 py-3 px-4 text-sm rounded-lg hover:bg-accent/60 transition-all duration-200 group animate-in fade-in slide-in-from-left-2"
+                                                                        style={{
+                                                                            animationDelay: `${idx * 100}ms`,
+                                                                        }}
+                                                                    >
+                                                                        <div
+                                                                            className={cn(
+                                                                                'w-6 h-6 rounded-md flex items-center justify-center group-hover:bg-opacity-20 transition-colors',
+                                                                                {
+                                                                                    Questions:
+                                                                                        'bg-amber-50 text-amber-600',
+                                                                                    'Blood Storage':
+                                                                                        'bg-emerald-50 text-emerald-600',
+                                                                                    Appointment:
+                                                                                        'bg-purple-50 text-purple-600',
+                                                                                    'Blog Management':
+                                                                                        'bg-cyan-50 text-cyan-600',
+                                                                                    'Account Management':
+                                                                                        'bg-pink-50 text-pink-600',
+                                                                                }[
+                                                                                    item
+                                                                                        .label
+                                                                                ] ||
+                                                                                    'bg-muted/20 text-muted-foreground',
+                                                                            )}
+                                                                        >
+                                                                            <item.icon className="w-3 h-3" />
+                                                                        </div>
+                                                                        <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                                                                            {
+                                                                                item.label
+                                                                            }
+                                                                        </span>
+                                                                    </Link>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    </details>
+                                                )}
+                                            </div>
+                                        </nav>
+                                    </div>
+
+                                    <div className="p-6 border-t bg-gradient-to-r from-background to-accent/5">
+                                        {currentAccount ? (
+                                            <div className="space-y-1">
+                                                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                                    Account
+                                                </div>
+
+                                                {currentAccount?.role ===
+                                                    'donor' && (
+                                                    <>
+                                                        <Link
+                                                            href="/profile"
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="p-1.5 bg-blue-50 rounded-lg">
+                                                                <User className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">
+                                                                    Profile
+                                                                </span>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    Manage your
+                                                                    account
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+
+                                                        <Link
+                                                            href="/donation"
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="p-1.5 bg-rose-50 rounded-lg">
+                                                                <Droplets className="h-4 w-4 text-rose-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">
+                                                                    Donations
+                                                                </span>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    View
+                                                                    donation
+                                                                    history
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+
+                                                        <Link
+                                                            href="/health"
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="p-1.5 bg-emerald-50 rounded-lg">
+                                                                <Shield className="h-4 w-4 text-emerald-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">
+                                                                    Health
+                                                                </span>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    Health
+                                                                    records &
+                                                                    status
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+
+                                                        <Link
+                                                            href="/appointment"
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent/30 rounded-xl transition-colors duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                <Calendar className="h-4 w-4 text-purple-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium">
+                                                                    Appointments
+                                                                </span>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    Manage
+                                                                    appointments
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </>
+                                                )}
+
+                                                <button
+                                                    onClick={() =>
+                                                        logout.mutate()
+                                                    }
+                                                    className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full"
+                                                >
+                                                    <div className="p-1.5 bg-red-50 rounded-lg">
+                                                        <LogOut className="h-4 w-4 text-red-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-left font-medium">
+                                                            Logout
+                                                        </p>
+                                                        <div className="text-xs text-red-500">
+                                                            Sign out of your
+                                                            account
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="p-6 bg-gradient-to-r from-background to-accent/5">
+                                                <div className="flex flex-col space-y-3">
+                                                    <Link href="/auth/register">
+                                                        <Button
+                                                            variant="outline"
+                                                            className="w-full justify-start font-medium hover:bg-accent/60 transition-all duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            Register
+                                                        </Button>
+                                                    </Link>
+                                                    <Link href="/auth/login">
+                                                        <Button
+                                                            className="w-full justify-start bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                                                            onClick={() =>
+                                                                setIsMobileMenuOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                        >
+                                                            Login
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
                     </div>
                 </div>
             </header>
 
             <div
-                className={`fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${
-                    isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
-            >
-                {account && (
-                    <div className="flex items-center gap-4 p-6 bg-gradient-to-r from-slate-50 to-slate-100/50">
-                        <AccountOverview account={account} />
-                    </div>
+                className={cn(
+                    'transition-all duration-300 ease-in-out',
+                    navbarHeight,
                 )}
-
-                <div className="px-6 py-4">
-                    <div className="space-y-1">
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                            Navigation
-                        </div>
-                        {items.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all duration-200 group"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                <div className="p-2 bg-slate-100 group-hover:bg-rose-100 rounded-lg transition-colors duration-200">
-                                    <item.icon className="h-5 w-5 group-hover:text-rose-600" />
-                                </div>
-                                <span className="font-medium">
-                                    {item.label}
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="px-6 py-4 border-t border-slate-200">
-                    {!account ? (
-                        <div className="grid gap-4">
-                            <Link className="w-full" href="/auth/register">
-                                <Button className="w-full" variant="outline">
-                                    Register
-                                </Button>
-                            </Link>
-                            <Link className="w-full" href="/auth/login">
-                                <Button className="w-full">Login</Button>
-                            </Link>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="space-y-1">
-                                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                                    Account
-                                </div>
-                                <Link
-                                    href="/profile"
-                                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    <div className="p-1.5 bg-blue-50 rounded-lg">
-                                        <User className="h-4 w-4 text-blue-600" />
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-slate-900">
-                                            Profile
-                                        </span>
-                                        <div className="text-xs text-slate-500">
-                                            Manage your account
-                                        </div>
-                                    </div>
-                                </Link>
-                                {account?.role === 'donor' && (
-                                    <>
-                                        <Link
-                                            href="/donation"
-                                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                                            onClick={() =>
-                                                setIsMobileMenuOpen(false)
-                                            }
-                                        >
-                                            <div className="p-1.5 bg-rose-50 rounded-lg">
-                                                <Droplets className="h-4 w-4 text-rose-600" />
-                                            </div>
-                                            <div>
-                                                <span className="font-medium text-slate-900">
-                                                    Donations
-                                                </span>
-                                                <div className="text-xs text-slate-500">
-                                                    View donation history
-                                                </div>
-                                            </div>
-                                        </Link>
-                                        <Link
-                                            href="/health"
-                                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                                            onClick={() =>
-                                                setIsMobileMenuOpen(false)
-                                            }
-                                        >
-                                            <div className="p-1.5 bg-emerald-50 rounded-lg">
-                                                <Shield className="h-4 w-4 text-emerald-600" />
-                                            </div>
-                                            <div>
-                                                <span className="font-medium text-slate-900">
-                                                    Health
-                                                </span>
-                                                <div className="text-xs text-slate-500">
-                                                    Health records & status
-                                                </div>
-                                            </div>
-                                        </Link>
-                                        <Link
-                                            href="/appointment"
-                                            className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-200"
-                                            onClick={() =>
-                                                setIsMobileMenuOpen(false)
-                                            }
-                                        >
-                                            <div className="p-1.5 bg-purple-50 rounded-lg">
-                                                <Calendar className="h-4 w-4 text-purple-600" />
-                                            </div>
-                                            <div>
-                                                <span className="font-medium text-slate-900">
-                                                    Appointments
-                                                </span>
-                                                <div className="text-xs text-slate-500">
-                                                    Manage appointments
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </>
-                                )}
-                                <button
-                                    onClick={() => logout.mutate()}
-                                    className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <div className="p-1.5 bg-red-50 rounded-lg">
-                                        <LogOut className="h-4 w-4 text-red-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-left font-medium">
-                                            Logout
-                                        </p>
-                                        <div className="text-xs text-red-500">
-                                            Sign out of your account
-                                        </div>
-                                    </div>
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-
-            {isMobileMenuOpen && (
-                <div
-                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                />
-            )}
+            />
         </>
     );
-};
+}
+
+const ListItem = forwardRef<
+    React.ElementRef<'a'>,
+    React.ComponentPropsWithoutRef<'a'> & {
+        icon?: React.ComponentType<{ className?: string }>;
+        delay?: number;
+    }
+>(({ className, title, children, icon: Icon, delay = 0, ...props }, ref) => {
+    return (
+        <div
+            className="animate-in fade-in slide-in-from-left-2 duration-300"
+            style={{ animationDelay: `${delay}ms` }}
+        >
+            <NavigationMenuLink asChild>
+                <a
+                    ref={ref}
+                    className={cn(
+                        'group block select-none rounded-xl p-4 leading-none no-underline outline-none transition-all duration-200 hover:bg-accent/60 hover:shadow-md hover:scale-[1.02] focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-border/50',
+                        className,
+                    )}
+                    {...props}
+                >
+                    <div className="flex items-start space-x-3">
+                        {Icon && (
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0 mt-0.5">
+                                <Icon className="w-4 h-4 text-primary" />
+                            </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium leading-none mb-2 group-hover:text-primary transition-colors">
+                                {title}
+                            </div>
+                            <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground group-hover:text-foreground/80 transition-colors">
+                                {children}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </NavigationMenuLink>
+        </div>
+    );
+});
+ListItem.displayName = 'ListItem';

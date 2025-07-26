@@ -5,7 +5,6 @@ import QueryProvider from './query-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { BloodDonationChatbot } from '@/components/chatbot';
 import { Header } from '@/components/header';
-import { Navbar } from '@/components/header2';
 import Footer from '@/components/footer';
 
 const geistSans = Geist({
@@ -34,7 +33,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
             >
                 <QueryProvider>
-                    <Navbar />
+                    <Header />
                     {children}
                     <div className="min-h-screen flex flex-col">
                         <main className="flex-1 flex flex-col min-w-full">
