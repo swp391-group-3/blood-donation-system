@@ -41,19 +41,17 @@ import {
     StatsLabel,
     StatsValue,
 } from '@/components/stats';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function ProfilePage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState('all');
     const { data: account, isPending, error } = useCurrentAccount();
     const { data: donations } = useCurrentAccountDonation();
-    const { data: nextDonatableDate } = useNextDonatableDate();
     const { mutation, form } = useUpdateAccountForm(account, {
         onSuccess() {
             setIsEditModalOpen(false);
         },
     });
-    const filterDonations = donations?.slice(0, 3);
 
     useEffect(() => {
         if (account) {
@@ -90,15 +88,8 @@ export default function ProfilePage() {
         return age;
     };
 
-    const daysUntilNextDonation = nextDonatableDate
-        ? Math.ceil(
-              (nextDonatableDate.getTime() - Date.now()) /
-                  (1000 * 60 * 60 * 24),
-          )
-        : undefined;
-
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="bg-gray-50">
             <div className=" max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
