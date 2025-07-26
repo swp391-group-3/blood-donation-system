@@ -85,6 +85,13 @@ function Page() {
         page_index: pagination?.pageIndex,
         page_size: pagination?.pageSize,
     });
+    useEffect(() => {
+        setPagination((prev) => ({
+            ...prev,
+            pageIndex: 0,
+        }));
+    }, [searchTerm, roleFilter]);
+
     const { mutation: mutationAccount, form: formAccount } =
         useCreateStaffAccount({
             onSuccess() {

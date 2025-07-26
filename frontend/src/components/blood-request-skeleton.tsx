@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardContent} from '@/components/ui/card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const RequestCardSkeleton = () => {
@@ -26,7 +26,10 @@ export const RequestCardSkeleton = () => {
             <CardContent className="px-6 pb-6 flex flex-col justify-between">
                 <div className="grid grid-cols-2 gap-3 mb-6">
                     {[...Array(4)].map((_, idx) => (
-                        <div key={idx} className="flex items-center gap-2 p-3 bg-slate-100 rounded-lg">
+                        <div
+                            key={idx}
+                            className="flex items-center gap-2 p-3 bg-slate-100 rounded-lg"
+                        >
                             <Skeleton className="h-4 w-4 rounded" />
                             <div className="flex-1 space-y-1">
                                 <Skeleton className="h-4 w-1/2 rounded" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     Hero,
     HeroDescription,
@@ -102,6 +102,13 @@ export default function BloodStorage() {
         page_index: pagination.pageIndex,
         page_size: pagination.pageSize,
     });
+    useEffect(() => {
+        setPagination((prev) => ({
+            ...prev,
+            pageIndex: 0,
+        }));
+    }, [bloodGroup, component, mode]);
+
     const { data: stats } = useBloodBagStats();
 
     const columns = useMemo(

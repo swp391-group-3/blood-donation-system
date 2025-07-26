@@ -25,7 +25,7 @@ export default function RequestApplyPage() {
     const { data: questions, isPending, error } = useQuestion();
     const [answers, setAnswers] = useState<Record<number, Answer>>({});
     const progress = useMemo(
-        () => (Object.keys(answers).length / (questions?.length ?? 0)) * 100,
+        () => Math.round((Object.keys(answers).length / (questions?.length ?? 0)) * 100),
         [questions, answers],
     );
     const [step, setStep] = useState(0);

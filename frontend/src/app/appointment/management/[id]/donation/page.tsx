@@ -173,7 +173,9 @@ const DonatedSection = ({
     const [newBloodBag, setNewBloodBag] = useState<CreateBloodBag>({
         amount: 150,
         component: 'red_cell',
-        expired_time: new Date(),
+        expired_time: calculateExpectedExpiryDate(
+            componentConfigs['red_cell'].shelfLife,
+        ),
     });
     const [bloodBags, setBloodBags] = useState<CreateBloodBag[]>([]);
     const totalBagAmount = useMemo(
