@@ -277,7 +277,7 @@ export const HealthForm = ({ appointmentId }: Props) => {
                                 <FormItem className="space-y-4">
                                     <FormControl>
                                         <div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                 <Button
                                                     type="button"
                                                     variant={
@@ -316,6 +316,39 @@ export const HealthForm = ({ appointmentId }: Props) => {
                                                             : 'outline'
                                                     }
                                                     onClick={() =>
+                                                        console.log('abc')
+                                                    }
+                                                    className={`h-24 transition-all duration-300 rounded-2xl ${
+                                                        !field.value
+                                                            ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white shadow-xl shadow-yellow-400/30 transform'
+                                                            : 'border-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-300'
+                                                    }`}
+                                                >
+                                                    <div className="text-center">
+                                                        <AlertCircle
+                                                            className={`h-8 w-8 mx-auto mb-2 ${
+                                                                !field.value
+                                                                    ? 'text-white'
+                                                                    : 'text-yellow-600'
+                                                            }`}
+                                                        />
+                                                        <div className="text-lg font-bold">
+                                                            Reject
+                                                        </div>
+                                                        <div className="text-sm opacity-90">
+                                                            Not eligible today
+                                                        </div>
+                                                    </div>
+                                                </Button>
+
+                                                <Button
+                                                    type="button"
+                                                    variant={
+                                                        !field.value
+                                                            ? 'default'
+                                                            : 'outline'
+                                                    }
+                                                    onClick={() =>
                                                         form.setValue(
                                                             'is_good_health',
                                                             false,
@@ -330,10 +363,11 @@ export const HealthForm = ({ appointmentId }: Props) => {
                                                     <div className="text-center">
                                                         <AlertCircle className="h-8 w-8 mx-auto mb-2" />
                                                         <div className="text-lg font-bold">
-                                                            Reject
+                                                            Permanently Banned
                                                         </div>
                                                         <div className="text-sm opacity-90">
-                                                            Not eligible today
+                                                            Not eligible due to
+                                                            some conditions
                                                         </div>
                                                     </div>
                                                 </Button>

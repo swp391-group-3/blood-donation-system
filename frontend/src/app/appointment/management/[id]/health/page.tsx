@@ -51,41 +51,6 @@ const DonorSection = ({ id }: { id: string }) => {
     );
 };
 
-const RequestSection = ({ appointmentId }: { appointmentId: string }) => {
-    const { data: request, isPending, error } = useBloodRequest(appointmentId);
-    if (isPending) {
-        return <div></div>;
-    }
-    if (error) {
-        toast.error(error.message);
-        return <div></div>;
-    }
-
-    return (
-        <div className="text-right">
-            <div className="bg-blue-50 rounded-xl p-8 border border-blue-200">
-                <div className="flex justify-end items-center text-blue-600 text-sm mb-2">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span className="font-medium">Appointment</span>
-                </div>
-                <div className="text-lg font-bold text-slate-900">
-                    {new Date(request.start_time).toLocaleDateString()} -{' '}
-                    {new Date(request.end_time).toLocaleDateString()}
-                </div>
-                <div className="text-sm text-slate-600">
-                    {new Date(request.start_time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    })}
-                </div>
-                <div className="text-xs text-blue-600 mt-2 font-medium">
-                    {request.title}
-                </div>
-            </div>
-        </div>
-    );
-};
-
 export default function AppointmentHealthPage() {
     const { id } = useParams<{ id: string }>();
     const { data: apt, isPending, error } = useAppointment(id);
@@ -104,7 +69,6 @@ export default function AppointmentHealthPage() {
                 <CardContent className="px-8">
                     <div className="flex items-center justify-between">
                         <DonorSection id={apt.donor_id} />
-                        <RequestSection appointmentId={apt.id} />
                     </div>
                 </CardContent>
             </Card>
