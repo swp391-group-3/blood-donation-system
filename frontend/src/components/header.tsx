@@ -252,7 +252,7 @@ export function Header() {
                                                             asChild
                                                         >
                                                             <Link
-                                                                href="/appointment"
+                                                                href="/appointment/management"
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="flex gap-4">
