@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import QueryProvider from './query-provider';
 import { Toaster } from '@/components/ui/sonner';
-import { Header } from '@/components/header';
 import { BloodDonationChatbot } from '@/components/chatbot';
+import { Header } from '@/components/header';
 import Footer from '@/components/footer';
 
 const geistSans = Geist({
@@ -33,13 +33,12 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
             >
                 <QueryProvider>
+                    <Header />
+                    {children}
                     <div className="min-h-screen flex flex-col">
-                        <Header />
-
                         <main className="flex-1 flex flex-col min-w-full">
                             {children}
                         </main>
-
                         <Footer className='mt-16' />
                     </div>
 

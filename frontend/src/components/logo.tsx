@@ -8,7 +8,7 @@ export const Logo = () => {
                     <Heart className="h-5 w-5 text-white" />
                 </div>
             </div>
-            <div className="hidden sm:block">
+            <div className="sm:block">
                 <span className="text-xl font-bold text-slate-900">
                     LifeLink
                 </span>
