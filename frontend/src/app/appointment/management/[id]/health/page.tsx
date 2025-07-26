@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { User, Heart, Clock } from 'lucide-react';
+import { User, Heart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useParams } from 'next/navigation';
@@ -11,7 +11,6 @@ import { HealthForm } from '@/components/health-form';
 import { capitalCase } from 'change-case';
 import { useAppointment } from '@/hooks/use-appointment';
 import { useAccount } from '@/hooks/use-account';
-import { useBloodRequest } from '@/hooks/use-blood-request';
 
 const DonorSection = ({ id }: { id: string }) => {
     const { data: donor, isPending, error } = useAccount(id);

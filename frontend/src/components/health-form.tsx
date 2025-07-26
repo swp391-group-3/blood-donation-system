@@ -50,6 +50,7 @@ export const HealthForm = ({ appointmentId }: Props) => {
 
     const handleTemporaryReject = async () => {
         setSelectedAction('temporarily_rejected');
+        setIsProcessing((prev) => ({ ...prev, permanentBan: true }));
     };
 
     const handlePermanentBan = async () => {
