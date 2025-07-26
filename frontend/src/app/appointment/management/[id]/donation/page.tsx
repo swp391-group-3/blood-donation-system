@@ -143,12 +143,7 @@ const RequestSection = ({ id }: { id: string }) => {
                     {new Date(request.start_time).toLocaleDateString()} -{' '}
                     {new Date(request.end_time).toLocaleDateString()}
                 </div>
-                <div className="text-sm text-slate-600">
-                    {new Date(request.start_time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    })}
-                </div>
+
                 <div className="text-xs text-red-600 mt-2 font-medium">
                     {request.title}
                 </div>
@@ -361,7 +356,7 @@ const DonatedSection = ({
                                                 (component) => {
                                                     const config =
                                                         componentConfigs[
-                                                            component
+                                                        component
                                                         ];
 
                                                     return (

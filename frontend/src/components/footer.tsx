@@ -3,6 +3,7 @@
 import { Logo } from '@/components/logo';
 import { useCurrentAccount } from '@/hooks/use-current-account';
 import { Account } from '@/lib/api/dto/account';
+import { cn } from '@/lib/utils';
 import { ArrowRight, Mail } from 'lucide-react';
 import Link from 'next/link';
 
@@ -45,12 +46,21 @@ function getMainLinks(account: Account | undefined, isError: boolean) {
     ];
 }
 
-export default function Footer() {
+interface Props {
+    className?: string;
+}
+
+export default function Footer({ className }: Props) {
     const { data: account, isError } = useCurrentAccount();
     const mainLinks = getMainLinks(account, isError);
 
     return (
-        <footer className="bg-gradient-to-b from-gray-50 to-white border-t border-gray-200">
+        <footer
+            className={cn(
+                className,
+                'bg-gradient-to-b from-gray-50 to-white border-t border-gray-200',
+            )}
+        >
             <div className="container mx-auto px-4 max-w-6xl pt-10 pb-10">
                 <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
                     <div className="w-full lg:w-1/3">

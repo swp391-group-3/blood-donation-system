@@ -134,10 +134,10 @@ export default function BlogCreatePage() {
                                                                 ) => {
                                                                     const tagsArray =
                                                                         typeof newTags ===
-                                                                        'function'
+                                                                            'function'
                                                                             ? newTags(
-                                                                                  tags,
-                                                                              )
+                                                                                tags,
+                                                                            )
                                                                             : newTags;
 
                                                                     setTags(
@@ -219,9 +219,9 @@ export default function BlogCreatePage() {
 
                                                                     if (
                                                                         typeof newValue ===
-                                                                            'string' &&
+                                                                        'string' &&
                                                                         newValue.trim() !==
-                                                                            ''
+                                                                        ''
                                                                     ) {
                                                                         setValue(
                                                                             'content',
@@ -243,14 +243,14 @@ export default function BlogCreatePage() {
                                                                     }
                                                                 }}
                                                                 className="w-full"
-                                                                editorContentClassName="p-5"
                                                                 output="html"
                                                                 placeholder="Enter your blog content..."
                                                                 autofocus={
                                                                     false
                                                                 }
                                                                 editable={true}
-                                                                editorClassName="focus:outline-hidden"
+                                                                editorContentClassName="p-10 px-15 min-h-40 cursor-text"
+                                                                editorClassName="focus:outline-hidden min-h-40"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />

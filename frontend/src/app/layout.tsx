@@ -39,7 +39,7 @@ export default function RootLayout({
                         <main className="flex-1 flex flex-col min-w-full">
                             {children}
                         </main>
-                        <Footer />
+                        <Footer className='mt-16' />
                     </div>
 
                     <BloodDonationChatbot />
