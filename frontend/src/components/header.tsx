@@ -32,6 +32,7 @@ import {
     Users,
     Warehouse,
     HelpCircle,
+    Heart,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from './logo';
@@ -198,20 +199,22 @@ export function Header() {
                                                                 href="/question"
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
-                                                                <div className="p-1.5 bg-green-50 rounded-lg">
-                                                                    <BadgeQuestionMark className="h-4 w-4 text-green-600" />
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-medium text-slate-900 group-hover:text-slate-700">
-                                                                        Questions
-                                                                    </span>
-                                                                    <div className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
-                                                                        Manage
-                                                                        questions
-                                                                        for
-                                                                        blood
-                                                                        request
-                                                                        survey
+                                                                <div className="flex gap-4">
+                                                                    <div className="p-1.5 bg-green-50 h-8 w-8 rounded-lg">
+                                                                        <BadgeQuestionMark className="h-4 w-4 text-green-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="font-medium text-slate-900 group-hover:text-slate-700">
+                                                                            Questions
+                                                                        </span>
+                                                                        <div className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
+                                                                            Manage
+                                                                            questions
+                                                                            for
+                                                                            blood
+                                                                            request
+                                                                            survey
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </Link>
@@ -225,20 +228,25 @@ export function Header() {
                                                                 href="/blood-storage"
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
-                                                                <div className="p-1.5 bg-red-50 rounded-lg">
-                                                                    <Droplet className="h-4 w-4 text-red-600" />
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-medium text-slate-900 group-hover:text-slate-700">
-                                                                        Blood
-                                                                        Storage
-                                                                    </span>
-                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
-                                                                        Manage
-                                                                        blood
-                                                                        bags in
-                                                                        storage
-                                                                    </p>
+                                                                <div className="flex gap-4">
+                                                                    <div className="p-1.5 bg-red-50 h-8 w-8 rounded-lg">
+                                                                        <Droplet className="h-4 w-4 text-red-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="font-medium text-slate-900 group-hover:text-slate-700">
+                                                                            Blood
+                                                                            Storage
+                                                                        </span>
+                                                                        <div className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
+                                                                            Manage
+                                                                            all
+                                                                            blood
+                                                                            bags
+                                                                            in
+                                                                            the
+                                                                            storage
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </Link>
                                                         </NavigationMenuLink>
@@ -250,20 +258,22 @@ export function Header() {
                                                                 href="/appointment"
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
-                                                                <div className="p-1.5 bg-blue-50 rounded-lg">
-                                                                    <Calendar className="h-4 w-4 text-blue-600" />
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-medium text-slate-900 group-hover:text-slate-700">
-                                                                        Appointment
-                                                                    </span>
-                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
-                                                                        Manage
-                                                                        all
-                                                                        blood
-                                                                        request
-                                                                        appointments
-                                                                    </p>
+                                                                <div className="flex gap-4">
+                                                                    <div className="p-1.5 bg-blue-50 h-8 w-8 rounded-lg">
+                                                                        <Calendar className="h-4 w-4 text-blue-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="font-medium text-slate-900 group-hover:text-slate-700">
+                                                                            Appointment
+                                                                        </span>
+                                                                        <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
+                                                                            Manage
+                                                                            all
+                                                                            blood
+                                                                            request
+                                                                            appointments
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </Link>
                                                         </NavigationMenuLink>
@@ -293,21 +303,24 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/admin/blog"
-                                                                className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-all duration-200 group"
+                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
-                                                                <div className="p-2 bg-purple-50 rounded-lg group-hover:bg-purple-100 transition-colors flex-shrink-0">
-                                                                    <FileText className="h-4 w-4 text-purple-600" />
-                                                                </div>
-                                                                <div className="flex-1 min-w-0">
-                                                                    <p className="font-medium text-slate-900 group-hover:text-slate-700">
-                                                                        Blog
-                                                                        Management
-                                                                    </p>
-                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
-                                                                        Manage
-                                                                        blog
-                                                                        articles
-                                                                    </p>
+                                                                <div className="flex gap-4">
+                                                                    <div className="p-1.5 bg-purple-50 h-8 w-8 rounded-lg">
+                                                                        <FileText className="h-4 w-4 text-purple-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="font-medium text-slate-900 group-hover:text-slate-700">
+                                                                            Manage
+                                                                            Blogs
+                                                                        </span>
+                                                                        <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
+                                                                            Manage
+                                                                            Blog
+                                                                            and
+                                                                            Articles
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </Link>
                                                         </NavigationMenuLink>
@@ -317,21 +330,24 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/admin/account"
-                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                                className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-all duration-200 group"
                                                             >
-                                                                <div className="p-1.5 bg-blue-50 rounded-lg">
-                                                                    <UserCog className="h-4 w-4 text-yellow-600" />
-                                                                </div>
-                                                                <div className="flex-1 min-w-0">
-                                                                    <p className="font-medium text-slate-900 group-hover:text-slate-700">
-                                                                        Account
-                                                                        Management
-                                                                    </p>
-                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
-                                                                        Manage
-                                                                        all user
-                                                                        accounts
-                                                                    </p>
+                                                                <div className="flex gap-4">
+                                                                    <div className="p-1.5 bg-yellow-50 h-8 w-8 rounded-lg">
+                                                                        <UserCog className="h-4 w-4 text-yellow-600" />
+                                                                    </div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="font-medium text-slate-900 group-hover:text-slate-700">
+                                                                            Account
+                                                                            Management
+                                                                        </p>
+                                                                        <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
+                                                                            Manage
+                                                                            all
+                                                                            user
+                                                                            accounts
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </Link>
                                                         </NavigationMenuLink>
@@ -489,8 +505,6 @@ export function Header() {
                                                     </DropdownMenuItem>
                                                 </>
                                             )}
-
-                                            <DropdownMenuSeparator className="my-2 bg-slate-100" />
 
                                             <DropdownMenuItem
                                                 onClick={() => logout.mutate()}
