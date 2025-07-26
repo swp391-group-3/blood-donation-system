@@ -110,9 +110,9 @@ export function Header() {
                 asChild
                 className={cn(
                     navigationMenuTriggerStyle(),
-                    // Thêm conditional styling dựa trên isScrolled
+                    // Thêm conditional styling dựa trên isScrolled với glassmorphism effect
                     isScrolled
-                        ? 'bg-transparent hover:bg-white/10 hover:text-foreground'
+                        ? 'bg-white/60 hover:bg-white/80 hover:shadow-md border border-white/20 backdrop-blur-sm transition-all duration-300'
                         : 'hover:bg-accent hover:text-accent-foreground',
                 )}
             >
@@ -137,7 +137,7 @@ export function Header() {
                 className={cn(
                     'fixed top-0 w-full z-50 transition-all duration-500 ease-in-out',
                     isScrolled
-                        ? 'bg-background/20 backdrop-blur-3xl border-b border-border/10 shadow-2xl'
+                        ? 'bg-white/80 backdrop-blur-2xl border-b border-slate-200/50 shadow-lg shadow-slate-900/5'
                         : 'bg-transparent',
                 )}
             >
@@ -180,9 +180,8 @@ export function Header() {
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger
                                                 className={cn(
-                                                    // Conditional styling cho NavigationMenuTrigger
                                                     isScrolled
-                                                        ? 'bg-transparent hover:bg-white/10 data-[state=open]:bg-white/10'
+                                                        ? 'bg-white/60 hover:bg-white/80 hover:shadow-md data-[state=open]:bg-white/80 border border-white/20 backdrop-blur-sm transition-all duration-300'
                                                         : 'hover:bg-accent data-[state=open]:bg-accent',
                                                 )}
                                             >
@@ -197,23 +196,23 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/question"
-                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="p-1.5 bg-green-50 rounded-lg">
                                                                     <BadgeQuestionMark className="h-4 w-4 text-green-600" />
                                                                 </div>
                                                                 <div>
-                                                                    <p className="font-medium text-slate-900">
+                                                                    <span className="font-medium text-slate-900 group-hover:text-slate-700">
                                                                         Questions
-                                                                    </p>
-                                                                    <p className="text-xs text-slate-500">
+                                                                    </span>
+                                                                    <div className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
                                                                         Manage
                                                                         questions
                                                                         for
                                                                         blood
                                                                         request
                                                                         survey
-                                                                    </p>
+                                                                    </div>
                                                                 </div>
                                                             </Link>
                                                         </NavigationMenuLink>
@@ -224,17 +223,17 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/blood-storage"
-                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="p-1.5 bg-red-50 rounded-lg">
                                                                     <Droplet className="h-4 w-4 text-red-600" />
                                                                 </div>
                                                                 <div>
-                                                                    <p className="font-medium text-slate-900">
+                                                                    <span className="font-medium text-slate-900 group-hover:text-slate-700">
                                                                         Blood
                                                                         Storage
-                                                                    </p>
-                                                                    <p className="text-xs text-slate-500">
+                                                                    </span>
+                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
                                                                         Manage
                                                                         blood
                                                                         bags in
@@ -249,16 +248,16 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/appointment"
-                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="p-1.5 bg-blue-50 rounded-lg">
                                                                     <Calendar className="h-4 w-4 text-blue-600" />
                                                                 </div>
                                                                 <div>
-                                                                    <p className="font-medium text-slate-900">
+                                                                    <span className="font-medium text-slate-900 group-hover:text-slate-700">
                                                                         Appointment
-                                                                    </p>
-                                                                    <p className="text-xs text-slate-500">
+                                                                    </span>
+                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
                                                                         Manage
                                                                         all
                                                                         blood
@@ -278,9 +277,8 @@ export function Header() {
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger
                                                 className={cn(
-                                                    // Conditional styling cho NavigationMenuTrigger
                                                     isScrolled
-                                                        ? 'bg-transparent hover:bg-white/10 data-[state=open]:bg-white/10'
+                                                        ? 'bg-white/60 hover:bg-white/80 hover:shadow-md data-[state=open]:bg-white/80 border border-white/20 backdrop-blur-sm transition-all duration-300'
                                                         : 'hover:bg-accent data-[state=open]:bg-accent',
                                                 )}
                                             >
@@ -295,17 +293,17 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/admin/blog"
-                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                                className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-all duration-200 group"
                                                             >
-                                                                <div className="p-1.5 bg-purple-50 rounded-lg">
+                                                                <div className="p-2 bg-purple-50 rounded-lg group-hover:bg-purple-100 transition-colors flex-shrink-0">
                                                                     <FileText className="h-4 w-4 text-purple-600" />
                                                                 </div>
-                                                                <div>
-                                                                    <p className="font-medium text-slate-900">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="font-medium text-slate-900 group-hover:text-slate-700">
                                                                         Blog
                                                                         Management
                                                                     </p>
-                                                                    <p className="text-xs text-slate-500">
+                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
                                                                         Manage
                                                                         blog
                                                                         articles
@@ -319,17 +317,17 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/admin/account"
-                                                                className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
+                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
-                                                                <div className="p-1.5 bg-yellow-50 rounded-lg">
+                                                                <div className="p-1.5 bg-blue-50 rounded-lg">
                                                                     <UserCog className="h-4 w-4 text-yellow-600" />
                                                                 </div>
-                                                                <div>
-                                                                    <p className="font-medium text-slate-900">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="font-medium text-slate-900 group-hover:text-slate-700">
                                                                         Account
                                                                         Management
                                                                     </p>
-                                                                    <p className="text-xs text-slate-500">
+                                                                    <p className="text-xs text-slate-500 group-hover:text-slate-600 line-clamp-2">
                                                                         Manage
                                                                         all user
                                                                         accounts
@@ -351,12 +349,29 @@ export function Header() {
                                 {!currentAccount ? (
                                     <div className="gap-4 flex">
                                         <Link href="/auth/register">
-                                            <Button variant="outline">
+                                            <Button
+                                                variant="outline"
+                                                className={cn(
+                                                    'transition-all duration-300',
+                                                    isScrolled
+                                                        ? 'bg-white/70 hover:bg-white/90 border-white/30 backdrop-blur-sm hover:shadow-md'
+                                                        : '',
+                                                )}
+                                            >
                                                 Register
                                             </Button>
                                         </Link>
                                         <Link href="/auth/login">
-                                            <Button>Login</Button>
+                                            <Button
+                                                className={cn(
+                                                    'transition-all duration-300',
+                                                    isScrolled
+                                                        ? 'shadow-lg hover:shadow-xl bg-primary hover:bg-primary/90'
+                                                        : '',
+                                                )}
+                                            >
+                                                Login
+                                            </Button>
                                         </Link>
                                     </div>
                                 ) : (
@@ -375,7 +390,12 @@ export function Header() {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent
                                             align="end"
-                                            className="mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/60 shadow-xl rounded-2xl p-2"
+                                            className={cn(
+                                                'mt-2 border shadow-xl rounded-2xl p-2 transition-all duration-300',
+                                                isScrolled
+                                                    ? 'bg-white/90 backdrop-blur-xl border-white/20 shadow-2xl shadow-slate-900/10'
+                                                    : 'bg-white/95 backdrop-blur-xl border-slate-200/60',
+                                            )}
                                         >
                                             <div className="px-3 py-3 border-b border-slate-100 mb-2">
                                                 <AccountOverview
@@ -502,7 +522,12 @@ export function Header() {
                                 <Button
                                     variant="ghost"
                                     size={isScrolled ? 'sm' : 'icon'}
-                                    className="transition-all duration-300 hover:bg-accent/80"
+                                    className={cn(
+                                        'transition-all duration-300',
+                                        isScrolled
+                                            ? 'hover:bg-white/80 hover:shadow-md bg-white/60 border border-white/20 backdrop-blur-sm'
+                                            : 'hover:bg-accent/80',
+                                    )}
                                 >
                                     <Menu
                                         className={cn(
