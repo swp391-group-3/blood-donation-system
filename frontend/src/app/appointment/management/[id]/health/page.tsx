@@ -51,8 +51,8 @@ const DonorSection = ({ id }: { id: string }) => {
     );
 };
 
-const RequestSection = ({ appointmentId }: { appointmentId: string }) => {
-    const { data: request, isPending, error } = useBloodRequest(appointmentId);
+const RequestSection = ({ id }: { id: string }) => {
+    const { data: request, isPending, error } = useBloodRequest(id);
     if (isPending) {
         return <div></div>;
     }
@@ -104,7 +104,7 @@ export default function AppointmentHealthPage() {
                 <CardContent className="px-8">
                     <div className="flex items-center justify-between">
                         <DonorSection id={apt.donor_id} />
-                        <RequestSection appointmentId={apt.id} />
+                        <RequestSection id={apt.request_id} />
                     </div>
                 </CardContent>
             </Card>
