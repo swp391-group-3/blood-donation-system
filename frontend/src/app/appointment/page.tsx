@@ -40,12 +40,12 @@ export default function AppointmentPage() {
         error,
     } = useCurrentAccountAppointment();
 
-    const [status, setStatus] = useState<Status>('approved');
+    const [status, setStatus] = useState<Status>('all');
     const filteredAppointments = useMemo(
-        () =>
-            appointments?.filter(
-                (appointment) => appointment.status === status,
-            ),
+        () => {
+            if (status === "all") return appointments;
+            return appointments?.filter(apt => apt.status === status);
+        },
         [appointments, status],
     );
     const [selected, setSelected] = useState<string | undefined>();
@@ -155,11 +155,15 @@ export default function AppointmentPage() {
                                 <SelectValue placeholder="Priority" />
                             </SelectTrigger>
                             <SelectContent>
-                                {statuses.map((status) => (
-                                    <SelectItem key={status} value={status}>
-                                        {capitalCase(status)}
-                                    </SelectItem>
-                                ))}
+                                {statuses.map((status) => {
+                                    console.log("status", status);
+
+                                    return (
+                                        <SelectItem key={status} value={status}>
+                                            {capitalCase(status)}
+                                        </SelectItem>
+                                    )
+                                })}
                             </SelectContent>
                         </Select>
                     </div>
