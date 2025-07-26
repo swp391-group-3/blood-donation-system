@@ -103,7 +103,10 @@ impl OpenIdConnectClient {
             }
         };
 
-        let id_token_verifier: CoreIdTokenVerifier = self.inner_client.id_token_verifier();
+        let id_token_verifier: CoreIdTokenVerifier = self
+            .inner_client
+            .id_token_verifier()
+            .require_issuer_match(false);
         let id_token = match token_response.extra_fields().id_token() {
             Some(id_token) => id_token,
             None => {
