@@ -43,7 +43,7 @@ const componentColors = {
 };
 
 export const getColumns = (
-    onMarkAsUsed: (bag: BloodBag) => void,
+    onRemove: (bag: BloodBag) => void,
 ): ColumnDef<BloodBag>[] => [
     {
         header: 'Bag Details',
@@ -157,17 +157,21 @@ export const getColumns = (
 
             if (isExpired(new Date(bag.expired_time))) {
                 return (
-                    <Badge className="bg-red-100 text-red-800 border-red-200 px-3 py-1">
+                    <Button
+                        size="sm"
+                        onClick={() => onRemove(bag)}
+                        className="bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                    >
                         <XCircle className="h-3 w-3 mr-1" />
-                        Expired
-                    </Badge>
+                        Remove
+                    </Button>
                 );
             }
 
             return (
                 <Button
                     size="sm"
-                    onClick={() => onMarkAsUsed(bag)}
+                    onClick={() => onRemove(bag)}
                     className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
                 >
                     <Activity className="h-3 w-3 mr-1" />
