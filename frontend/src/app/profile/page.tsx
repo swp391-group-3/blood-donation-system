@@ -41,12 +41,15 @@ import {
     StatsLabel,
     StatsValue,
 } from '@/components/stats';
-import { formatDistanceToNow } from 'date-fns';
+import {
+    differenceInCalendarYears,
+    differenceInYears,
+    formatDistanceToNow,
+} from 'date-fns';
 
 export default function ProfilePage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const { data: account, isPending, error } = useCurrentAccount();
-    const { data: donations } = useCurrentAccountDonation();
     const { mutation, form } = useUpdateAccountForm(account, {
         onSuccess() {
             setIsEditModalOpen(false);
@@ -73,20 +76,6 @@ export default function ProfilePage() {
         toast.error('Login to use this feature');
         redirect('/auth/login');
     }
-
-    const calculateAge = (birthday: string) => {
-        const today = new Date();
-        const birthDate = new Date(birthday);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (
-            monthDiff < 0 ||
-            (monthDiff === 0 && today.getDate() < birthDate.getDate())
-        ) {
-            age--;
-        }
-        return age;
-    };
 
     return (
         <div className="my-10">
@@ -176,7 +165,10 @@ export default function ProfilePage() {
                                         <CakeIcon className="h-4 w-4 text-gray-600" />
                                         <div>
                                             <p className="text-sm font-medium text-gray-900">
-                                                {calculateAge(account.birthday)}{' '}
+                                                {differenceInYears(
+                                                    new Date(),
+                                                    account.birthday,
+                                                )}{' '}
                                                 years old
                                             </p>
                                             <p className="text-xs text-gray-500">
