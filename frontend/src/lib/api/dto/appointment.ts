@@ -1,5 +1,4 @@
 export const statuses = [
-    "all",
     'on_process',
     'approved',
     'checked_in',
