@@ -148,13 +148,16 @@ export default function AppointmentPage() {
                             onValueChange={(value: Status) => setStatus(value)}
                         >
                             <SelectTrigger
-                                value={status}
+                                value="all"
                                 className="w-fit border-slate-200"
                             >
                                 <Filter className="h-4 w-4 mr-2" />
                                 <SelectValue placeholder="Priority" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem key="all" value="all">
+                                    All
+                                </SelectItem>
                                 {statuses.map((status) => (
                                     <SelectItem key={status} value={status}>
                                         {capitalCase(status)}
