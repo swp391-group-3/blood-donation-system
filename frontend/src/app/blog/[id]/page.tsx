@@ -144,12 +144,12 @@ export default function BlogReadPage() {
                                             value={value}
                                             onChange={setValue}
                                             className="w-full h-full min-h-40"
-                                            editorContentClassName="p-5"
                                             output="html"
                                             placeholder="Share your think..."
                                             autofocus={false}
                                             editable={true}
-                                            editorClassName="focus:outline-hidden"
+                                            editorContentClassName="p-5 min-h-40 cursor-text"
+                                            editorClassName="focus:outline-hidden min-h-40"
                                         />
                                         <div className="flex justify-end">
                                             <Button

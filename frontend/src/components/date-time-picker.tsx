@@ -4,7 +4,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
 import { Button } from './ui/button';
 import { ChevronDownIcon } from 'lucide-react';
 import { Calendar } from './ui/calendar';
@@ -14,7 +13,7 @@ interface Props {
     onDateChange: (date: Date) => void;
 }
 
-export function DateTimePicker({ date, onDateChange }: Props) {
+export function DatePicker({ date, onDateChange }: Props) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -27,7 +26,7 @@ export function DateTimePicker({ date, onDateChange }: Props) {
                             id="date-picker"
                             className="w-32 justify-between font-normal"
                         >
-                            {date ? date.toLocaleDateString() : 'Select date'}
+                            {date ? date.toLocaleDateString("en-GB")  : 'Select date'}
                             <ChevronDownIcon />
                         </Button>
                     </PopoverTrigger>
@@ -52,15 +51,7 @@ export function DateTimePicker({ date, onDateChange }: Props) {
                     </PopoverContent>
                 </Popover>
             </div>
-            <div className="flex flex-col gap-3">
-                <Input
-                    type="time"
-                    id="time-picker"
-                    step="1"
-                    defaultValue="10:30:00"
-                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                />
-            </div>
+            
         </div>
     );
 }

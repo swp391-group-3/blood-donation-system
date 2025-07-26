@@ -28,7 +28,7 @@ import { useBloodRequestForm } from '@/hooks/use-create-blood-request';
 import { Droplet } from 'lucide-react';
 import { bloodGroups, bloodGroupLabels } from '@/lib/api/dto/blood-group';
 import { priorities } from '@/lib/api/dto/blood-request';
-import { DateTimePicker } from '@/components/date-time-picker';
+import { DatePicker } from '@/components/date-time-picker';
 import { MultiSelect } from '@/components/multi-select';
 
 export default function RequestBloodDialog({
@@ -176,7 +176,7 @@ export default function RequestBloodDialog({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Start Date</FormLabel>
-                                    <DateTimePicker
+                                    <DatePicker
                                         date={field.value}
                                         onDateChange={(newDate) => {
                                             form.setValue(
@@ -195,7 +195,7 @@ export default function RequestBloodDialog({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>End Date</FormLabel>
-                                    <DateTimePicker
+                                    <DatePicker
                                         date={field.value}
                                         onDateChange={(newDate) => {
                                             form.setValue('end_time', newDate);
