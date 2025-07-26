@@ -337,11 +337,10 @@ export default function BloodStorage() {
                     <DialogContent className="max-w-md">
                         <DialogHeader>
                             <DialogTitle className="text-xl font-bold text-slate-900">
-                                Mark Blood Bag as Used
+                                Remove Blood Bag
                             </DialogTitle>
                             <DialogDescription className="text-slate-600">
-                                Are you sure want to make this blood bag as used
-                                ?
+                                Are you sure want to remove this blood bag?
                             </DialogDescription>
                         </DialogHeader>
                         {selectedBag && (
@@ -412,7 +411,7 @@ export default function BloodStorage() {
                                 disabled={isDeleting}
                                 className="bg-red-600 hover:bg-red-700 text-white"
                             >
-                                Mark as used
+                                Remove
                             </Button>
                         </DialogFooter>
                     </DialogContent>
