@@ -155,15 +155,11 @@ export default function AppointmentPage() {
                                 <SelectValue placeholder="Priority" />
                             </SelectTrigger>
                             <SelectContent>
-                                {statuses.map((status) => {
-                                    console.log("status", status);
-
-                                    return (
-                                        <SelectItem key={status} value={status}>
-                                            {capitalCase(status)}
-                                        </SelectItem>
-                                    )
-                                })}
+                                {statuses.map((status) => (
+                                    <SelectItem key={status} value={status}>
+                                        {capitalCase(status)}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
