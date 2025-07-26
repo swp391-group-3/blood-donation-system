@@ -20,13 +20,6 @@ import { useBloodRequest } from '@/hooks/use-blood-request';
 import { toast } from 'sonner';
 
 const statusConfig = {
-    all: {
-        color: 'bg-gray-500',
-        ringColor: 'ring-gray-500/20',
-        badgeColor: 'bg-gray-100 text-gray-800 border-gray-200',
-        icon: List,
-        description: 'All statuses',
-    },
     on_process: {
         color: 'bg-amber-500',
         ringColor: 'ring-amber-500/20',
