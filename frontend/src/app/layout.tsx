@@ -34,12 +34,11 @@ export default function RootLayout({
             >
                 <QueryProvider>
                     <Header />
-                    {children}
                     <div className="min-h-screen flex flex-col">
                         <main className="flex-1 flex flex-col min-w-full">
                             {children}
                         </main>
-                        <Footer className='mt-16' />
+                        <Footer className="mt-16" />
                     </div>
 
                     <BloodDonationChatbot />
