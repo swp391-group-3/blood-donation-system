@@ -40,7 +40,7 @@ export default function AppointmentPage() {
         error,
     } = useCurrentAccountAppointment();
 
-    const [status, setStatus] = useState<FilterStatus>('on_process');
+    const [status, setStatus] = useState<FilterStatus>('all');
     const filteredAppointments = useMemo(
         () => {
             if (status === "all") return appointments
@@ -150,7 +150,7 @@ export default function AppointmentPage() {
                             onValueChange={(value: FilterStatus) => setStatus(value)}
                         >
                             <SelectTrigger
-                                value="all"
+                                value={status}
                                 className="w-fit border-slate-200"
                             >
                                 <Filter className="h-4 w-4 mr-2" />
