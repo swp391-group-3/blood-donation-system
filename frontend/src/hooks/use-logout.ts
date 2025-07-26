@@ -16,9 +16,9 @@ export const useLogout = () => {
         },
         onError: (error) => toast.error(error.message),
         onSuccess: async () => {
-            toast.message('Logout successfully');
-            router.push('/');
-            await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+            queryClient.setQueryData(['auth', 'me'], null)
+            toast.success('Logout successful')
+            router.push('/')
         },
     });
 };
