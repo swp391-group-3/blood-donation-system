@@ -280,7 +280,7 @@ async function seed() {
         const donors = faker.helpers.shuffle(donorIds);
 
         for (const donorId of donors) {
-            if (requestPeopleMap.get(requestId)! >= 100) continue;
+            if (requestPeopleMap.get(requestId)! >= 10) continue;
             if (donorActiveApptMap[donorId]) continue;
 
             const donorBlood = donorBloodMap[donorId];
