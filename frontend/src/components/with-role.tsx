@@ -1,3 +1,5 @@
+'use client';
+
 import { useCurrentAccount } from '@/hooks/use-current-account';
 import { Role } from '@/lib/api/dto/account';
 import { redirect } from 'next/navigation';
@@ -15,7 +17,7 @@ export function WithRole({ children, roles }: PropsWithChildren<Props>) {
         return <div></div>;
     }
 
-    if (error || roles.indexOf(account.role) === -1) {
+    if (error || !account || roles.indexOf(account.role) === -1) {
         toast.error('Missing required role');
         redirect('/auth/login');
     }
