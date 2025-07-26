@@ -9,6 +9,8 @@ export const statuses = [
 
 export type Status = (typeof statuses)[number];
 
+export type FilterStatus = Status | 'all';
+
 export interface Appointment {
     id: string;
     donor_id: string;
