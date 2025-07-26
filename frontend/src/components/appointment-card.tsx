@@ -4,7 +4,6 @@ import {
     Activity,
     CheckCircle,
     Clock,
-    List,
     MapPin,
     QrCode,
     Timer,
