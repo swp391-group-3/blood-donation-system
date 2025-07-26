@@ -109,7 +109,6 @@ export function Header() {
                 asChild
                 className={cn(
                     navigationMenuTriggerStyle(),
-                    // Thêm conditional styling dựa trên isScrolled với glassmorphism effect
                     isScrolled
                         ? 'bg-white/60 hover:bg-white/80 hover:shadow-md border border-white/20 backdrop-blur-sm transition-all duration-300'
                         : 'hover:bg-accent hover:text-accent-foreground',
