@@ -2,14 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import {
-    User,
     Droplets,
-    Shield,
     Heart,
-    Trophy,
-    Activity,
-    BarChart3,
-    Clock,
     MapPinIcon,
     PhoneIcon,
     MailIcon,
@@ -20,7 +14,6 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentAccount } from '@/hooks/use-current-account';
 import { useUpdateAccountForm } from '@/hooks/use-update-account-form';
@@ -29,23 +22,7 @@ import { redirect } from 'next/navigation';
 import { AccountPicture } from '@/components/account-picture';
 import { capitalCase } from 'change-case';
 import { EditProfileModel } from '@/components/edit-profile';
-import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation';
-import { displayDonationType } from '@/lib/api/dto/donation';
-import { AchievementCard } from '@/components/achievement-card';
-import { useNextDonatableDate } from '@/hooks/use-next-donatable-date';
-import {
-    Stats,
-    StatsDescription,
-    StatsGrid,
-    StatsIcon,
-    StatsLabel,
-    StatsValue,
-} from '@/components/stats';
-import {
-    differenceInCalendarYears,
-    differenceInYears,
-    formatDistanceToNow,
-} from 'date-fns';
+import { differenceInYears } from 'date-fns';
 
 export default function ProfilePage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
