@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/select';
 import { Filter, Calendar, CheckCircle, Clock, Activity } from 'lucide-react';
 import { toast } from 'sonner';
-import { Status, statuses } from '@/lib/api/dto/appointment';
+import { FilterStatus, Status, statuses } from '@/lib/api/dto/appointment';
 import { useCurrentAccountAppointment } from '@/hooks/use-current-account-appointment';
 import { redirect } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -40,12 +40,14 @@ export default function AppointmentPage() {
         error,
     } = useCurrentAccountAppointment();
 
-    const [status, setStatus] = useState<Status>('on_process');
+    const [status, setStatus] = useState<FilterStatus>('on_process');
     const filteredAppointments = useMemo(
-        () =>
-            appointments?.filter(
+        () => {
+            if(status === "all") return appointments
+            return appointments?.filter(
                 (appointment) => appointment.status === status,
-            ),
+            )
+        },
         [appointments, status],
     );
     const [selected, setSelected] = useState<string | undefined>();
