@@ -30,13 +30,20 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
             >
                 <QueryProvider>
-                    <Header />
-                    {children}
+                    <div className="min-h-screen flex flex-col">
+                        <Header />
+
+                        <main className="flex-1 flex flex-col min-w-full">
+                            {children}
+                        </main>
+
+                        <Footer />
+                    </div>
+
                     <BloodDonationChatbot />
-                    <Footer />
                     <Toaster richColors />
                 </QueryProvider>
             </body>

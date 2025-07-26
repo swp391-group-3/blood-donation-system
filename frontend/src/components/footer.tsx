@@ -51,7 +51,7 @@ export default function Footer() {
 
     return (
         <footer className="bg-gradient-to-b from-gray-50 to-white border-t border-gray-200">
-            <div className="container mx-auto px-4 max-w-6xl pt-10 pb-16">
+            <div className="container mx-auto px-4 max-w-6xl pt-10 pb-10">
                 <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
                     <div className="w-full lg:w-1/3">
                         <Logo />
