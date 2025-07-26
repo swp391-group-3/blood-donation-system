@@ -2231,11 +2231,11 @@ dependencies = [
 
 [[package]]
 name = "oauth2"
-version = "5.0.0"
+version = "5.0.0-alpha.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d"
+checksum = "098af5a5110b4deacf3200682963713b143ae9d28762b739bdb7b98429dfaf68"
 dependencies = [
- "base64 0.22.1",
+ "base64 0.21.7",
  "chrono",
  "getrandom 0.2.16",
  "http",
@@ -2266,9 +2266,8 @@ checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
 name = "openidconnect"
-version = "4.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6dd50d4a5e7730e754f94d977efe61f611aadd3131f6a2b464f6e3a4167e8ef7"
+version = "4.0.0-alpha.2"
+source = "git+https://github.com/phy1729/openidconnect-rs?branch=entra#0e005069201273c507713d0e557c1fbc8d00825d"
 dependencies = [
  "base64 0.21.7",
  "chrono",
