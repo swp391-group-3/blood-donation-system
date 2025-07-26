@@ -27,7 +27,7 @@ itertools = "0.14.0"
 jsonwebtoken = "9.3.1"
 lettre = { version = "0.11.17",  default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1-rustls-tls"] }
 model-mapper = "0.6.1"
-openidconnect = "4.0.0"
+openidconnect = { git = "https://github.com/phy1729/openidconnect-rs", branch = "entra" }
 qdrant-client = { version = "1.14.0", optional = true }
 rig-core = { version = "=0.11.1", features = ["derive", "rayon"], optional = true }
 rig-qdrant = { version =  "=0.1.12", optional = true }
