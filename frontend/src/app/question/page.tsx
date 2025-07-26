@@ -95,7 +95,7 @@ export default function QuestionPage() {
                                             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-800 text-sm font-bold shadow-sm border border-purple-200">
                                                 {index + 1}
                                             </div>
-                                            <div className="min-w-0 flex-1">
+                                            <div className="text-wrap min-w-0 flex-1">
                                                 <div className="font-medium text-slate-900 leading-relaxed">
                                                     {question.content}
                                                 </div>
