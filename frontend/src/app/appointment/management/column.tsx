@@ -26,10 +26,6 @@ import { ReviewDialog } from '@/components/review-dialog';
 import Link from 'next/link';
 
 const statusConfigs: Record<Status, { color: string; icon: LucideIcon }> = {
-    all: {
-        color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-        icon: Clock,
-    },
     on_process: {
         color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
         icon: Clock,
