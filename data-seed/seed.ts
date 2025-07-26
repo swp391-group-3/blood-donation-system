@@ -130,13 +130,12 @@ async function seed() {
     }
 
     const questions = [
-        'Do you feel well today?',
-        'Have you had any infections in the last week?',
-        'Are you taking any medication currently?',
-        'Have you been pregnant in the past 6 months?',
-        'Do you weigh more than 50kg?',
-        'Have you received any vaccinations in the last 2 weeks?',
-        'Have you had a tattoo or piercing in the last 6 months?',
+        'Are you feeling healthy today?',
+        'Have you recently been ill or had symptoms like fever, cough, diarrhea, or skin infection?',
+        'Have you had recent medical treatments—surgeries, dental procedures, injections, vaccines, or antibiotics?',
+        'Have you traveled to any malaria-risk areas or lived in those regions in recent years?',
+        'Are you taking any medications—such as for infections, PrEP/PEP, or others with potential deferral?',
+        'Do you have any history of bloodborne infections (like HIV, hepatitis), or recent risky exposures?',
     ];
     const questionIds: number[] = [];
     for (const q of questions) {
