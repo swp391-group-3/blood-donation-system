@@ -1,7 +1,7 @@
 use axum::http::StatusCode;
 use openidconnect::{
     AuthenticationFlow, AuthorizationCode, CsrfToken, EndpointMaybeSet, EndpointNotSet,
-    EndpointSet, Nonce, Scope,
+    EndpointSet, Nonce, ProviderMetadataDiscoveryOptions, Scope,
     core::{
         CoreClient, CoreIdTokenClaims, CoreIdTokenVerifier, CoreProviderMetadata, CoreResponseType,
     },
@@ -35,10 +35,13 @@ impl OpenIdConnectClient {
             .build()
             .unwrap();
 
-        let provider_metadata =
-            CoreProviderMetadata::discover_async(config.issuer_url, &http_client)
-                .await
-                .unwrap();
+        let provider_metadata = CoreProviderMetadata::discover_async_with_options(
+            config.issuer_url,
+            &http_client,
+            ProviderMetadataDiscoveryOptions::default().validate_issuer_url(false),
+        )
+        .await
+        .unwrap();
 
         let inner_client = CoreClient::from_provider_metadata(
             provider_metadata,
