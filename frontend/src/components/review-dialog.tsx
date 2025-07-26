@@ -54,8 +54,8 @@ export const ReviewDialog = ({
     return (
         <Dialog>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="p-0 max-h-[90vh] overflow-y-auto">
-                <div className="w-[95vw] max-w-[1400px] mx-auto px-4 py-6">
+            <DialogContent className="mx-5 md:!max-w-200 p-0 max-h-[90vh] overflow-y-auto">
+                <div className="mx-auto px-4 py-6">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-bold text-slate-900">
                             Application Review - {donor.name}
