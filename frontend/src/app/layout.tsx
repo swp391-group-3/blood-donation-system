@@ -40,7 +40,7 @@ export default function RootLayout({
                             {children}
                         </main>
 
-                        <Footer />
+                        <Footer className='mt-16' />
                     </div>
 
                     <BloodDonationChatbot />
