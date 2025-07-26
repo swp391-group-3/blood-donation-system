@@ -9,7 +9,7 @@ export const CardGrid = ({
     children,
 }: PropsWithChildren<{ className?: string }>) => {
     return (
-        <div className={cn('space-y-10', className)}>
+        <div className={cn('grid grid-cols-1 gap-10', className)}>
             {React.Children.count(children) === 0 ? (
                 <EmptyState
                     className="mx-auto col-span-full"

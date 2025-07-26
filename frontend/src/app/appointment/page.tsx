@@ -41,15 +41,12 @@ export default function AppointmentPage() {
     } = useCurrentAccountAppointment();
 
     const [status, setStatus] = useState<FilterStatus>('all');
-    const filteredAppointments = useMemo(
-        () => {
-            if (status === "all") return appointments
-            return appointments?.filter(
-                (appointment) => appointment.status === status,
-            )
-        },
-        [appointments, status],
-    );
+    const filteredAppointments = useMemo(() => {
+        if (status === 'all') return appointments;
+        return appointments?.filter(
+            (appointment) => appointment.status === status,
+        );
+    }, [appointments, status]);
     const [selected, setSelected] = useState<string | undefined>();
     const url = useMemo(() => {
         if (!selected) return undefined;
@@ -147,7 +144,9 @@ export default function AppointmentPage() {
                         <div className="relative flex-1"></div>
                         <Select
                             value={status}
-                            onValueChange={(value: FilterStatus) => setStatus(value)}
+                            onValueChange={(value: FilterStatus) =>
+                                setStatus(value)
+                            }
                         >
                             <SelectTrigger
                                 value={status}
@@ -169,7 +168,7 @@ export default function AppointmentPage() {
                         </Select>
                     </div>
 
-                    <CardGrid>
+                    <CardGrid className="lg:grid-cols-2">
                         {filteredAppointments!.map((appointment) => (
                             <AppointmentCard
                                 key={appointment.id}
