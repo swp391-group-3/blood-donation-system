@@ -16,6 +16,7 @@ import {
     CalendarIcon,
     UserIcon,
     CakeIcon,
+    XCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { bloodGroupLabels } from '@/lib/api/dto/blood-group';
@@ -32,6 +33,14 @@ import { useCurrentAccountDonation } from '@/hooks/use-current-account-donation'
 import { displayDonationType } from '@/lib/api/dto/donation';
 import { AchievementCard } from '@/components/achievement-card';
 import { useNextDonatableDate } from '@/hooks/use-next-donatable-date';
+import {
+    Stats,
+    StatsDescription,
+    StatsGrid,
+    StatsIcon,
+    StatsLabel,
+    StatsValue,
+} from '@/components/stats';
 
 export default function ProfilePage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -98,51 +107,34 @@ export default function ProfilePage() {
                                 <AccountPicture name={account.name} />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-800 mb-1">
-                                    {account.name}
-                                </h1>
+                                <div className="flex gap-4">
+                                    <h1 className="text-xl font-bold text-gray-800 mb-1">
+                                        {account.name}
+                                    </h1>
+                                    {account.is_banned ? (
+                                        <Badge
+                                            variant="outline"
+                                            className="text-xs border-red-200 text-red-700"
+                                        >
+                                            <XCircle className="h-3 w-3 mr-1" />
+                                            Banned from donating
+                                        </Badge>
+                                    ) : (
+                                        <Badge
+                                            variant="outline"
+                                            className="text-xs border-green-200 text-green-700"
+                                        >
+                                            <Heart className="h-3 w-3 mr-1" />
+                                            Active Donor
+                                        </Badge>
+                                    )}
+                                </div>
                                 <p className="text-gray-400 mb-3">
-                                    {' '}
                                     {account.email}
                                 </p>
-                                <div className="flex items-center gap-3">
-                                    <Badge
-                                        variant="secondary"
-                                        className="text-[13px] rounded-2xl"
-                                    >
-                                        <Shield className="h-3 w-3 mr-1" />
-                                        Verified
-                                    </Badge>
-                                    <Badge
-                                        variant="outline"
-                                        className="text-xs border-green-200 text-green-700"
-                                    >
-                                        <Heart className="h-3 w-3 mr-1" />
-                                        Active Donor
-                                    </Badge>
-                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <Card className="border-gray-200">
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-2xl font-bold text-gray-900">
-                                        {donations?.length}
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        Total Donations
-                                    </p>
-                                </div>
-                                <div className="p-3 bg-red-50 rounded-lg">
-                                    <Droplets className="h-6 w-6 text-red-600" />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
 
                 <div className="space-y-4">
