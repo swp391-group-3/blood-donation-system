@@ -34,21 +34,15 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
             >
                 <QueryProvider>
-<<<<<<< HEAD
                     <Navbar />
                     {children}
-=======
                     <div className="min-h-screen flex flex-col">
-                        <Header />
-
                         <main className="flex-1 flex flex-col min-w-full">
                             {children}
                         </main>
-
                         <Footer />
                     </div>
 
->>>>>>> main
                     <BloodDonationChatbot />
                     <Toaster richColors />
                 </QueryProvider>

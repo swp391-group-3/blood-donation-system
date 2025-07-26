@@ -274,7 +274,7 @@ export function Navbar() {
                                                             className="mb-2"
                                                         >
                                                             <Link
-                                                                href="/blog-management"
+                                                                href="/admin/blog"
                                                                 className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
                                                             >
                                                                 <div className="p-1.5 bg-purple-50 rounded-lg">
@@ -298,7 +298,7 @@ export function Navbar() {
                                                             asChild
                                                         >
                                                             <Link
-                                                                href="/account-management"
+                                                                href="/admin/account"
                                                                 className="flex items-start gap-3 p-2 hover:bg-slate-50 rounded-xl transition"
                                                             >
                                                                 <div className="p-1.5 bg-yellow-50 rounded-lg">
@@ -363,25 +363,6 @@ export function Navbar() {
                                                 />
                                             </div>
 
-                                            <DropdownMenuItem asChild>
-                                                <Link
-                                                    href="/profile"
-                                                    className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
-                                                >
-                                                    <div className="p-1.5 bg-blue-50 rounded-lg">
-                                                        <User className="h-4 w-4 text-blue-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900">
-                                                            Profile
-                                                        </span>
-                                                        <div className="text-xs text-slate-500">
-                                                            Manage your account
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </DropdownMenuItem>
-
                                             {currentAccount.role ===
                                                 'donor' && (
                                                 <>
@@ -401,6 +382,26 @@ export function Navbar() {
                                                                     View
                                                                     donation
                                                                     history
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </DropdownMenuItem>
+
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href="/profile"
+                                                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                        >
+                                                            <div className="p-1.5 bg-blue-50 rounded-lg">
+                                                                <User className="h-4 w-4 text-blue-600" />
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-medium text-slate-900">
+                                                                    Profile
+                                                                </span>
+                                                                <div className="text-xs text-slate-500">
+                                                                    Manage your
+                                                                    account
                                                                 </div>
                                                             </div>
                                                         </Link>
