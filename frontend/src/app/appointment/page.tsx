@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/select';
 import { Filter, Calendar, CheckCircle, Clock, Activity } from 'lucide-react';
 import { toast } from 'sonner';
-import { Status, statuses } from '@/lib/api/dto/appointment';
+import { FilterStatus, statuses } from '@/lib/api/dto/appointment';
 import { useCurrentAccountAppointment } from '@/hooks/use-current-account-appointment';
 import { redirect } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -40,12 +40,14 @@ export default function AppointmentPage() {
         error,
     } = useCurrentAccountAppointment();
 
-    const [status, setStatus] = useState<Status>('approved');
+    const [status, setStatus] = useState<FilterStatus>('all');
     const filteredAppointments = useMemo(
-        () =>
-            appointments?.filter(
+        () => {
+            if (status === "all") return appointments
+            return appointments?.filter(
                 (appointment) => appointment.status === status,
-            ),
+            )
+        },
         [appointments, status],
     );
     const [selected, setSelected] = useState<string | undefined>();
@@ -145,7 +147,7 @@ export default function AppointmentPage() {
                         <div className="relative flex-1"></div>
                         <Select
                             value={status}
-                            onValueChange={(value: Status) => setStatus(value)}
+                            onValueChange={(value: FilterStatus) => setStatus(value)}
                         >
                             <SelectTrigger
                                 value={status}
@@ -155,6 +157,9 @@ export default function AppointmentPage() {
                                 <SelectValue placeholder="Priority" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem key="all" value="all">
+                                    All
+                                </SelectItem>
                                 {statuses.map((status) => (
                                     <SelectItem key={status} value={status}>
                                         {capitalCase(status)}

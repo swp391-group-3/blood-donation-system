@@ -154,7 +154,7 @@ export default function AppointmentManagementPage() {
                     </div>
                     <Select
                         value={selectedStatus}
-                        onValueChange={(value: Status | 'all') =>
+                        onValueChange={(value: Status | "all") =>
                             setSelectedStatus(value)
                         }
                     >
