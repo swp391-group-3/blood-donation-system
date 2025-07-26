@@ -32,7 +32,6 @@ import {
     Users,
     Warehouse,
     HelpCircle,
-    Heart,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from './logo';
@@ -41,7 +40,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { AccountPicture } from './account-picture';
