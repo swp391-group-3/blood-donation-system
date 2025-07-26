@@ -108,7 +108,13 @@ export function Header() {
         <NavigationMenuItem key={item.label}>
             <NavigationMenuLink
                 asChild
-                className={navigationMenuTriggerStyle()}
+                className={cn(
+                    navigationMenuTriggerStyle(),
+                    // Thêm conditional styling dựa trên isScrolled
+                    isScrolled
+                        ? 'bg-transparent hover:bg-white/10 hover:text-foreground'
+                        : 'hover:bg-accent hover:text-accent-foreground',
+                )}
             >
                 <Link href={item.href}>{item.label}</Link>
             </NavigationMenuLink>
@@ -172,7 +178,14 @@ export function Header() {
 
                                     {isStaff && (
                                         <NavigationMenuItem>
-                                            <NavigationMenuTrigger>
+                                            <NavigationMenuTrigger
+                                                className={cn(
+                                                    // Conditional styling cho NavigationMenuTrigger
+                                                    isScrolled
+                                                        ? 'bg-transparent hover:bg-white/10 data-[state=open]:bg-white/10'
+                                                        : 'hover:bg-accent data-[state=open]:bg-accent',
+                                                )}
+                                            >
                                                 Management
                                             </NavigationMenuTrigger>
                                             <NavigationMenuContent>
@@ -263,7 +276,14 @@ export function Header() {
 
                                     {isAdmin && (
                                         <NavigationMenuItem>
-                                            <NavigationMenuTrigger>
+                                            <NavigationMenuTrigger
+                                                className={cn(
+                                                    // Conditional styling cho NavigationMenuTrigger
+                                                    isScrolled
+                                                        ? 'bg-transparent hover:bg-white/10 data-[state=open]:bg-white/10'
+                                                        : 'hover:bg-accent data-[state=open]:bg-accent',
+                                                )}
+                                            >
                                                 Management
                                             </NavigationMenuTrigger>
                                             <NavigationMenuContent>
