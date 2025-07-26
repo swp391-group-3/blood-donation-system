@@ -154,7 +154,7 @@ export default function AppointmentManagementPage() {
                     </div>
                     <Select
                         value={selectedStatus}
-                        onValueChange={(value: Status ) =>
+                        onValueChange={(value: Status | "all") =>
                             setSelectedStatus(value)
                         }
                     >
@@ -163,6 +163,9 @@ export default function AppointmentManagementPage() {
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
+                            <SelectItem key="all" value="all">
+                                All
+                            </SelectItem>
                             {statuses
                                 .filter(
                                     (status) =>
