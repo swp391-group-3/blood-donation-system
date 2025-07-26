@@ -89,7 +89,7 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="bg-gray-50">
+        <div className="my-10">
             <div className=" max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
