@@ -40,12 +40,12 @@ export default function AppointmentPage() {
         error,
     } = useCurrentAccountAppointment();
 
-    const [status, setStatus] = useState<Status>('all');
+    const [status, setStatus] = useState<Status>('on_process');
     const filteredAppointments = useMemo(
-        () => {
-            if (status === "all") return appointments;
-            return appointments?.filter(apt => apt.status === status);
-        },
+        () =>
+            appointments?.filter(
+                (appointment) => appointment.status === status,
+            ),
         [appointments, status],
     );
     const [selected, setSelected] = useState<string | undefined>();
