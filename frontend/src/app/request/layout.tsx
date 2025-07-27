@@ -10,14 +10,10 @@ export default function Layout({
     children: React.ReactNode;
 }>) {
     const router = useRouter();
-    const { data: account, isPending } = useCurrentAccount();
-    if (isPending) {
-        return <div></div>;
-    }
+    const { data: account } = useCurrentAccount();
     if (account && account.is_banned) {
         toast.warning('You have been banned from donating blood');
         router.push('/');
-        return;
     }
 
     return (
