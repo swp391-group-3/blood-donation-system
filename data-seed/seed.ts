@@ -1,5 +1,5 @@
 /**
- * Complete Database Seeding Script for Blood Donation Platform (Reduced Volume)
+ * Complete Database Seeding Script for Blood Donation Platform
  */
 
 import { Client } from 'pg';
@@ -153,10 +153,9 @@ async function seed() {
     const donorActiveApptMap: Record<string, boolean> = {};
     const donorBloodMap: Record<string, string> = {};
 
-    // Generate 10% of previous accounts (200 instead of 2000)
     for (let i = 0; i < 200; i++) {
         const id = uuidv4();
-        const role = i < 5 ? 'staff' : 'donor'; // 10% of 50 staff => 5
+        const role = i < 7 ? 'staff' : 'donor';
         const email = faker.internet.exampleEmail();
         const password =
             '$2a$10$LTZhbjKO4EbC2YsVwQ6AfuDd3Xk0ZGEkNiK.ibeMnDDeUbNUSH80W';
@@ -210,13 +209,21 @@ async function seed() {
     const requestTimeMap = new Map<string, [Date, Date]>();
     const requestPeopleMap = new Map<string, number>();
     const currentActiveRequests: string[] = [];
+    const requestMaxMap: Record<string, number> = {};
 
     for (const staffId of staffIds) {
-        for (let i = 0; i < 30; i++) { // Will be changed to 3
+        for (let i = 0; i < 3; i++) {
             const id = uuidv4();
             const priority = pick(PRIORITIES);
             const title = `Blood Drive - ${priority}`;
-            const max_people = faker.number.int({ min: 10, max: 100 });
+            const baseMax = faker.number.int({ min: 30, max: 100 });
+            const pct = faker.number.float({
+                min: 0.10,
+                max: 0.70,
+                multipleOf: 0.01,
+            });
+            const actualMax = Math.max(1, Math.floor(baseMax * pct));
+            requestMaxMap[id] = actualMax;
             let start: Date, end: Date;
             if (Math.random() < 0.3) {
                 start = randomDate(
@@ -247,7 +254,7 @@ async function seed() {
                     staffId,
                     priority,
                     title,
-                    max_people,
+                    baseMax,
                     start,
                     end,
                     isActive,
@@ -280,7 +287,7 @@ async function seed() {
         const donors = faker.helpers.shuffle(donorIds);
 
         for (const donorId of donors) {
-            if (requestPeopleMap.get(requestId)! >= 10) continue;
+            if (requestPeopleMap.get(requestId)! >= requestMaxMap[requestId]) continue;
             if (donorActiveApptMap[donorId]) continue;
 
             const donorBlood = donorBloodMap[donorId];
@@ -398,7 +405,7 @@ async function seed() {
                     donationType = pick(DONATION_TYPES);
                     tries++;
                 }
-                if (tries >= 10) continue; // Skip this donor if no valid donation type
+                if (tries >= 10) continue;
 
                 donorDonationMap[donorId][donationType] = donationDate;
 
@@ -437,7 +444,6 @@ async function seed() {
         }
     }
 
-    // Generate 50 blogs instead of 100
     const tagNames = [
         'Donation',
         'Health',
@@ -457,7 +463,7 @@ async function seed() {
     }
 
     const blogIds: string[] = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 49; i++) {
         const blogId = uuidv4();
         const authorId = pick(accountIds);
         const title = faker.lorem.sentence();
@@ -498,7 +504,7 @@ async function seed() {
         }
     }
 
-    console.log('✅ Database seeded successfully (reduced volume).');
+    console.log('✅ Database seeded successfully.');
     await client.end();
 }
 
