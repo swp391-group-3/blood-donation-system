@@ -14,12 +14,16 @@ interface Filter {
 }
 
 export const useBloodRequestList = (filter: Filter) => {
-    return useInfiniteScroll<Filter, BloodRequest>(filter, async (filter) => {
-        const params = buildParams(filter);
-        const response = await fetchWrapper(
-            `/blood-request?${params.toString()}`,
-        );
+    return useInfiniteScroll<Filter, BloodRequest>(
+        filter,
+        async (filter, signal) => {
+            const params = buildParams(filter);
+            const response = await fetchWrapper(
+                `/blood-request?${params.toString()}`,
+                { signal },
+            );
 
-        return await deserialize<Pagination<BloodRequest>>(response);
-    });
+            return await deserialize<Pagination<BloodRequest>>(response);
+        },
+    );
 };
