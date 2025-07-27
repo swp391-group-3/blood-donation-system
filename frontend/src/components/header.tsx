@@ -179,8 +179,8 @@ export function Header() {
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="flex gap-4">
-                                                                    <div className="p-1.5 bg-green-50 h-8 w-8 rounded-lg">
-                                                                        <BadgeQuestionMark className="h-4 w-4 text-green-600" />
+                                                                    <div className="p-2 bg-green-50 size-fit rounded-lg">
+                                                                        <BadgeQuestionMark className='size-4 text-green-600' />
                                                                     </div>
                                                                     <div>
                                                                         <span className="font-medium text-slate-900 group-hover:text-slate-700">
@@ -208,8 +208,8 @@ export function Header() {
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="flex gap-4">
-                                                                    <div className="p-1.5 bg-red-50 h-8 w-8 rounded-lg">
-                                                                        <Droplet className="h-4 w-4 text-red-600" />
+                                                                    <div className="p-2 size-fit bg-red-50 rounded-lg">
+                                                                        <Droplet className="size-4 text-red-600" />
                                                                     </div>
                                                                     <div>
                                                                         <span className="font-medium text-slate-900 group-hover:text-slate-700">
@@ -238,8 +238,8 @@ export function Header() {
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="flex gap-4">
-                                                                    <div className="p-1.5 bg-blue-50 h-8 w-8 rounded-lg">
-                                                                        <Calendar className="h-4 w-4 text-blue-600" />
+                                                                    <div className="p-2 bg-blue-50 size-fit rounded-lg">
+                                                                        <Calendar className="size-4 text-blue-600" />
                                                                     </div>
                                                                     <div>
                                                                         <span className="font-medium text-slate-900 group-hover:text-slate-700">
@@ -285,8 +285,8 @@ export function Header() {
                                                                 className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="flex gap-4">
-                                                                    <div className="p-1.5 bg-purple-50 h-8 w-8 rounded-lg">
-                                                                        <FileText className="h-4 w-4 text-purple-600" />
+                                                                    <div className="p-2 bg-purple-50 size-fit rounded-lg">
+                                                                        <FileText className="size-4 text-purple-600" />
                                                                     </div>
                                                                     <div>
                                                                         <span className="font-medium text-slate-900 group-hover:text-slate-700">
@@ -312,8 +312,8 @@ export function Header() {
                                                                 className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-all duration-200 group"
                                                             >
                                                                 <div className="flex gap-4">
-                                                                    <div className="p-1.5 bg-yellow-50 h-8 w-8 rounded-lg">
-                                                                        <UserCog className="h-4 w-4 text-yellow-600" />
+                                                                    <div className="p-2 bg-yellow-50 size-fit rounded-lg">
+                                                                        <UserCog className="size-4 text-yellow-600" />
                                                                     </div>
                                                                     <div className="flex-1 min-w-0">
                                                                         <p className="font-medium text-slate-900 group-hover:text-slate-700">
