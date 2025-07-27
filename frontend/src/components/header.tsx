@@ -152,11 +152,9 @@ export function Header() {
                         <div className="absolute left-1/2 transform -translate-x-1/2  hidden md:flex flex-1 justify-center">
                             <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
-                                    {
-                                        mainMenuItems.map(renderLink)
-                                    }
+                                    {mainMenuItems.map(renderLink)}
 
-                                    {isStaff && (
+                                    {isAdmin && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger
                                                 className={cn(
@@ -176,11 +174,11 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/question"
-                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                                className="flex item-start gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="flex gap-4">
                                                                     <div className="p-2 bg-green-50 size-fit rounded-lg">
-                                                                        <BadgeQuestionMark className='size-4 text-green-600' />
+                                                                        <BadgeQuestionMark className="size-4 text-green-600" />
                                                                     </div>
                                                                     <div>
                                                                         <span className="font-medium text-slate-900 group-hover:text-slate-700">
@@ -205,7 +203,7 @@ export function Header() {
                                                         >
                                                             <Link
                                                                 href="/blood-storage"
-                                                                className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
+                                                                className="flex items-start gap-3 cursor-pointer px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors duration-200"
                                                             >
                                                                 <div className="flex gap-4">
                                                                     <div className="p-2 size-fit bg-red-50 rounded-lg">
