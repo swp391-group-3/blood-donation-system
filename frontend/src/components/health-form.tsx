@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useHealthForm } from '@/hooks/use-health-form';
+import { useRejectAppointment } from '@/hooks/use-reject-appointment';
 import {
     Form,
     FormControl,
@@ -30,18 +32,61 @@ interface Props {
     appointmentId: string;
 }
 
+type ActionType =
+    | 'approved'
+    | 'temporarily_rejected'
+    | 'permanently_banned'
+    | null;
+
 export const HealthForm = ({ appointmentId }: Props) => {
     const router = useRouter();
-    const { mutation, form } = useHealthForm(appointmentId);
+    const { mutation: healthMutation, form } = useHealthForm(appointmentId);
+    const rejectMutation = useRejectAppointment(appointmentId);
+
+    const [selectedAction, setSelectedAction] = useState<ActionType>(null);
+
+    const handleApprove = () => {
+        setSelectedAction('approved');
+    };
+
+    const handleTemporaryReject = () => {
+        setSelectedAction('temporarily_rejected');
+    };
+
+    const handlePermanentBan = () => {
+        setSelectedAction('permanently_banned');
+    };
+
+    const handleApproveAssessment = () => {
+        form.handleSubmit((values) => {
+            const approveData = { ...values, is_good_health: true };
+            healthMutation.mutate(approveData);
+        })();
+    };
+
+    const handleRejectAssessment = () => {
+        form.handleSubmit((values) => {
+            rejectMutation.mutate({
+                reason: values.note || '',
+                isBanned: false,
+            });
+        })();
+    };
+
+    const handleBanAssessment = () => {
+        form.handleSubmit((values) => {
+            rejectMutation.mutate({
+                reason: values.note || '',
+                isBanned: true,
+            });
+        })();
+    };
+
+    const isLoading = healthMutation.isPending || rejectMutation.isPending;
 
     return (
-        <Form {...form}>
-            <form
-                className="space-y-6"
-                onSubmit={form.handleSubmit((values) =>
-                    mutation.mutate(values),
-                )}
-            >
+        <div className="space-y-6">
+            <Form {...form}>
                 <Card>
                     <CardHeader className="px-8">
                         <CardTitle className="flex items-center space-x-3">
@@ -90,6 +135,7 @@ export const HealthForm = ({ appointmentId }: Props) => {
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={form.control}
                             name="weight"
@@ -126,6 +172,7 @@ export const HealthForm = ({ appointmentId }: Props) => {
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={form.control}
                             name="heart_rate"
@@ -162,6 +209,7 @@ export const HealthForm = ({ appointmentId }: Props) => {
                                 </FormItem>
                             )}
                         />
+
                         <div className="grid gap-2 space-y-4">
                             <Label className="space-y-4">
                                 <div className="flex items-center space-x-3 mb-4">
@@ -228,6 +276,7 @@ export const HealthForm = ({ appointmentId }: Props) => {
                         </div>
                     </CardContent>
                 </Card>
+
                 <Card>
                     <CardHeader className="px-8">
                         <CardTitle className="flex items-center space-x-3">
@@ -238,159 +287,210 @@ export const HealthForm = ({ appointmentId }: Props) => {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="px-8 py-4">
-                        <FormItem>
-                            <FormField
-                                control={form.control}
-                                name="note"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-4">
-                                        <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                className="min-h-[120px] resize-none border-2 focus:border-blue-500 rounded-xl text-base transition-all"
-                                                placeholder="Enter any medical observations, concerns, or notes about the donor's condition..."
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </FormItem>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="px-8">
-                        <CardTitle className="flex items-center space-x-3">
-                            <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg shadow-amber-500/25">
-                                <Shield className="size-6 text-white" />
-                            </div>
-                            <span className="text-lg">
-                                Donation Eligibility Decision
-                            </span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8">
                         <FormField
                             control={form.control}
-                            name="is_good_health"
+                            name="note"
                             render={({ field }) => (
                                 <FormItem className="space-y-4">
                                     <FormControl>
-                                        <div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <Button
-                                                    type="button"
-                                                    variant={
-                                                        field.value
-                                                            ? 'default'
-                                                            : 'outline'
-                                                    }
-                                                    onClick={() =>
-                                                        form.setValue(
-                                                            'is_good_health',
-                                                            true,
-                                                        )
-                                                    }
-                                                    className={`h-24 transition-all duration-300 rounded-2xl ${
-                                                        field.value
-                                                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl shadow-green-500/25 transform'
-                                                            : 'border-2 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300'
-                                                    }`}
-                                                >
-                                                    <div className="text-center">
-                                                        <CheckCircle className="h-8 w-8 mx-auto mb-2" />
-                                                        <div className="text-lg font-bold">
-                                                            Approve
-                                                        </div>
-                                                        <div className="text-sm opacity-90">
-                                                            Eligible for
-                                                            donation
-                                                        </div>
-                                                    </div>
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    variant={
-                                                        !field.value
-                                                            ? 'default'
-                                                            : 'outline'
-                                                    }
-                                                    onClick={() =>
-                                                        form.setValue(
-                                                            'is_good_health',
-                                                            false,
-                                                        )
-                                                    }
-                                                    className={`h-24 transition-all duration-300 rounded-2xl ${
-                                                        !field.value
-                                                            ? 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white shadow-xl shadow-red-500/25 transform'
-                                                            : 'border-2 border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300'
-                                                    }`}
-                                                >
-                                                    <div className="text-center">
-                                                        <AlertCircle className="h-8 w-8 mx-auto mb-2" />
-                                                        <div className="text-lg font-bold">
-                                                            Reject
-                                                        </div>
-                                                        <div className="text-sm opacity-90">
-                                                            Not eligible today
-                                                        </div>
-                                                    </div>
-                                                </Button>
-                                            </div>
-
-                                            {field.value && (
-                                                <Alert className="border-green-200 bg-green-50 mt-6 rounded-xl">
-                                                    <CheckCircle className="h-5 w-5 text-green-600" />
-                                                    <AlertDescription className="text-green-800 font-medium">
-                                                        Donor approved for
-                                                        donation and will
-                                                        proceed to the donation
-                                                        process.
-                                                    </AlertDescription>
-                                                </Alert>
-                                            )}
-
-                                            {!field.value && (
-                                                <Alert className="border-amber-200 bg-amber-50 mt-6 rounded-xl">
-                                                    <AlertTriangle className="h-5 w-5 text-amber-600" />
-                                                    <AlertDescription className="text-amber-800 font-medium">
-                                                        Donor deferred from
-                                                        donation. Please ensure
-                                                        all reasons are
-                                                        documented in medical
-                                                        notes.
-                                                    </AlertDescription>
-                                                </Alert>
-                                            )}
-                                        </div>
+                                        <Textarea
+                                            {...field}
+                                            className="min-h-[120px] resize-none border-2 focus:border-blue-500 rounded-xl text-base transition-all"
+                                            placeholder="Enter any medical observations, concerns, or notes about the donor's condition..."
+                                        />
                                     </FormControl>
                                     <FormMessage />
+                                    {(selectedAction ===
+                                        'temporarily_rejected' ||
+                                        selectedAction ===
+                                            'permanently_banned') && (
+                                        <div className="text-sm text-amber-600 font-medium mt-2">
+                                            * This note will be used as the
+                                            reason for rejection
+                                        </div>
+                                    )}
                                 </FormItem>
                             )}
                         />
                     </CardContent>
                 </Card>
-                <div className="flex justify-end space-x-4 pt-8">
+            </Form>
+
+            <Card>
+                <CardHeader className="px-8">
+                    <CardTitle className="flex items-center space-x-3">
+                        <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg shadow-amber-500/25">
+                            <Shield className="size-6 text-white" />
+                        </div>
+                        <span className="text-lg">
+                            Donation Eligibility Decision
+                        </span>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-8">
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <Button
+                                type="button"
+                                variant={
+                                    selectedAction === 'approved'
+                                        ? 'default'
+                                        : 'outline'
+                                }
+                                onClick={handleApprove}
+                                disabled={isLoading}
+                                className={`h-24 transition-all duration-300 rounded-2xl ${
+                                    selectedAction === 'approved'
+                                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl shadow-green-500/25 transform'
+                                        : 'border-2 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300'
+                                }`}
+                            >
+                                <div className="text-center">
+                                    <CheckCircle className="h-8 w-8 mx-auto mb-2" />
+                                    <div className="text-lg font-bold">
+                                        Approve
+                                    </div>
+                                    <div className="text-sm opacity-90">
+                                        Eligible for donation
+                                    </div>
+                                </div>
+                            </Button>
+
+                            <Button
+                                type="button"
+                                variant={
+                                    selectedAction === 'temporarily_rejected'
+                                        ? 'default'
+                                        : 'outline'
+                                }
+                                onClick={handleTemporaryReject}
+                                disabled={isLoading}
+                                className={`h-24 transition-all duration-300 rounded-2xl ${
+                                    selectedAction === 'temporarily_rejected'
+                                        ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white shadow-xl shadow-yellow-400/30 transform'
+                                        : 'border-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-300'
+                                }`}
+                            >
+                                <div className="text-center">
+                                    <AlertCircle
+                                        className={`h-8 w-8 mx-auto mb-2 ${
+                                            selectedAction ===
+                                            'temporarily_rejected'
+                                                ? 'text-white'
+                                                : 'text-yellow-600'
+                                        }`}
+                                    />
+                                    <div className="text-lg font-bold">
+                                        Reject
+                                    </div>
+                                    <div className="text-sm opacity-90">
+                                        Not eligible today
+                                    </div>
+                                </div>
+                            </Button>
+
+                            <Button
+                                type="button"
+                                variant={
+                                    selectedAction === 'permanently_banned'
+                                        ? 'default'
+                                        : 'outline'
+                                }
+                                onClick={handlePermanentBan}
+                                disabled={isLoading}
+                                className={`h-24 transition-all duration-300 rounded-2xl ${
+                                    selectedAction === 'permanently_banned'
+                                        ? 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white shadow-xl shadow-red-500/25 transform'
+                                        : 'border-2 border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300'
+                                }`}
+                            >
+                                <div className="text-center">
+                                    <AlertCircle
+                                        className={`h-8 w-8 mx-auto mb-2 ${
+                                            selectedAction ===
+                                            'permanently_banned'
+                                                ? 'text-white'
+                                                : 'text-red-600'
+                                        }`}
+                                    />
+                                    <div className="text-lg font-bold">
+                                        Permanently Banned
+                                    </div>
+                                    <div className="text-sm opacity-90">
+                                        Not eligible due to some conditions
+                                    </div>
+                                </div>
+                            </Button>
+                        </div>
+
+                        {selectedAction === 'approved' && (
+                            <Alert className="border-green-200 bg-green-50 mt-6 rounded-xl">
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                                <AlertDescription className="text-green-800 font-medium">
+                                    Donor approved for donation and will proceed
+                                    to the donation process.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
+                        {selectedAction === 'temporarily_rejected' && (
+                            <Alert className="border-amber-200 bg-amber-50 mt-6 rounded-xl">
+                                <AlertTriangle className="h-5 w-5 text-amber-600" />
+                                <AlertDescription className="text-amber-800 font-medium">
+                                    Donor temporarily rejected. Please ensure
+                                    all reasons are documented in medical notes
+                                    before completing the assessment.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
+                        {selectedAction === 'permanently_banned' && (
+                            <Alert className="border-red-200 bg-red-50 mt-6 rounded-xl">
+                                <AlertTriangle className="h-5 w-5 text-red-600" />
+                                <AlertDescription className="text-red-800 font-medium">
+                                    Donor permanently banned from donation.
+                                    Please ensure all conditions are documented
+                                    in medical notes before completing the
+                                    assessment.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
+                        {!selectedAction && (
+                            <Alert className="border-slate-200 bg-slate-50 mt-6 rounded-xl">
+                                <AlertTriangle className="h-5 w-5 text-slate-600" />
+                                <AlertDescription className="text-slate-800 font-medium">
+                                    Please select an eligibility decision to
+                                    proceed.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="flex justify-end space-x-4 pt-8">
+                <Button
+                    type="button"
+                    onClick={() => router.push('/appointment/management')}
+                    variant="outline"
+                    className="px-8 py-6 transition-all"
+                    disabled={isLoading}
+                >
+                    Cancel
+                </Button>
+
+                {selectedAction === 'approved' && (
                     <Button
                         type="button"
-                        onClick={() => {
-                            router.push('/appointment/management');
-                        }}
-                        variant="outline"
-                        className="px-8 py-6 transition-all"
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        type="submit"
-                        disabled={mutation.isPending}
+                        onClick={handleApproveAssessment}
+                        disabled={isLoading}
                         className="bg-blue-600 hover:bg-blue-700 py-6 transition-all"
                     >
-                        {mutation.isPending ? (
+                        {healthMutation.isPending ? (
                             <>
                                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                                Saving Assessment...
+                                Approving...
                             </>
                         ) : (
                             <>
@@ -399,8 +499,50 @@ export const HealthForm = ({ appointmentId }: Props) => {
                             </>
                         )}
                     </Button>
-                </div>
-            </form>
-        </Form>
+                )}
+
+                {selectedAction === 'temporarily_rejected' && (
+                    <Button
+                        type="button"
+                        onClick={handleRejectAssessment}
+                        disabled={isLoading}
+                        className="bg-yellow-600 hover:bg-yellow-700 py-6 transition-all"
+                    >
+                        {rejectMutation.isPending ? (
+                            <>
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                                Rejecting...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="h-5 w-5 mr-3" />
+                                Complete Assessment
+                            </>
+                        )}
+                    </Button>
+                )}
+
+                {selectedAction === 'permanently_banned' && (
+                    <Button
+                        type="button"
+                        onClick={handleBanAssessment}
+                        disabled={isLoading}
+                        className="bg-red-600 hover:bg-red-700 py-6 transition-all"
+                    >
+                        {rejectMutation.isPending ? (
+                            <>
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                                Banning...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="h-5 w-5 mr-3" />
+                                Complete Assessment
+                            </>
+                        )}
+                    </Button>
+                )}
+            </div>
+        </div>
     );
 };
