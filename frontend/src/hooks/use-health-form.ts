@@ -11,7 +11,7 @@ import z from 'zod';
 export const schema = z
     .object({
         heart_rate: z.number({ coerce: true }).int(),
-        is_good_health: z.boolean(),
+        is_good_health: z.boolean().optional(),
         lower_blood_pressure: z.number({ coerce: true }).int(),
         note: z.string().optional(),
         temperature: z.number({ coerce: true }),
