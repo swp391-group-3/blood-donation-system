@@ -52,20 +52,14 @@ export function Header() {
     const { data: currentAccount } = useCurrentAccount();
     const logout = useLogout();
 
-    const isGuestOrDonor =
-        !currentAccount?.role || currentAccount?.role === 'donor';
     const isStaff = currentAccount?.role === 'staff';
     const isAdmin = currentAccount?.role === 'admin';
-
-    const commonLinks = [
-        { label: 'Home', href: '/' },
-        { label: 'Blood Request', href: '/request' },
-        { label: 'Blog', href: '/blog' },
-    ];
 
     const mainMenuItems = isAdmin
         ? [
               { label: 'Home', href: '/', icon: Home },
+              { label: 'Blood Request', href: '/request', icon: Droplet },
+              { label: 'Blog', href: '/blog', icon: Newspaper },
               { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
           ]
         : [
@@ -158,21 +152,9 @@ export function Header() {
                         <div className="absolute left-1/2 transform -translate-x-1/2  hidden md:flex flex-1 justify-center">
                             <NavigationMenu viewport={false}>
                                 <NavigationMenuList>
-                                    {(isGuestOrDonor || isStaff) &&
-                                        commonLinks.map(renderLink)}
-
-                                    {isAdmin && (
-                                        <>
-                                            {renderLink({
-                                                label: 'Home',
-                                                href: '/',
-                                            })}
-                                            {renderLink({
-                                                label: 'Dashboard',
-                                                href: '/dashboard',
-                                            })}
-                                        </>
-                                    )}
+                                    {
+                                        mainMenuItems.map(renderLink)
+                                    }
 
                                     {isStaff && (
                                         <NavigationMenuItem>
