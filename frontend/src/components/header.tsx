@@ -154,7 +154,7 @@ export function Header() {
                                 <NavigationMenuList>
                                     {mainMenuItems.map(renderLink)}
 
-                                    {isAdmin && (
+                                    {isStaff && (
                                         <NavigationMenuItem>
                                             <NavigationMenuTrigger
                                                 className={cn(
