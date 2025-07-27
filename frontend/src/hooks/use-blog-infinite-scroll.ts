@@ -15,9 +15,11 @@ interface Filter {
 }
 
 export const useBlogList = (filter: Filter) => {
-    return useInfiniteScroll<Filter, Blog>(filter, async (filter) => {
+    return useInfiniteScroll<Filter, Blog>(filter, async (filter, signal) => {
         const params = buildParams(filter);
-        const response = await fetchWrapper(`/blog?${params.toString()}`);
+        const response = await fetchWrapper(`/blog?${params.toString()}`, {
+            signal,
+        });
 
         return await deserialize<Pagination<Blog>>(response);
     });
