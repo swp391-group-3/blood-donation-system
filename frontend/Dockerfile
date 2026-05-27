@@ -7,6 +7,8 @@ RUN bun install --frozen-lockfile
 
 FROM base AS builder
 
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app
@@ -20,14 +22,14 @@ WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN adduser --system --uid 1001 nextjs
+RUN chown -R 1001:1001 /app
 
 COPY --from=builder /app/public ./public
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-USER nextjs
+USER 1001
 
 EXPOSE 3000
 
