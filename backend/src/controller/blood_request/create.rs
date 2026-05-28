@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::sync::Arc;
 
 use axum::{Json, extract::State, http::StatusCode};
