@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use database::queries::account::Account;
 use lettre::{
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor, message::header::ContentType,
